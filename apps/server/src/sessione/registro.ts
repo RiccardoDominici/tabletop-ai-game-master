@@ -163,6 +163,11 @@ function testo(v: unknown): string | null {
 }
 
 /** Nomi e testi dalla campagna caricata (e dal repertorio in modalità B). */
+/** The mode A marks of a snapshot as log entries (no line carries them): id, turn, `battuta: null`. */
+function daMarche(voci: ReadonlyArray<[string, number]>): Array<{ id: string; turno: number; battuta: string | null }> {
+  return voci.map(([id, turno]) => ({ id, turno, battuta: null })).sort((a, b) => a.turno - b.turno || a.id.localeCompare(b.id));
+}
+
 export function definizioniRegistro(c: Campagna, repertorio?: Repertorio): DefinizioniRegistro {
   // The narrator's clocks and the fronts' extra clocks (docs/mondo.md §3): both are in the Engine's snapshot.
   const narratore = Array.isArray(c.campagnaNarratore['orologi']) ? (c.campagnaNarratore['orologi'] as DatiYaml[]) : [];
@@ -233,7 +238,11 @@ export function estraiRegistro(s: SessioneDaRegistrare, eventi: readonly EventoD
   }
   if (fotografie.length === 0) avvisi.push('Nessuna fotografia nell’archivio: la sessione non è mai partita davvero.');
   const modoB = fotografie.some((f) => f.repertorio !== null && f.repertorio !== undefined);
-  if (!modoB) avvisi.push('Modalità A (improvvisa) o repertorio assente: il Motore non tiene indizi, battute, menzogne e fatti noti; quelle sezioni sono vuote (null).');
+  // Mode A (A16): the narrator's marks ([indizio], [menzogna], [fatto]) checked by the Engine, from the last snapshot that
+  // has them; an older archive has none, and those sections stay null as before.
+  const marcheA = modoB ? undefined : [...fotografie].reverse().find((f) => f.marche !== undefined)?.marche;
+  if (!modoB && !marcheA) avvisi.push('Modalità A (improvvisa) o repertorio assente: il Motore non tiene indizi, battute, menzogne e fatti noti; quelle sezioni sono vuote (null).');
+  else if (!modoB) avvisi.push('Modalità A (improvvisa): indizi, menzogne e fatti noti vengono dalle righe [indizio], [menzogna], [fatto] del narratore controllate dal Motore; le battute non ci sono (null).');
 
   // --- Trascrizione pubblica: i turni in ordine, le voci nell'ordine in cui sono state dette.
   const voci = [...turni.entries()].sort(([a], [b]) => a - b).flatMap(([, v]) => v);
@@ -397,8 +406,9 @@ export function estraiRegistro(s: SessioneDaRegistrare, eventi: readonly EventoD
   for (const c of cambiDiScena) segna(c.turno, `scena: ${c.id}`);
   for (const o of orologi) for (const sg of o.segni) segna(sg.turno, `orologio ${o.id}: segno ${sg.numero}/${o.segmenti}${sg.causa === 'master' ? ' (master)' : ''}`);
   for (const o of orologi) if (o.partito_al_turno !== null) segna(o.partito_al_turno, `orologio ${o.id}: parte`);
-  for (const i of indizi) segna(i.turno, `indizio: ${i.id}`);
-  for (const m of menzogne) segna(m.turno, `menzogna: ${m.id}`);
+  // Mode A: the narrator's checked marks are moments too (A16).
+  for (const i of marcheA ? daMarche(marcheA.indizi) : indizi) segna(i.turno, `indizio: ${i.id}`);
+  for (const m of marcheA ? daMarche(marcheA.menzogne) : menzogne) segna(m.turno, `menzogna: ${m.id}`);
   for (const b of battute) if (b.tipo && TIPI_MOMENTO.has(b.tipo)) segna(b.turno, `${b.tipo}: ${b.id}`);
   for (const sit of situazioni) segna(sit.turno, `situazione: ${sit.id}`);
   const momenti: RegistroSessione['momenti'] = [...cosaPer.entries()]
@@ -440,10 +450,10 @@ export function estraiRegistro(s: SessioneDaRegistrare, eventi: readonly EventoD
     luoghi,
     situazioni: situazioni.sort((a, b) => a.turno - b.turno || a.id.localeCompare(b.id)),
     orologi,
-    indizi: modoB ? indizi.sort(perTurnoEId) : null,
+    indizi: modoB ? indizi.sort(perTurnoEId) : marcheA ? daMarche(marcheA.indizi) : null,
     battute: modoB ? battute.sort(perTurnoEId) : null,
-    menzogne: modoB ? menzogne.sort(perTurnoEId) : null,
-    fatti_noti: modoB ? fattiNoti.sort(perTurnoEId) : null,
+    menzogne: modoB ? menzogne.sort(perTurnoEId) : marcheA ? daMarche(marcheA.menzogne) : null,
+    fatti_noti: modoB ? fattiNoti.sort(perTurnoEId) : marcheA ? daMarche(marcheA.fatti_noti) : null,
     png_incontrati: pngIncontrati,
     pg,
     momenti,

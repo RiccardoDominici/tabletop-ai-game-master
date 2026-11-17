@@ -305,6 +305,21 @@ describe('registro da eventi a mano', () => {
     ]);
   });
 
+  it('modalità A con le righe [indizio] / [menzogna] / [fatto] controllate (A16): le sezioni ci sono, le battute no', () => {
+    const ultima = { ...foto(4, 's2', 1, 2, 'fine_turno'), marche: { indizi: [['i_lettera', 3] as [string, number]], menzogne: [['x_bugia', 1] as [string, number]], fatti_noti: [['f_vero', 3] as [string, number]] } };
+    const conMarche = [...eventi.slice(0, -1), { ...eventi.at(-1)!, dati: ultima }];
+    const { registro: r } = estraiRegistro(SESSIONE, conMarche, DEF);
+    expect(r.indizi).toEqual([{ id: 'i_lettera', turno: 3, battuta: null }]);
+    expect(r.menzogne).toEqual([{ id: 'x_bugia', turno: 1, battuta: null }]);
+    expect(r.fatti_noti).toEqual([{ id: 'f_vero', turno: 3, battuta: null }]);
+    expect(r.battute).toBeNull();
+    expect(r.avvisi.join(' ')).toMatch(/righe \[indizio\]/);
+    expect(r.momenti.map((m) => [m.turno, m.cosa])).toEqual([
+      [1, ['orologio o: segno 2/3', 'menzogna: x_bugia']],
+      [3, ['scena: s2', 'indizio: i_lettera']],
+    ]);
+  });
+
   it('una sessione mai partita: registro vuoto con un avviso, niente eccezioni', () => {
     const { registro: r } = estraiRegistro({ ...SESSIONE, pacchetto: null }, eventi.slice(0, 1), DEF);
     expect(r.scene).toEqual([]);

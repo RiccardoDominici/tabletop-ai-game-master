@@ -157,8 +157,10 @@ its turn and cause: narration or master, signs removed, departure), `indizi` (cl
 last turn), `png_improvvisati` (minor characters the narrator improvised in mode A with `[nuovo png]`: name, role,
 turn, scene; only when there are any, docs/coerenza.md), `pg` (PCs) (public and private actions kept separate, exact text and outcome), `momenti` (moments) (the turns
 in which the Engine recorded a change, with the lines said and the actions), `note_del_master` (the Game Master's notes),
-`avvisi` (warnings). `trascrizione.yaml` sits next to it: the public entries turn by turn, exact text. In mode A the
-Engine does not keep clues, lines, lies and facts: those sections are `null` and a warning says so.
+`avvisi` (warnings). `trascrizione.yaml` sits next to it: the public entries turn by turn, exact text. In mode A there
+are no lines (`battute: null`); clues, lies and known facts come from the narrator's `[indizio]`, `[menzogna]`,
+`[fatto]` lines the Engine accepted (A16, docs/f0-contratti.md), each with its turn and `battuta: null`, and a warning
+says where they come from. An archive from before those lines has `null` there, as before.
 
 ## The cycle between sessions
 1. **Fine sessione** (master's panel): the server writes `sessioni/<nn>/registro.yaml` from the archive.

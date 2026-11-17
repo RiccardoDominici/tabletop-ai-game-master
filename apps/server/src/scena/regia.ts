@@ -88,6 +88,7 @@ import { personaggiScena, pngIncontrati, presenzaEffettiva, presenzeMaster } fro
 import { sommaCosti } from '../llm/costi';
 import type { Battuta, Repertorio } from '../repertorio/tipi';
 import { STATI_ATTEGGIAMENTO, TUTTI_I_PG, type StatoAtteggiamento } from '../campagna/mondo';
+import { MarcheRivelate } from './marche';
 import { haCancelloAzione, StatoRepertorio } from '../repertorio/stato';
 import { provaFallita } from '../repertorio/condizioni';
 import { righeMenzogneDette } from '../repertorio/menzogne';
@@ -516,6 +517,8 @@ export class Regia {
   private turno = 0;
   /** The world that moves (docs/mondo.md): gates of avanza_quando, off-screen marks. */
   private mondo!: MondoInGioco;
+  /** Mode A (A16): clues, lies and canon facts the narrator marked as revealed, checked by the Engine. */
+  private marche!: MarcheRivelate;
   /** The stall move of the turn being narrated (docs/mondo.md §5), or null. */
   private mossaStallo: MossaStallo | null = null;
   /** Clocks due in the message of the turn being narrated (owed marks are said by the Engine if not shown). */
@@ -763,6 +766,7 @@ export class Regia {
     this.pronuncia = this.lessico.pronuncia;
     this.orologi = new StatoOrologi(opzioni.campagna);
     this.mondo = this.nuovoMondo();
+    this.marche = new MarcheRivelate(this.campagna);
     this.nomiPng = nomiDeiPng(opzioni.campagna);
     this.luogo = opzioni.campagna.scena.id;
     this.ritmo = ritmoDellaScena(this.campagna);
@@ -914,6 +918,7 @@ export class Regia {
       umore: this.umoreScelto ? { ...this.umoreScelto } : null,
       orologi: this.orologi.esporta(),
       mondo: this.mondo.esporta(),
+      marche: this.marche.esporta(),
       repertorio: this.statoRepertorio?.esporta() ?? null,
       note: this.note.esporta(),
       pausa: { richiesta: this.pausaRichiesta, invitoSospeso: this.invitoSospeso },
@@ -1011,6 +1016,7 @@ export class Regia {
     this.luogo = f.luogo || this.campagna.scena.id;
     this.orologi.importa(f.orologi);
     this.mondo.importa(f.mondo);
+    this.marche.importa(f.marche);
     if (this.prove?.attivo && f.prove) this.prove.importa(f.prove);
     if (this.statoRepertorio && f.repertorio) this.statoRepertorio.importa(f.repertorio);
     this.diarioRegistro.importa(f.registro);
@@ -2739,6 +2745,7 @@ export class Regia {
     // Si riparte dalla prima scena, con gli orologi della campagna da capo.
     this.orologi = new StatoOrologi(this.o.campagna);
     this.mondo = this.nuovoMondo();
+    this.marche = new MarcheRivelate(this.campagna);
     this.sceneVisitate.clear();
     this.sceneConFinale.clear();
     this.rivelati.clear();
@@ -4328,6 +4335,14 @@ export class Regia {
         log.error({ orologio: id, motivo: a.motivo }, 'orologio: avanzamento rifiutato');
       }
     }
+    // Mode A: what the answer marked as revealed ([indizio] / [menzogna] / [fatto], A16), checked like [orologio]. In mode
+    // B the lines carry these effects, and a reader's mark is not taken.
+    const esitiMarche = (this.statoRepertorio ? [] : esito.marche).map((m) => {
+      const e = this.marche.proponi(m.cosa, m.id, turno, { scena: this.campagna.scena.id, presenti: this.pngInScena() });
+      if (e.ok) log.info({ cosa: m.cosa, id: m.id }, 'narrator: revealed mark accepted');
+      else log.warn({ cosa: m.cosa, id: m.id, motivo: e.motivo }, 'narrator: revealed mark refused');
+      return e.ok ? { ...m, ok: true } : { ...m, ok: false, motivo: e.motivo };
+    });
     // Attitude changes the narrator proposed (mode A): the Engine checks them (docs/mondo.md §4).
     const atteggiamenti = this.atteggiamentiDalNarratore(turno, esito.atteggiamenti, log);
     // Minor characters the narrator brought in ([nuovo png], mode A): registered before the presence changes.
@@ -4435,6 +4450,7 @@ export class Regia {
       errore: esito.errore,
       invito: esito.invito,
       orologi: esitiOrologi,
+      ...(esitiMarche.length ? { marche: esitiMarche } : {}),
       ...(atteggiamenti.length ? { atteggiamenti } : {}),
       stato_orologi: this.orologi.riepilogo(),
       anomalie: esito.anomalie,

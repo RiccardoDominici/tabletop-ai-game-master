@@ -206,6 +206,7 @@ contesto:
     conoscenze_private: "conoscenze_private of {id} (SECRET: only this player knows them. Never say them aloud; they become public only when the player uses them or tells them):"
     etichetta_orologio: "- [orologio] followed by the id of an active clock, only when the response shows its next sign"
     etichetta_atteggiamento: "- [atteggiamento] followed by the NPC id, the PC id (or tutti) and the new state (ostile, indifferente, amichevole), only when an NPC in the scene changes their mind about a PC"
+    etichetta_marche: "- [indizio] followed by the id of a clue of the scene, [menzogna] followed by the id of a lie (mente_su) of an NPC in the scene, [fatto] followed by the id of a canon fact: one line each, only when the answer really reveals it to the PCs (or the NPC tells that lie)"
   # Selector context, public part only (apps/server/src/repertorio/contesto.ts).
   repertorio:
     intestazione: "# Campaign “{titolo}” (public part)"

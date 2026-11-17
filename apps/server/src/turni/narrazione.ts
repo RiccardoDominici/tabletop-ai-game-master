@@ -100,6 +100,8 @@ export interface EsitoTurnoNarrato {
   invito: string[] | 'tutti' | null;
   /** Id proposti con [orologio] (li valida la regia). */
   orologi: string[];
+  /** Mode A (A16): [indizio] / [menzogna] / [fatto] ids the answer marked as revealed (the director checks them). */
+  marche: Array<{ cosa: 'indizio' | 'menzogna' | 'fatto'; id: string }>;
   /** Attitude changes proposed with [atteggiamento] (the director checks them: docs/mondo.md §4). */
   atteggiamenti: Array<{ png: string; pg: string; stato: string }>;
   /** Presence changes the narrator proposed ([esce]/[entra], docs/coerenza.md §1): the director checks them. */
@@ -359,6 +361,7 @@ export async function narraTurno(
   const idPng = new Set(campagna.png.map((x) => x.id));
   let invito: string[] | 'tutti' | null = null;
   const orologi: string[] = [];
+  const marche: Array<{ cosa: 'indizio' | 'menzogna' | 'fatto'; id: string }> = [];
   const atteggiamenti: Array<{ png: string; pg: string; stato: string }> = [];
   const presenze: Array<{ png: string; presente: boolean; verso: string | null }> = [];
   const nuoviPng: Array<{ nome: string; ruolo: string | null }> = [];
@@ -589,6 +592,10 @@ export async function narraTurno(
       } else if (e.tipo === 'invito') {
         invito = e.invitati;
         log.info({ turno: p.turno, invito: e.invitati, grezzo: e.grezzo }, 'narratore: invito');
+      } else if (e.tipo === 'marca') {
+        // Mode A (A16): what the answer revealed; the director checks each id, like [orologio].
+        marche.push({ cosa: e.cosa, id: e.id });
+        log.info({ turno: p.turno, cosa: e.cosa, id: e.id, grezzo: e.grezzo }, 'narrator: revealed mark proposed');
       } else {
         if (p.ignora?.has(e.codice)) continue;
         anomalie.push({ codice: e.codice, dettaglio: e.dettaglio });
@@ -614,6 +621,7 @@ export async function narraTurno(
   const risultato = (esito: EsitoNarrazione | null, errore: string | null, interrotto: boolean): EsitoTurnoNarrato => ({
     invito,
     orologi,
+    marche,
     atteggiamenti,
     presenze,
     nuoviPng,

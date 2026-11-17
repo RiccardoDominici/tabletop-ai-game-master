@@ -10,6 +10,8 @@
  *   [atteggiamento] png_x pg_y stato ← optional, not read aloud: a proposed NPC attitude change (docs/mondo.md §4)
  *   [esce] png_x verso <dove> / [entra] png_x ← optional, not read aloud: an NPC leaves or arrives (docs/coerenza.md §1)
  *   [nuovo png] <nome>, <ruolo>         ← optional, mode A, not read aloud: a minor improvised character enters
+ *   [indizio] i_x / [menzogna] id / [fatto] f_x ← optional, mode A, not read aloud: the answer revealed a clue, told
+ *                                         an NPC's lie, made a canon fact known (the Engine checks it, like [orologio])
  *   [invito] pg_a,pg_b      ← ultima riga, obbligatoria, non letta a voce
  *
  * Riceve i delta del testo in streaming e produce eventi appena possibile:
@@ -38,6 +40,7 @@ export type CodiceAnomalia =
   | 'invito_ripetuto'
   | 'testo_dopo_invito'
   | 'orologio_vuoto'
+  | 'marca_vuota'
   | 'ritmo_sconosciuto'
   | 'usa_vuoto'
   | 'umore_vuoto'
@@ -64,6 +67,11 @@ export type EventoNarratore =
   | { tipo: 'invito'; invitati: string[] | 'tutti'; grezzo: string }
   /** Riga [orologio] <id>: il narratore ha mostrato il prossimo segno di quell'orologio. */
   | { tipo: 'orologio'; id: string; grezzo: string }
+  /**
+   * [indizio] i_x, [menzogna] <mente_su id>, [fatto] f_x (mode A, A16): what the answer revealed, so clues, lies and
+   * known facts reach the session log as in mode B; the Engine checks each id like [orologio].
+   */
+  | { tipo: 'marca'; cosa: 'indizio' | 'menzogna' | 'fatto'; id: string; grezzo: string }
   /** Riga [ritmo] concitato|calmo: la narrazione chiede (o toglie) il conto alla rovescia. */
   | { tipo: 'ritmo'; ritmo: 'concitato' | 'calmo'; grezzo: string }
   /**
@@ -104,10 +112,13 @@ const ATTEGGIAMENTO = 'atteggiamento';
 const ESCE = 'esce';
 const ENTRA = 'entra';
 const NUOVO_PNG = 'nuovo png';
+/** Control lines of mode A that mark what the answer revealed (A16). */
+const MARCHE = ['indizio', 'menzogna', 'fatto'] as const;
+type Marca = (typeof MARCHE)[number];
 /** Oltre questa lunghezza un «[» a inizio riga senza «]» non è un'etichetta. */
 const MAX_ETICHETTA = 48;
 
-type Modo = 'inizio_riga' | 'testo' | 'invito' | 'orologio' | 'ritmo' | 'usa' | 'umore' | 'effetto' | 'atteggiamento' | 'esce' | 'entra' | 'nuovo_png';
+type Modo = 'inizio_riga' | 'testo' | 'invito' | 'orologio' | 'ritmo' | 'usa' | 'umore' | 'effetto' | 'atteggiamento' | 'esce' | 'entra' | 'nuovo_png' | Marca;
 
 export class ParserNarratore {
   private readonly png: Set<string>;
@@ -190,6 +201,9 @@ export class ParserNarratore {
       case 'esce':
       case 'entra':
       case 'nuovo_png':
+      case 'indizio':
+      case 'menzogna':
+      case 'fatto':
         this.bufferInvito += c;
         return;
       case 'testo':
@@ -271,7 +285,7 @@ export class ParserNarratore {
       this.bufferInvito = resto;
       return;
     }
-    if (risolta.tipo === 'orologio' || risolta.tipo === 'ritmo' || risolta.tipo === 'usa' || risolta.tipo === 'umore' || risolta.tipo === 'effetto' || risolta.tipo === 'atteggiamento' || risolta.tipo === 'esce' || risolta.tipo === 'entra' || risolta.tipo === 'nuovo_png') {
+    if (risolta.tipo === 'orologio' || risolta.tipo === 'ritmo' || risolta.tipo === 'usa' || risolta.tipo === 'umore' || risolta.tipo === 'effetto' || risolta.tipo === 'atteggiamento' || risolta.tipo === 'esce' || risolta.tipo === 'entra' || risolta.tipo === 'nuovo_png' || risolta.tipo === 'indizio' || risolta.tipo === 'menzogna' || risolta.tipo === 'fatto') {
       this.modo = risolta.tipo;
       this.bufferInvito = resto;
       return;
@@ -313,6 +327,9 @@ export class ParserNarratore {
     | { tipo: 'esce' }
     | { tipo: 'entra' }
     | { tipo: 'nuovo_png' }
+    | { tipo: 'indizio' }
+    | { tipo: 'menzogna' }
+    | { tipo: 'fatto' }
     | { tipo: 'parlante'; id: string; alias: boolean }
     | { tipo: 'privato'; pg: string | null }
     | { tipo: 'sconosciuta' } {
@@ -333,6 +350,7 @@ export class ParserNarratore {
     if (t === ESCE) return { tipo: 'esce' };
     if (t === ENTRA) return { tipo: 'entra' };
     if (t.replace(/[\s_]+/g, ' ') === NUOVO_PNG) return { tipo: 'nuovo_png' };
+    if ((MARCHE as readonly string[]).includes(t)) return { tipo: t as Marca };
     if (t === NARRATORE) return { tipo: 'parlante', id: NARRATORE, alias: false };
     if (this.png.has(t)) return { tipo: 'parlante', id: t, alias: false };
     const daAlias = this.alias.get(t) ?? this.alias.get(t.replace(/^png_/, ''));
@@ -397,6 +415,11 @@ export class ParserNarratore {
         break;
       case 'nuovo_png':
         this.chiudiNuovoPng();
+        break;
+      case 'indizio':
+      case 'menzogna':
+      case 'fatto':
+        this.chiudiMarca(this.modo);
         break;
       case 'inizio_riga': {
         const p = this.prefisso.trim();
@@ -489,6 +512,18 @@ export class ParserNarratore {
       return;
     }
     this.eventi.push({ tipo, tag, grezzo });
+  }
+
+  /** [indizio] / [menzogna] / [fatto] <id>: the first word, lowercase (the Engine checks it). */
+  private chiudiMarca(cosa: Marca): void {
+    const grezzo = this.bufferInvito.trim();
+    this.bufferInvito = '';
+    const id = grezzo.replace(/[`"'«»]/g, '').split(/[\s,;]+/)[0]?.toLowerCase().replace(/[.!?:]+$/, '') ?? '';
+    if (!id) {
+      this.anomalia('marca_vuota', `riga [${cosa}] senza id`);
+      return;
+    }
+    this.eventi.push({ tipo: 'marca', cosa, id, grezzo });
   }
 
   private chiudiOrologio(): void {

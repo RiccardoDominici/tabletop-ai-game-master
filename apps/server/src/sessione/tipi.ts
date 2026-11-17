@@ -19,6 +19,7 @@
  * turno della trascrizione, l'ultimo stato del tavolo, l'ultimo PG di ogni dispositivo.
  */
 import type { EsitoPrivato, FaseScena, NotaRegia, RiassuntoSerata, VoceTrascrizione } from '@tabletop-ai-gm/shared';
+import type { MarcheSalvate } from '../scena/marche';
 import type { UmoreScelto } from '../audio/scena';
 import type { Azione } from '../azioni/tipi';
 import type { StatoProveSalvato } from '../prove/stato';
@@ -74,6 +75,8 @@ export interface FotografiaSessione {
   orologi: Record<string, StatoOrologioSalvato>;
   /** The world that moves (docs/mondo.md): gates opened… (absent in older archives). */
   mondo?: StatoMondoSalvato;
+  /** Mode A (A16): clues, lies and canon facts the narrator marked as revealed (absent in older archives). */
+  marche?: MarcheSalvate;
   repertorio: StatoRepertorioSalvato | null;
   note: { elenco: NotaRegia[]; prossimoId: number };
   /** `automatica` c'era negli archivi di prima (pausa dopo gli stalli, tolta): si ignora. */

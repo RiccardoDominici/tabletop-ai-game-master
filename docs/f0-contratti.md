@@ -109,6 +109,13 @@ into sentences and sends each sentence to the right voice.
   logs. The Engine keeps the state of the clocks and puts into the context of every turn «orologio X: segni
   mostrati N di M, prossimo segno: …» (clock X: signs shown N of M, next sign: …), so the narrator does not have
   to reconstruct it from the transcript.
+- `[indizio] <i_id>` / `[menzogna] <mente_su id>` / `[fatto] <f_id>`: optional, mode A only, before `[invito]`, not
+  read, one line each: the response revealed that clue of the scene, an NPC told that lie, or made that canon fact
+  known to the PCs. The Engine checks them like `[orologio]` (`scena/marche.ts`): the clue exists and belongs to the
+  scene in play (or to a campaign node), the lie is a `mente_su` of an NPC in the scene, the fact is in the canon and
+  not known from the start; each id once. Accepted marks go to the turn log (`marche`), the snapshot and the
+  end-of-session log, so a campaign over several sessions keeps its clues in mode A too (A16); in mode B the lines
+  carry these effects and the tags are not taken.
 - `[atteggiamento] <png> <pg|tutti> <stato>`: optional and rare (both modes), before `[invito]`, not read: the narrator or the selector
   proposes that an NPC in the scene changes its attitude towards a PC (`ostile`, `indifferente`, `amichevole`). The Engine
   accepts one step at a time, one change per NPC per turn, at most two a turn, and not the same pair again within three
