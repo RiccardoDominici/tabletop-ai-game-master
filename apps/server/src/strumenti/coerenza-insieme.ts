@@ -197,8 +197,9 @@ function main(): void {
       for (const { suffisso, testo: grezzo } of testi) {
       const frasi: FraseInsieme[] = [];
       for (const riga of grezzo.split('\n')) {
-        const m = /^\[([a-z_0-9]+)(?:\s+pg_[a-z_0-9]+)?\]\s*(.*)$/u.exec(riga.trim());
-        const etichetta = m?.[1] === 'privato' ? 'narratore' : m?.[1];
+        // A private reply's rows are `[privato pg_x]`; the public set reads only plain labels, as before.
+        const m = (private_ ? /^\[([a-z_0-9]+)(?:\s+pg_[a-z_0-9]+)?\]\s*(.*)$/u : /^\[([a-z_0-9]+)\]\s*(.*)$/u).exec(riga.trim());
+        const etichetta = private_ && m?.[1] === 'privato' ? 'narratore' : m?.[1];
         if (!m || !etichetta || !(etichetta === 'narratore' || etichetta.startsWith('png_'))) continue;
         // The pipeline's own sentence splitter (narrazione/frasi.ts), so the set's sentences are the checker's.
         for (const testo of dividiTesto(m[2]!)) {

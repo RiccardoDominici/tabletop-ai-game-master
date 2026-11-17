@@ -1,5 +1,5 @@
 {
- "nota": "Labels of the private replies replay set (A7), by hand on the flagged sentences; the same rule as etichette.json. Two unflagged sentences carry the out-of-play goblin as subject and are labelled too.",
+ "nota": "Labels of the private replies replay set (A7), the same rule as etichette.json. First by hand on the flagged sentences plus two carried-subject sentences; then an opus subagent labelled all 25 sentences blind: it agreed on all 8 and called two more doubtful violations (Ugo's mule, Tonio looking), kept clean by the public set's precedent («Tonio watches: a character in the scene»).",
  "regola": "violation = an entity out of play since before this turn, absent from the scene, or nobody in play (an invented creature) acts, speaks, perceives, is hit or is said present; or a told outcome against the card. clean = a state or a body, an absence, this turn's own fall or flight, a PC acting on a body, a place named after a creature, talk about creatures elsewhere.",
  "etichette": {
   "coerenza3-torre-mozza-combattimento-B-manuale#17-p-pg_livia:0": {
@@ -41,6 +41,16 @@
    "etichetta": "violation",
    "perche": "carried subject: the goblin out of play clenches its teeth",
    "testo": "Stringe i denti, e non dice altro."
+  },
+  "coerenza3-torre-mozza-combattimento-B-automatico#1-p-pg_nespola:1": {
+   "etichetta": "clean",
+   "perche": "Ugo's mule, an animal of the scene, not a creature of the ledger (doubtful for the blind opus labeller)",
+   "testo": "Mentre parla, il suo mulo sbuffa e gli muove il fianco, e lui ti dice piano: «Vivo. Per ora. Chiedi a lei dove dorme il ragazzo.»"
+  },
+  "coerenza3-torre-mozza-combattimento-B-manuale#18-p-pg_eliandro:1": {
+   "etichetta": "clean",
+   "perche": "Tonio looks: a character in the scene, as in the public set (doubtful for the blind opus labeller)",
+   "testo": "Tonio ti guarda, ma la sua bocca resta chiusa: non ha fiato per rispondere a voce così bassa."
   }
  }
 }

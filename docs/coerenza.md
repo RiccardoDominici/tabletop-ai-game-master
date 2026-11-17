@@ -922,7 +922,9 @@ T9) and some questions and later own clauses dropped by the «one sentence» rul
   their raw text has been logged since round 3 (`tipo: risposta_privata`). `coerenza-insieme.ts --private --tutte`
   builds their set from the runs that have it (`esperimenti/coerenza/insieme-private.json`: 10 replies of round 3 and
   of the smoke run), labelled by hand like the public one (`etichette-private.json`: 8 sentences, 7 violations, all an
-  out-of-play or invented goblin speaking in a private reply during the fight). Score (`coerenza-punteggio.ts --insieme
+  out-of-play or invented goblin speaking in a private reply during the fight), then by an opus subagent blind on all
+  25 sentences: it agreed on all 8 and called two more doubtful violations (Ugo's mule, Tonio looking), labelled clean
+  by the public set's precedent («Tonio watches: a character in the scene»). Score (`coerenza-punteggio.ts --insieme
   private`): the rules catch 6 of 7 and touch no clean sentence; the miss is a sentence carried with no subject after
   a preposition («Tra un respiro e l'altro sussurra: …»), which R-fuori does not carry by design.
 
