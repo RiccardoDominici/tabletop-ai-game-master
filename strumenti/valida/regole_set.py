@@ -117,8 +117,9 @@ def _risoluzione(r: dict, e: Esito, dove: str) -> tuple[str | None, int | None]:
     for k, (da, a) in (("critico", (2, 20)), ("disastro", (1, 19))):
         if ris.get(k) is not None and not (_intero(ris[k]) and da <= ris[k] <= a):
             _err(e, k, dove, f"risoluzione.{k}: nel d20_cd un dado naturale da {da} a {a}, o null")
-    if ris.get("critici") is not None and ris["critici"] not in ("attacchi", "tutti"):
-        _err(e, "critici", dove, "risoluzione.critici: attacchi o tutti")
+    # attacchi_e_salvezze: also the abilities marked `salvezza: true` (Basic Fantasy p. 60), checked in controlla().
+    if ris.get("critici") is not None and ris["critici"] not in ("attacchi", "attacchi_e_salvezze", "tutti"):
+        _err(e, "critici", dove, "risoluzione.critici: attacchi, attacchi_e_salvezze o tutti")
     return tipo, 20
 
 
@@ -228,6 +229,9 @@ def _abilita(r: dict, car: set[str], e: Esito, dove: str) -> set[str]:
         ids.add(o["id"])
         if o.get("caratteristica") is not None and o["caratteristica"] not in car:
             _err(e, "abilita", dove, f"abilita.{o['id']}: caratteristica inesistente «{o['caratteristica']}»")
+        # A saving throw of the manual: its natural d20s follow risoluzione.critici (attacchi_e_salvezze).
+        if "salvezza" in o and not isinstance(o["salvezza"], bool):
+            _err(e, "abilita", dove, f"abilita.{o['id']}.salvezza: true o false")
         # Abilità tirata a parte sotto la soglia della scheda: percentuale (d100) o «x su 6» (d6).
         if "soglia" in o:
             so = _ogg(o["soglia"])
@@ -405,6 +409,9 @@ def controlla(c: Campagna, e: Esito) -> None:
     _fasce(r, e, dove)
     car = {o["id"] for o in _voci(r.get("caratteristiche"), "caratteristiche", dove, e, obbligatorio=True)}
     abi = _abilita(r, car, e, dove)
+    if (_ogg(r.get("risoluzione")) or {}).get("critici") == "attacchi_e_salvezze" and not any(
+            isinstance(o, dict) and o.get("salvezza") is True for o in r.get("abilita") or []):
+        _err(e, "critici", dove, "risoluzione.critici: attacchi_e_salvezze senza nessuna abilità con salvezza: true")
     diff = set(_difficolta(r, tipo, e, dove))
     _modificatore(r, tipo, e, dove)
     _vantaggio(r, dado, e, dove)

@@ -187,7 +187,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
         if (condSv) fonti.push({ v: 'svantaggio', motivo: condSv.toLowerCase() });
         const v = combinaVantaggi(fonti.map((f) => f.v));
         const sistTiro = cosa.soglia ? sistemaSoglia(s, cosa.soglia) : s;
-        const e = tiraCol(sistTiro, dadiDelPg(a, 'prova'), cosa.valore, cosa.soglia ? null : (ps?.difficolta ?? d.difficolta), v, cosa.etichetta);
+        const e = tiraCol(sistTiro, dadiDelPg(a, 'prova'), cosa.valore, cosa.soglia ? null : (ps?.difficolta ?? d.difficolta), v, cosa.etichetta, false, !!cosa.salvezza);
         const b = d.bersaglio && o.esiste(d.bersaglio) && d.bersaglio !== a.autore ? d.bersaglio : null;
         aggiungi(cartaDa(e, a.autore, 'prova', cosa.etichetta, b, fonti.filter((f) => f.v === v).map((f) => f.motivo).join('; ') || null, a.privata, sistTiro));
         esito.riuscita = e.riuscita;
@@ -247,7 +247,7 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
   const nomeAbil = (id: string): string => s.abilita.find((x) => x.id === id)?.nome ?? id;
 
   /** Il numero da tirare (modificatore o soglia) e come si chiama, da mossa, abilità o caratteristica. */
-  function cheCosa(sch: SchedaGenerica, d: { caratteristica: string | null; abilita: string | null; mossa: string | null }, sociale: boolean): { valore: number; etichetta: string; mossa: SistemaRegole['mosse'][number] | null; soglia?: 6 | 20 | 100 } | null {
+  function cheCosa(sch: SchedaGenerica, d: { caratteristica: string | null; abilita: string | null; mossa: string | null }, sociale: boolean): { valore: number; etichetta: string; mossa: SistemaRegole['mosse'][number] | null; soglia?: 6 | 20 | 100; salvezza?: boolean } | null {
     const mossa = d.mossa ? (s.mosse.find((m) => m.id === d.mossa) ?? null) : null;
     if (mossa) return { valore: valoreCaratteristica(s, sch, mossa.caratteristica), etichetta: `${nomeCar(mossa.caratteristica)}, ${mossa.nome}`, mossa };
     let abil = d.abilita && s.abilita.some((x) => x.id === d.abilita) ? d.abilita : null;
@@ -267,7 +267,9 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
         return { valore: v, etichetta: nomeAbil(abil), mossa: null };
       }
       const base = carAbil ? valoreCaratteristica(s, sch, carAbil) : 0;
-      return { valore: base + (sch.abilita[abil] ?? 0), etichetta: carAbil ? etichettaComposta(nomeAbil(abil), nomeCar(carAbil)) : nomeAbil(abil), mossa: null };
+      // A saving throw of the manual (`salvezza: true`): its natural d20s may count (`risoluzione.critici`).
+      const salvezza = s.abilita.find((x) => x.id === abil)?.salvezza ? { salvezza: true } : {};
+      return { valore: base + (sch.abilita[abil] ?? 0), etichetta: carAbil ? etichettaComposta(nomeAbil(abil), nomeCar(carAbil)) : nomeAbil(abil), mossa: null, ...salvezza };
     }
     if (car) return { valore: valoreCaratteristica(s, sch, car), etichetta: nomeCar(car), mossa: null };
     return null;

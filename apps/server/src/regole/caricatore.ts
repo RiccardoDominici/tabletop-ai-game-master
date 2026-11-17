@@ -65,16 +65,20 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     if (!v) return [];
     const car = str(ogg(x)?.['caratteristica']);
     if (car && !idCar.has(car)) errori.push(`abilita.${v.id}: caratteristica inesistente «${car}»`);
+    // A saving throw of the manual (`salvezza: true`): its natural d20s follow `risoluzione.critici`.
+    const sv = ogg(x)?.['salvezza'];
+    if (sv !== undefined && typeof sv !== 'boolean') errori.push(`abilita.${v.id}.salvezza: true o false`);
+    const salvezza = sv === true ? { salvezza: true } : {};
     // Un'abilità che il manuale tira a parte: percentuale (d100) o «x su 6» (d6), sotto la soglia della scheda.
     const so = ogg(ogg(x)?.['soglia']);
-    if (ogg(x)?.['soglia'] === undefined) return [{ ...v, caratteristica: car }];
+    if (ogg(x)?.['soglia'] === undefined) return [{ ...v, caratteristica: car, ...salvezza }];
     const dado = num(so?.['dado']);
     const predefinita = so && Object.hasOwn(so, 'predefinita') ? num(so['predefinita']) : null;
     if (!so || (dado !== 6 && dado !== 20 && dado !== 100)) {
       errori.push(`abilita.${v.id}.soglia: {dado: 6 | 20 | 100, predefinita: …}`);
-      return [{ ...v, caratteristica: car }];
+      return [{ ...v, caratteristica: car, ...salvezza }];
     }
-    return [{ ...v, caratteristica: car, soglia: { dado: dado as 6 | 20 | 100, predefinita } }];
+    return [{ ...v, caratteristica: car, soglia: { dado: dado as 6 | 20 | 100, predefinita }, ...salvezza }];
   });
   const modTipo = (ogg(d['modificatore'])?.['tipo'] ?? (tipo === 'sotto_soglia' ? 'soglia' : tipo === '2d6_fasce' ? 'diretto' : 'srd')) as SistemaRegole['modificatore'];
   if (!['srd', 'diretto', 'soglia', 'tabella'].includes(modTipo)) errori.push('modificatore.tipo: srd, diretto, soglia o tabella');
@@ -153,7 +157,9 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
   const disastro = naturale('disastro', tipo === 'd20_cd' ? 1 : null);
   if (tipo === 'd20_cd' && critico !== null && (critico < 2 || critico > 20)) errori.push('risoluzione.critico: nel d20_cd un dado naturale da 2 a 20, o null');
   if (tipo === 'd20_cd' && disastro !== null && (disastro < 1 || disastro > 19)) errori.push('risoluzione.disastro: nel d20_cd un dado naturale da 1 a 19, o null');
-  if (r['critici'] !== undefined && r['critici'] !== 'attacchi' && r['critici'] !== 'tutti') errori.push('risoluzione.critici: attacchi o tutti');
+  const CRITICI = ['attacchi', 'attacchi_e_salvezze', 'tutti'] as const;
+  if (r['critici'] !== undefined && !CRITICI.includes(r['critici'] as (typeof CRITICI)[number])) errori.push('risoluzione.critici: attacchi, attacchi_e_salvezze o tutti');
+  if (r['critici'] === 'attacchi_e_salvezze' && !abilita.some((x) => x.salvezza)) errori.push('risoluzione.critici: attacchi_e_salvezze senza nessuna abilità con salvezza: true');
   const danni = ogg(d['danni']) ?? {};
   const soc = ogg(d['sociale']) ?? {};
   const socCar = str(soc['caratteristica']);
@@ -182,7 +188,7 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     perNarratore: str(d['per_il_narratore']),
     fonte: { titolo: str(fonte['titolo']) ?? testo('regole.predefiniti.fonte'), autore: str(fonte['autore']), file: str(fonte['file']) },
     licenza: { nome: str(lic['nome']) ?? 'non dichiarata', libera: lic['libera'] === true, attribuzione: str(lic['attribuzione']) },
-    risoluzione: { tipo, facce, numero: tipo === '2d6_fasce' ? (num(r['dadi']) ?? 2) : 1, fasce, gradi, critico, disastro, critici: r['critici'] === 'tutti' ? 'tutti' : 'attacchi' },
+    risoluzione: { tipo, facce, numero: tipo === '2d6_fasce' ? (num(r['dadi']) ?? 2) : 1, fasce, gradi, critico, disastro, critici: r['critici'] === 'tutti' || r['critici'] === 'attacchi_e_salvezze' ? r['critici'] : 'attacchi' },
     caratteristiche,
     abilita,
     modificatore: modTipo,

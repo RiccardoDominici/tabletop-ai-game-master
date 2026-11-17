@@ -71,16 +71,22 @@ export interface SistemaRegole {
      */
     critico: number | null;
     disastro: number | null;
-    /** d20_cd: critico e disastro valgono solo per gli attacchi (SRD) o per tutti i tiri. */
-    critici: 'attacchi' | 'tutti';
+    /**
+     * d20_cd: critico e disastro valgono solo per gli attacchi (SRD), per gli attacchi e i tiri salvezza (le abilità
+     * del set con `salvezza: true`; Basic Fantasy p. 60: «as with attack rolls, a natural 20 is always a success»), o
+     * per tutti i tiri. The death saves of the fight keep their own (`combattimento.danni.tiri_morte`).
+     */
+    critici: 'attacchi' | 'attacchi_e_salvezze' | 'tutti';
   };
   caratteristiche: Voce[];
   /**
    * `soglia`: l'abilità si tira a parte, sotto una soglia (percentuali del ladro: d100; «x su 6»: d6), col
    * valore della scheda come soglia (25 = 25%, 2 = 2 su 6). `predefinita`: la soglia di chi non ha il valore
    * nella scheda («1 su 6» per tutti); null = chi non ce l'ha tira come una prova qualunque del set.
+   * `salvezza`: the ability is a saving throw of the manual (the Engine cannot tell one by its id): with
+   * `risoluzione.critici: attacchi_e_salvezze` its natural d20s count as an attack's do.
    */
-  abilita: Array<Voce & { caratteristica: string | null; soglia?: { dado: 6 | 20 | 100; predefinita: number | null } | null }>;
+  abilita: Array<Voce & { caratteristica: string | null; soglia?: { dado: 6 | 20 | 100; predefinita: number | null } | null; salvezza?: boolean }>;
   /** Come il valore di una caratteristica entra nel tiro. */
   /**
    * Come una caratteristica diventa il numero del tiro: `srd` (punteggio − 10) / 2; `diretto` (la scheda

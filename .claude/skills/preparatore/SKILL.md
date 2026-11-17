@@ -224,7 +224,7 @@ here only the order.
      (`modificatore: {tipo: tabella, tabella: [{da, mod}]}`, the sheets write the score); percentile or «x in 6»
      skills (`abilita[].soglia: {dado: 100 | 6, predefinita}`, the sheet writes the percentage or the x); a weapon that
      always hits (`attacchi[].automatico: true` on the sheet); natural 20/1 on a d20 (`risoluzione.critico`,
-     `disastro`, `critici`), critical and minimum damage (`attacchi.danno_critico`, `danno_minimo`); the death-save
+     `disastro`, `critici: attacchi | attacchi_e_salvezze | tutti`, the saving throws marked `abilita[].salvezza: true`), critical and minimum damage (`attacchi.danno_critico`, `danno_minimo`); the death-save
      extras of the SRD only if the manual has them (`tiri_morte.venti_rialza`, `uno_doppio`); initiative re-rolled
      every round (`ogni_round`). The SRD values apply where the set says nothing.
    - **Keywords** (`parole_chiave`, the `parole` of scene checks and of excerpts with `per:`): specific words, not

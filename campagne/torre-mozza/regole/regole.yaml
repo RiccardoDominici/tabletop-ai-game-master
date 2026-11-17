@@ -11,9 +11,10 @@
 # - Percentuali (abilità del ladro, p. 9) e possibilità «x su 1d6» (porte, porte segrete, pietra, p. 43–44): si
 #   tirano a parte (`soglia` dell'abilità), d100 o d6 sotto il valore della scheda, come nel manuale.
 # - Tiri salvezza (p. 60–61): d20 ≥ numero della tabella. Con la difficoltà normale (17) il bonus è 17 − numero,
-#   più il bonus di razza (nani e halfling +4, elfi +1/+2): è esatto. Il 20 naturale che colpisce sempre e l'1 che
-#   manca sempre valgono negli attacchi (`critico`, `disastro`, p. 53), senza raddoppiare il danno; nei tiri
-#   salvezza il manuale li vuole uguali, ma lo schema li dà solo agli attacchi o a tutti i tiri (anche alle prove).
+#   più il bonus di razza (nani e halfling +4, elfi +1/+2): è esatto. Il 20 naturale che riesce sempre e l'1 che
+#   fallisce sempre valgono negli attacchi (`critico`, `disastro`, p. 53), senza raddoppiare il danno, e nei tiri
+#   salvezza, «as with attack rolls» (p. 60): `critici: attacchi_e_salvezze`, coi cinque salvezza segnati
+#   `salvezza: true`. Non nelle prove di caratteristica.
 # - Bonus d'attacco (p. 53): un'abilità «mischia» (con la Forza) e una «distanza» (con la Destrezza); nella
 #   scheda vale il bonus della tabella (+1 per tutte le classi al primo livello; per i mostri i dadi vita).
 #   Il bonus di Forza al danno in mischia (p. 55) è scritto nella formula del danno dell'arma («1d8+2»).
@@ -35,10 +36,10 @@ licenza:
 risoluzione:
   tipo: d20_cd
   dado: 20
-  # Negli attacchi il 20 naturale colpisce sempre, l'1 manca sempre (p. 53).
+  # Negli attacchi il 20 naturale colpisce sempre, l'1 manca sempre (p. 53); nei tiri salvezza lo stesso (p. 60).
   critico: 20
   disastro: 1
-  critici: attacchi
+  critici: attacchi_e_salvezze
 
 # Le sei caratteristiche del manuale (p. 4). Nelle schede il punteggio da 3 a 18; il bonus da −3 a +3 lo dà la tabella.
 caratteristiche:
@@ -72,14 +73,14 @@ abilita:
   # Una volta al giorno: il Motore non lo conta, lo dice la scheda.
   - {id: dardo_incantato, nome: "Dardo incantato", caratteristica: null}
   # I cinque tiri salvezza (p. 60–61): bonus = 17 − numero della tabella della classe, più la razza.
-  - {id: ts_morte, nome: "Tiro salvezza contro raggio della morte o veleno", caratteristica: null}
+  - {id: ts_morte, nome: "Tiro salvezza contro raggio della morte o veleno", caratteristica: null, salvezza: true}
   # Lo stesso salvezza con la Destrezza, come il manuale lo chiede per fosse, cadute e inseguimenti (p. 43, 52): stesso
   # bonus della scheda, e il Motore somma la Destrezza.
-  - {id: ts_morte_destrezza, nome: "Tiro salvezza contro raggio della morte, con la Destrezza", caratteristica: destrezza}
-  - {id: ts_bacchette, nome: "Tiro salvezza contro bacchette magiche", caratteristica: null}
-  - {id: ts_paralisi, nome: "Tiro salvezza contro paralisi o pietrificazione", caratteristica: null}
-  - {id: ts_soffio, nome: "Tiro salvezza contro soffio del drago", caratteristica: null}
-  - {id: ts_incantesimi, nome: "Tiro salvezza contro incantesimi", caratteristica: null}
+  - {id: ts_morte_destrezza, nome: "Tiro salvezza contro raggio della morte, con la Destrezza", caratteristica: destrezza, salvezza: true}
+  - {id: ts_bacchette, nome: "Tiro salvezza contro bacchette magiche", caratteristica: null, salvezza: true}
+  - {id: ts_paralisi, nome: "Tiro salvezza contro paralisi o pietrificazione", caratteristica: null, salvezza: true}
+  - {id: ts_soffio, nome: "Tiro salvezza contro soffio del drago", caratteristica: null, salvezza: true}
+  - {id: ts_incantesimi, nome: "Tiro salvezza contro incantesimi", caratteristica: null, salvezza: true}
   # Abilità del ladro (p. 9), in percentuale come nel manuale: d100 sotto il valore della scheda. Chi non ce l'ha
   # nella scheda tira come una prova qualunque (d20 contro la difficoltà).
   - {id: scassinare, nome: "Scassinare serrature", caratteristica: null, soglia: {dado: 100}}

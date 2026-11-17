@@ -84,6 +84,39 @@ describe('critici del d20: del set, l’SRD se il set tace', () => {
     expect(errori.join(' ')).toMatch(/risoluzione\.critico/);
   });
 
+  // A17 of docs/da-fare.md: Basic Fantasy wants the naturals on attacks AND saving throws (p. 60), not on ability checks.
+  it('attacchi_e_salvezze: the naturals on attacks and on the abilities marked salvezza, not on the other checks', () => {
+    const conTs = (critici: string) =>
+      setBx((d) => {
+        Object.assign(d['risoluzione'] as object, { critici });
+        (d['abilita'] as unknown[]).push({ id: 'ts_veleno', nome: 'Tiro salvezza contro veleno', caratteristica: null, salvezza: true }, { id: 'arrampicarsi', nome: 'Arrampicarsi', caratteristica: 'forza' });
+      });
+    const s = conTs('attacchi_e_salvezze');
+    expect(s.abilita.find((a) => a.id === 'ts_veleno')?.salvezza).toBe(true);
+    const alta = s.difficolta.reduce((a, b) => ((b.valore ?? 0) > (a.valore ?? 0) ? b : a)).id;
+    // A save: a natural 20 succeeds, a natural 1 fails, whatever the numbers.
+    expect(tiraCol(s, new DadiACopione([20]), -10, alta, null, 'Tiro salvezza', false, true)).toMatchObject({ riuscita: true, grado: { id: 'critico' } });
+    expect(tiraCol(s, new DadiACopione([1]), 40, null, null, 'Tiro salvezza', false, true)).toMatchObject({ riuscita: false, grado: { id: 'disastro' } });
+    // An ordinary check: no naturals; an attack: still.
+    expect(tiraCol(s, new DadiACopione([20]), -10, alta, null, 'Forza')).toMatchObject({ riuscita: false, grado: null });
+    expect(tiraCol(s, new DadiACopione([20]), 0, null, null, 'Spada', true)).toMatchObject({ riuscita: true, grado: { id: 'critico' } });
+    // With critici: attacchi the save has none (as before).
+    expect(tiraCol(conTs('attacchi'), new DadiACopione([20]), -10, alta, null, 'Tiro salvezza', false, true)).toMatchObject({ riuscita: false, grado: null });
+    // Through the resolver: the PC's save on a decision that names the marked ability.
+    const c = caricaCampagna(BX);
+    const schede = caricaSchedeGeneriche(s, c);
+    const r = risolviTurnoRegole({ turno: 1, sistema: s, schede, stato: new StatoProve(schede), dadi: new DadiACopione([20]), proveScena: [], nome: (id: string) => id, esiste: () => true, log: loggerMuto(), azioni: [{ id: 'a1', autore: 'pg_corrado', testo: 'Resisto al veleno', privata: false }], decisioni: new Map([['a1', { id: 'a1', tipo: 'salvezza', caratteristica: null, abilita: 'ts_veleno', bersaglio: null, arma: null, prova_scena: null, difficolta: alta, abilita_bersaglio: null, vantaggio: null, motivo: '', aiuta: null, reazione: null, mossa: null }]]) } as never);
+    expect(r.tiri[0]).toMatchObject({ riuscita: true, critico: true });
+    // The loader's errors: a marker that is not a boolean; attacchi_e_salvezze with no save marked.
+    const errori: string[] = [];
+    const d = grezzo();
+    Object.assign(d['risoluzione'] as object, { critici: 'attacchi_e_salvezze' });
+    (d['abilita'] as unknown[]).push({ id: 'ts_x', nome: 'TS', caratteristica: null, salvezza: 'sì' });
+    leggiSistema(d, errori, []);
+    expect(errori.join(' ')).toMatch(/abilita\.ts_x\.salvezza: true o false/);
+    expect(errori.join(' ')).toMatch(/attacchi_e_salvezze senza nessuna abilità con salvezza: true/);
+  });
+
   it('danno del critico (doppio o normale) e danno minimo, dal set', () => {
     const c = caricaCampagna(BX);
     const colpo = (s: SistemaRegole, dadi: number[]) => {

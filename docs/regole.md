@@ -53,8 +53,10 @@ risoluzione:
     - {min: 7, esito: parziale, nome: "Successo con un costo", significato: "riesce, ma…"}   # significato: optional
     - {min: null, esito: fallimento, nome: "Fallimento"}
   # d20_cd: optional critico (natural die ≥ this: succeeds anyway), disastro (≤ this: fails anyway),
-  #   critici: attacchi | tutti (which rolls they apply to). If the set does not write them, the SRD ones apply: 20 and 1,
-  #   only in attacks; `critico: null`, `disastro: null` remove them.
+  #   critici: attacchi | attacchi_e_salvezze | tutti (which rolls they apply to: attacks; attacks and the saving throws,
+  #   the abilities marked `salvezza: true`, as Basic Fantasy p. 60 wants; every roll). If the set does not write them,
+  #   the SRD ones apply: 20 and 1, only in attacks; `critico: null`, `disastro: null` remove them. The fight's death
+  #   saves keep their own (`combattimento.danni.tiri_morte`). [V] attacchi_e_salvezze needs one ability marked.
   # sotto_soglia: dado: 20 | 100 [V]; optional critico (≤ this), disastro (≥ this), gradi
   dado: 100
   critico: 1
@@ -66,6 +68,8 @@ abilita:                      # optional; caratteristica = an existing id [V]
   - {id: persuadere, nome: "Persuadere", caratteristica: potere}
   - {id: scalare, nome: "Scalare pareti", caratteristica: null, soglia: {dado: 100}}               # optional [V]:
   - {id: porte, nome: "Porte segrete", caratteristica: null, soglia: {dado: 6, predefinita: 1}}   #   rolled separately
+  - {id: ts_veleno, nome: "Tiro salvezza contro veleno", caratteristica: null, salvezza: true}    # optional [V] boolean:
+    # a saving throw of the manual: the Engine cannot tell one by its id, and `critici: attacchi_e_salvezze` needs it
     # rolled below the sheet's threshold, as in the manual: d100 for percentages (scalare: 80 = 80%), d6 for «x su 6» (x out of 6)
     # (porte: 2 = 2 out of 6), d20. `predefinita`: the threshold for whoever lacks the value («1 su 6» (1 out of 6) for everyone);
     # without it, whoever lacks it rolls like any check of the set. The validator checks that the value is between 0 and the die.

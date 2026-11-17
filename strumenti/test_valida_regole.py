@@ -159,6 +159,17 @@ def test_abilita_sotto_soglia_e_attacco_automatico(tmp_path: Path) -> None:
     assert any("abilita.x.soglia" in r for r in regole_di(dest)), regole_di(dest)
 
 
+def test_critici_attacchi_e_salvezze(tmp_path: Path) -> None:
+    """Basic Fantasy p. 60: the naturals of attacks also on the saving throws, which the set marks (A17)."""
+    dest = copia(BX, tmp_path)
+    modifica(dest, "regole/regole.yaml", lambda d: d["risoluzione"].update(critici="attacchi_e_salvezze"))
+    assert any("attacchi_e_salvezze senza nessuna abilità" in r for r in regole_di(dest)), regole_di(dest)
+    modifica(dest, "regole/regole.yaml", lambda d: d.setdefault("abilita", []).append({"id": "ts_veleno", "nome": "TS veleno", "salvezza": True}))
+    assert not any(r.startswith(("REGOLE.critici", "REGOLE.abilita")) for r in regole_di(dest)), regole_di(dest)
+    modifica(dest, "regole/regole.yaml", lambda d: d["abilita"][-1].update(salvezza="sì"))
+    assert any("abilita.ts_veleno.salvezza: true o false" in r for r in regole_di(dest)), regole_di(dest)
+
+
 def test_critici_validi_e_null(tmp_path: Path) -> None:
     dest = copia(BX, tmp_path)
     modifica(dest, "regole/regole.yaml", lambda d: d["risoluzione"].update(critico=None, disastro=None, critici="tutti")
