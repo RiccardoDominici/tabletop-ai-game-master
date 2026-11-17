@@ -104,7 +104,7 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   (their raw text is now logged, for a replay set of their own)~~ **Done** (A7: insieme-private.json, the rules 6 of 7); ~~R-fuori's whole-sentence state check (the judge
   replaces it in profile B, not in profile A)~~ **Done** (A8: per clause); the cart «impossibile» (11a);
   ~~`R-eco` and the projector mark~~ **Done** (A9); ~~the stall's S3 sentence said twice word for word~~ **Done** (A10); profile A (the reader plus the
-  Mac's swap were too much on 16 November) and the dictated action not run. The «Coerenza» box was seen in headless
+  Mac's swap were too much on 16 November) and ~~the dictated action not run~~ **Done** (A11: end to end in profile A, docs/ascolto.md). The «Coerenza» box was seen in headless
   Chromium on a live test instance (16 November, 0 console errors), not on a real tablet (needs Riccardo: a real tablet).
 - **Duration in sessions and game layers** (Riccardo's request, 3 November 2026): the brief states the estimated duration in *number of sessions*, and that determines how many layers the framework generates. A one-shot has few things (situation, a few scenes and NPCs: this is what the skill does today); a campaign of years has more phases or arcs and a complete world, and the material for the next session is prepared between sessions, starting from what actually happened.
   Done, by step: research (c0ebcc1), design (96b59e7, 6e2df77), `strumenti/strati.py` (09b3ef4), validator of sessions and STATO/CONTINUITÀ (e02e26c, 8fcfe18), skill (a10a172), session packages and the server side (2d3f2d4, 5bc833b, 7201894).

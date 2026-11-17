@@ -12,7 +12,11 @@
  *   E2E_PORTA=4861 E2E_AUDIO_DETTATO=/path/sentence.wav E2E_NOMI_DETTATO=Name1,Name2 \
  *     npx playwright test -c apps/web/playwright.config.ts dettato
  *   TAGM_PORTA=4861 scripts/arresto.sh
- * Optional: E2E_SECONDI_DETTATO (how long the button is held, default 6). Screenshots: logs/screenshots/dettato-*.png.
+ * Optional: E2E_SECONDI_DETTATO (how long the button is held, default 6; Chromium loops the WAV, so pad it with
+ * silence past that time). E2E_MASTER_TOKEN (the server's TAGM_MASTER_TOKEN): the turn is then played to its answer,
+ * «Risolvi ora» from the Game Master's panel (the other PCs have no phone here), and the answer must reach the phone's
+ * transcript; started in profile A (TAGM_CONFIG with the local reader, TAGM_MODO=repertorio), this is the dictated
+ * action end to end through the local reader (docs/ascolto.md, «Measured»). Screenshots: logs/screenshots/dettato-*.png.
  * Without E2E_AUDIO_DETTATO, or with dictation off on the server, the test is skipped.
  */
 import { expect, test } from '@playwright/test';
@@ -21,6 +25,7 @@ import { chromiumDisponibile, SCREENSHOT, URL_PROVE } from './percorsi';
 const AUDIO = process.env['E2E_AUDIO_DETTATO'] ?? '';
 const NOMI = (process.env['E2E_NOMI_DETTATO'] ?? '').split(',').map((n) => n.trim()).filter(Boolean);
 const SECONDI = Number(process.env['E2E_SECONDI_DETTATO'] ?? 6);
+const TOKEN = process.env['E2E_MASTER_TOKEN'] ?? '';
 const URL_HTTPS = URL_PROVE.replace(/^http:/, 'https:');
 
 test.use({
@@ -74,6 +79,19 @@ test('dictation: hold the microphone, the transcript lands in the box with the n
 
   await tel.getByTestId('invia-azione').click();
   await expect(tel.getByTestId('testo-azione')).toHaveValue('', { timeout: 15_000 }).catch(() => undefined);
+
+  if (TOKEN) {
+    // The turn to its answer: the Game Master closes the window, the answer reaches the phone's transcript.
+    const prima = await tel.getByTestId('trascrizione').innerText();
+    const master = await (await browser.newContext()).newPage();
+    await master.goto(`/master?token=${TOKEN}`);
+    await expect(master.getByTestId('master-chiudi-finestra')).toBeEnabled({ timeout: 30_000 });
+    await master.getByTestId('master-chiudi-finestra').click();
+    await expect.poll(async () => (await tel.getByTestId('trascrizione').innerText()).length - prima.length, { timeout: 120_000 }).toBeGreaterThan(40);
+    const dopo = await tel.getByTestId('trascrizione').innerText();
+    console.log(`answer: ${dopo.startsWith(prima) ? dopo.slice(prima.length).trim() : dopo}`);
+    await tel.screenshot({ path: `${SCREENSHOT}/dettato-risposta.png` });
+  }
   expect(errori).toEqual([]);
 });
 

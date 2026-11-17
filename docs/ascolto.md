@@ -80,6 +80,29 @@ of 4–6 s transcribed in about 2 s once warm.
   1,279 sentences: 0. Output: `esperimenti/risultati/ascolto/falsi.txt`. Lowercase matches turned ordinary words
   into names; this is why the phonetic match needs Whisper's capital.
 
+- A dictated action end to end in profile A, 17 November 2026 (A11): Chromium's fake microphone plays a sentence
+  spoken by macOS `say` («Chiedo a Berta chi ha portato via Tonio stanotte, e se ha visto qualcuno salire alla torre.»),
+  the local Whisper transcribes it (2.1 s; «Bert → Berta» corrected by the phonetic match), the action is sent,
+  the Game Master's «Risolvi ora» closes the window, and the minimal local reader (Qwen3 0.6B 4-bit) answers with
+  Berta's prepared line (`ber_cose_tonio`), which reaches the phone. In one run the reader picked it at the send
+  (1.2 s); in the next its JSON was invalid twice and the Engine's first indicated line was used, the same line. The
+  campaign was a copy and the game lexicon went to the port's log folder. Whisper and the reader were up only for
+  the run (memory 42–48% free). Records: `esperimenti/risultati/ascolto/azione-dettata-A/`. Command (a copy of the
+  campaign, a config folder whose `locale.yaml` sets the reader local on Qwen3 0.6B and `ascolto: {provider:
+  locale}`):
+
+  ```bash
+  scripts/ascolto-avvio.sh && scripts/lettore-avvio.sh mlx-community/Qwen3-0.6B-4bit
+  TAGM_PORTA=4960 TAGM_MASTER_TOKEN=<token> TAGM_CONFIG=<config folder> TAGM_CARTELLA_CAMPAGNA=<campaign copy> \
+    TAGM_MODO=repertorio TAGM_SCENEGGIATORE=si TAGM_FINESTRA_TUTTI=1 TAGM_TIRI_GIOCATORI=automatico scripts/avvio.sh --mock
+  E2E_PORTA=4960 E2E_MASTER_TOKEN=<token> E2E_AUDIO_DETTATO=<sentence padded with silence>.wav \
+    E2E_NOMI_DETTATO=Berta,Tonio E2E_SECONDI_DETTATO=7 npx playwright test -c apps/web/playwright.config.ts dettato.spec
+  TAGM_PORTA=4960 scripts/arresto.sh; scripts/ascolto-arresto.sh; scripts/lettore-arresto.sh
+  ```
+
+  Seen in passing: the announcement quoted the action itself as the PC's speech («Livia Sarti dice: «Chiedo a Berta a
+  chi ha portato via Tonio stanotte».»), and Whisper added an «a» («a chi»).
+
 ## Not verified yet
 
 - A real phone: the button was driven by Playwright with Chromium's fake microphone (`apps/web/e2e/dettato.spec.ts`),

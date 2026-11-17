@@ -113,7 +113,10 @@ TAGM_PORTA=4710 scripts/arresto.sh
 The specs assume the program rolls the dice (`TAGM_TIRI_GIOCATORI=automatico`): with the players' manual rolls, the
 campaign default, an action that needs a check waits for a die no spec enters. Only `e2e/tiri-manuali.spec.ts` and
 `e2e/tiro-dettato.spec.ts` (dictation into the roll card, with the real local Whisper and a WAV for the fake
-microphone) test manual rolls, with the server line written in their header.
+microphone) test manual rolls, with the server line written in their header. `e2e/dettato.spec.ts` (a dictated
+action) plays the turn to its answer when `E2E_MASTER_TOKEN` names the test server's `TAGM_MASTER_TOKEN`: the Game
+Master's «Risolvi ora» closes the window and the answer must reach the phone (the profile A command is in
+docs/ascolto.md, «Measured»).
 
 The first line starts a test server on 4710 with the scripted narrator and the fake voice (no cost); the second
 runs the tests; the third stops only that server.
