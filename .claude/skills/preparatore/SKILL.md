@@ -227,7 +227,9 @@ here only the order.
      `disastro`, `critici: attacchi | attacchi_e_salvezze | tutti`, the saving throws marked `abilita[].salvezza: true`), critical and minimum damage (`attacchi.danno_critico`, `danno_minimo`); the death-save
      extras of the SRD only if the manual has them (`tiri_morte.venti_rialza`, `uno_doppio`); initiative re-rolled
      every round (`ogni_round`), ties acting at the same moment (`pari: simultanei`, when the manual says equal
-     numbers act together). The SRD values apply where the set says nothing.
+     numbers act together); the manual's situational attack bonuses (from behind, charge, range) as `modificatori`,
+     each with the words of a PC's action that make it apply, `attacchi: tutti | mischia | distanza`, the weapons it
+     needs (`armi`), the abilities it does not combine with (`non_con`) and `danno: doppio` if the manual doubles it. The SRD values apply where the set says nothing.
    - **Keywords** (`parole_chiave`, the `parole` of scene checks and of excerpts with `per:`): specific words, not
      places, body parts or common objects («porta», «passaggio», «spalla»), which the validator refuses.
 3. Write `campagne/<id>/regole/`: `regole.yaml` (with `fonte.titolo`, `licenza` and the section `combattimento:`,

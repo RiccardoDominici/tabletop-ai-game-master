@@ -94,6 +94,17 @@ attacchi:
   parziale: scambio          # 2d6: with a partial success the target also hits
   danno_critico: doppio      # doppio (SRD, default): with a critical the damage dice are doubled; normale: no
   danno_minimo: 0            # a successful hit deals at least this much damage (Basic Fantasy: 1; default 0)
+modificatori:                 # optional: situational attack modifiers (regole/modificatori.ts, prove/modificatori.ts)
+  - id: da_dietro             # [V] snake_case, unique
+    nome: "Attacco da dietro" #   said on the card's rule: «… (compresi: Attacco da dietro +2)»
+    bonus: 2                  # [V] an integer from −10 to 10, not 0, added to the attack roll
+    attacchi: tutti           # [V] tutti | mischia | distanza (the weapon's `distanza`)
+    parole: [alle spalle, da dietro]   # [V] at least one: words of what the PC does that make it apply (start of a word)
+    armi: [lancia]            # optional: words of the weapon's id it needs (a charge needs a spear); empty = any
+    non_con: [alle_spalle]    # optional [V] abilities of the set it does not combine with (the thief's sneak attack)
+    danno: doppio             # optional [V] normale | doppio: a hit deals double damage (Basic Fantasy's charge)
+  # The Engine knows no positions: only a PC's action has words, so an NPC's attack never gets one. When one applies,
+  # the arbiter's own advantage for that action is dropped (never ±2 twice for one situation); help and conditions stay.
 danni: {nome: "Ferite", a_zero: "Fuori gioco: …"}
 condizioni: [{id, nome, effetto}]          # text for the narrator and the summary
 sociale:                                    # what is rolled to persuade an NPC, if the arbiter does not say

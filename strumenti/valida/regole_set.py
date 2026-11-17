@@ -241,6 +241,42 @@ def _abilita(r: dict, car: set[str], e: Esito, dove: str) -> set[str]:
     return ids
 
 
+def _modificatori(r: dict, abi: set[str], e: Esito, dove: str) -> None:
+    """Situational attack modifiers (regole.yaml → modificatori, apps/server/src/regole/modificatori.ts): from behind,
+    a charge, range. What makes one apply is in the set: words of the PC's action, the kind of attack, the weapon."""
+    v = r.get("modificatori")
+    if v is None:
+        return
+    if not isinstance(v, list):
+        _err(e, "modificatori", dove, "modificatori: una lista")
+        return
+    visti: set[str] = set()
+    for i, o in enumerate(v, 1):
+        o = _ogg(o) or {}
+        mid = o.get("id")
+        luogo = f"modificatori.{mid if isinstance(mid, str) else f'[{i}]'}"
+        if not isinstance(mid, str) or not mid or not mid.replace("_", "").isalnum() or mid != mid.lower() or mid in visti:
+            _err(e, "modificatori", dove, f"{luogo}: serve un id snake_case, unico")
+            continue
+        visti.add(mid)
+        b = o.get("bonus")
+        if not _intero(b) or b == 0 or abs(b) > 10:
+            _err(e, "modificatori", dove, f"{luogo}: bonus: un intero da −10 a 10, non 0")
+        if o.get("attacchi", "tutti") not in ("tutti", "mischia", "distanza"):
+            _err(e, "modificatori", dove, f"{luogo}: attacchi: tutti, mischia o distanza")
+        parole = o.get("parole")
+        if not isinstance(parole, list) or not parole or not all(isinstance(p, str) and p.strip() for p in parole):
+            _err(e, "modificatori", dove, f"{luogo}: parole: almeno una (le parole dell'azione del PG che lo fanno valere)")
+        for k in ("armi", "non_con"):
+            if k in o and (not isinstance(o[k], list) or not all(isinstance(p, str) and p.strip() for p in o[k])):
+                _err(e, "modificatori", dove, f"{luogo}: {k}: una lista di parole")
+        for a in o.get("non_con") or []:
+            if isinstance(a, str) and a not in abi:
+                _err(e, "modificatori", dove, f"{luogo}: non_con: «{a}» non è un'abilità del set")
+        if o.get("danno", "normale") not in ("normale", "doppio"):
+            _err(e, "modificatori", dove, f"{luogo}: danno: normale o doppio")
+
+
 def soglie_abilita(r: dict) -> dict[str, int]:
     """Le abilità tirate sotto soglia, con il dado (per controllare i valori delle schede)."""
     out = {}
@@ -416,6 +452,7 @@ def controlla(c: Campagna, e: Esito) -> None:
     _modificatore(r, tipo, e, dove)
     _vantaggio(r, dado, e, dove)
     _schema_sociale_attacchi(r, car, abi, e, dove)
+    _modificatori(r, abi, e, dove)
     mosse = _mosse(r, car, e, dove)
     regole_combattimento.controlla(r, car, e, dove)
     for k, voci in (_ogg(r.get("parole_chiave")) or {}).items():

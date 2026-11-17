@@ -42,6 +42,7 @@ import {
 } from './testi';
 import type { AzioneRisolvibile } from './risolutore';
 import { conEffetto, fontiAttacco, type CondizioniDi } from './condizioni';
+import { modificatoriDellAttacco } from './modificatori';
 
 /** Una prova scritta nei dati della scena, col vocabolario del set (scena → prove). */
 export interface ProvaScenaRegole {
@@ -139,7 +140,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
       tiri.push(t);
     };
     const sch = o.schede.get(a.autore) ?? null;
-    const fonti: Array<{ v: Vantaggio; motivo: string }> = [...(d?.vantaggio ? [{ v: d.vantaggio, motivo: d.motivo }] : []), ...(aiutanti.get(a.id) ?? []).map((n) => ({ v: 'vantaggio' as const, motivo: testo('prove.motivo.aiuta', { nome: n }) }))];
+    const fonti: Array<{ v: Vantaggio; motivo: string; fonte?: 'arbitro' }> = [...(d?.vantaggio ? [{ v: d.vantaggio, motivo: d.motivo, fonte: 'arbitro' as const }] : []), ...(aiutanti.get(a.id) ?? []).map((n) => ({ v: 'vantaggio' as const, motivo: testo('prove.motivo.aiuta', { nome: n }) }))];
     let fatto: string;
     if (!d) fatto = fattoSenzaArbitro();
     // A dead PC is dead, not «a terra» with the set's text about what happens at zero (run of 15 November).
@@ -160,7 +161,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
       else if (o.stato.fuoriGioco(b) === 'fuggito') fatto = fattoFuggito(o.nome(b));
       else if (o.stato.aTerra(b)) fatto = fattoGiaATerra(o.nome(b));
       else {
-        const r = attacca(a.autore, b, d.arma, fonti, a.privata, dadiDelPg(a, 'prova'), (x) => dadiDelPg(a, 'danno', x))!;
+        const r = attacca(a.autore, b, d.arma, fonti, a.privata, dadiDelPg(a, 'prova'), (x) => dadiDelPg(a, 'danno', x), a.testo)!;
         aggiungi(r.t);
         esito.riuscita = r.esito?.riuscita ?? null;
         if (r.esito) (r.esito.riuscita ? esito.riuscite : esito.fallite).push('attacco', r.t.etichetta);
@@ -309,10 +310,12 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
    * Danno di un attacco riuscito al bersaglio (armatura se il set la conta): testo per il narratore. `dadiDanno`: the
    * attacking PC's own dice for the damage (manual rolls); an NPC's damage is the Engine's.
    */
-  function colpisci(t: TiroMostrato, attaccante: Attacco, bersaglio: SchedaGenerica, critico: boolean, dadiDanno: FonteDadi = o.dadi): string {
+  function colpisci(t: TiroMostrato, attaccante: Attacco, bersaglio: SchedaGenerica, critico: boolean, dadiDanno: FonteDadi = o.dadi, doppio = false): string {
     // Il critico raddoppia i dadi del danno solo se il set lo dice (SRD sì); il danno minimo è del set (Basic Fantasy: 1).
     const d = tiraDanno(dadiDanno, attaccante.danno, 0, critico && s.attacchi.dannoCritico === 'doppio');
-    const ridotto = Math.max(s.attacchi.dannoMinimo, s.attacchi.armaturaRiduce ? Math.max(0, d.totale - bersaglio.armatura) : d.totale);
+    // A situational modifier with `danno: doppio` (Basic Fantasy's charge, p. 52): the damage of the hit is doubled.
+    const base = doppio ? d.totale * 2 : d.totale;
+    const ridotto = Math.max(s.attacchi.dannoMinimo, s.attacchi.armaturaRiduce ? Math.max(0, base - bersaglio.armatura) : base);
     const r = o.stato.danneggia(bersaglio.id, ridotto);
     t.danno = dannoMostrato({ formula: d.formula, dadi: d.dadi, bonus: d.bonus, totale: ridotto, tipo: attaccante.tipo_danno });
     const pf = o.stato.puntiFerita(bersaglio.id)!;
@@ -332,10 +335,12 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     chi: string,
     bersaglio: string,
     idArma: string | null,
-    fontiDate: Array<{ v: Vantaggio; motivo: string }>,
+    fontiDate: Array<{ v: Vantaggio; motivo: string; fonte?: 'arbitro' }>,
     privata: boolean,
     dadiTiro: FonteDadi = o.dadi,
     dadiDanno?: (x: Pick<GruppoDadi, 'etichetta' | 'modificatore'>) => FonteDadi,
+    /** The PC's action: the set's situational modifiers read it (from behind, a charge, range). Absent = none (NPCs). */
+    azione?: string,
   ): { t: TiroMostrato; testo: string; esito: EsitoTiroGenerico | null } | null {
     const sa = o.schede.get(chi);
     const sb = o.schede.get(bersaglio);
@@ -353,16 +358,23 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
       return { t, testo: testo('prove.fatto.attacco_automatico', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, danno: fatto }), esito: e };
     }
     const cosa = cheCosa(sa, { caratteristica: a.caratteristica, abilita: a.abilita, mossa: null }, false) ?? { valore: 0, etichetta: a.nome, mossa: null };
-    const fonti = [...fontiDate, ...fontiAttacco(o.condizioni, chi, bersaglio)];
+    // The set's situational modifiers (A17): summed into the roll, said in the rule; they replace the arbiter's own
+    // advantage for the same action (never ±2 twice for one situation); the help of another PC and conditions stay.
+    const situazioni = azione ? modificatoriDellAttacco(s, azione, a) : [];
+    const date = situazioni.length ? fontiDate.filter((f) => f.fonte !== 'arbitro') : fontiDate;
+    if (situazioni.length) o.log.info({ chi, bersaglio, arma: a.id, modificatori: situazioni.map((m) => `${m.id} ${m.bonus}`), senza_vantaggio_arbitro: date.length !== fontiDate.length }, 'prove: situational modifiers of the set');
+    const fonti = [...date, ...fontiAttacco(o.condizioni, chi, bersaglio)];
     const v = combinaVantaggi(fonti.map((f) => f.v));
     // d20 contro la difesa del bersaglio; gli altri tipi con la loro risoluzione (fasce, soglia).
     const sist = s.risoluzione.tipo === 'd20_cd' && sb.difesa !== null ? { ...s, difficolta: [{ id: ID_DIFESA, nome: testo('prove.cd.difesa_di', { nome: o.nome(bersaglio) }), valore: sb.difesa, divisore: null, modificatore: null }] } : s;
     // Etichetta una volta sola: senza una mossa né un’abilità la «cosa» è l’arma stessa.
     const etichetta = cosa.etichetta === a.nome ? a.nome : `${a.nome}, ${cosa.etichetta}`;
-    const e = tiraCol(sist, dadiTiro, cosa.valore, sist === s ? null : ID_DIFESA, v, etichetta, true);
+    const extra = situazioni.reduce((x, m) => x + m.bonus, 0);
+    const e = tiraCol(sist, dadiTiro, cosa.valore + extra, sist === s ? null : ID_DIFESA, v, etichetta, true);
+    if (situazioni.length) e.regola += testo('prove.regola.situazioni', { elenco: situazioni.map((m) => `${m.nome} ${m.bonus > 0 ? '+' : '−'}${Math.abs(m.bonus)}`).join(', ') });
     const t = cartaDa(e, chi, 'attacco', a.nome, bersaglio, fonti.filter((f) => f.v === v).map((f) => f.motivo).join('; ') || null, privata);
     if (!e.riuscita) return { t, testo: testo('prove.fatto.attacco_set', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, esito: esitoInParole(e, true) }), esito: e };
-    const fatto = colpisci(t, a, sb, e.grado?.id === 'critico' || !!conEffetto(o.condizioni, bersaglio, 'critico_contro'), danno);
+    const fatto = colpisci(t, a, sb, e.grado?.id === 'critico' || !!conEffetto(o.condizioni, bersaglio, 'critico_contro'), danno, situazioni.some((m) => m.danno === 'doppio'));
     return { t, testo: testo('prove.fatto.attacco_set_colpito', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, esito: esitoInParole(e, true), danno: fatto }), esito: e };
   }
   return { cheCosa, cartaDa, colpisci, attacca };

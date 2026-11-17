@@ -47,6 +47,24 @@ export interface Mossa extends Voce {
   esiti: { successo: string; parziale: string | null; fallimento: string };
 }
 
+/**
+ * A situational attack modifier of the set (regole.yaml → `modificatori`; regole/modificatori.ts): from behind, a
+ * charge, range. It applies to a PC's attack whose action has one of its `parole`, of the kind `attacchi`, with a
+ * weapon whose id has one of `armi` (empty = any), unless the attack uses an ability of `non_con`.
+ */
+export interface Modificatore {
+  id: string;
+  nome: string;
+  /** Added to the attack roll (Basic Fantasy: +2 from behind, +2 charging, +1 short range, −2 long range). */
+  bonus: number;
+  attacchi: 'tutti' | 'mischia' | 'distanza';
+  parole: string[];
+  armi: string[];
+  nonCon: string[];
+  /** `doppio`: a hit deals double damage (Basic Fantasy's charge, p. 52). */
+  danno: 'normale' | 'doppio';
+}
+
 export interface SistemaRegole {
   id: string;
   nome: string;
@@ -113,6 +131,8 @@ export interface SistemaRegole {
   combattimento: Combattimento;
   /** Arbitro a regole: id di abilità, mossa o caratteristica → parole che lo chiamano (regole.yaml → parole_chiave). */
   paroleChiave: Record<string, string[]>;
+  /** Situational attack modifiers the set declares (absent or empty = none: the SRD, most sets). */
+  modificatori?: Modificatore[];
 }
 
 /** Un passo del manuale (regole/estratti/*.md), per l'arbitro e per «Chiedi una regola». */

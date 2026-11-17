@@ -112,6 +112,8 @@ prove:
   regola:
     automatico: "Attacco automatico: {arma} {dadi}{armatura}"
     meno_armatura: " meno l’armatura"
+    # The set's situational modifiers that apply to an attack (regole.yaml → modificatori), after the roll's rule.
+    situazioni: " (compresi: {elenco})"
     colpisce: "Colpisce"
   # La sezione «Esiti dei tiri» del messaggio del narratore e del selettore.
   esiti:

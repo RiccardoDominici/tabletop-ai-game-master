@@ -103,6 +103,8 @@ prove:
     colpisce_sempre: "always hits"
   regola:
     automatico: "Automatic attack: {arma} {dadi}{armatura}"
+    # The set's situational modifiers that apply to an attack (regole.yaml → modificatori), after the roll's rule.
+    situazioni: " (including: {elenco})"
     meno_armatura: " minus armor"
     colpisce: "Hits"
   esiti:

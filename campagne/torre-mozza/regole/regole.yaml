@@ -18,9 +18,11 @@
 # - Bonus d'attacco (p. 53): un'abilità «mischia» (con la Forza) e una «distanza» (con la Destrezza); nella
 #   scheda vale il bonus della tabella (+1 per tutte le classi al primo livello; per i mostri i dadi vita).
 #   Il bonus di Forza al danno in mischia (p. 55) è scritto nella formula del danno dell'arma («1d8+2»).
-# - Il Motore non tiene conto di: gittata (+1, −2), attacco alle spalle (+2) e
-#   carica, rateo di fuoco delle balestre, numero di incantesimi al giorno. La sorpresa con 1d6 sì
-#   (combattimento.sorpresa).
+# - Gittata (+1 corta, −2 lunga, p. 54), attacco da dietro (+2, non col colpo furtivo del ladro, p. 53) e carica
+#   (+2 e danno doppio, solo con lancia o arma in asta, p. 52) sono `modificatori` del set: valgono per le parole
+#   dell'azione del PG (il Motore non conosce le posizioni). Restano fuori: il −5 a chi tira con un nemico a un metro e
+#   mezzo, il −2 alla Classe d'Armatura di chi carica, il rateo di fuoco delle balestre, il numero di incantesimi al
+#   giorno. La sorpresa con 1d6 sì (combattimento.sorpresa).
 id: basic-fantasy-r142
 nome: "Basic Fantasy (4ª edizione)"
 per_il_narratore: "Si tira un d20 e si somma un bonus: gli attacchi contro la Classe d'Armatura, tutto il resto contro diciassette al primo livello; a zero punti ferita si rischia la morte."
@@ -106,10 +108,18 @@ difficolta:
   - {id: ardua, nome: "Ardua", valore: 21}
 difficolta_predefinita: normale
 
-# Il manuale non ha il vantaggio: ha bonus e penalità di situazione, il più comune è ±2 (alle spalle, carica).
+# Il manuale non ha il vantaggio: ha bonus e penalità di situazione, il più comune è ±2. Da dietro, carica e gittata
+# sono i `modificatori` qui sopra (non si sommano al vantaggio dell'arbitro per la stessa azione); il ±2 resta per il resto.
 vantaggio:
   tipo: bonus
   valore: 2
+
+# Modificatori di situazione degli attacchi (A17): parole dell'azione del PG, tipo d'attacco, arma.
+modificatori:
+  - {id: da_dietro, nome: "Attacco da dietro", bonus: 2, parole: [alle spalle, da dietro, di spalle], non_con: [alle_spalle]}
+  - {id: carica, nome: "Carica", bonus: 2, attacchi: mischia, parole: [carico, carichiamo, alla carica], armi: [lancia, picca, alabarda, asta], danno: doppio}
+  - {id: gittata_corta, nome: "Gittata corta", bonus: 1, attacchi: distanza, parole: [da vicino, a pochi passi, da pochi passi]}
+  - {id: gittata_lunga, nome: "Gittata lunga", bonus: -2, attacchi: distanza, parole: [da lontano, da molto lontano, dalla distanza]}
 
 # Si colpisce con d20 + bonus contro la Classe d'Armatura (p. 53); l'armatura non riduce il danno.
 attacchi:

@@ -159,6 +159,19 @@ def test_abilita_sotto_soglia_e_attacco_automatico(tmp_path: Path) -> None:
     assert any("abilita.x.soglia" in r for r in regole_di(dest)), regole_di(dest)
 
 
+def test_modificatori_di_situazione(tmp_path: Path) -> None:
+    """From behind, a charge, range: the set's situational attack modifiers (A17)."""
+    dest = copia(BX, tmp_path)
+    buoni = [{"id": "da_dietro", "nome": "Da dietro", "bonus": 2, "parole": ["alle spalle"]},
+             {"id": "carica", "nome": "Carica", "bonus": 2, "attacchi": "mischia", "parole": ["carico"], "armi": ["lancia"], "danno": "doppio"}]
+    modifica(dest, "regole/regole.yaml", lambda d: d.update(modificatori=buoni))
+    assert not any(r.startswith("REGOLE.modificatori") for r in regole_di(dest)), regole_di(dest)
+    modifica(dest, "regole/regole.yaml", lambda d: d.update(modificatori=[{"id": "x", "bonus": 0, "parole": []}, {"id": "y", "bonus": 1, "attacchi": "magia", "parole": ["z"], "non_con": ["nessuna"], "danno": "triplo"}]))
+    msg = " ".join(regole_di(dest))
+    for atteso in ("modificatori.x: bonus", "modificatori.x: parole", "modificatori.y: attacchi", "non_con: «nessuna»", "modificatori.y: danno"):
+        assert atteso in msg, msg
+
+
 def test_critici_attacchi_e_salvezze(tmp_path: Path) -> None:
     """Basic Fantasy p. 60: the naturals of attacks also on the saving throws, which the set marks (A17)."""
     dest = copia(BX, tmp_path)

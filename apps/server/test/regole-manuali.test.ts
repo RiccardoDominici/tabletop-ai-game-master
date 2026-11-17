@@ -117,6 +117,59 @@ describe('critici del d20: del set, l’SRD se il set tace', () => {
     expect(errori.join(' ')).toMatch(/attacchi_e_salvezze senza nessuna abilità con salvezza: true/);
   });
 
+  // A17 of docs/da-fare.md: Basic Fantasy's +2 from behind (p. 53, not with the Sneak Attack), +2 and double damage
+  // charging with a spear (p. 52), +1 short and −2 long range (p. 54), as modifiers the set declares.
+  it('situational modifiers of the set: words of the action, kind of attack, weapon, abilities they do not combine with', () => {
+    const MOD = [
+      { id: 'da_dietro', nome: 'Da dietro', bonus: 2, parole: ['alle spalle', 'da dietro'], non_con: ['furtivo'] },
+      { id: 'carica', nome: 'Carica', bonus: 2, attacchi: 'mischia', parole: ['carico'], armi: ['lancia'], danno: 'doppio' },
+      { id: 'lontano', nome: 'Gittata lunga', bonus: -2, attacchi: 'distanza', parole: ['da lontano'] },
+    ];
+    const s = setBx((d) => {
+      d['modificatori'] = MOD;
+      (d['abilita'] as unknown[]).push({ id: 'furtivo', nome: 'Attacco furtivo', caratteristica: 'destrezza' });
+    });
+    expect(s.modificatori?.map((m) => [m.id, m.bonus, m.attacchi, m.danno])).toEqual([['da_dietro', 2, 'tutti', 'normale'], ['carica', 2, 'mischia', 'doppio'], ['lontano', -2, 'distanza', 'normale']]);
+    const c = caricaCampagna(BX);
+    const schede = caricaSchedeGeneriche(s, c);
+    const corrado = schede.get('pg_corrado')!;
+    const base = corrado.attacchi[0]!;
+    corrado.attacchi.push({ ...base, id: 'lancia', nome: 'Lancia' }, { ...base, id: 'arco', nome: 'Arco', distanza: true }, { ...base, id: 'pugnale_furtivo', nome: 'Pugnale furtivo', abilita: 'furtivo' });
+    const colpo = (testo: string, arma: string | null, dadi: number[], vantaggio: 'vantaggio' | null = null) => {
+      const r = risolviTurnoRegole({
+        turno: 1, sistema: s, schede, stato: new StatoProve(schede), dadi: new DadiACopione(dadi), proveScena: [], nome: (id: string) => id, esiste: () => true, log: loggerMuto(),
+        azioni: [{ id: 'a1', autore: 'pg_corrado', testo, privata: false }],
+        decisioni: new Map([['a1', { id: 'a1', tipo: 'attacco', caratteristica: null, abilita: null, bersaglio: 'png_ruggero', arma, prova_scena: null, difficolta: null, abilita_bersaglio: null, vantaggio, motivo: 'alle spalle', aiuta: null, reazione: null, mossa: null }]]),
+      } as never);
+      return r.tiri[0]!;
+    };
+    const semplice = colpo('Colpisco Ruggero con la spada', null, [10, 3]);
+    // From behind: +2 on the roll, said in the rule; the arbiter's own advantage for it is dropped (never twice).
+    const dietro = colpo('Colpisco Ruggero alle spalle con la spada', null, [10, 3], 'vantaggio');
+    expect(dietro.modificatore).toBe(semplice.modificatore + 2);
+    expect(dietro.vantaggio).toBeNull();
+    expect(dietro.regola).toMatch(/compresi: Da dietro \+2/);
+    // Not with the thief's sneak attack (the weapon's ability is in non_con).
+    expect(colpo('Lo colpisco alle spalle con il pugnale furtivo', 'pugnale_furtivo', [10, 3]).regola).not.toMatch(/Da dietro/);
+    // A charge: only with a spear; a hit deals double damage.
+    expect(colpo('Carico Ruggero con la spada', null, [10, 3]).regola).not.toMatch(/Carica/);
+    const carica = colpo('Carico Ruggero con la lancia', 'lancia', [15, 3]);
+    expect(carica.regola).toMatch(/Carica \+2/);
+    expect(carica.danno?.totale).toBe(6);
+    // Long range: ranged attacks only.
+    expect(colpo('Tiro con l\'arco a Ruggero da lontano', 'arco', [10, 3]).modificatore).toBe(semplice.modificatore - 2);
+    expect(colpo('Colpisco Ruggero da lontano con la spada', null, [10, 3]).regola).not.toMatch(/Gittata/);
+    // An NPC's attack has no action: none apply.
+    const o = { turno: 1, sistema: s, schede, stato: new StatoProve(schede), dadi: new DadiACopione([10, 3]), proveScena: [], nome: (id: string) => id, esiste: () => true, log: loggerMuto() };
+    expect(strumentiRegole(o).attacca('png_ruggero', 'pg_corrado', null, [], false)!.t.regola).not.toMatch(/compresi/);
+    // The loader's errors.
+    const errori: string[] = [];
+    const d = grezzo();
+    d['modificatori'] = [{ id: 'x', bonus: 0, parole: [] }, { id: 'y', bonus: 2, attacchi: 'magia', parole: ['zac'], non_con: ['nessuna'] }];
+    leggiSistema(d, errori, []);
+    expect(errori.join(' ')).toMatch(/modificatori\.x: bonus.*modificatori\.x: parole.*modificatori\.y: attacchi.*modificatori\.y: non_con: «nessuna»/);
+  });
+
   it('danno del critico (doppio o normale) e danno minimo, dal set', () => {
     const c = caricaCampagna(BX);
     const colpo = (s: SistemaRegole, dadi: number[]) => {

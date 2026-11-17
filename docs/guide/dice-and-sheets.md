@@ -106,7 +106,7 @@ Without a model (the default referee), the program starts from medium (or your r
 
 **A natural 20 and a natural 1** count only on attack rolls: a 20 is always a critical hit (the damage dice are rolled twice), and a 1 always misses. In checks and saving throws they do not count. (This is the SRD 5.2; a campaign with its own rule set says where they count, see [Your rules manual](your-rules-manual.md): Basic Fantasy counts them on saving throws too.)
 
-**Attacks.** The roll is compared with the target's AC. A ranged weapon has disadvantage if an enemy who can see the attacker is within 1.5 metres of it.
+**Attacks.** The roll is compared with the target's AC. A ranged weapon has disadvantage if an enemy who can see the attacker is within 1.5 metres of it. (A campaign with its own rule set may add situational modifiers instead: in Basic Fantasy «colpisco alle spalle» (I strike from behind) is +2, a charge with a spear +2 and double damage, «da lontano» (from afar) −2; see [Your rules manual](your-rules-manual.md).)
 - At 0 PF an NPC dies or is knocked out, as its rule set says.
 - At 0 PF a player's character falls unconscious and makes death saving throws: see [Combat](#combat).
 

@@ -63,6 +63,7 @@ The set can keep the manual's numbers as they are, instead of converting them (t
 - a table from ability score to bonus (`modificatore: {tipo: tabella, …}`), with the score on the sheet;
 - skills rolled as a percentage or as «x in 6» (`soglia` on the skill), with the percentage or the x on the sheet;
 - a weapon that always hits (`automatico: true` on the sheet's weapon);
+- situational attack modifiers (`modificatori`): from behind, a charge, short or long range, each with the words of a player's action that make it apply («alle spalle», «carico», «da lontano»), the kind of attack, and the weapon it needs (a charge needs a spear). The program knows no positions: the player's words decide, and an NPC's attack never gets one;
 - what a natural 20 or 1 does on a d20, and on which rolls (`critici`: attacks only, attacks and saving throws, or every roll; the saving throws are the skills marked `salvezza: true`), critical and minimum damage, the extras of a death save, initiative rolled again every round, and ties acting at the same moment (`pari: simultanei`).
 
 Where the set says nothing, the SRD 5.2 values apply.
