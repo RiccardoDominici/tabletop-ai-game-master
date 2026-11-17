@@ -164,8 +164,9 @@ in mode B, after an answer that brought something new). Level `((n − 1) mod 3)
   Mode A: a directive with the clue; mode B: only a clue with an available `indizio` line that reveals it and has no
   gate on the action, which the Engine says; with none, it falls back to S1;
 - **S3** an NPC present, or a memory, sums up 2–3 concrete leads, built from what the PCs know: places of the map
-  known to them, not visited yet and not kept for the next session (`prossima_sessione`), facts already found, the
-  last sign of the threat. Mode A: a directive with the
+  known to them, not visited yet and not kept for the next session (`prossima_sessione`), facts already found; the
+  last sign of the threat is material for the narrator apart (mode A), never one of the «roads» of the Engine's
+  sentence (round 7, ST T9 heard a clock sign listed as a road). Mode A: a directive with the
   leads; mode B: the Engine says them in one sentence of the language pack.
 Never an empty «cosa fate?»: every level carries material. On an E12 stall the move comes together with the
 answers to the actions; in mode B the fillers also enter the catalogue.

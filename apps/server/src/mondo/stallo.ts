@@ -191,8 +191,13 @@ export interface MossaStallo {
   pericolo: PericoloMondo | null;
   /** The clue to bring (S2). */
   indizio: string | null;
-  /** 2–3 concrete leads (S3). */
+  /** 2–3 concrete leads (S3): places the PCs know, a fact they found. */
   piste: string[];
+  /**
+   * The last visible sign of the threat (S3): material for the narrator, never a «road» of the Engine's sentence
+   * (round 7, ST T9: «Vi tornano in mente le strade ancora aperte: …; Nella Torre Mozza si accende un fuoco…»).
+   */
+  segno?: string | null;
 }
 
 /** The danger the scene is facing: its clock is active, or an NPC of its cast is present, or the first one. */
@@ -210,8 +215,9 @@ export function mossaDiStallo(n: number, c: ContestoStallo): MossaStallo {
   const livello = livelloStallo(n);
   const pericolo = pericoloDellaScena(c);
   const indizio = [...c.offerti, ...c.indiziDellaScena].find((i) => !c.giàDati.has(i)) ?? null;
-  const piste = [...c.luoghiNoti.slice(0, 2), ...c.fattiScoperti.slice(-1), ...(c.ultimoSegno ? [c.ultimoSegno] : [])].slice(0, 3);
-  if (livello === 3 && (piste.length >= 2 || c.riassuntoPronto)) return { n, livello: 3, duro: false, pericolo, indizio: null, piste };
+  const piste = [...c.luoghiNoti.slice(0, 2), ...c.fattiScoperti.slice(-1)].slice(0, 3);
+  // Two leads, or one and the threat's last sign (as before, the sign counts as material: it is said apart).
+  if (livello === 3 && (piste.length + (c.ultimoSegno ? 1 : 0) >= 2 || c.riassuntoPronto)) return { n, livello: 3, duro: false, pericolo, indizio: null, piste, segno: c.ultimoSegno };
   if (livello >= 2 && indizio) return { n, livello: 2, duro: false, pericolo, indizio, piste: [] };
   return { n, livello: 1, duro: stalloDuro(n), pericolo, indizio: null, piste: [] };
 }

@@ -35,6 +35,14 @@ describe('mondo/stallo', () => {
     expect(c.registra(true, false)).toBe(1);
   });
 
+  it('the threat\'s last sign is S3 material apart, never a «road» of the leads (round 7, ST T9)', () => {
+    const m = mossaDiStallo(3, { ...base, ultimoSegno: 'Un tonfo a monte.' });
+    expect(m.piste).toEqual(['Il bosco', 'Il ponte']);
+    expect(m.segno).toBe('Un tonfo a monte.');
+    // One lead and the sign are still enough for S3, as before.
+    expect(mossaDiStallo(3, { ...base, luoghiNoti: ['Il bosco'], ultimoSegno: 'Un tonfo a monte.' }).livello).toBe(3);
+  });
+
   it('a prepared summary line makes S3 possible with fewer than two leads of the Engine', () => {
     const poco: ContestoStallo = { ...base, luoghiNoti: [], indiziDellaScena: [] };
     expect(mossaDiStallo(3, poco).livello).toBe(1);

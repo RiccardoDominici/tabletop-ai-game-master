@@ -1650,7 +1650,7 @@ export class Regia {
   private materialeStallo(m: MossaStallo): string[] {
     if (m.livello === 1 && m.pericolo) return [testoFisso('mondo.stallo_pericolo', { mosse: m.pericolo.mosse.join('; ') || '—', segni: m.pericolo.segniVisibili.join('; ') || '—' })];
     if (m.livello === 2 && m.indizio) return [testoFisso('mondo.stallo_indizio', { id: m.indizio, come: indiziCampagna(this.o.campagna).get(m.indizio)?.come_si_trova || m.indizio })];
-    if (m.livello === 3) return [testoFisso('mondo.stallo_piste', { piste: m.piste.map(senzaPuntoFinale).join('; ') })];
+    if (m.livello === 3) return [testoFisso('mondo.stallo_piste', { piste: [...m.piste, ...(m.segno ? [m.segno] : [])].map(senzaPuntoFinale).join('; ') })];
     return [];
   }
 
