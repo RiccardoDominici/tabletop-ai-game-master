@@ -33,10 +33,10 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   - ~~Haiku still answers «impossibile» for lifting a cart, with a `motivo` that contradicts the verdict (the verdict
     field comes before the reason): a reason-first field or a deterministic check (docs/prove-verifica.md §5). A
     reason-first field was measured on 16 November: the cart solved, the twenty down from 18.0 to 15.7: dropped~~
-    **Done** (A1): the deterministic check: «impossibile» needs a reason in the scene's `vincoli_pubblici`, else the
+    **Done** (ab18afc): the deterministic check: «impossibile» needs a reason in the scene's `vincoli_pubblici`, else the
     rules' check is rolled. Replayed on the cached Haiku answers (no credit): twenty 18.0 → 19.3, ten 9.0 → 8.0 (a
     stone bridge lifted by hand now rolls hard unless the scene says why not); Haiku's own path untested live;
-  - ~~initiative by sides is unit-tested only (no example campaign's set uses it)~~ **Done** (A2): a whole-server
+  - ~~initiative by sides is unit-tested only (no example campaign's set uses it)~~ **Done** (a8c2db5): a whole-server
     test and a live run on the invented fixture `bx` with the scripted narrator (docs/prove-verifica.md §6c);
   - ~~the told-facts guard added a duplicate «Zirrà fugge.» after a narration that told the flight («sparisce oltre il
     crollo»)~~ **Done** (16 November): a row with no subject continues the row before (docs/combattimento.md §3.7);
@@ -46,12 +46,12 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   - ~~to check: with automatic rolls the panel's fight still starts at the click, and the next window's `dopoAzioni`
     (prove/combattimento.ts) advances past step 0 before running any step, so an NPC first in the order seems to lose
     its first step (read from the code, not reproduced; the manual path starts inside `dopoAzioni` and runs it)~~
-    **Done** (A3): reproduced, then fixed in the Engine (only a PC step at the head is consumed; the click's order is
+    **Done** (61fd744): reproduced, then fixed in the Engine (only a PC step at the head is consumed; the click's order is
     said in that first turn). Left: with an NPC first, the PCs' actions of that window still resolve before its step;
-  - ~~«the goblin» meant for a named NPC (Zirrà) without her name still finds no target (no roll)~~ **Done** (A4): it
+  - ~~«the goblin» meant for a named NPC (Zirrà) without her name still finds no target (no roll)~~ **Done** (b8f797a): it
     finds her by her alias since C5's re-targeting (the failure was Haiku's attack on an unknown target, skipped
     before C5); pinned by a test. A word that is no alias («la sentinella») still finds nobody;
-  - ~~no example campaign uses minions yet; world questions and minions not yet seen in a live run~~ **Done** (A5):
+  - ~~no example campaign uses minions yet; world questions and minions not yet seen in a live run~~ **Done** (267042d):
     ponte-lanterne's Casa del Sale has the consul's two guards as minions; both seen live with the scripted narrator
     (docs/prove-verifica.md §6d), which also found the rules arbiter rolling Perception for «Resto vicino al camino».
 - **Final end-to-end pass on today's code**: done in profile B (docs/e2e-finale-3.md, 958556a: not ready), and its fix
@@ -103,11 +103,11 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   from round 7: ~~the live lexicon (`pronunce-gioco.yaml`, written by test runs into the campaign's folder) made
   «Oreste» a known name, so the invented-name line never fired: count only verified lexicon entries, and keep test
   runs out of the campaign folder~~ **Done** (86ad009); ~~«Pugnale ancora» with a target named needs the go-on words in the named-target path
-  too~~ **Done** (A36); ~~the S3 leads sentence lists the last
+  too~~ **Done** (6dd8f54); ~~the S3 leads sentence lists the last
   clock sign as a road~~ **Done** (dd19b25); ~~a scriptwriter line can confirm a place that does not exist~~ **Done** (35c8290); ~~a commitment toward something that does not exist still resets the stall~~ **Done** (15ff25b); ~~repeated catchphrases~~ **Done** (8e618aa, da6397f: the lines that come out too).
   Still open: a round 4 in profile B measured live (needs Riccardo: API credit for profile B; provider not chosen); a full measuring round of the judge (round 3 had one valid game of four; needs Riccardo: API credit for profile B); ~~the private replies stay on the rules
   (their raw text is now logged, for a replay set of their own)~~ **Done** (59d5954, f45ef77: insieme-private.json, the rules 6 of 7); ~~R-fuori's whole-sentence state check (the judge
-  replaces it in profile B, not in profile A)~~ **Done** (9804a24: per clause); ~~the cart «impossibile» (11a)~~ **Done** (A1, above);
+  replaces it in profile B, not in profile A)~~ **Done** (9804a24: per clause); ~~the cart «impossibile» (11a)~~ **Done** (ab18afc, above);
   ~~`R-eco` and the projector mark~~ **Done** (f9847ff R-eco, a70e783 mark); ~~the stall's S3 sentence said twice word for word~~ **Done** (88baf0c); profile A (the reader plus the
   Mac's swap were too much on 16 November) and ~~the dictated action not run~~ **Done** (26daa19, 7609bd1: end to end in profile A, docs/ascolto.md). The «Coerenza» box was seen in headless
   Chromium on a live test instance (16 November, 0 console errors), not on a real tablet (needs Riccardo: a real tablet).
@@ -139,7 +139,7 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
 ## Later
 - **Gaps in the Basic Fantasy set from the final e2e** (docs/e2e-finale.md §2 and §7, «dadi» (dice)):
   ~~closed 11 November 2026 (HIDDEN/NASCOSTA marker in every language, death and natural d20 checks from the set, table-based modifiers, individual `ogni_round`, percentages and "x on 6", automatic weapons, the two validator checks)~~
-  **Done**: markers (3238277), death-save naturals and d20 criticals (2d78978), table modifiers (bc15b8d), individual `ogni_round` (b75a693), percentages, x-in-6 and always-hit weapons (554972f), validator checks (19f863d). Still open: ~~simultaneous initiative ties~~ **Done** (A17: `iniziativa.pari: simultanei`), ~~natural d20s for attacks AND saving throws only (today `critici: attacchi | tutti`)~~ **Done** (A17: `critici: attacchi_e_salvezze`, saves marked `salvezza: true`), ~~surprise with 1d6~~ **Done** (e04058e), ~~range, charge and attack from behind as modifiers of the set~~ **Done** (A17: `modificatori`, triggered by the PC's words; not modelled: −5 shooting into melee, −2 AC after a charge).
+  **Done**: markers (3238277), death-save naturals and d20 criticals (2d78978), table modifiers (bc15b8d), individual `ogni_round` (b75a693), percentages, x-in-6 and always-hit weapons (554972f), validator checks (19f863d). Still open: ~~simultaneous initiative ties~~ **Done** (72d098e: `iniziativa.pari: simultanei`), ~~natural d20s for attacks AND saving throws only (today `critici: attacchi | tutti`)~~ **Done** (e7bb597: `critici: attacchi_e_salvezze`, saves marked `salvezza: true`), ~~surprise with 1d6~~ **Done** (e04058e), ~~range, charge and attack from behind as modifiers of the set~~ **Done** (e9bf590: `modificatori`, triggered by the PC's words; not modelled: −5 shooting into melee, −2 AC after a charge).
 - **Setup on non-Apple computers** (docs/profili.md, profile `altro` (other)). The guided setup run by Claude Code (`.claude/skills/setup`) says that local reader, local voice and local images are not yet supported outside Apple silicon (docs/profili.md:24). Without an Anthropic key the narrator is the scripted one (a trial, not a real game). Done meanwhile: the computer is detected as JSON (1d3fd81) and the profile is chosen per computer (004a135). To do: a local reader on Linux/Windows (llama.cpp or Ollama with the same protocol), a local voice (see below) and image generation (today only mflux, Apple). Until then, the setup tells the user to choose the Anthropic key or text-only play.
   **TODO (decided by the lead, setup):** a local LLM through Ollama or llama.cpp, on the same OpenAI-compatible API
   as the Mac reader (port 4613, `backend.locale.url`), and a light voice (Piper or Kokoro). Claude Code installs them
@@ -181,7 +181,7 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
 - **B2** leak detector blind to release lines: partly. The releases no longer happen (57c8ce7), but the second-pass judge still found `nar_piccone` counted as clean. Open.
 - ~~**B3** verbal tics (Zirrà «ride corto», «Non so, non m'importa. Parliamo di prezzo.» as a stock deflection). Open: the tic rule exists only for the sceneggiatore.~~ **Done** (8e618aa, da6397f): the checker holds every line that comes out to it (an NPC's sheet tic heard in its last lines, and any sentence heard in this visit of the scene).
 - ~~**C4** in combat, script actions sent out of turn are deferred and re-judged stale. Open: the harness should send, in combat, only the action of the PC on turn (`esperimenti/`).~~ **Done** (d14f89c: "Harness: in combat send only the actions of the PC on turn").
-- ~~**C5** attacks on creatures without a sheet become a check against 17, and the narrator invents goblins.~~ **Done** (minions, `gregari`, docs/prove.md §2); ~~left: «the goblin» meant as a named NPC without her name is still no roll~~ **Done** (A4, see above).
+- ~~**C5** attacks on creatures without a sheet become a check against 17, and the narrator invents goblins.~~ **Done** (minions, `gregari`, docs/prove.md §2); ~~left: «the goblin» meant as a named NPC without her name is still no roll~~ **Done** (b8f797a, see above).
 - **D2** validator check that a line giving what a check gates must not come out after a failed check. The Engine part is done (6eff704, 3406550); ~~the validator check~~ **Done** in 19f863d («a check another oppure path bypasses»); not yet confirmed by a run.
 - ~~**D4** announcements: partly. 192bcff makes them never empty and cuts them at a sensible boundary, but the quotes of the player's words still come out broken («Livia Sarti: «Blocco un goblin ferito contro il muro: «Dov'è il ragazzo».»).~~ **Done** (4320e25): the inner quote marks are dropped from the citation, so the wrapper has one pair.
 - ~~**D5** cards say «contro CD 14» for an attack against the Armour Class, and repeat the label.~~ **Done** (87ce932): an attack against a defence is typed CA (AC in English, from the language package), and the label is not repeated when the attack has no ability.
