@@ -16,17 +16,19 @@
  * - R-segreto: a secret still hidden goes to the phone of who asked in private, or the NPC's deflection replaces the line;
  * - R-rifiuto: an NPC who refused after a failed social check does not give in: its refusal replaces the line;
  * - R-ripetuta: a sentence the table heard word for word in the last turns is dropped.
+ * - R-eco: a sentence that restates a player's words of this turn beyond the announcement is dropped (coerenza/eco.ts).
  * The repertoire's lines (mode B, the local minimal reader) go through the rules that judge facts, R-esito and R-fuori:
  * a prewritten line can contradict the state too. Pure logic around the closures the director builds for the turn.
  */
+import { ecoDi } from './eco';
 import { ID_NARRATORE } from '../campagna/tipi';
 import type { CorrezioneEsito } from '../narrazione/guardia-esiti';
 import type { EsitoGuardiaSegreti } from '../narrazione/guardia-segreti';
 import { togliNumeriRegole } from '../narrazione/numeri-regole';
 import { normalizza } from '../azioni/regole';
 
-export type IdRegola = 'R-numeri' | 'R-esito' | 'R-fuori' | 'R-inesistente' | 'R-assente' | 'R-finzione' | 'R-privato' | 'R-segreto' | 'R-rifiuto' | 'R-ripetuta' | 'R-dovuto';
-export const REGOLE: readonly IdRegola[] = ['R-numeri', 'R-esito', 'R-fuori', 'R-inesistente', 'R-assente', 'R-finzione', 'R-privato', 'R-segreto', 'R-rifiuto', 'R-ripetuta', 'R-dovuto'];
+export type IdRegola = 'R-numeri' | 'R-esito' | 'R-fuori' | 'R-inesistente' | 'R-assente' | 'R-finzione' | 'R-privato' | 'R-segreto' | 'R-rifiuto' | 'R-ripetuta' | 'R-eco' | 'R-dovuto';
+export const REGOLE: readonly IdRegola[] = ['R-numeri', 'R-esito', 'R-fuori', 'R-inesistente', 'R-assente', 'R-finzione', 'R-privato', 'R-segreto', 'R-rifiuto', 'R-ripetuta', 'R-eco', 'R-dovuto'];
 
 /** What the checker did with the sentence. */
 export type AzioneViolazione = 'riscritta' | 'sostituita' | 'tolta' | 'spostata' | 'aggiunta' | 'riparata' | 'osservata';
@@ -69,6 +71,11 @@ export interface RegoleTurno {
    * judge's lines and opener: each line once a turn. Absent: this call's own set.
    */
   lineeDette?: Set<string>;
+  /**
+   * R-eco: this turn's public actions (their texts) and the language's function words: a sentence that restates a
+   * player's clause beyond the announcement is dropped (coerenza/eco.ts).
+   */
+  eco?: { azioni: readonly string[]; vuote: ReadonlySet<string> };
 }
 
 export interface FraseDaVerificare {
@@ -210,6 +217,14 @@ export class VerificaTurno {
       this.viola({ regola: 'R-rifiuto', etichetta: e.etichetta, frase: testo, azione: rifiuto.length ? 'sostituita' : 'tolta', sostituto: rifiuto.map((x) => x.testo) });
       this.segmentiFermati.add(e.segmento);
       return { tipo: 'sostituisci', righe: rifiuto };
+    }
+    // R-eco: the player's words restated as the world's (round 7, FB T4). The announcement is the only place they are said.
+    if (!e.attribuita && !corretta && this.r.eco?.azioni.length) {
+      const eco = ecoDi(testo, this.r.eco.azioni, this.r.eco.vuote);
+      if (eco) {
+        this.viola({ regola: 'R-eco', etichetta: e.etichetta, frase: testo, azione: 'tolta' });
+        return { tipo: 'togli' };
+      }
     }
     // Said word for word in the last turns, or already in this call: dropped. A sentence that names a PC is never a
     // repetition (a turn prompt, an outcome), nor is an Engine line that replaced one.

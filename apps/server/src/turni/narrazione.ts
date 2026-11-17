@@ -26,6 +26,8 @@ import type { FraseDaDire, PipelineVoce } from '../voce/pipeline';
 import { EspressioneTurno } from '../voce/espressione';
 import type { CueAudio, Risolto } from '../audio/cue';
 import { testo as testoFisso } from '../lingua';
+import { linguaDettato } from '../dettato/lingua';
+import { normalizza } from '../azioni/regole';
 import type { EsitoGuardiaSegreti } from '../narrazione/guardia-segreti';
 import { togliIdBattute } from '../narrazione/id-battute';
 import { frasePerRipetizione, VerificaTurno, type Violazione } from '../coerenza/verifica';
@@ -253,6 +255,8 @@ function anomaliaDi(v: Violazione): { codice: string; messaggio: string } {
       return { codice: 'rifiuto_dopo_prova', messaggio: 'narrator: NPC gives in after a failed social check, replaced by its refusal' };
     case 'R-ripetuta':
       return { codice: 'ripetuta', messaggio: 'narrator: sentence said word for word in the last turns, dropped' };
+    case 'R-eco':
+      return { codice: 'eco', messaggio: 'narrator: sentence restates a player\'s words beyond the announcement, dropped' };
     case 'R-dovuto':
       return { codice: 'fatto_dovuto', messaggio: 'prove: fatti dello scontro non detti dalla narrazione, li dice il Motore' };
   }
@@ -263,6 +267,11 @@ export function voceDi(campagna: Campagna, etichetta: string): { voce_id: string
   if (etichetta === ID_NARRATORE) return { voce_id: ID_NARRATORE, nome: nomeNarratore() };
   const png = campagna.png.find((p) => p.id === etichetta);
   return png ? { voce_id: png.voce_id, nome: png.nome } : { voce_id: ID_NARRATORE, nome: nomeNarratore() };
+}
+
+/** The language's function words (dettato/lingua.ts, `parole_comuni`), plain forms: left out of R-eco's comparison. */
+function paroleVuote(): ReadonlySet<string> {
+  return new Set([...linguaDettato().paroleComuni].map((w) => normalizza(w)));
 }
 
 /** I segmenti delle battute stanno in un intervallo a parte, per non unirsi alle righe improvvisate. */
@@ -324,6 +333,8 @@ export async function narraTurno(
       ...(p.giàSentite ? { giàSentite: p.giàSentite } : {}),
       ...(p.detteNelTurno ? { detteNelTurno: p.detteNelTurno } : {}),
       ...(p.lineeDette ? { lineeDette: p.lineeDette } : {}),
+      // R-eco: this turn's public actions, the language's function words (coerenza/eco.ts).
+      ...(p.dati?.azioni?.length ? { eco: { azioni: p.dati.azioni.filter((a) => a.testo && !a.privata).map((a) => a.testo!), vuote: paroleVuote() } } : {}),
       nomiPg: [...new Set(campagna.pg.flatMap((x) => [x.nome, x.nome.split(/\s+/)[0] ?? '']).map(frasePerRipetizione).filter((x) => x.length > 2))],
     },
     segnala,

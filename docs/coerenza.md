@@ -80,8 +80,10 @@ with an id and its word lists in the language pack:
 acting (built after round 1, below); `R-assente` an NPC not in the scene who speaks or acts; `R-esito` an
 outcome against its card (polarity, target, a fall without a fact); `R-privato` a private fact in a public sentence
 (the audience split makes it a backstop); `R-segreto`; `R-rifiuto`; `R-numeri`; `R-ripetuta` a recent line word for
-word; `R-eco` the player's words restated beyond the announcement (not built: no rule yet, the measured runs had no
-echo above the old repetition check); and the end-of-turn `R-dovuto` (a card's fact not told).
+word; `R-eco` the player's words restated beyond the announcement (built after round 7, coerenza/eco.ts: a sentence
+that shares at least three content words with one clause of this turn's public actions, and those are at least 60% of
+its own, is dropped; round 7, FB T4: «Nano, la ruota è rotta da mesi.» after «Il mulino sul fiume ha la ruota rotta da
+mesi»; the attributed announcement is exempt); and the end-of-turn `R-dovuto` (a card's fact not told).
 On a violation: (a) when the sentence is not yet needed by the voice (the buffer has slack) and a fast model is
 available, one targeted repair: a short call with the exact error and the ledger rows, with a hard deadline (to
 measure; about 1.5 s); (b) otherwise (profile A with the local reader goes straight here), or if the repair fails the
