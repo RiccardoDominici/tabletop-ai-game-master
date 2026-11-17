@@ -34,6 +34,8 @@ elementi_interattivi:
   - {cosa: "la porta del retro", dove: "nel magazzino, dietro i sacchi", azioni: "NASCOSTA: non ha il chiavistello; non nominarla finché non la nomina chi la conosce, o finché un PG non gira dietro i sacchi"}
 
 png_presenti: [png_vischi]
+# The consul's two guards (campagna.yaml → gregari): one at the study door, one by the council table.
+gregari: [{tipo: guardia, quanti: 2}]
 orologi_attivi: [o_firme]
 
 indizi:

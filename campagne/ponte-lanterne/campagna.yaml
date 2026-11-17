@@ -560,6 +560,23 @@ preparazione:
       - {capienza: c_bigia, non_porta: [g_ricovero, g_case_lunghe],
          perche: "Un gruppo per volta (f_un_gruppo): i due gruppi insieme non ci stanno nemmeno senza i PG, oltre a stare ai due capi del Borgo."}
 
+# Minions (docs/prove.md §2): the nameless foes a scene can have, with one stat line by type. The consul's two guards
+# (Vischi's card: «due guardie del console che gli obbediscono»; one stands at the study door of the Casa del Sale) are
+# the SRD 5.2 Guard: chain shirt and shield (AC 16), 11 hit points, a spear. At the bridge they do not fight for the
+# crank (cb_catena), so only the Casa del Sale lists them.
+gregari:
+  - tipo: guardia
+    nome: "guardia del console"
+    parole: [guardia, guardie]
+    scheda:
+      gs: 1/8
+      caratteristiche: {forza: 13, destrezza: 12, costituzione: 12, intelligenza: 10, saggezza: 11, carisma: 10}
+      competenze: [percezione]
+      armatura: {tipo: giaco di maglia, scudo: true}
+      pf: 11
+      attacchi:
+        - {nome: Lancia, caratteristica: forza, danno: 1d6, tipo_danno: perforante}
+
 # Who rolls (docs/prove.md §8–9): the players roll real dice at the table and enter them on the phone, the DC stays
 # secret; the Engine's own rolls for the world (a gate with `tiro`) stay hidden from the table.
 regole:

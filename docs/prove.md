@@ -208,7 +208,7 @@ on nobody: no roll, and the fact tells the narrator not to invent the creature (
 Next to an enemy, an attack with no target named stays a doubt: no roll. Validator: `SCHEDA.gregari` (types, sheets as
 the set's NPC sheets, the scenes' entries) and the warning `SCHEDA.nemici_senza_statistiche` when a scene names a
 minion's word with no minion of that type nor an NPC by that name (strumenti/valida/regole_gregari.py). Tests:
-test/gregari.test.ts.
+test/gregari.test.ts. Example: ponte-lanterne, the consul's two guards at the Casa del Sale (the SRD 5.2 Guard).
 
 ## 3. Flow
 

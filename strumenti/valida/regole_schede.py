@@ -264,8 +264,10 @@ def _scheda(c: Campagna, e: Esito, dove: str, s, png: bool, pg: dict | None) -> 
     ca = _armatura(e, dove, s, mod_des)
     if not png and not 10 <= ca <= 20:
         e.errore("SCHEDA.ca", dove, f"CA {ca}: fuori dalle CA di un PG di primo livello (10–20)")
-    if png and gs is not None and not (9 <= ca <= srd.ca_attesa(gs)):
-        e.errore("SCHEDA.gs", dove, f"CA {ca} fuori dalla fascia di un GS {_nome_gs(gs)} (da 9 a {srd.ca_attesa(gs)})")
+    # Up to three above the typical AC of the CR, as srd.ca_attesa and docs/prove.md §2 say: the check used to stop at the
+    # typical value, so the SRD 5.2 Guard (CR 1/8, AC 16: chain shirt and shield) was an error.
+    if png and gs is not None and not (9 <= ca <= srd.ca_attesa(gs) + 3):
+        e.errore("SCHEDA.gs", dove, f"CA {ca} fuori dalla fascia di un GS {_nome_gs(gs)} (da 9 a {srd.ca_attesa(gs) + 3})")
 
     pf = s.get("pf")
     if not _intero(pf, 1, 10_000):

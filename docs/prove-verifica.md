@@ -180,6 +180,18 @@ wait), 12 windows.
 
 The same fight with fixed dice is a whole-server test: test/combattimento-schieramento.test.ts.
 
+## 6d. Minions and a world question, live with the scripted narrator (17 November, A5)
+
+Two short runs on scratchpad copies of the example campaigns (never on `campagne/`), each with `TAGM_CARTELLA_CAMPAGNA`,
+`TAGM_TIRI_GIOCATORI=automatico TAGM_ARBITRO=regole TAGM_SEME_DADI=0123…cdef scripts/avvio.sh --finto --mock`, driven
+by a socket script (projector, two phones, the Game Master's socket for the scene change).
+
+| Check | Seen | Verdict |
+|---|---|---|
+| World question (torre-mozza, port 4971): `d_zirra_porta` in scena_torre, asked by an action on the crypt's door | Nespola «Scendo piano in cantina e provo ad aprire la porta di ferro della cripta con il grimaldello» → «prove: an NPC's own check (world question)»: Zirrà's Wisdom 8 against 17, no; «world: question answered by the dice»; on the panel's Game Master rolls, hidden (`nascosti`). The scripted narrator ignores its facts, so the `se_no` line's use by a narrator is covered by test/mondo-domande.test.ts, not seen here | works |
+| Minions (ponte-lanterne, port 4972): the consul's two guards (`gregari: guardia`, SRD 5.2 Guard, AC 16) in scena_casa_del_sale | Ghita «Colpisco la guardia alla porta dello studio con la spada lunga» → «Spada lunga 13 contro CA 16» against «guardia del console 1»; the fight takes in both guards (ids `png_guardia_casa_del_sale_1`, `_2`), not Vischi (not hostile); each guard strikes in its step («guardia del console 2: Lancia 13 contro CA 12, riuscita», Ghita 11 → 6) | works |
+| Also seen | the rules arbiter rolled Perception for «Resto vicino al camino» against the scene check about the rope «appesa vicino al camino» (two shared words, «vicino» and «camino»): an absurd card | open, reported |
+
 ## 7. Live runs with manual rolls, SRD 5.2
 
 **Profile A**, `TAGM_PORTA=4895 esegui.ts pressione A --campagna prova-f0 --tiri manuale` (8 turns, $0.018,
@@ -244,7 +256,8 @@ roll at the scene change hidden by default («nascosto»).
   Haiku still calls lifting a cart «impossibile» (§5), with a reason that contradicts its own verdict.
 - ~~**Attacks on creatures without a sheet**~~ (C5): minions with a stat line by type (`gregari`, docs/prove.md §2),
   and an attack in a scene with nobody with stats tells the narrator not to invent the creature
-  (test/gregari.test.ts). No example campaign uses minions yet. ~~An attack on «the goblin» standing for a named NPC
+  (test/gregari.test.ts). ~~No example campaign uses minions yet~~: ponte-lanterne has the consul's two guards at the
+  Casa del Sale, seen live (§6d). ~~An attack on «the goblin» standing for a named NPC
   (Zirrà) without her name still finds nobody~~: it rolls against her when «goblin» is her alias (`alias` of her
   card), and did since C5 (17 November, read back on `logs/porta-4894`: at BF T11 Haiku's attack named an unknown
   target, «sentinella», which the Engine then skipped; C5's re-targeting of an arbiter's attack on an unknown target
@@ -257,7 +270,7 @@ roll at the scene change hidden by default («nascosto»).
   fight opened from the panel; a restart during the wait replays the turn and the requests are asked again.
 - ~~**The Game Master's own rolls** cover the world's gates only~~: world questions written in a scene and NPCs' own
   checks out of combat go through the same path (`domande`, docs/prove.md §9; test/mondo-domande.test.ts; example in
-  torre-mozza). Not yet seen in a live run.
+  torre-mozza). ~~Not yet seen in a live run~~: seen live with the scripted narrator (§6d).
 - ~~**Morale and flight**~~: seen live on torre-mozza (§6b). ~~Initiative by sides is still unit-tested only (no example
   campaign's set uses it)~~: seen live on the invented fixture `bx` (§6c). The told-facts guard added «Zirrà fugge.» after a narration that told the flight with
   «sparisce oltre il crollo»: a duplicate line, open.

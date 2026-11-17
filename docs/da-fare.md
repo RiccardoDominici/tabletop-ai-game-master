@@ -48,7 +48,9 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   - ~~«the goblin» meant for a named NPC (Zirrà) without her name still finds no target (no roll)~~ **Done** (A4): it
     finds her by her alias since C5's re-targeting (the failure was Haiku's attack on an unknown target, skipped
     before C5); pinned by a test. A word that is no alias («la sentinella») still finds nobody;
-  - no example campaign uses minions yet; world questions and minions not yet seen in a live run.
+  - ~~no example campaign uses minions yet; world questions and minions not yet seen in a live run~~ **Done** (A5):
+    ponte-lanterne's Casa del Sale has the consul's two guards as minions; both seen live with the scripted narrator
+    (docs/prove-verifica.md §6d), which also found the rules arbiter rolling Perception for «Resto vicino al camino».
 - **Final end-to-end pass on today's code**: done in profile B (docs/e2e-finale-3.md, 958556a: not ready), and its fix
   pass (§7 there, 16 November), which became the **coherence layer** (docs/coerenza.md: ledger, «Cosa è vero adesso»,
   one checker with named rules, audience split for private actions, presence tags, targeted repair, the panel's

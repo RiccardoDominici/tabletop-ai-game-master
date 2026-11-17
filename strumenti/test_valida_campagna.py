@@ -1691,6 +1691,14 @@ def test_png_ca_fuori_dalla_fascia_del_gs(camp):
     assert "SCHEDA.gs" in errori(camp)
 
 
+def test_png_ca_fino_a_tre_sopra_la_tipica(camp):
+    # The SRD 5.2 Guard: CR 1/8, AC 16 (typical 13 + 3) is in the band; 17 is not.
+    modifica(camp, "png/png_bruno.yaml", lambda d: _scheda_png(d).update(gs="1/8", ca=16))
+    assert "SCHEDA.gs" not in errori(camp)
+    modifica(camp, "png/png_bruno.yaml", lambda d: _scheda_png(d).update(gs="1/8", ca=17))
+    assert "SCHEDA.gs" in errori(camp)
+
+
 def test_png_pf_fuori_dalla_fascia_del_gs(camp):
     modifica(camp, "png/png_irma.yaml", lambda d: _scheda_png(d).__setitem__("pf", 40))
     assert "SCHEDA.gs" in errori(camp)
