@@ -3277,6 +3277,12 @@ export class Regia {
    * What the table heard in the last three turns (normalised sentences, narrator and NPCs), for the word-for-word
    * repetition check of the narration (turni/narrazione.ts, `giàSentite`; third e2e pass, bug 10).
    */
+  /** Every sentence heard at the table in this visit of the scene before this turn (R-ripetuta for catchphrases). */
+  private frasiDellaVisita(turno: number): Set<string> {
+    const ingresso = this.mondo.visita.ingresso;
+    return new Set(this.trascrizione.filter((v) => (v.tipo === 'narrazione' || v.tipo === 'battuta') && v.turno < turno && v.turno >= ingresso).map((v) => frasePerRipetizione(v.testo)));
+  }
+
   private frasiRecenti(turno: number): Set<string> {
     return new Set(this.trascrizione.filter((v) => (v.tipo === 'narrazione' || v.tipo === 'battuta') && v.turno < turno && turno - v.turno <= 3).map((v) => frasePerRipetizione(v.testo)));
   }
@@ -4093,6 +4099,8 @@ export class Regia {
         ...(giudice ? { giudice } : {}),
         ...this.parametroRifiuti(turno),
         giàSentite: this.frasiRecenti(turno),
+        giàSentiteVisita: this.frasiDellaVisita(turno),
+        ticVietati: ticBloccati(this.trascrizione, this.campagna.png),
         lineeDette,
         onViolazione: (v) => this.violazione(v),
         ...(this.o.riparazione ? { ripara: (x: { regola: string; frase: string; motivo: string; sostituto: string }) => this.riparaFrase(turno, x) } : {}),
@@ -4149,6 +4157,8 @@ export class Regia {
           ...this.parametroRifiuti(turno),
           // The repair must not say again what the first answer of this turn already said either.
           giàSentite: this.frasiRecenti(turno),
+          giàSentiteVisita: this.frasiDellaVisita(turno),
+          ticVietati: ticBloccati(this.trascrizione, this.campagna.png),
           detteNelTurno: new Set(this.trascrizione.filter((v) => (v.tipo === 'narrazione' || v.tipo === 'battuta') && v.turno === turno).map((v) => frasePerRipetizione(v.testo))),
           lineeDette,
           onViolazione: (v) => this.violazione(v),

@@ -31,3 +31,17 @@ describe('the checker drops the echo, never the announcement', () => {
     expect(v.verifica({ etichetta: 'narratore', testo: 'Fulco dice: «Il mulino sul fiume ha la ruota rotta da mesi».', voce: '', segmento: 2, attribuita: true }).tipo).toBe('dici');
   });
 });
+
+describe('catchphrases and tics (B3 of the final e2e pass; round 7: «Le pecore non aspettano.» at T2 and T6)', () => {
+  it('a sentence heard in this visit is not said again, even after the three-turn window; an NPC\'s tic just heard neither', () => {
+    const viste: Violazione[] = [];
+    const v = new VerificaTurno(
+      { turno: 6, idPng: new Set(['png_berta']), nomiPg: [], giàSentite: new Set(), giàSentiteVisita: new Set(['le pecore non aspettano']), ticVietati: new Map([['png_berta', ['ride corto']]]) },
+      (x) => viste.push(x),
+    );
+    expect(v.verifica({ etichetta: 'png_berta', testo: 'Le pecore non aspettano.', voce: '', segmento: 1 })).toEqual({ tipo: 'togli' });
+    expect(v.verifica({ etichetta: 'png_berta', testo: 'Berta ride corto e scuote la testa.', voce: '', segmento: 2 })).toEqual({ tipo: 'togli' });
+    expect(v.verifica({ etichetta: 'png_berta', testo: 'Il fieno è bagnato, stanotte.', voce: '', segmento: 3 }).tipo).toBe('dici');
+    expect(viste.map((x) => x.regola)).toEqual(['R-ripetuta', 'R-ripetuta']);
+  });
+});

@@ -21,6 +21,7 @@
  * a prewritten line can contradict the state too. Pure logic around the closures the director builds for the turn.
  */
 import { ecoDi } from './eco';
+import { normalizzaFrase } from '../sceneggiatore/ripetizioni';
 import { ID_NARRATORE } from '../campagna/tipi';
 import type { CorrezioneEsito } from '../narrazione/guardia-esiti';
 import type { EsitoGuardiaSegreti } from '../narrazione/guardia-segreti';
@@ -62,6 +63,14 @@ export interface RegoleTurno {
   guardiaSegreti?: (etichetta: string, testo: string) => EsitoGuardiaSegreti | null;
   rifiutoDopoProva?: (etichetta: string, testo: string) => Array<{ etichetta: string; testo: string }> | null;
   giàSentite?: ReadonlySet<string>;
+  /**
+   * Every sentence heard in this visit of the scene (normalised): a catchphrase said again after the three-turn window
+   * of `giàSentite` is dropped too (round 7: «Le pecore non aspettano.» at T2 and T6; «Ugo batte la pala per terra due
+   * volte.» at T10 and T14). B3 of the final e2e pass: the verbal tics.
+   */
+  giàSentiteVisita?: ReadonlySet<string>;
+  /** An NPC's sheet tics (`voce.tic`) heard in its last lines: a row of that NPC with one of them is dropped. */
+  ticVietati?: ReadonlyMap<string, readonly string[]>;
   /** What this turn's earlier call already said (the repair call of mode B): a repeat of it is dropped, names or not. */
   detteNelTurno?: ReadonlySet<string>;
   /** The PCs' names (normalised as `frasePerRipetizione`): a sentence that names one is never a repetition. */
@@ -233,8 +242,15 @@ export class VerificaTurno {
       const nominaPg = this.r.nomiPg.some((n) => ` ${k} `.includes(` ${n} `));
       // Within the turn a repeat is always redundant; across turns a sentence that names a PC may come back.
       const nelTurno = this.detteOra.has(k) || !!this.r.detteNelTurno?.has(k);
-      if (k.length >= 12 && (nelTurno || (!nominaPg && !!this.r.giàSentite?.has(k)))) {
+      if (k.length >= 12 && (nelTurno || (!nominaPg && (!!this.r.giàSentite?.has(k) || !!this.r.giàSentiteVisita?.has(k))))) {
         this.viola({ regola: 'R-ripetuta', etichetta: e.etichetta, frase: testo, azione: 'tolta' });
+        return { tipo: 'togli' };
+      }
+      // An NPC's own tic, heard in its last lines: not again so soon, whatever line carries it (before, only the
+      // scriptwriter's lines were held to this; prewritten lines repeated it).
+      const tic = this.r.ticVietati?.get(e.etichetta)?.find((x) => ` ${normalizzaFrase(testo)} `.includes(` ${x} `));
+      if (tic) {
+        this.viola({ regola: 'R-ripetuta', etichetta: e.etichetta, frase: testo, azione: 'tolta', dettaglio: { tic } });
         return { tipo: 'togli' };
       }
       this.detteOra.add(k);

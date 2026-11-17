@@ -81,7 +81,9 @@ with an id and its word lists in the language pack:
 acting (built after round 1, below); `R-assente` an NPC not in the scene who speaks or acts; `R-esito` an
 outcome against its card (polarity, target, a fall without a fact); `R-privato` a private fact in a public sentence
 (the audience split makes it a backstop); `R-segreto`; `R-rifiuto`; `R-numeri`; `R-ripetuta` a recent line word for
-word; `R-eco` the player's words restated beyond the announcement (built after round 7, coerenza/eco.ts: a sentence
+word (after round 7 also any sentence heard in this visit of the scene, and an NPC's sheet tic heard in its last two
+lines, whatever line carries it: round 7 repeated «Le pecore non aspettano.» and «Ugo batte la pala per terra due
+volte.»); `R-eco` the player's words restated beyond the announcement (built after round 7, coerenza/eco.ts: a sentence
 that shares at least three content words with one clause of this turn's public actions, and those are at least 60% of
 its own, is dropped; round 7, FB T4: «Nano, la ruota è rotta da mesi.» after «Il mulino sul fiume ha la ruota rotta da
 mesi»; the attributed announcement is exempt); and the end-of-turn `R-dovuto` (a card's fact not told).

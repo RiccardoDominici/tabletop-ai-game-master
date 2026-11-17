@@ -192,6 +192,9 @@ export interface ParametriTurno {
    * pause between uses (repertorio/stato.ts).
    */
   giàSentite?: ReadonlySet<string>;
+  /** Every sentence heard in this visit of the scene (R-ripetuta for catchphrases) and the NPCs' tics just heard. */
+  giàSentiteVisita?: ReadonlySet<string>;
+  ticVietati?: ReadonlyMap<string, readonly string[]>;
   /** What this turn's first call already said (for its repair call): repeated word for word, it is dropped. */
   detteNelTurno?: ReadonlySet<string>;
   /** Every violation the checker caught, with its rule (coerenza/verifica.ts): the director logs and counts it. */
@@ -331,6 +334,8 @@ export async function narraTurno(
       ...(p.guardiaSegreti ? { guardiaSegreti: p.guardiaSegreti } : {}),
       ...(p.rifiutoDopoProva ? { rifiutoDopoProva: p.rifiutoDopoProva } : {}),
       ...(p.giàSentite ? { giàSentite: p.giàSentite } : {}),
+      ...(p.giàSentiteVisita ? { giàSentiteVisita: p.giàSentiteVisita } : {}),
+      ...(p.ticVietati ? { ticVietati: p.ticVietati } : {}),
       ...(p.detteNelTurno ? { detteNelTurno: p.detteNelTurno } : {}),
       ...(p.lineeDette ? { lineeDette: p.lineeDette } : {}),
       // R-eco: this turn's public actions, the language's function words (coerenza/eco.ts).
