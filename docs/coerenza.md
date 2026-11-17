@@ -81,9 +81,15 @@ with an id and its word lists in the language pack:
 acting (built after round 1, below); `R-assente` an NPC not in the scene who speaks or acts; `R-esito` an
 outcome against its card (polarity, target, a fall without a fact); `R-privato` a private fact in a public sentence
 (the audience split makes it a backstop); `R-segreto`; `R-rifiuto`; `R-numeri`; `R-ripetuta` a recent line word for
-word (after round 7 also any sentence heard in this visit of the scene, and an NPC's sheet tic heard in its last two
-lines, whatever line carries it: round 7 repeated «Le pecore non aspettano.» and «Ugo batte la pala per terra due
-volte.»); `R-eco` the player's words restated beyond the announcement (built after round 7, coerenza/eco.ts: a sentence
+word (after round 7, A30, `coerenza/ripetute.ts`: any sentence heard in this visit of the scene, the same words or the
+same gesture with a tail, i.e. one opens with all the words of the other, five or more; and an NPC's sheet tic heard in
+its last two lines, a tic that quotes its words being those words. It judges the rows of the lines that come out too,
+prepared, scriptwriter's or the Engine's: round 7 in profile A repeated «Ugo batte la pala per terra due volte.»
+through two different lines. A line's repeated sentence is left out of its row and the rest is said; a line is never
+emptied, if nothing would be left it is said whole, since its effects come with its words. Dry run on the sixteen
+profile-A games of rounds 4–7, 190 lines: it drops exactly the two round-7 repeats, nothing else, and empties no line.
+A tic said by a narrator row about the NPC is not caught: tics are matched on the NPC's own rows, as the
+scriptwriter's validator does); `R-eco` the player's words restated beyond the announcement (built after round 7, coerenza/eco.ts: a sentence
 that shares at least three content words with one clause of this turn's public actions, and those are at least 60% of
 its own, is dropped; round 7, FB T4: «Nano, la ruota è rotta da mesi.» after «Il mulino sul fiume ha la ruota rotta da
 mesi»; the attributed announcement is exempt); and the end-of-turn `R-dovuto` (a card's fact not told).

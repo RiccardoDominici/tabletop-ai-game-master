@@ -21,12 +21,13 @@
  * a prewritten line can contradict the state too. Pure logic around the closures the director builds for the turn.
  */
 import { ecoDi } from './eco';
+import { frasePerRipetizione, LUNGHEZZA_MINIMA, ripete } from './ripetute';
+import { dividiTesto } from '../narrazione/frasi';
 import { normalizzaFrase } from '../sceneggiatore/ripetizioni';
 import { ID_NARRATORE } from '../campagna/tipi';
 import type { CorrezioneEsito } from '../narrazione/guardia-esiti';
 import type { EsitoGuardiaSegreti } from '../narrazione/guardia-segreti';
 import { togliNumeriRegole } from '../narrazione/numeri-regole';
-import { normalizza } from '../azioni/regole';
 
 export type IdRegola = 'R-numeri' | 'R-esito' | 'R-fuori' | 'R-inesistente' | 'R-assente' | 'R-finzione' | 'R-privato' | 'R-segreto' | 'R-rifiuto' | 'R-ripetuta' | 'R-eco' | 'R-dovuto';
 export const REGOLE: readonly IdRegola[] = ['R-numeri', 'R-esito', 'R-fuori', 'R-inesistente', 'R-assente', 'R-finzione', 'R-privato', 'R-segreto', 'R-rifiuto', 'R-ripetuta', 'R-eco', 'R-dovuto'];
@@ -117,9 +118,7 @@ export type Decisione =
   | { tipo: 'sostituisci'; righe: Array<{ etichetta: string; testo: string }> };
 
 /** A sentence as the word-for-word repetition check compares it: lower case, no accents, no punctuation. */
-export function frasePerRipetizione(t: string): string {
-  return normalizza(t).replace(/[^\p{L}\p{N} ]+/gu, ' ').replace(/\s+/g, ' ').trim();
-}
+export { frasePerRipetizione };
 
 const REGOLA_DI_MOTIVO: Record<NonNullable<CorrezioneEsito>['motivo'], IdRegola> = {
   colpo_contrario: 'R-esito',
@@ -242,7 +241,7 @@ export class VerificaTurno {
       const nominaPg = this.r.nomiPg.some((n) => ` ${k} `.includes(` ${n} `));
       // Within the turn a repeat is always redundant; across turns a sentence that names a PC may come back.
       const nelTurno = this.detteOra.has(k) || !!this.r.detteNelTurno?.has(k);
-      if (k.length >= 12 && (nelTurno || (!nominaPg && (!!this.r.giàSentite?.has(k) || !!this.r.giàSentiteVisita?.has(k))))) {
+      if (k.length >= LUNGHEZZA_MINIMA && (nelTurno || (!nominaPg && !!(ripete(k, this.r.giàSentite) ?? ripete(k, this.r.giàSentiteVisita))))) {
         this.viola({ regola: 'R-ripetuta', etichetta: e.etichetta, frase: testo, azione: 'tolta' });
         return { tipo: 'togli' };
       }
@@ -275,6 +274,45 @@ export class VerificaTurno {
    * rows. A prewritten line was written for a state that may not hold any more. Returns the text to say (the Engine's
    * line instead of the row), '' to drop the row, or null when the row stays as written.
    */
+  /**
+   * R-ripetuta on a line's rows (prepared, scriptwriter's, or the Engine's own): a sentence heard in this visit or in
+   * this call (`ripete`: the same words, or the same gesture with a tail), or one with a tic of the row's NPC heard in
+   * its last lines, is left out of its row, and a row left empty goes. Round 7 in profile A repeated «Ugo batte la pala
+   * per terra due volte.» through two different lines, which this rule did not see (it judged improvised sentences
+   * only). A line is never emptied by it: if nothing would be left, the line is said whole, since its effects come with
+   * its words. A row whose text changed is flagged `ridotta` (its prerecorded audio no longer matches).
+   */
+  righeDellaBattuta<R extends { etichetta: string; testo: string }>(battuta: string, righe: readonly R[]): Array<R & { ridotta?: true }> {
+    if (!this.r.giàSentite && !this.r.giàSentiteVisita && !this.r.detteNelTurno && !this.r.ticVietati) return [...righe];
+    const tolte: Array<{ etichetta: string; frase: string; tic?: string }> = [];
+    const chiavi: string[] = [];
+    const nuove: Array<R & { ridotta?: true }> = [];
+    for (const r of righe) {
+      const frasi = dividiTesto(r.testo);
+      const tenute = frasi.filter((f) => {
+        const k = frasePerRipetizione(f);
+        const nominaPg = this.r.nomiPg.some((n) => ` ${k} `.includes(` ${n} `));
+        const giàDetta = ripete(k, this.detteOra) ?? ripete(k, this.r.detteNelTurno) ?? (nominaPg ? null : (ripete(k, this.r.giàSentite) ?? ripete(k, this.r.giàSentiteVisita)));
+        const tic = this.r.ticVietati?.get(r.etichetta)?.find((x) => ` ${normalizzaFrase(f)} `.includes(` ${x} `));
+        if (giàDetta || tic) {
+          tolte.push({ etichetta: r.etichetta, frase: f, ...(tic ? { tic } : {}) });
+          return false;
+        }
+        chiavi.push(k);
+        return true;
+      });
+      if (!tenute.length) continue;
+      nuove.push(tenute.length === frasi.length ? r : { ...r, testo: tenute.join(' '), ridotta: true });
+    }
+    if (!tolte.length || !nuove.length) {
+      for (const r of righe) for (const f of dividiTesto(r.testo)) this.detteOra.add(frasePerRipetizione(f));
+      return [...righe];
+    }
+    for (const t of tolte) this.viola({ regola: 'R-ripetuta', etichetta: t.etichetta, frase: t.frase, azione: 'tolta', battuta, ...(t.tic ? { dettaglio: { tic: t.tic } } : {}) });
+    for (const k of chiavi) this.detteOra.add(k);
+    return nuove;
+  }
+
   verificaBattuta(battuta: string, riga: { etichetta: string; testo: string }): string | null {
     if (riga.etichetta !== ID_NARRATORE || !this.r.correggiEsito) return null;
     const c = this.r.correggiEsito(riga.testo, { prescritta: true });

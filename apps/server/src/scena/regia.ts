@@ -92,7 +92,8 @@ import { provaFallita } from '../repertorio/condizioni';
 import { righeMenzogneDette } from '../repertorio/menzogne';
 import { segretiDelMotore, segretiNelTesto, type ParolaSegreta, type StatoPubblico } from '../repertorio/segreti';
 import { CacheAudio, chiaveAudio, testoPerVoce } from '../voce/cache-audio';
-import { frasePerRipetizione, voceDi } from '../turni/narrazione';
+import { voceDi } from '../turni/narrazione';
+import { chiaviRipetizione, giàSentita } from '../coerenza/ripetute';
 import { PipelineVoce, type UscitaAudio } from '../voce/pipeline';
 import { direzionePredefinita } from '../voce/espressione';
 import type { Pronunciatore } from '../voce/pronuncia';
@@ -3280,11 +3281,12 @@ export class Regia {
   /** Every sentence heard at the table in this visit of the scene before this turn (R-ripetuta for catchphrases). */
   private frasiDellaVisita(turno: number): Set<string> {
     const ingresso = this.mondo.visita.ingresso;
-    return new Set(this.trascrizione.filter((v) => (v.tipo === 'narrazione' || v.tipo === 'battuta') && v.turno < turno && v.turno >= ingresso).map((v) => frasePerRipetizione(v.testo)));
+    return new Set(this.trascrizione.filter((v) => (v.tipo === 'narrazione' || v.tipo === 'battuta') && v.turno < turno && v.turno >= ingresso).flatMap((v) => chiaviRipetizione(v.testo)));
   }
 
   private frasiRecenti(turno: number): Set<string> {
-    return new Set(this.trascrizione.filter((v) => (v.tipo === 'narrazione' || v.tipo === 'battuta') && v.turno < turno && turno - v.turno <= 3).map((v) => frasePerRipetizione(v.testo)));
+    // Per sentence: a transcript row of a line may hold two (coerenza/ripetute.ts).
+    return new Set(this.trascrizione.filter((v) => (v.tipo === 'narrazione' || v.tipo === 'battuta') && v.turno < turno && turno - v.turno <= 3).flatMap((v) => chiaviRipetizione(v.testo)));
   }
 
   /** How many turns back a private action or outcome still counts for the privacy guard (the message shows 12 outcomes). */
@@ -3575,7 +3577,7 @@ export class Regia {
       .filter((x): x is Record<string, unknown> => !!x && x['noto_ai_pg'] === true && typeof x['nome'] === 'string')
       .map((x) => x['nome'] as string);
     const frase = luoghi.length ? testoFisso('coerenza.strade', { luoghi: luoghi.join('; ') }) : testoFisso('coerenza.strade_nessuna');
-    if (this.frasiRecenti(turno).has(frasePerRipetizione(frase))) {
+    if (giàSentita(frase, this.frasiRecenti(turno))) {
       log.info({ turno, dove }, 'coherence: the real roads were said in the last turns, not again');
       return;
     }
@@ -4166,7 +4168,7 @@ export class Regia {
           giàSentite: this.frasiRecenti(turno),
           giàSentiteVisita: this.frasiDellaVisita(turno),
           ticVietati: ticBloccati(this.trascrizione, this.campagna.png),
-          detteNelTurno: new Set(this.trascrizione.filter((v) => (v.tipo === 'narrazione' || v.tipo === 'battuta') && v.turno === turno).map((v) => frasePerRipetizione(v.testo))),
+          detteNelTurno: new Set(this.trascrizione.filter((v) => (v.tipo === 'narrazione' || v.tipo === 'battuta') && v.turno === turno).flatMap((v) => chiaviRipetizione(v.testo))),
           lineeDette,
           onViolazione: (v) => this.violazione(v),
           presenti: this.pngInScena(),
@@ -4230,7 +4232,7 @@ export class Regia {
     // With the yes/no judge, R-inesistente is only its fallback: its added line belongs to the rules alone.
     if (!giudice && ines && ines.pubbliche.length && !ines.detta && !controllo.signal.aborted) {
       // At most once in three turns: round 2 said the same line in almost every turn after the fight.
-      if (this.frasiRecenti(turno).has(frasePerRipetizione(ines.frase))) log.info({ turno, parole: ines.pubbliche.map((a) => a.parola) }, 'coherence: who is really there was said in the last turns, not again');
+      if (giàSentita(ines.frase, this.frasiRecenti(turno))) log.info({ turno, parole: ines.pubbliche.map((a) => a.parola) }, 'coherence: who is really there was said in the last turns, not again');
       else this.diciChiCeDavvero(turno, esito, ines, log);
     }
 
@@ -4745,7 +4747,7 @@ export class Regia {
     const righe = pg.flatMap((id) => {
       const t = conferme.get(id);
       if (!t) return [];
-      const riga = recenti.has(frasePerRipetizione(t)) ? testoFisso('coerenza.risposta.tentativo', { chi: nomeBreve(this.nomePg(id)) }) : t;
+      const riga = giàSentita(t, recenti) ? testoFisso('coerenza.risposta.tentativo', { chi: nomeBreve(this.nomePg(id)) }) : t;
       return [{ id, etichetta: ID_NARRATORE, testo: riga, testo_voce: this.pronuncia(riga) }];
     });
     if (!righe.length) return [];

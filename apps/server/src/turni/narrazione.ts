@@ -544,10 +544,12 @@ export async function narraTurno(
           continue;
         }
         // A prewritten line can contradict the state too (docs/coerenza.md §3): its narrator rows go through the fact rules.
+        // R-ripetuta first (a sentence heard in this visit, a tic just heard: docs/coerenza.md), then the fact rules.
         const righe: RigaPronta[] = esito.privato
           ? esito.righe
-          : esito.righe.flatMap((r): RigaPronta[] => {
+          : verifica.righeDellaBattuta(e.id, esito.righe).flatMap((r): RigaPronta[] => {
               const v = verifica.verificaBattuta(e.id, r);
+              if (v === null && r.ridotta) return [{ ...r, testo_voce: p.pronuncia(r.testo), chiave_cache: '' }];
               if (v === null) return [r];
               if (v === '') return [];
               // The Engine's line: no prerecorded audio for it (an empty key is no cache).

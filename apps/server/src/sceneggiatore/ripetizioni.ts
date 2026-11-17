@@ -24,10 +24,21 @@ export function normalizzaFrase(s: string): string {
     .trim();
 }
 
-/** I tic della scheda di un PNG (`voce.tic`), normalizzati. */
+/**
+ * The tics of an NPC's sheet (`voce.tic`), normalised. A tic that quotes its words («Le pecore non aspettano.» per
+ * chiudere un discorso) is those words when they are two or more: the description around them is never said as such,
+ * so it never matched a line (round 7 heard Berta's catchphrase twice).
+ */
 export function ticDi(p: PngCaricato): string[] {
   const t = (p.dati['voce'] as { tic?: unknown } | undefined)?.tic;
-  return (Array.isArray(t) ? t : typeof t === 'string' ? [t] : []).filter((x): x is string => typeof x === 'string').map(normalizzaFrase).filter((x) => x.length > 3);
+  return (Array.isArray(t) ? t : typeof t === 'string' ? [t] : [])
+    .filter((x): x is string => typeof x === 'string')
+    .map((x) => {
+      const citate = /[«“"]([^»”"]+)[»”"]/u.exec(x)?.[1];
+      const parole = citate ? normalizzaFrase(citate) : '';
+      return parole.split(' ').length >= 2 ? parole : normalizzaFrase(x);
+    })
+    .filter((x) => x.length > 3);
 }
 
 /** I PNG il cui tic è uscito nelle loro ultime RIGHE_TRA_I_TIC righe: id → tic da non ripetere. */

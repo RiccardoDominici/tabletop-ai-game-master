@@ -96,7 +96,8 @@ The same rules as the prepared repertoire, plus those for whoever writes on the 
   lines it has written recently (the last 6 replies, 10 minutes), which the table may not yet have heard: two replies of
   the same turn go out together, and the second knows what the first one wrote. It also carries the tics that came out in
   the last two lines of each NPC: a line that repeats a tic too soon is rejected, because the narrator's rule applies, at
-  most one tic every three lines;
+  most one tic every three lines (a tic that quotes its words, «Le pecore non aspettano.» per chiudere un discorso, is
+  those words; the coherence checker holds every line that comes out to the same rule, docs/coerenza.md);
 - **voice**: at most 4 lines of 240 characters.
 
 The lines that pass enter the live repertoire **immediately**, and from there into the catalog of the following turns,
