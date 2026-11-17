@@ -164,6 +164,8 @@ prove:
     prima_png: "NPCs first"
     png_non_agisce: "{nome}'s turn: is {condizione}, does not act."
     turno_png: "{nome}'s turn: {frase} Details: {dettagli}"
+    # Simultaneous ties (combattimento.iniziativa.pari: simultanei): the NPC strikes at the same moment it is dropped.
+    turno_png_insieme: "{nome}'s turn, at the same moment they fall (tied initiative): {frase} Details: {dettagli}"
     morte_venti: "natural twenty: regains consciousness with 1 hit point"
     morte_senza_soccorso: "Nobody is standing to help them: the death saves decide now."
     morte_morto: "failures {n} of {n}: DEAD"

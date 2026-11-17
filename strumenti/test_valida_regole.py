@@ -318,6 +318,7 @@ def _combattimento(cartella: Path, rompi) -> None:
         (lambda c: c["iniziativa"].update(dado=7), "iniziativa.dado"),
         (lambda c: c["iniziativa"].update(caratteristica="fede"), "iniziativa.caratteristica"),
         (lambda c: c["iniziativa"].update(ogni_round="sempre"), "iniziativa.ogni_round"),
+        (lambda c: c["iniziativa"].update(pari="a caso"), "iniziativa.pari"),
         (lambda c: c.update(fasi=[]), "fasi: almeno una"),
         (lambda c: c["fasi"][0].update(id="Movimento"), "fasi[1]: serve un id"),
         (lambda c: c["fasi"][1].update(png="magia_nera"), "fasi.proiettili.png"),
@@ -334,7 +335,7 @@ def _combattimento(cartella: Path, rompi) -> None:
         (lambda c: c.update(sorpresa={"dado": 6, "fino_a": 6, "condizione": "prono"}), "sorpresa.fino_a"),
         (lambda c: c.update(sorpresa={"dado": 6, "fino_a": 2, "condizione": "sorpresissimo"}), "sorpresa.condizione"),
     ],
-    ids=["tipo", "dado", "caratteristica", "ogni-round", "fasi-vuote", "fase-id", "fase-png", "modello",
+    ids=["tipo", "dado", "caratteristica", "ogni-round", "pari", "fasi-vuote", "fase-id", "fase-png", "modello",
          "a-zero-pg", "a-zero-png", "tiri-morte", "tiri-morte-venti", "effetto-chiuso", "condizione-doppia", "a-zero-condizione", "morale",
          "sorpresa-dado", "sorpresa-fino-a", "sorpresa-condizione"],
 )

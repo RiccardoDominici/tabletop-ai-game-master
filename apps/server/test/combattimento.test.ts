@@ -153,6 +153,56 @@ describe('combattimento SRD 5.2', () => {
   });
 });
 
+// A17 of docs/da-fare.md: Basic Fantasy p. 51, «Any characters/monsters with equal numbers act simultaneously».
+describe('simultaneous initiative ties (iniziativa.pari: simultanei)', () => {
+  const simultanei = (): Combattimento => ({ ...combattimentoSrd(), iniziativa: { ...combattimentoSrd().iniziativa, pari: 'simultanei' } });
+  const cand = [{ id: 'pg_a', lato: 'pg' as const, mod: 2 }, { id: 'png_x', lato: 'png' as const, mod: 0 }];
+
+  it('a tied NPC the PC drops still strikes at that same moment; with the fixed order it does not', () => {
+    // Initiative: a 10+2, x 12+0: both 12. a acts first (the PCs' step of the tie), drops x.
+    const { g, stato, attacchi } = scontro(simultanei(), { pg_a: 10, png_x: 5 }, [10, 12], () => 3);
+    g.inizia(cand, [], null);
+    expect(g.turnoDi()).toEqual(['pg_a']);
+    stato.danneggia('png_x', 5);
+    const r = g.dopoAzioni({ turno: 2, attacchi: [{ chi: 'pg_a', bersaglio: 'png_x' }], autori: ['pg_a'], candidati: () => cand });
+    expect(attacchi).toEqual([{ png: 'png_x', pg: 'pg_a', fase: 'turno' }]);
+    expect(r.fatti.join(' ')).toMatch(/Turno di x, nello stesso istante in cui cade \(iniziativa pari\): png_x colpisce pg_a: 3 danni/);
+    expect(stato.puntiFerita('pg_a')).toEqual({ attuali: 7, massimi: 10 });
+    expect(r.finito).toBeTruthy();
+    // The fixed order (the set says nothing): the higher modifier goes first, and a fallen NPC does not strike.
+    const fisso = scontro(combattimentoSrd(), { pg_a: 10, png_x: 5 }, [10, 12], () => 3);
+    fisso.g.inizia(cand, [], null);
+    expect(fisso.g.turnoDi()).toEqual(['pg_a']);
+    fisso.stato.danneggia('png_x', 5);
+    fisso.g.dopoAzioni({ turno: 2, attacchi: [{ chi: 'pg_a', bersaglio: 'png_x' }], autori: ['pg_a'], candidati: () => cand });
+    expect(fisso.attacchi).toEqual([]);
+  });
+
+  it('the modifier does not break a tie; tied PCs share one window; an NPC dropped by an earlier number does not strike', () => {
+    const tre = [{ id: 'pg_a', lato: 'pg' as const, mod: 0 }, { id: 'pg_b', lato: 'pg' as const, mod: 0 }, { id: 'png_x', lato: 'png' as const, mod: 3 }];
+    // a 9, b 9, x 6+3 = 9: one PC step (a and b), then x's step at the same number.
+    const { g } = scontro(simultanei(), { pg_a: 10, pg_b: 10, png_x: 5 }, [9, 9, 6], () => 1);
+    expect(g.inizia(tre, [], null)).toBe('Inizia il combattimento. Iniziativa: a 9, b 9, x 9.');
+    expect(g.turnoDi()).toEqual(['pg_a', 'pg_b']);
+    // Not tied: a 15 drops x (8+0); x's own step comes later: no strike.
+    const due = [{ id: 'pg_a', lato: 'pg' as const, mod: 0 }, { id: 'png_x', lato: 'png' as const, mod: 0 }];
+    const n = scontro(simultanei(), { pg_a: 10, png_x: 5 }, [15, 8], () => 1);
+    n.g.inizia(due, [], null);
+    n.stato.danneggia('png_x', 5);
+    n.g.dopoAzioni({ turno: 2, attacchi: [{ chi: 'pg_a', bersaglio: 'png_x' }], autori: ['pg_a'], candidati: () => due });
+    expect(n.attacchi).toEqual([]);
+  });
+
+  it('the set: pari is ordine or simultanei', () => {
+    const errori: string[] = [];
+    expect(leggiCombattimento({ iniziativa: { pari: 'simultanei' } }, combattimentoSrd(), new Set(['destrezza']), errori).iniziativa.pari).toBe('simultanei');
+    expect(leggiCombattimento({ iniziativa: { pari: 'ordine' } }, combattimentoSrd(), new Set(['destrezza']), errori).iniziativa.pari).toBeUndefined();
+    expect(errori).toEqual([]);
+    leggiCombattimento({ iniziativa: { pari: 'a caso' } }, combattimentoSrd(), new Set(['destrezza']), errori);
+    expect(errori.join(' ')).toMatch(/iniziativa\.pari: ordine o simultanei/);
+  });
+});
+
 describe('combattimento alla B/X e alla PbtA', () => {
   const bx = caricaRegole(path.join(FIX, 'bx')).sistema.combattimento;
 

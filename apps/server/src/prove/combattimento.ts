@@ -202,7 +202,7 @@ export class GestoreCombattimento {
       aggressore: null,
     }));
     if (r.iniziativa.tipo === 'individuale') {
-      GestoreCombattimento.ordina(partecipanti);
+      GestoreCombattimento.ordina(partecipanti, r.iniziativa.pari === 'simultanei');
       this.ordineTirato = partecipanti.map((p) => p.nome);
     }
     this.s = { round: 1, indice: 0, partecipanti, primo: 'pg', passi: [], moraleControllato: [], ultimoPg: null };
@@ -259,9 +259,14 @@ export class GestoreCombattimento {
     return candidati.find((c) => c.id === id)?.lato ?? null;
   }
 
-  /** Iniziativa individuale: dal più alto; pari: modificatore più alto, poi i PG, poi l'id (deterministico). */
-  private static ordina(partecipanti: Partecipante[]): void {
-    partecipanti.sort((a, b) => b.iniziativa! - a.iniziativa! || b.mod - a.mod || (a.lato === b.lato ? 0 : a.lato === 'pg' ? -1 : 1) || a.id.localeCompare(b.id));
+  /**
+   * Iniziativa individuale: dal più alto; pari: modificatore più alto, poi i PG, poi l'id (deterministico). With
+   * simultaneous ties (`pari: simultanei`) the modifier does not break them: the tied PCs come first, then the tied
+   * NPCs, who act at that same moment (costruisciPassi, dopoAzioni).
+   */
+  private static ordina(partecipanti: Partecipante[], simultanei = false): void {
+    const lato = (a: Partecipante, b: Partecipante): number => (a.lato === b.lato ? 0 : a.lato === 'pg' ? -1 : 1);
+    partecipanti.sort((a, b) => b.iniziativa! - a.iniziativa! || (simultanei ? 0 : b.mod - a.mod) || lato(a, b) || a.id.localeCompare(b.id));
   }
 
   /**
@@ -272,7 +277,7 @@ export class GestoreCombattimento {
     const s = this.s!;
     const dadi = this.d.dadi();
     for (const p of s.partecipanti) p.iniziativa = p.esito === 'morto' || p.esito === 'fuggito' ? p.iniziativa : this.dadiIniziativa(p.id, p.lato, p.mod, dadi).tira(this.d.regole.iniziativa.dado) + p.mod;
-    GestoreCombattimento.ordina(s.partecipanti);
+    GestoreCombattimento.ordina(s.partecipanti, this.d.regole.iniziativa.pari === 'simultanei');
     const vivi = s.partecipanti.filter((p) => p.esito !== 'morto' && p.esito !== 'fuggito');
     this.ordineTirato = vivi.map((p) => p.nome);
     this.d.log.info({ round: s.round, ordine: vivi.map((p) => ({ id: p.id, iniziativa: p.iniziativa })) }, 'combattimento: iniziativa ritirata');
@@ -309,7 +314,13 @@ export class GestoreCombattimento {
     if (r.iniziativa.tipo === 'nessuna') return out;
     for (const fase of r.fasi) {
       if (r.iniziativa.tipo === 'individuale') {
-        for (const p of vivi) out.push({ fase, lato: p.lato, attori: [p.id] });
+        // Simultaneous ties: the tied combatants of one side share a step (the tied PCs' window opens for all of them).
+        for (const p of vivi) {
+          const ultimo = out.at(-1);
+          const insieme = r.iniziativa.pari === 'simultanei' && ultimo && ultimo.fase === fase && ultimo.lato === p.lato && this.part(ultimo.attori[0]!)?.iniziativa === p.iniziativa;
+          if (insieme) ultimo.attori.push(p.id);
+          else out.push({ fase, lato: p.lato, attori: [p.id] });
+        }
       } else {
         for (const lato of s.primo === 'pg' ? (['pg', 'png'] as const) : (['png', 'pg'] as const)) {
           const attori = vivi.filter((p) => p.lato === lato).map((p) => p.id);
@@ -383,6 +394,10 @@ export class GestoreCombattimento {
       if (b && this.part(a.chi)?.lato === 'pg') b.aggressore = a.chi;
     }
     if (o.autori.length) s.ultimoPg = o.autori.at(-1)!;
+    // Simultaneous ties (`pari: simultanei`): the NPCs with the same number as the PC step just played act at that same
+    // moment, so one the PCs dropped in this turn still strikes in its tied step (Basic Fantasy p. 51). Read before the
+    // fall is recorded; nothing new is saved, the numbers are the participants'.
+    const insieme = this.pariDelPassoGiocato(o.attacchi, appenaIniziato);
     for (const p of s.partecipanti) this.controllaZero(p, fatti);
     if (!this.aTurni) {
       // Senza iniziativa niente turni: solo la fine dello scontro.
@@ -394,14 +409,16 @@ export class GestoreCombattimento {
     // next window used to skip an NPC first in the order (A3 of docs/da-fare.md).
     if (!appenaIniziato && s.passi[s.indice]?.lato !== 'png') this.avanza(fatti);
     for (let guardia = 0; guardia < 60 && this.s; guardia++) {
-      if (this.controllaFine(fatti, { turno: o.turno, tiri })) break;
       const p = this.s.passi[this.s.indice];
+      // A tied NPC dropped at this same moment strikes before the fight can end with its fall.
+      if (!(insieme.size && p?.lato === 'png') && this.controllaFine(fatti, { turno: o.turno, tiri })) break;
       if (!p) {
         this.avanza(fatti);
         continue;
       }
       if (p.lato === 'png') {
-        for (const id of p.attori) this.turnoPng(id, p.fase, o.turno, fatti, tiri);
+        for (const id of p.attori) this.turnoPng(id, p.fase, o.turno, fatti, tiri, insieme.has(id));
+        insieme.clear();
         this.avanza(fatti);
         continue;
       }
@@ -426,11 +443,32 @@ export class GestoreCombattimento {
     return { fatti, tiri, intestazione: this.intestazione(), invitati: invitati && invitati.length ? invitati : null, finito: null, morte, fuggiti, ...ordine };
   }
 
-  /** Il PNG agisce da solo nella sua fase: attacca (se la fase lo prevede) il bersaglio scelto. */
-  private turnoPng(id: string, fase: Fase, turno: number, fatti: string[], tiri: TiroMostrato[]): void {
+  /**
+   * The NPCs that act at the same moment as the PC step about to be consumed (simultaneous ties): those with its
+   * initiative number, in the step right after it, that this turn's attacks dropped. Empty with the fixed order.
+   */
+  private pariDelPassoGiocato(attacchi: ReadonlyArray<{ chi: string; bersaglio: string }>, appenaIniziato: boolean): Set<string> {
+    const s = this.s!;
+    const passo = s.passi[s.indice];
+    const dopo = s.passi[s.indice + 1];
+    if (this.d.regole.iniziativa.pari !== 'simultanei' || appenaIniziato || passo?.lato !== 'pg' || dopo?.lato !== 'png' || dopo.fase !== passo.fase) return new Set();
+    const numero = this.part(passo.attori[0]!)?.iniziativa;
+    const colpiti = new Set(attacchi.filter((a) => passo.attori.includes(a.chi)).map((a) => a.bersaglio));
+    return new Set(dopo.attori.filter((id) => {
+      const p = this.part(id);
+      return !!p && p.iniziativa === numero && p.esito === 'in_gioco' && colpiti.has(id) && this.d.stato.aTerra(id);
+    }));
+  }
+
+  /**
+   * Il PNG agisce da solo nella sua fase: attacca (se la fase lo prevede) il bersaglio scelto. `insieme`: it acts at
+   * the same moment as the PCs who dropped it (simultaneous ties), so its fall does not stop this one blow.
+   */
+  private turnoPng(id: string, fase: Fase, turno: number, fatti: string[], tiri: TiroMostrato[], insieme = false): void {
     const p = this.part(id);
-    if (!p || p.esito !== 'in_gioco' || this.d.stato.aTerra(id)) return;
-    const perde = this.haEffetto(id, 'perde_turno');
+    if (!p || (!insieme && (p.esito !== 'in_gioco' || this.d.stato.aTerra(id)))) return;
+    // Falling at this same moment, the condition at zero («Privo di sensi») does not stop the one blow; any other does.
+    const perde = insieme ? (p.condizioni.filter((c) => c.id !== this.d.regole.condizioneAZero).map((c) => this.cond(c.id)).find((c) => c?.effetti.includes('perde_turno'))?.nome ?? null) : this.haEffetto(id, 'perde_turno');
     if (perde) {
       fatti.push(testo('prove.combattimento.png_non_agisce', { nome: p.nome, condizione: perde.toLowerCase() }));
       return;
@@ -441,7 +479,8 @@ export class GestoreCombattimento {
     const r = this.d.attacca(id, bersaglio, fase, turno);
     if (!r) return;
     tiri.push(r.t);
-    fatti.push(testo('prove.combattimento.turno_png', { nome: p.nome, frase: fraseAttaccoPng(r.t), dettagli: r.testo }));
+    fatti.push(testo(insieme ? 'prove.combattimento.turno_png_insieme' : 'prove.combattimento.turno_png', { nome: p.nome, frase: fraseAttaccoPng(r.t), dettagli: r.testo }));
+    if (insieme) this.d.log.info({ png: id, bersaglio, iniziativa: p.iniziativa }, 'combat: a tied NPC strikes at the same moment it falls');
     const b = this.part(bersaglio);
     if (b) this.controllaZero(b, fatti);
   }

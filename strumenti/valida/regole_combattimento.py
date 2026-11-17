@@ -47,6 +47,11 @@ def _iniziativa(ini: dict, car: set[str], e: Esito, dove: str) -> None:
         _err(e, dove, f"iniziativa.caratteristica «{car_ini}» non è del set")
     if ini.get("ogni_round") is not None and not isinstance(ini["ogni_round"], bool):
         _err(e, dove, "iniziativa.ogni_round: true o false")
+    # Ties of individual initiative: the fixed order (default) or at the same moment (Basic Fantasy p. 51).
+    if ini.get("pari") is not None and ini["pari"] not in ("ordine", "simultanei"):
+        _err(e, dove, "iniziativa.pari: ordine o simultanei")
+    elif ini.get("pari") == "simultanei" and ini.get("tipo", "individuale") != "individuale":
+        e.avviso("REGOLE.combattimento", dove, "iniziativa.pari: simultanei vale solo con l'iniziativa individuale (per schieramento i pari si ritirano)")
 
 
 def _fasi(fasi, e: Esito, dove: str) -> None:

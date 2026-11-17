@@ -30,7 +30,8 @@ Ironsworn's «in controllo» (in control) is approximated with `nessuna` (see §
 
 ```yaml
 combattimento:
-  iniziativa: {tipo: individuale | per_schieramento | nessuna, dado: 20, caratteristica: destrezza, ogni_round: false}
+  iniziativa: {tipo: individuale | per_schieramento | nessuna, dado: 20, caratteristica: destrezza, ogni_round: false,
+               pari: ordine | simultanei}   # ties: fixed order (default) or at the same moment (Basic Fantasy)
   fasi:                         # in order; png = what the NPCs do on their own in that phase
     - {id: movimento, nome: "Movimento", png: null}
     - {id: proiettili, nome: "Proiettili", png: attacco_distanza}
@@ -76,6 +77,12 @@ combattimento:
      surprised creature has disadvantage on initiative, a judgement the Engine cannot make without a model): a set
      without `sorpresa` rolls none.
 2. **Steps**: a round is phases × order (individual), or phases × sides (per side).
+   - **Ties** (individual): by default the Engine breaks them with a fixed order (higher modifier, then the PCs, then
+     the id). A set with `iniziativa.pari: simultanei` (Basic Fantasy p. 51: equal numbers act simultaneously; A17, 17
+     November) does not use the modifier: the tied PCs share one step (one window for all of them), the tied NPCs act
+     in the step right after, at the same moment, and an NPC the tied PCs dropped in that turn still makes its blow
+     («Turno di Zirrà, nello stesso istante in cui cade (iniziativa pari): …», `prove.combattimento.turno_png_insieme`).
+     Nothing new is saved: the tie is read from the participants' numbers. Test: test/combattimento.test.ts.
    - **PC step**: the window opens **only for that PC**, or for their whole side. The Engine ignores the narrator's
      invitation. The others may write, but their action stays queued (`TavoloAzioni.rinvia`) and is resolved on their
      turn. No timer: the fast pace applies only if the scene asks for it.

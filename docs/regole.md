@@ -120,6 +120,9 @@ combattimento:                              # optional: without it, the full SRD
     caratteristica: destrezza               # [V] existing, or null
     ogni_round: false                       # boolean: rolled again each round (B/X by side, Basic Fantasy
                                             #   individual: 1d6 + Dexterity for each, new order from the next round)
+    pari: ordine | simultanei               # [V] individual only: ties in the fixed order (default: higher modifier,
+                                            #   then the PCs) or at the same moment (Basic Fantasy p. 51): tied PCs share one
+                                            #   window, tied NPCs act right after them, and one they dropped still strikes
   fasi:                                     # [V] at least one; snake_case ids
     - {id: mischia, nome: "Mischia", png: attacco_mischia}   # [V] png: attacco | attacco_distanza | attacco_mischia | null
   azioni: [{id, nome, quante}]              # economy of the turn (text)

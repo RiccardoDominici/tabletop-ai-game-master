@@ -226,7 +226,8 @@ here only the order.
      always hits (`attacchi[].automatico: true` on the sheet); natural 20/1 on a d20 (`risoluzione.critico`,
      `disastro`, `critici: attacchi | attacchi_e_salvezze | tutti`, the saving throws marked `abilita[].salvezza: true`), critical and minimum damage (`attacchi.danno_critico`, `danno_minimo`); the death-save
      extras of the SRD only if the manual has them (`tiri_morte.venti_rialza`, `uno_doppio`); initiative re-rolled
-     every round (`ogni_round`). The SRD values apply where the set says nothing.
+     every round (`ogni_round`), ties acting at the same moment (`pari: simultanei`, when the manual says equal
+     numbers act together). The SRD values apply where the set says nothing.
    - **Keywords** (`parole_chiave`, the `parole` of scene checks and of excerpts with `per:`): specific words, not
      places, body parts or common objects («porta», «passaggio», «spalla»), which the validator refuses.
 3. Write `campagne/<id>/regole/`: `regole.yaml` (with `fonte.titolo`, `licenza` and the section `combattimento:`,

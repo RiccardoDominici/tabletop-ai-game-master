@@ -177,6 +177,8 @@ prove:
     prima_png: "prima i PNG"
     png_non_agisce: "Turno di {nome}: è {condizione}, non agisce."
     turno_png: "Turno di {nome}: {frase} Dettagli: {dettagli}"
+    # Simultaneous ties (combattimento.iniziativa.pari: simultanei): the NPC strikes at the same moment it is dropped.
+    turno_png_insieme: "Turno di {nome}, nello stesso istante in cui cade (iniziativa pari): {frase} Dettagli: {dettagli}"
     morte_venti: "venti naturale: torna in sé con 1 punto ferita"
     morte_senza_soccorso: "Nessuno è in piedi per soccorrerli: i tiri contro la morte decidono adesso."
     morte_morto: "fallimenti {n} su {n}: è MORTO"

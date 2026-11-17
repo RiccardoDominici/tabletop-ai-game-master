@@ -54,6 +54,12 @@ export interface Combattimento {
     caratteristica: string | null;
     /** Si ritira a ogni round (B/X); altrimenti resta fissa. */
     ogniRound: boolean;
+    /**
+     * Individual initiative: combatants with the same number act at the same moment (Basic Fantasy p. 51: «Any
+     * characters/monsters with equal numbers act simultaneously»). Absent = the Engine breaks ties with a fixed order
+     * (higher modifier, then the PCs, then the id), as the SRD has it.
+     */
+    pari?: 'simultanei';
   };
   /** Fasi del round, in ordine. Con l'iniziativa individuale di solito una sola: «turno». */
   fasi: Fase[];
@@ -177,6 +183,10 @@ export function leggiCombattimento(v: unknown, base: Combattimento, caratteristi
       else out.iniziativa.caratteristica = car;
     }
     if (typeof ini['ogni_round'] === 'boolean') out.iniziativa.ogniRound = ini['ogni_round'];
+    // Ties: `simultanei` (act at the same moment) or `ordine` (the fixed order, the default).
+    if (ini['pari'] === 'simultanei') out.iniziativa.pari = 'simultanei';
+    else if (ini['pari'] === 'ordine') delete out.iniziativa.pari;
+    else if (ini['pari'] !== undefined) errori.push('combattimento.iniziativa.pari: ordine o simultanei');
   }
   if (Array.isArray(d['fasi'])) {
     const fasi: Fase[] = [];
