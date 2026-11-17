@@ -9,7 +9,9 @@ and this page must be updated. The items to implement in the Engine are in `docs
 <!-- limite: azioni_private -->
 ## Private actions are answered only by lines with the gate
 A line without `richiede.privata: true` answers only public actions. A private action (written from the phone as private)
-is answered only by lines with `privata: true`, and for the rest the narrator improvises.
+is answered only by lines with `privata: true`; for the rest a live narrator answers it in a private reply, and with the
+local reader the Engine sends a discreet line to that phone only (the roll's outcome if there was one, else «Lo fai in
+disparte. Per ora non succede altro.»): never silence, never aloud, but never content either.
 - **What to do**: for each thing a PC will probably do in private (speak to an NPC alone, search secretly, read a
   letter), write a line with `privata: true`; an important piece of information that can arrive both in public and in
   private has two lines, or one with `oppure` (repertorio.md §4).

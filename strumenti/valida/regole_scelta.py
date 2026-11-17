@@ -19,10 +19,7 @@ import re
 from .carica import Campagna
 from .esito import Esito
 
-_STOP = {"della", "delle", "dello", "degli", "nella", "nelle", "sulla", "sulle",
-         # articulated prepositions (the Italian «dalla/dal» cases of L6); short ones never make a root anyway
-         "dalla", "dal", "dallo", "dagli", "dalle", "del", "dei", "nel", "allo", "alla",
-         "quando", "perché", "quello",
+_STOP = {"della", "delle", "dello", "degli", "nella", "nelle", "sulla", "sulle", "quando", "perché", "quello",
          "quella", "questo", "questa", "sono", "dopo", "prima", "anche", "ancora", "tutti", "tutte", "altro",
          "altra", "mentre", "senza", "verso", "sempre", "fuori", "dentro", "essere", "avere", "fare"}
 

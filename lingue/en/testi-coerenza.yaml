@@ -41,6 +41,8 @@ coerenza:
     bersaglio_via: "{chi} tries, but {bersaglio} is no longer here."
     impossibile: "{chi} tries, but it cannot be done that way."
     tentativo: "{chi} tries."
+    # A private action nothing answered (A20): the Engine's discreet answer, only on that phone (no card to tell).
+    privata: "You do it apart from the others. For now nothing else happens."
   # R-inesistente (coerenza/inesistenti.ts): who is really there, when the players name a creature the scene does not have.
   inesistente:
     e: "and"

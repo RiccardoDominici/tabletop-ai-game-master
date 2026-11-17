@@ -128,7 +128,10 @@ Lines as today, plus a new one:
 - **Gates on the action** (`richiede.privata`, `richiede.da_pg`): the Engine puts a line in the catalog only if the turn
   contains an action it can answer (private for `privata: true`, from the listed PCs for `da_pg`), and accepts
   `[usa] <id> > <pg>` only toward that action. Lines without a gate answer only public actions: a private action
-  receives no generic lines.
+  receives no generic lines. A private action that nothing answered on its phone in its turn (no private line, no
+  private reply, no scriptwriter's line yet) gets the Engine's discreet answer there and only there: the card's outcome
+  if it rolled («Livia ci riesce.»), else the pack's `coerenza.risposta.privata` («Lo fai in disparte. Per ora non
+  succede altro.»); counted as `risposte_private_motore` in turni.jsonl (A20).
 - The effects are applied by the Engine; the `[orologio]` line is no longer needed for signs written in the repertoire.
 - In the public transcript goes the text of the line that came out (it is public by now).
 - **Selector context**: in repertoire mode the secrets leave Haiku's context (truth of the lies, `segreto`, canon facts

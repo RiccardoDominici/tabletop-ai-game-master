@@ -4056,11 +4056,11 @@ export class Regia {
     const correggiEsito = conGiudice?.correggiEsito ?? (this.prove?.attivo ? this.guardiaDegliEsiti(tiri?.tiri ?? [], tiri?.combattimento ?? null, inesistenti, true) : null);
     // The turn order just rolled (the fight starts, a new round): the Engine says it at the table (bug 6, third e2e pass).
     const ordine = tiri?.combattimento?.ordine ?? [];
-    // The Engine's acknowledgement of each public action, from its card and the ledger: said only if the checker drops
-    // that action's answer (coerenza/risposta.ts).
+    // The Engine's acknowledgement of each action, from its card and the ledger: for a public action said only if the
+    // checker drops its answer; for a private one, on its phone, if nothing else answered it (coerenza/risposta.ts, A20).
     const conferme = new Map(
       r.azioni
-        .filter((a) => !a.privata && !!a.testo && !fuoriAllaChiusura.has(a.autore))
+        .filter((a) => !!a.testo && !fuoriAllaChiusura.has(a.autore))
         .map((a) => {
           const e = tiri?.perAzione.get(a.id);
           const carte = (e?.tiri ?? []).filter((t) => t.chi === a.autore && !t.di_png && !t.del_master);
@@ -4311,6 +4311,8 @@ export class Regia {
     // The private replies of this turn end before the next window opens (their lines are on the phones already).
     if (private_.length) await Promise.allSettled(private_);
     if (epoca !== this.epoca) return;
+    // A private action nothing answered on its phone gets the Engine's discreet answer there, never silence nor aloud.
+    const privateRisposteMotore = !controllo.signal.aborted ? this.rispondiPrivateSenzaRisposta(turno, azioni, conferme, log) : [];
 
     // Orologi: il narratore propone, il Motore controlla (un segno per orologio, al massimo due
     // orologi per risposta, il ritmo massimo di ciascuno). In modalità repertorio i segni sono
@@ -4401,6 +4403,7 @@ export class Regia {
       riparazioni,
       // Of those, the actions whose answer the checker dropped and the Engine acknowledged (coerenza/risposta.ts).
       conferme_motore: confermate.length,
+      risposte_private_motore: privateRisposteMotore.length,
       // Il primo segno aggiunto dal Motore (come prima) e tutti quelli del turno (uno per orologio dovuto).
       segno_aggiunto: segniAggiunti[0] ?? null,
       segni_aggiunti: segniAggiunti,
@@ -4789,6 +4792,31 @@ export class Regia {
     log.info({ turno, righe: righe.map((r) => ({ id_pg: r.id, testo: r.testo })), prima_dell_invito: primaDellInvito }, 'coherence: an action\'s answer was dropped, the Engine acknowledges it');
     this.notifica();
     return righe.map((r) => r.id);
+  }
+
+  /**
+   * A20 (docs/repertorio.md, «Gates on the action»): a private action that got nothing on its phone in this turn (no
+   * private line, no private reply, no scriptwriter's line yet) gets the Engine's discreet answer there and only there:
+   * the card's outcome when the action rolled («Livia ci riesce.»), else a neutral line of the language pack. Before,
+   * the local reader's table left such an action in silence (only `privata: true` lines answer a private action).
+   * Returns the PCs answered.
+   */
+  private rispondiPrivateSenzaRisposta(turno: number, azioni: ReadonlyArray<{ id_pg: string; testo: string | null; privata?: boolean; sospesa?: boolean }>, conferme: ReadonlyMap<string, string>, log: Logger): string[] {
+    const fatte: string[] = [];
+    const tentativo = (id: string): string => testoFisso('coerenza.risposta.tentativo', { chi: nomeBreve(this.nomePg(id)) });
+    for (const a of azioni) {
+      if (!a.privata || !a.testo || a.sospesa || fatte.includes(a.id_pg)) continue;
+      if (this.privati.some((p) => p.turno === turno && p.id_pg === a.id_pg)) continue;
+      const carta = conferme.get(a.id_pg);
+      const testo = carta && carta !== tentativo(a.id_pg) ? carta : testoFisso('coerenza.risposta.privata');
+      this.frasePrivata(turno, { etichetta: ID_NARRATORE, nome: nomeNarratore(), testo, segmento: 90_000 + fatte.length, id_pg: a.id_pg });
+      fatte.push(a.id_pg);
+    }
+    if (fatte.length) {
+      this.o.registroNarrazioni.scrivi({ sessione: this.sessione, turno, tipo: 'risposta_privata_motore', id_pg: fatte });
+      log.info({ turno, id_pg: fatte }, 'coherence: a private action nothing answered gets the Engine\'s discreet answer on its phone');
+    }
+    return fatte;
   }
 
   /** Testo di un fatto del canone (per i fatti scoperti). */

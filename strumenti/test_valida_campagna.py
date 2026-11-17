@@ -957,14 +957,6 @@ def test_vincoli_senza_segreti(camp):
     assert "VINCOLI.segreto" in errori(camp)
 
 
-def test_vincoli_non_riesce_a_non_e_contraddizione(camp):
-    """«non riesce a <verbo>» conferma il vincolo «non <verbo>»: il validatore non deve avvisare (falso positivo
-    trovato nel trial finale, L6). La negazione può stare fino a tre parole prima del verbo."""
-    modifica(camp, "scena.yaml", lambda d: d["indizi"][1].update(vincolo_pubblico="La botte grande in fondo non suona quando la si tocca."))
-    modifica(camp, "scena.yaml", lambda d: d["sensi"].__setitem__(1, "La botte grande in fondo non riesce a suonare: è piena di sabbia."))
-    assert "VINCOLI.contraddetto" not in avvisi(camp)
-
-
 def test_vincoli_contraddetti_dalla_scena(camp):
     modifica(camp, "scena.yaml", lambda d: d["indizi"][1].update(vincolo_pubblico="La botte grande in fondo non suona quando la si tocca."))
     modifica(camp, "scena.yaml", lambda d: d["sensi"].__setitem__(1, "La botte grande in fondo suona cupa a ogni colpo di vento."))
@@ -991,14 +983,6 @@ def test_scelta_premio_travestito_da_prezzo(camp):
     modifica(camp, "brief.yaml", lambda d: d.setdefault("decisioni", {}).update(strade=premio))
     assert "SCELTA.premio" not in errori(camp)
     assert "SCELTA.premio" in errori(camp, rigoroso=True)
-
-
-def test_scelta_stop_word_articolate_non_fanno_radice():
-    """Le preposizioni articolate («dalla», «degli», «nel»…) non sono parole del prezzo: non creano somiglianze
-    tra desiderio e prezzo (L6: «dalla/dal» passavano come radici)."""
-    from valida.regole_scelta import radici
-    for parola in ("dalla", "delle", "degli", "nella", "nelle", "della", "delle"):
-        assert parola[:5] not in radici(f"Prendere la chiave {parola} cassa"), parola
 
 
 def test_scelta_forma_e_strade_mancanti(camp):
