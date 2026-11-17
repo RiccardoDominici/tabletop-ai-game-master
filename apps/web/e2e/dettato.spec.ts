@@ -81,15 +81,16 @@ test('dictation: hold the microphone, the transcript lands in the box with the n
   await expect(tel.getByTestId('testo-azione')).toHaveValue('', { timeout: 15_000 }).catch(() => undefined);
 
   if (TOKEN) {
-    // The turn to its answer: the Game Master closes the window, the answer reaches the phone's transcript.
-    const prima = await tel.getByTestId('trascrizione').innerText();
+    // The turn to its answer: the Game Master closes the window, and a narration or NPC row that is not the player's
+    // own action nor its announcement («Nome dice: «…»») reaches the phone's transcript.
+    const risposte = tel.locator('[data-testid="trascrizione"] :is([data-tipo="battuta"], [data-tipo="narrazione"])').filter({ hasNotText: /\s(dice|says):\s«/ });
+    const prima = await risposte.count();
     const master = await (await browser.newContext()).newPage();
     await master.goto(`/master?token=${TOKEN}`);
     await expect(master.getByTestId('master-chiudi-finestra')).toBeEnabled({ timeout: 30_000 });
     await master.getByTestId('master-chiudi-finestra').click();
-    await expect.poll(async () => (await tel.getByTestId('trascrizione').innerText()).length - prima.length, { timeout: 120_000 }).toBeGreaterThan(40);
-    const dopo = await tel.getByTestId('trascrizione').innerText();
-    console.log(`answer: ${dopo.startsWith(prima) ? dopo.slice(prima.length).trim() : dopo}`);
+    await expect.poll(() => risposte.count(), { timeout: 120_000 }).toBeGreaterThan(prima);
+    console.log(`answer: ${(await risposte.allInnerTexts()).slice(prima).join(' | ')}`);
     await tel.screenshot({ path: `${SCREENSHOT}/dettato-risposta.png` });
   }
   expect(errori).toEqual([]);
