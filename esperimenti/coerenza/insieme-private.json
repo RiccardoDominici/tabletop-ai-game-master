@@ -1,0 +1,1580 @@
+{
+ "nota": "Replay set of the private replies (docs/coerenza.md, A7). Raw private replies; ledger rebuilt from registro events.",
+ "campagna": "torre-mozza",
+ "chiamate": 10,
+ "segnate": 6,
+ "insieme": [
+  {
+   "id": "coerenza3-torre-mozza-combattimento-B-automatico#1-p-pg_nespola",
+   "run": "coerenza3-torre-mozza-combattimento-B-automatico",
+   "turno": 1,
+   "scena": "scena_ovile",
+   "scontro": false,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [],
+   "carte": [],
+   "azioni": [
+    {
+     "id_pg": "pg_livia",
+     "testo": "Berta, la torre è quella sopra il bosco? Ci andiamo adesso, prima di mezzanotte.",
+     "privata": false
+    },
+    {
+     "id_pg": "pg_nespola",
+     "testo": "Ugo, a parte, a bassa voce: «Tonio è vivo? Dimmi la verità, cmq non dico niente.»",
+     "privata": true
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Ugo non alza lo sguardo dalla pala.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 1,
+     "etichetta": "narratore",
+     "testo": "Mentre parla, il suo mulo sbuffa e gli muove il fianco, e lui ti dice piano: «Vivo. Per ora. Chiedi a lei dove dorme il ragazzo.»",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 2,
+     "etichetta": "narratore",
+     "testo": "Non si sbottona di più, e tu capisci che non lo farà senza una ragione.",
+     "segnata": false,
+     "menzioni": []
+    }
+   ],
+   "storia": {
+    "carte": [],
+    "fughe": []
+   }
+  },
+  {
+   "id": "coerenza3-torre-mozza-combattimento-B-automatico#2-p-pg_eliandro",
+   "run": "coerenza3-torre-mozza-combattimento-B-automatico",
+   "turno": 2,
+   "scena": "scena_ovile",
+   "scontro": false,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [],
+   "carte": [],
+   "azioni": [
+    {
+     "id_pg": "pg_eliandro",
+     "testo": "Berta, a bassa voce: «Chi a Spinalba sa scrivere così bene le lettere comuni?»",
+     "privata": true
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Berta si ferma con la chiave in pugno.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 1,
+     "etichetta": "narratore",
+     "testo": "Fa una risposta breve, a voce bassa, senza guardare il cortile: il lessico preciso dei conti e la grafia ordinata appartengono alla moglie del vecchio castellano, che vive a Valdirame.",
+     "segnata": false,
+     "menzioni": []
+    }
+   ],
+   "storia": {
+    "carte": [],
+    "fughe": []
+   }
+  },
+  {
+   "id": "coerenza3-torre-mozza-combattimento-B-manuale#1-p-pg_nespola",
+   "run": "coerenza3-torre-mozza-combattimento-B-manuale",
+   "turno": 1,
+   "scena": "scena_ovile",
+   "scontro": false,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [],
+   "carte": [],
+   "azioni": [
+    {
+     "id_pg": "pg_livia",
+     "testo": "Berta, la torre è quella sopra il bosco? Ci andiamo adesso, prima di mezzanotte.",
+     "privata": false
+    },
+    {
+     "id_pg": "pg_nespola",
+     "testo": "Ugo, a parte, a bassa voce: «Tonio è vivo? Dimmi la verità, cmq non dico niente.»",
+     "privata": true
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Ugo ti guarda di traverso e non risponde.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 1,
+     "etichetta": "narratore",
+     "testo": "Sputa a terra, poi abbassa la voce di un tono e dice soltanto: «Il ragazzo respira ancora, se è questo che vuoi sapere. Ma non qui.»",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 2,
+     "etichetta": "narratore",
+     "testo": "Non ti dice altro, e nel suo sguardo non c'è la menzogna che cercavi.",
+     "segnata": false,
+     "menzioni": []
+    }
+   ],
+   "storia": {
+    "carte": [],
+    "fughe": []
+   }
+  },
+  {
+   "id": "coerenza3-torre-mozza-combattimento-B-manuale#2-p-pg_eliandro",
+   "run": "coerenza3-torre-mozza-combattimento-B-manuale",
+   "turno": 2,
+   "scena": "scena_ovile",
+   "scontro": false,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [],
+   "carte": [],
+   "azioni": [
+    {
+     "id_pg": "pg_eliandro",
+     "testo": "Berta, a bassa voce: «Chi a Spinalba sa scrivere così bene le lettere comuni?»",
+     "privata": true
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Berta ti guarda a lungo prima di rispondere, poi abbassa la voce fino a farla quasi sparire.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 1,
+     "etichetta": "narratore",
+     "testo": "Dice che la lettera gliel'ha insegnata il prete di valle, e che di scritture belle a Spinalba non ce n'è più da anni.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 2,
+     "etichetta": "narratore",
+     "testo": "Eliandro, Berta ha visto la tua domanda.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 3,
+     "etichetta": "narratore",
+     "testo": "Che fai adesso?",
+     "segnata": false,
+     "menzioni": []
+    }
+   ],
+   "storia": {
+    "carte": [],
+    "fughe": []
+   }
+  },
+  {
+   "id": "coerenza3-torre-mozza-combattimento-B-manuale#17-p-pg_livia",
+   "run": "coerenza3-torre-mozza-combattimento-B-manuale",
+   "turno": 17,
+   "scena": "scena_torre",
+   "scontro": true,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "fuggito",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "morto",
+     "presenza": "in_scena",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [],
+   "carte": [],
+   "azioni": [
+    {
+     "id_pg": "pg_livia",
+     "testo": "Piano al goblin, con la punta della spada: «Parla, e ti lascio andare. Dov'è il ragazzo?»",
+     "privata": true
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Livia abbassa la punta della spada fino a sfiorare il selciato, senza staccare gli occhi dal goblin.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 1,
+     "etichetta": "narratore",
+     "testo": "Il goblin ti guarda con gli occhi gialli e poi lancia un'occhiata verso la porta di ferro.",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 2,
+     "etichetta": "narratore",
+     "testo": "Tra un respiro e l'altro sussurra: «Il ragazzo è giù, dietro la porta. La chiave l'ha Grosso.»",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_grosso"
+     ]
+    },
+    {
+     "i": 3,
+     "etichetta": "png_zirra",
+     "testo": "Ti sa tutto, la pastora: chiedi a lei, scudo bianco.",
+     "segnata": true,
+     "menzioni": [
+      "assente:png_berta",
+      "nome:pastora",
+      "parla:png_zirra"
+     ]
+    }
+   ],
+   "storia": {
+    "carte": [
+     {
+      "turno": 6,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 7,
+      "chi": "pg_livia",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 8,
+      "chi": "pg_nespola",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 9,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     }
+    ],
+    "fughe": [
+     {
+      "turno": 9,
+      "id": "png_grosso"
+     }
+    ]
+   }
+  },
+  {
+   "id": "coerenza3-torre-mozza-combattimento-B-manuale#18-p-pg_eliandro",
+   "run": "coerenza3-torre-mozza-combattimento-B-manuale",
+   "turno": 18,
+   "scena": "scena_torre",
+   "scontro": true,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "fuggito",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "morto",
+     "presenza": "in_scena",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [],
+   "carte": [],
+   "azioni": [
+    {
+     "id_pg": "pg_eliandro",
+     "testo": "Anch'io gli parlo, piano: «Chi vi dà ordini? Dimmelo e scappa.»",
+     "privata": true
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Il tuo «chi vi dà ordini?» scivola sulla pietra e si perde nel fruscio del fuoco.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 1,
+     "etichetta": "narratore",
+     "testo": "Tonio ti guarda, ma la sua bocca resta chiusa: non ha fiato per rispondere a voce così bassa.",
+     "segnata": false,
+     "menzioni": []
+    }
+   ],
+   "storia": {
+    "carte": [
+     {
+      "turno": 6,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 7,
+      "chi": "pg_livia",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 8,
+      "chi": "pg_nespola",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 9,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_zirra"
+     }
+    ],
+    "fughe": [
+     {
+      "turno": 9,
+      "id": "png_grosso"
+     }
+    ]
+   }
+  },
+  {
+   "id": "fumo-torre-mozza-combattimento-B-manuale#1-p-pg_nespola",
+   "run": "fumo-torre-mozza-combattimento-B-manuale",
+   "turno": 1,
+   "scena": "scena_ovile",
+   "scontro": false,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [],
+   "carte": [],
+   "azioni": [
+    {
+     "id_pg": "pg_livia",
+     "testo": "Berta, la torre è quella sopra il bosco? Ci andiamo adesso, prima di mezzanotte.",
+     "privata": false
+    },
+    {
+     "id_pg": "pg_nespola",
+     "testo": "Ugo, a parte, a bassa voce: «Tonio è vivo? Dimmi la verità, cmq non dico niente.»",
+     "privata": true
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Ugo ti guarda a lungo, poi abbassa la voce: Tonio è vivo, legato in cima alla torre, ma non per molto.",
+     "segnata": false,
+     "menzioni": []
+    }
+   ],
+   "storia": {
+    "carte": [],
+    "fughe": []
+   }
+  },
+  {
+   "id": "fumo-torre-mozza-combattimento-B-manuale#2-p-pg_eliandro",
+   "run": "fumo-torre-mozza-combattimento-B-manuale",
+   "turno": 2,
+   "scena": "scena_ovile",
+   "scontro": false,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [],
+   "carte": [],
+   "azioni": [
+    {
+     "id_pg": "pg_eliandro",
+     "testo": "Berta, a bassa voce: «Chi a Spinalba sa scrivere così bene le lettere comuni?»",
+     "privata": true
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Berta non risponde subito.",
+     "segnata": false,
+     "menzioni": []
+    },
+    {
+     "i": 1,
+     "etichetta": "narratore",
+     "testo": "Stringe la chiave al collo e guarda la porta del fienile, poi dice piano: «Le lettere le scriveva mio padre, nel registro dell'ovile. Chiedilo al paese, non a me.»",
+     "segnata": false,
+     "menzioni": []
+    }
+   ],
+   "storia": {
+    "carte": [],
+    "fughe": []
+   }
+  },
+  {
+   "id": "fumo-torre-mozza-combattimento-B-manuale#17-p-pg_livia",
+   "run": "fumo-torre-mozza-combattimento-B-manuale",
+   "turno": 17,
+   "scena": "scena_torre",
+   "scontro": true,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "morto",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "morto",
+     "presenza": "in_scena",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [],
+   "carte": [],
+   "azioni": [
+    {
+     "id_pg": "pg_livia",
+     "testo": "Piano al goblin, con la punta della spada: «Parla, e ti lascio andare. Dov'è il ragazzo?»",
+     "privata": true
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Il goblin ti guarda negli occhi, poi abbassa la voce: «Il ragazzo è in cantina, dietro la porta di ferro. Lo tengono per la chiave dei Benni.»",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 1,
+     "etichetta": "narratore",
+     "testo": "Non mente.",
+     "segnata": false,
+     "menzioni": []
+    }
+   ],
+   "storia": {
+    "carte": [
+     {
+      "turno": 6,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 7,
+      "chi": "pg_nespola",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 8,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 9,
+      "chi": "pg_livia",
+      "bersaglio": "png_grosso"
+     }
+    ],
+    "fughe": []
+   }
+  },
+  {
+   "id": "fumo-torre-mozza-combattimento-B-manuale#18-p-pg_eliandro",
+   "run": "fumo-torre-mozza-combattimento-B-manuale",
+   "turno": 18,
+   "scena": "scena_torre",
+   "scontro": true,
+   "entita": [
+    {
+     "id": "pg_livia",
+     "tipo": "pg",
+     "nome": "Livia Sarti",
+     "nomi": [
+      "Livia Sarti",
+      "Livia"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_fulco",
+     "tipo": "pg",
+     "nome": "Fulco Granito",
+     "nomi": [
+      "Fulco Granito",
+      "Fulco"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_nespola",
+     "tipo": "pg",
+     "nome": "Nespola Tondi",
+     "nomi": [
+      "Nespola Tondi",
+      "Nespola"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "pg_eliandro",
+     "tipo": "pg",
+     "nome": "Eliandro",
+     "nomi": [
+      "Eliandro",
+      "Eliandro"
+     ],
+     "stato": "in_piedi",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_berta",
+     "tipo": "png",
+     "nome": "Berta Benni",
+     "nomi": [
+      "berta benni",
+      "berta",
+      "pastora",
+      "vedova"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_grosso",
+     "tipo": "png",
+     "nome": "Grosso",
+     "nomi": [
+      "grosso",
+      "hobgoblin",
+      "guardaspalle"
+     ],
+     "stato": "morto",
+     "presenza": "in_scena",
+     "uscito": null
+    },
+    {
+     "id": "png_ugo",
+     "tipo": "png",
+     "nome": "Ugo Faggioli",
+     "nomi": [
+      "ugo faggioli",
+      "ugo",
+      "carbonaio"
+     ],
+     "stato": "in_piedi",
+     "presenza": "altrove",
+     "uscito": null
+    },
+    {
+     "id": "png_zirra",
+     "tipo": "png",
+     "nome": "Zirrà",
+     "nomi": [
+      "zirra",
+      "goblin",
+      "goblina",
+      "capobanda",
+      "guerriera"
+     ],
+     "stato": "morto",
+     "presenza": "in_scena",
+     "uscito": null
+    }
+   ],
+   "fuoriOra": [],
+   "carte": [],
+   "azioni": [
+    {
+     "id_pg": "pg_eliandro",
+     "testo": "Anch'io gli parlo, piano: «Chi vi dà ordini? Dimmelo e scappa.»",
+     "privata": true
+    }
+   ],
+   "frasi": [
+    {
+     "i": 0,
+     "etichetta": "narratore",
+     "testo": "Il goblin sotto il piede ti fissa per un lungo istante, poi sputa e ringhia una risposta spezzata: «Nessuno... dà ordini. Solo... chi paga. Chi paga è dentro.»",
+     "segnata": true,
+     "menzioni": [
+      "fuori:png_zirra",
+      "nome:goblin"
+     ]
+    },
+    {
+     "i": 1,
+     "etichetta": "narratore",
+     "testo": "Stringe i denti, e non dice altro.",
+     "segnata": false,
+     "menzioni": []
+    }
+   ],
+   "storia": {
+    "carte": [
+     {
+      "turno": 6,
+      "chi": "pg_livia",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 7,
+      "chi": "pg_nespola",
+      "bersaglio": "png_zirra"
+     },
+     {
+      "turno": 8,
+      "chi": "pg_eliandro",
+      "bersaglio": "png_grosso"
+     },
+     {
+      "turno": 9,
+      "chi": "pg_livia",
+      "bersaglio": "png_grosso"
+     }
+    ],
+    "fughe": []
+   }
+  }
+ ]
+}

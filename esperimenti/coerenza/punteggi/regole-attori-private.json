@@ -1,0 +1,14 @@
+{
+ "variante": "regole-attori",
+ "violazioni": 7,
+ "prese": 6,
+ "mancate": [
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#17-p-pg_livia:2",
+   "testo": "Tra un respiro e l'altro sussurra: «Il ragazzo è giù, dietro la porta. La chiave l'ha Grosso.»",
+   "perche": "the same goblin whispers (carried subject)"
+  }
+ ],
+ "toccatePulite": [],
+ "ms": 4
+}

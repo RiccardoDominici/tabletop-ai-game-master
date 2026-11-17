@@ -1,0 +1,46 @@
+{
+ "nota": "Labels of the private replies replay set (A7), by hand on the flagged sentences; the same rule as etichette.json. Two unflagged sentences carry the out-of-play goblin as subject and are labelled too.",
+ "regola": "violation = an entity out of play since before this turn, absent from the scene, or nobody in play (an invented creature) acts, speaks, perceives, is hit or is said present; or a told outcome against the card. clean = a state or a body, an absence, this turn's own fall or flight, a PC acting on a body, a place named after a creature, talk about creatures elsewhere.",
+ "etichette": {
+  "coerenza3-torre-mozza-combattimento-B-manuale#17-p-pg_livia:0": {
+   "etichetta": "clean",
+   "perche": "the PC looks at the goblin: nobody out of play acts",
+   "testo": "Livia abbassa la punta della spada fino a sfiorare il selciato, senza staccare gli occhi dal goblin."
+  },
+  "coerenza3-torre-mozza-combattimento-B-manuale#17-p-pg_livia:1": {
+   "etichetta": "violation",
+   "perche": "the goblin nobody in play answers to looks and glances at the door",
+   "testo": "Il goblin ti guarda con gli occhi gialli e poi lancia un'occhiata verso la porta di ferro."
+  },
+  "coerenza3-torre-mozza-combattimento-B-manuale#17-p-pg_livia:2": {
+   "etichetta": "violation",
+   "perche": "the same goblin whispers (carried subject)",
+   "testo": "Tra un respiro e l'altro sussurra: «Il ragazzo è giù, dietro la porta. La chiave l'ha Grosso.»"
+  },
+  "coerenza3-torre-mozza-combattimento-B-manuale#17-p-pg_livia:3": {
+   "etichetta": "violation",
+   "perche": "the same goblin goes on speaking",
+   "testo": "Ti sa tutto, la pastora: chiedi a lei, scudo bianco."
+  },
+  "fumo-torre-mozza-combattimento-B-manuale#17-p-pg_livia:0": {
+   "etichetta": "violation",
+   "perche": "the goblin out of play looks and speaks",
+   "testo": "Il goblin ti guarda negli occhi, poi abbassa la voce: «Il ragazzo è in cantina, dietro la porta di ferro. Lo tengono per la chiave dei Benni.»"
+  },
+  "fumo-torre-mozza-combattimento-B-manuale#18-p-pg_eliandro:0": {
+   "etichetta": "violation",
+   "perche": "the goblin out of play stares, spits and growls an answer",
+   "testo": "Il goblin sotto il piede ti fissa per un lungo istante, poi sputa e ringhia una risposta spezzata: «Nessuno... dà ordini. Solo... chi paga. Chi paga è dentro.»"
+  },
+  "fumo-torre-mozza-combattimento-B-manuale#17-p-pg_livia:1": {
+   "etichetta": "violation",
+   "perche": "carried subject: the goblin out of play «does not lie» (it spoke)",
+   "testo": "Non mente."
+  },
+  "fumo-torre-mozza-combattimento-B-manuale#18-p-pg_eliandro:1": {
+   "etichetta": "violation",
+   "perche": "carried subject: the goblin out of play clenches its teeth",
+   "testo": "Stringe i denti, e non dice altro."
+  }
+ }
+}

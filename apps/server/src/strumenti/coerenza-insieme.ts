@@ -9,10 +9,12 @@
  *
  *   npx tsx apps/server/src/strumenti/coerenza-insieme.ts <campaign folder> <run folder>… > esperimenti/coerenza/insieme.json
  *   npx tsx apps/server/src/strumenti/coerenza-insieme.ts --tutte <campaign folder> <run folder>…   (every call: a dry run of a rule)
+ *   npx tsx apps/server/src/strumenti/coerenza-insieme.ts --private --tutte <campaign folder> <run folder>…   (the private
+ *     replies, from their raw text `tipo: risposta_privata`: esperimenti/coerenza/insieme-private.json, A7)
  *
  * Limits, said in the output too: the ledger is rebuilt from the change events (a state never changed is standing; the
- * presence is the scene's `png_presenti`, then the presence events of the visit); the private replies' raw text is not in the logs (only the
- * public answer is); presence events logged in a turn are taken as before that turn's narration.
+ * presence is the scene's `png_presenti`, then the presence events of the visit); the private replies are a set of
+ * their own (`--private`, from round 3 on, when their raw text started to be logged); presence events logged in a turn are taken as before that turn's narration.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -88,7 +90,10 @@ function main(): void {
   const uscite = argomenti.includes('--uscite');
   // `--tutte`: every call, flagged or not (a dry run of a new rule over all the raw answers; not a set to label).
   const tutte = argomenti.includes('--tutte');
-  const [cartellaCampagna, ...runs] = argomenti.filter((a) => a !== '--uscite' && a !== '--tutte');
+  // `--private`: the private replies (audience split) instead of the public answers, from their raw text logged as
+  // `tipo: risposta_privata` in narrazioni.jsonl (A7: the private replies had no replay set of their own).
+  const private_ = argomenti.includes('--private');
+  const [cartellaCampagna, ...runs] = argomenti.filter((a) => a !== '--uscite' && a !== '--tutte' && a !== '--private');
   if (!cartellaCampagna || !runs.length) {
     process.stderr.write('usage: coerenza-insieme.ts <campaign folder> <run folder>…\n');
     process.exit(2);
@@ -184,15 +189,22 @@ function main(): void {
       const fuoriOra = eventi.filter((e) => e['tipo'] === 'stato' && Number(e['turno']) === turno && !IN_GIOCO.has(e['a'] as StatoEntita)).map((e) => String(e['id']));
       const contesto = contestoMenzioni(registro, tipi, carte, fuoriOra);
       const scontro = [...scontroTurni].some((t) => t >= ingresso && t <= turno);
+      // The texts of this turn's calls: the public answer, or (`--private`) each private reply, its `[privato pg_x]`
+      // rows read as the narrator's (the guards judge them the same way).
+      const testi: Array<{ suffisso: string; testo: string }> = private_
+        ? narr.filter((r) => r['tipo'] === 'risposta_privata' && Number(r['turno']) === turno && typeof r['testo'] === 'string').map((r) => ({ suffisso: `p-${String(r['id_pg'])}`, testo: String(r['testo']) }))
+        : [{ suffisso: '', testo: String(tr['testo']) }];
+      for (const { suffisso, testo: grezzo } of testi) {
       const frasi: FraseInsieme[] = [];
-      for (const riga of String(tr['testo']).split('\n')) {
-        const m = /^\[([a-z_0-9]+)\]\s*(.*)$/u.exec(riga.trim());
-        if (!m || !(m[1] === 'narratore' || m[1]!.startsWith('png_'))) continue;
+      for (const riga of grezzo.split('\n')) {
+        const m = /^\[([a-z_0-9]+)(?:\s+pg_[a-z_0-9]+)?\]\s*(.*)$/u.exec(riga.trim());
+        const etichetta = m?.[1] === 'privato' ? 'narratore' : m?.[1];
+        if (!m || !etichetta || !(etichetta === 'narratore' || etichetta.startsWith('png_'))) continue;
         // The pipeline's own sentence splitter (narrazione/frasi.ts), so the set's sentences are the checker's.
         for (const testo of dividiTesto(m[2]!)) {
           // `--uscite`: the set of possible silent exits (a narrator sentence naming an NPC in the scene and in play).
-          const menzioni = uscite ? (m[1] === 'narratore' ? presentiNominati(testo, contesto) : []) : menzioniDi(testo, m[1]!, contesto);
-          frasi.push({ i: frasi.length, etichetta: m[1]!, testo, segnata: menzioni.length > 0, menzioni });
+          const menzioni = uscite ? (etichetta === 'narratore' ? presentiNominati(testo, contesto) : []) : menzioniDi(testo, etichetta, contesto);
+          frasi.push({ i: frasi.length, etichetta, testo, segnata: menzioni.length > 0, menzioni });
         }
       }
       if (!tutte && !frasi.some((f) => f.segnata)) continue;
@@ -203,14 +215,17 @@ function main(): void {
         carte: [...colpiPerTurno].filter(([t]) => t >= ingresso && t <= turno).flatMap(([t, cs]) => cs.map((k) => ({ turno: t, chi: k.chi, bersaglio: k.bersaglio }))),
         fughe: eventi.filter((e) => e['tipo'] === 'stato' && e['a'] === 'fuggito' && Number(e['turno']) >= ingresso && Number(e['turno']) <= turno).map((e) => ({ turno: Number(e['turno']), id: String(e['id']) })),
       };
-      chiamate.push({ id: `${nome}#${turno}`, run: nome, turno, scena, scontro, entita, fuoriOra, carte, azioni, frasi, storia });
+      chiamate.push({ id: `${nome}#${turno}${suffisso ? `-${suffisso}` : ''}`, run: nome, turno, scena, scontro, entita, fuoriOra, carte, azioni, frasi, storia });
+      }
     }
   }
   const segnate = chiamate.reduce((n, x) => n + x.frasi.filter((f) => f.segnata).length, 0);
   process.stdout.write(
     `${JSON.stringify(
       {
-        nota: 'Frozen replay set (docs/coerenza.md). Raw public answers; ledger rebuilt from registro events; private replies not included.',
+        nota: private_
+          ? 'Replay set of the private replies (docs/coerenza.md, A7). Raw private replies; ledger rebuilt from registro events.'
+          : 'Frozen replay set (docs/coerenza.md). Raw public answers; ledger rebuilt from registro events; private replies not included.',
         campagna: path.basename(cartellaCampagna),
         chiamate: chiamate.length,
         segnate,

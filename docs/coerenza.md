@@ -912,6 +912,14 @@ T9) and some questions and later own clauses dropped by the «one sentence» rul
 - R-fuori judges the state per clause, not per sentence (docs/combattimento.md §3): on the frozen replay set the rules'
   path catches 82 of 117 (76 before), touching the same 4 clean sentences. Test: test/guardia-fuori.test.ts.
 
+- **A replay set of the private replies** (A7): the private replies stay on the rules (no yes/no judge on them), and
+  their raw text has been logged since round 3 (`tipo: risposta_privata`). `coerenza-insieme.ts --private --tutte`
+  builds their set from the runs that have it (`esperimenti/coerenza/insieme-private.json`: 10 replies of round 3 and
+  of the smoke run), labelled by hand like the public one (`etichette-private.json`: 8 sentences, 7 violations, all an
+  out-of-play or invented goblin speaking in a private reply during the fight). Score (`coerenza-punteggio.ts --insieme
+  private`): the rules catch 6 of 7 and touch no clean sentence; the miss is a sentence carried with no subject after
+  a preposition («Tra un respiro e l'altro sussurra: …»), which R-fuori does not carry by design.
+
 ## Characters the players invent (Riccardo's decision, 16 November)
 
 The blind off-the-rails script addressed «Oreste» and «Madre Carla», people the campaign never had; Berta and Ugo

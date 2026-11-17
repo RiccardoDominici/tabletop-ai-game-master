@@ -1,0 +1,25 @@
+{
+ "variante": "filtro",
+ "violazioni": 7,
+ "prese": 5,
+ "mancate": [
+  {
+   "chiave": "fumo-torre-mozza-combattimento-B-manuale#17-p-pg_livia:1",
+   "testo": "Non mente.",
+   "perche": "carried subject: the goblin out of play «does not lie» (it spoke)"
+  },
+  {
+   "chiave": "fumo-torre-mozza-combattimento-B-manuale#18-p-pg_eliandro:1",
+   "testo": "Stringe i denti, e non dice altro.",
+   "perche": "carried subject: the goblin out of play clenches its teeth"
+  }
+ ],
+ "toccatePulite": [
+  {
+   "chiave": "coerenza3-torre-mozza-combattimento-B-manuale#17-p-pg_livia:0",
+   "testo": "Livia abbassa la punta della spada fino a sfiorare il selciato, senza staccare gli occhi dal goblin.",
+   "etichettata": true
+  }
+ ],
+ "ms": 0
+}
