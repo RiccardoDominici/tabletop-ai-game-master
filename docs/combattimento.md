@@ -211,7 +211,7 @@ combattimento:
 
 ## 4. Screens
 - **Projector**: the initiative bar at the top (in place of the row of portraits during the clash). It shows the round and
-  phase, the combatants in order with whoever is on turn highlighted, the HP bar (for NPCs only the bar), the condition
+  phase, the combatants in order (by sides: the side acting first this round comes first) with whoever is on turn highlighted, the HP bar (for NPCs only the bar), the condition
   icons, «a terra / morto / fuggito» (on the ground / dead / fled), and death saves (schermo/BarraIniziativa.tsx).
 - **Phone**: «È il tuo turno» (It is your turn) with HP, conditions and available actions; otherwise «tocca a …» (it is
   up to …) (telefono/TurnoCombattimento.tsx).

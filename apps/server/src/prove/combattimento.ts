@@ -650,11 +650,14 @@ export class GestoreCombattimento {
     const r = this.d.regole;
     const ora = new Set(this.turnoDi() ?? []);
     const passo = s.passi[s.indice];
+    // By sides, the side acting first this round comes first on the bar (the live check of A2 showed the PCs listed
+    // first in a round the NPCs led); individual initiative is already sorted.
+    const inOrdine = r.iniziativa.tipo === 'per_schieramento' ? [...s.partecipanti].sort((a, b) => Number(a.lato !== s.primo) - Number(b.lato !== s.primo)) : s.partecipanti;
     return {
       round: s.round,
       fase: r.fasi.length > 1 && passo ? passo.fase.nome : null,
       iniziativa: r.iniziativa.tipo,
-      combattenti: s.partecipanti.map((p) => ({
+      combattenti: inOrdine.map((p) => ({
         id: p.id,
         nome: p.nome,
         di_png: p.lato === 'png',

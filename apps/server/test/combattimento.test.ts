@@ -169,6 +169,8 @@ describe('combattimento alla B/X e alla PbtA', () => {
     const cand = [{ id: 'pg_a', lato: 'pg' as const, mod: 0 }, { id: 'png_x', lato: 'png' as const, mod: 0 }, { id: 'png_y', lato: 'png' as const, mod: 0 }];
     const r = g.dopoAzioni({ turno: 1, attacchi: [{ chi: 'pg_a', bersaglio: 'png_x' }], autori: ['pg_a'], candidati: () => cand });
     expect(r.fatti[0]).toBe('Inizia il combattimento. Iniziativa per schieramento: PG 2, PNG 5; agiscono prima i PNG.');
+    // The projector's bar: the side acting first comes first.
+    expect(g.vista(() => null)!.combattenti.map((c) => c.id)).toEqual(['png_x', 'png_y', 'pg_a']);
     expect(attacchi).toEqual([]); // movimento: i PNG non attaccano da soli
     expect(r.intestazione).toMatch(/fase «Movimento»/);
     expect(r.invitati).toEqual(['pg_a']);

@@ -152,7 +152,7 @@ first seed is `manuale-torre-scontro-R`, 12 turns).
 | Morale | Grosso falls to the magic missile; the Engine's 2d6 for the rest: «Morale dei nemici: 9 contro 7 → CEDONO e fuggono (Zirrà)»; R runs: 5 and 3 vs 7, «tengono» | works |
 | Flight | the fight ends («i nemici sono fuggiti o fuori combattimento»); later attacks on Zirrà: «Zirrà ha preso la fuga e non è più qui: nessun tiro»; Haiku: «si volta e sale di corsa lungo la scala rotta… Sparisce oltre il crollo» | works; the Engine also added its own «Zirrà fugge.» after that narration (the told-facts guard missed «sparisce», a duplicate line) |
 | Surprise | the side attacked (the NPCs) rolls 1d6: «i nemici tirano 6 su 1d6: non sono colti di sorpresa» | works |
-| Initiative by sides | not on torre-mozza: its set rolls individual initiative each round (`iniziativa: {tipo: individuale, ogni_round: true}`) | not seen live (unit tests) |
+| Initiative by sides | not on torre-mozza: its set rolls individual initiative each round (`iniziativa: {tipo: individuale, ogni_round: true}`) | not seen here; seen live on the invented fixture `bx` (§6c) |
 | DC never said, dice as entered | no CD/CA number in `tavolo.md`; 0 × «card dice differ», 0 × «not asked» | works |
 
 **Dictation into the roll card**, live (`apps/web/e2e/tiro-dettato.spec.ts`, port 4921, the invented campaign
@@ -160,6 +160,25 @@ first seed is `manuale-torre-scontro-R`, 12 turns).
 padlock (one d20), the fake microphone plays «ho fatto quattordici» (macOS `say`, Alice), Whisper transcribes it in
 8.4 s, the box shows 14, «Fatto»; the server logs `valori: [14], da: dettato` and the card «Rapidità di mano
 (Destrezza): 14 +7 = 21 → riuscita». Passes (32 s). Screenshots `logs/screenshots/tiro-dettato-*.png`.
+
+## 6c. Live fight with initiative by sides (17 November, A2)
+
+No example campaign's set rolls initiative by sides, so the check runs on the invented fixture `bx` (an old-school set:
+one d6 per side re-rolled every round, four phases, the NPCs strike only in their weapon's phase). The fixture was
+copied to the scratchpad and the server started on it, never on `campagne/` (`TAGM_PORTA=4970
+TAGM_CARTELLA_CAMPAGNA=<copy of apps/server/test/fixtures/campagne/bx> TAGM_TIRI_GIOCATORI=automatico
+TAGM_ARBITRO=regole TAGM_SEME_DADI=0123…cdef TAGM_FINESTRA_TUTTI=1 scripts/avvio.sh --finto --mock`); a socket
+script played a projector and two phones (Corrado attacks Ruggero to open the fight and in each melee phase, the others
+wait), 12 windows.
+
+| Check | Seen | Verdict |
+|---|---|---|
+| Sides rolled, every round | «Iniziativa per schieramento: PG 4, PNG 6; agiscono prima i PNG.», then «Round 2: iniziativa PG 3, PNG 6…», «Round 3: … PG 3, PNG 4…» in the narrator's facts | works |
+| The window opens for the PCs' whole side, phase by phase | T2–T5 Movimento, Proiettili, Magia, Mischia, each window inviting Ida and Corrado together | works |
+| The NPC strikes only in its weapon's phase | Ruggero (melee only) attacked once per round, in Mischia, before the PCs' melee window (T4, T8, T12: two misses, one hit, Corrado 8 → 3 HP); nothing in the other phases | works |
+| The projector's bar | listed the PCs first in rounds the NPCs led: fixed, the side acting first comes first (`vista`), seen in a second run | fixed |
+
+The same fight with fixed dice is a whole-server test: test/combattimento-schieramento.test.ts.
 
 ## 7. Live runs with manual rolls, SRD 5.2
 
@@ -239,8 +258,8 @@ roll at the scene change hidden by default («nascosto»).
 - ~~**The Game Master's own rolls** cover the world's gates only~~: world questions written in a scene and NPCs' own
   checks out of combat go through the same path (`domande`, docs/prove.md §9; test/mondo-domande.test.ts; example in
   torre-mozza). Not yet seen in a live run.
-- ~~**Morale and flight**~~: seen live on torre-mozza (§6b). Initiative by sides is still unit-tested only (no example
-  campaign's set uses it). The told-facts guard added «Zirrà fugge.» after a narration that told the flight with
+- ~~**Morale and flight**~~: seen live on torre-mozza (§6b). ~~Initiative by sides is still unit-tested only (no example
+  campaign's set uses it)~~: seen live on the invented fixture `bx` (§6c). The told-facts guard added «Zirrà fugge.» after a narration that told the flight with
   «sparisce oltre il crollo»: a duplicate line, open.
 - **A private action's narrator line** «Eliandro, la pastora alza lo sguardo…» reached the table once in the BF run
   (no content of the question): the private guard's area (docs/e2e-finale.md A).

@@ -33,7 +33,8 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   - Haiku still answers «impossibile» for lifting a cart, with a `motivo` that contradicts the verdict (the verdict
     field comes before the reason): a reason-first field or a deterministic check (docs/prove-verifica.md §5). A
     reason-first field was measured on 16 November: the cart solved, the twenty down from 18.0 to 15.7: dropped;
-  - initiative by sides is unit-tested only (no example campaign's set uses it);
+  - ~~initiative by sides is unit-tested only (no example campaign's set uses it)~~ **Done** (A2): a whole-server
+    test and a live run on the invented fixture `bx` with the scripted narrator (docs/prove-verifica.md §6c);
   - ~~the told-facts guard added a duplicate «Zirrà fugge.» after a narration that told the flight («sparisce oltre il
     crollo»)~~ **Done** (16 November): a row with no subject continues the row before (docs/combattimento.md §3.7);
   - ~~a fight opened from the panel rolls the PCs' first initiative with the Engine's dice~~ **Done** (16 November, item
