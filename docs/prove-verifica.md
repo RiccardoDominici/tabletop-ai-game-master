@@ -225,8 +225,12 @@ roll at the scene change hidden by default («nascosto»).
   Haiku still calls lifting a cart «impossibile» (§5), with a reason that contradicts its own verdict.
 - ~~**Attacks on creatures without a sheet**~~ (C5): minions with a stat line by type (`gregari`, docs/prove.md §2),
   and an attack in a scene with nobody with stats tells the narrator not to invent the creature
-  (test/gregari.test.ts). No example campaign uses minions yet; an attack on «the goblin» standing for a named NPC
-  (Zirrà) without her name still finds nobody (no roll, no fact against inventing: she is there).
+  (test/gregari.test.ts). No example campaign uses minions yet. ~~An attack on «the goblin» standing for a named NPC
+  (Zirrà) without her name still finds nobody~~: it rolls against her when «goblin» is her alias (`alias` of her
+  card), and did since C5 (17 November, read back on `logs/porta-4894`: at BF T11 Haiku's attack named an unknown
+  target, «sentinella», which the Engine then skipped; C5's re-targeting of an arbiter's attack on an unknown target
+  or on none fixed it; pinned in test/prove-motore.test.ts). Still nobody: a word that is no alias of hers («la
+  sentinella», from the narration) — no roll, the narrator resolves it.
 - ~~**v1 limits of manual rolls**~~: closed in the Engine (docs/prove.md §8, «Rounds»): the damage of a hit,
   initiative, death saves and the other PC's die in a contest are the player's, asked round after round; the 2d6
   difficulty stays out of the phone's bonus (test/prove-manuali-seguito.test.ts, whole-server test in

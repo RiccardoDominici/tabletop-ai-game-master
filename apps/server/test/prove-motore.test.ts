@@ -138,6 +138,28 @@ describe('un turno di tiri', () => {
   });
 
   /*
+   * A4 of docs/da-fare.md: «the goblin» meant for a named NPC whose alias is that word got no roll. Read back on the
+   * 15 November run (BF T11, `logs/porta-4894`): Haiku's attack named an unknown target («sentinella»), and the Engine
+   * skipped it as an attack on a creature with no sheet. Since C5 the clear-attack pass re-targets an arbiter's attack
+   * on an unknown target or on none, so the alias («sgherro» for Ruggero) finds the NPC whatever the arbiter wrote.
+   * Still nobody: a word that is no alias («la sentinella» for him) — no roll, the narrator resolves it.
+   */
+  it('an attack on an NPC by its alias rolls against its sheet, whatever target the arbiter wrote', async () => {
+    const casi: Record<string, Partial<DecisioneProva>> = {
+      'Vedo lo sgherro! Tiro con la balestra leggera.': { tipo: 'attacco', bersaglio: 'sentinella', arma: 'balestra_leggera' },
+      'Colpisco lo sgherro con la spada lunga': { tipo: 'attacco', bersaglio: null },
+      'Carico lo sgherro, spada in avanti!': { tipo: 'nessuna' },
+    };
+    for (const testo of Object.keys(casi)) {
+      const r = await motore({ arbitro: new ArbitroFinto(casi), dadi: [15, 4] }).risolvi(3, [azione('a1', 'pg_corrado', testo)]);
+      expect(r.tiri[0], testo).toMatchObject({ tipo: 'attacco', chi: 'pg_corrado', bersaglio: { id: 'png_ruggero' } });
+    }
+    const sentinella = 'Tiro con la balestra leggera alla sentinella';
+    const r = await motore({ arbitro: new ArbitroFinto({ [sentinella]: { tipo: 'attacco', bersaglio: 'sentinella' } }), dadi: [15, 4] }).risolvi(3, [azione('a1', 'pg_corrado', sentinella)]);
+    expect(r.tiri).toEqual([]);
+  });
+
+  /*
    * Second pass of the final run (D6): the Haiku arbiter rolled «Ascoltare» for «Chiedo a Berta, sottovoce, chi a
    * Spinalba sapeva che la chiave era ancora in casa.». Speech said in a low voice is speech: a social check or no roll.
    */

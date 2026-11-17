@@ -42,7 +42,9 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   - to check: with automatic rolls the panel's fight still starts at the click, and the next window's `dopoAzioni`
     (prove/combattimento.ts) advances past step 0 before running any step, so an NPC first in the order seems to lose
     its first step (read from the code, not reproduced; the manual path starts inside `dopoAzioni` and runs it);
-  - «the goblin» meant for a named NPC (Zirrà) without her name still finds no target (no roll);
+  - ~~«the goblin» meant for a named NPC (Zirrà) without her name still finds no target (no roll)~~ **Done** (A4): it
+    finds her by her alias since C5's re-targeting (the failure was Haiku's attack on an unknown target, skipped
+    before C5); pinned by a test. A word that is no alias («la sentinella») still finds nobody;
   - no example campaign uses minions yet; world questions and minions not yet seen in a live run.
 - **Final end-to-end pass on today's code**: done in profile B (docs/e2e-finale-3.md, 958556a: not ready), and its fix
   pass (§7 there, 16 November), which became the **coherence layer** (docs/coerenza.md: ledger, «Cosa è vero adesso»,
@@ -171,7 +173,7 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
 - **B2** leak detector blind to release lines: partly. The releases no longer happen (57c8ce7), but the second-pass judge still found `nar_piccone` counted as clean. Open.
 - **B3** verbal tics (Zirrà «ride corto», «Non so, non m'importa. Parliamo di prezzo.» as a stock deflection). Open: the tic rule exists only for the sceneggiatore.
 - ~~**C4** in combat, script actions sent out of turn are deferred and re-judged stale. Open: the harness should send, in combat, only the action of the PC on turn (`esperimenti/`).~~ **Done** (d14f89c: "Harness: in combat send only the actions of the PC on turn").
-- ~~**C5** attacks on creatures without a sheet become a check against 17, and the narrator invents goblins.~~ **Done** (minions, `gregari`, docs/prove.md §2); left: «the goblin» meant as a named NPC without her name is still no roll.
+- ~~**C5** attacks on creatures without a sheet become a check against 17, and the narrator invents goblins.~~ **Done** (minions, `gregari`, docs/prove.md §2); ~~left: «the goblin» meant as a named NPC without her name is still no roll~~ **Done** (A4, see above).
 - **D2** validator check that a line giving what a check gates must not come out after a failed check. The Engine part is done (6eff704, 3406550); ~~the validator check~~ **Done** in 19f863d («a check another oppure path bypasses»); not yet confirmed by a run.
 - ~~**D4** announcements: partly. 192bcff makes them never empty and cuts them at a sensible boundary, but the quotes of the player's words still come out broken («Livia Sarti: «Blocco un goblin ferito contro il muro: «Dov'è il ragazzo».»).~~ **Done** (4320e25): the inner quote marks are dropped from the citation, so the wrapper has one pair.
 - ~~**D5** cards say «contro CD 14» for an attack against the Armour Class, and repeat the label.~~ **Done** (87ce932): an attack against a defence is typed CA (AC in English, from the language package), and the label is not repeated when the attack has no ability.
