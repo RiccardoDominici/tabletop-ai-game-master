@@ -1,0 +1,7 @@
+{"pg": ["pg_livia", "pg_nespola"],
+ "passi": [
+  {"azioni": {"pg_livia": "Saliamo alla torre senza perdere tempo", "pg_nespola": "Vado con Livia"}},
+  {"scena": "scena_torre"},
+  {"azioni": {"pg_nespola": "Scendo piano in cantina e provo ad aprire la porta di ferro della cripta con il grimaldello", "pg_livia": "Tengo d'occhio Grosso vicino al fuoco"}},
+  {"azioni": {"pg_nespola": "Guardo cosa c'è dietro la porta di ferro", "pg_livia": "Resto vicino alla scala"}}
+ ]}

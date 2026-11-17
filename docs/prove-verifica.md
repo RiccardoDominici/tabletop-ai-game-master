@@ -180,7 +180,7 @@ one d6 per side re-rolled every round, four phases, the NPCs strike only in thei
 copied to the scratchpad and the server started on it, never on `campagne/` (`TAGM_PORTA=4970
 TAGM_CARTELLA_CAMPAGNA=<copy of apps/server/test/fixtures/campagne/bx> TAGM_TIRI_GIOCATORI=automatico
 TAGM_ARBITRO=regole TAGM_SEME_DADI=0123…cdef TAGM_FINESTRA_TUTTI=1 scripts/avvio.sh --finto --mock`); a socket
-script played a projector and two phones (Corrado attacks Ruggero to open the fight and in each melee phase, the others
+script (`esperimenti/risultati/prove-verifica/dal-vivo-17nov/`, with its outputs and commands) played a projector and two phones (Corrado attacks Ruggero to open the fight and in each melee phase, the others
 wait), 12 windows.
 
 | Check | Seen | Verdict |
@@ -196,7 +196,8 @@ The same fight with fixed dice is a whole-server test: test/combattimento-schier
 
 Two short runs on scratchpad copies of the example campaigns (never on `campagne/`), each with `TAGM_CARTELLA_CAMPAGNA`,
 `TAGM_TIRI_GIOCATORI=automatico TAGM_ARBITRO=regole TAGM_SEME_DADI=0123…cdef scripts/avvio.sh --finto --mock`, driven
-by a socket script (projector, two phones, the Game Master's socket for the scene change).
+by a socket script (projector, two phones, the Game Master's socket for the scene change; script, inputs and outputs
+in `esperimenti/risultati/prove-verifica/dal-vivo-17nov/`).
 
 | Check | Seen | Verdict |
 |---|---|---|

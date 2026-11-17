@@ -1,0 +1,9 @@
+{"pg": ["pg_ghita", "pg_dalia"],
+ "passi": [
+  {"scena": "scena_casa_del_sale"},
+  {"azioni": {"pg_ghita": "Colpisco la guardia alla porta dello studio con la spada lunga", "pg_dalia": "Resto vicino al camino"}},
+  {"azioni": {"pg_ghita": "Colpisco ancora la guardia con la spada lunga"}},
+  {"azioni": {"pg_ghita": "Colpisco la guardia con la spada lunga"}},
+  {"azioni": {"pg_ghita": "Colpisco la guardia con la spada lunga"}},
+  {"azioni": {"pg_ghita": "Colpisco la guardia con la spada lunga"}}
+ ]}

@@ -1,0 +1,15 @@
+scene → scena_casa_del_sale: {"ok":true}
+T2 [La Casa del Sale, durante il consiglio]: no fight; pg_dalia 8/8, pg_ghita 11/11
+  pg_dalia: «Resto vicino al camino»
+  pg_ghita: «Colpisco la guardia alla porta dello studio con la spada lunga»
+T3 [La Casa del Sale, durante il consiglio]: fight round 1, on turn [pg_dalia], png_guardia_casa_del_sale_2 11/11 > pg_dalia 8/8 > pg_ghita 6/11 > png_guardia_casa_del_sale_1 11/11; pg_dalia 8/8, pg_ghita 6/11
+  pg_dalia: «Aspetto e guardo»
+T4 [La Casa del Sale, durante il consiglio]: fight round 1, on turn [pg_ghita], png_guardia_casa_del_sale_2 11/11 > pg_dalia 8/8 > pg_ghita 6/11 > png_guardia_casa_del_sale_1 11/11; pg_dalia 8/8, pg_ghita 6/11
+  pg_ghita: «Colpisco la guardia con la spada lunga»
+T5 [La Casa del Sale, durante il consiglio]: fight round 2, on turn [pg_dalia], png_guardia_casa_del_sale_2 11/11 > pg_dalia 8/8 > pg_ghita 6/11 > png_guardia_casa_del_sale_1 11/11; pg_dalia 8/8, pg_ghita 6/11
+  pg_dalia: «Aspetto e guardo»
+T6 [La Casa del Sale, durante il consiglio]: fight round 2, on turn [pg_ghita], png_guardia_casa_del_sale_2 11/11 > pg_dalia 8/8 > pg_ghita 6/11 > png_guardia_casa_del_sale_1 11/11; pg_dalia 8/8, pg_ghita 6/11
+  pg_ghita: «Colpisco la guardia con la spada lunga»
+system lines:
+  [T1] Nuova scena: La Casa del Sale, durante il consiglio.
+Game Master rolls: []

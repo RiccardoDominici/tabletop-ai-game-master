@@ -1,0 +1,29 @@
+T1: no fight; invited [pg_ida, pg_corrado]; pg_ida 8/8, pg_corrado 8/8, pg_teo 8/8
+  pg_ida: «Resto dietro Corrado»
+  pg_corrado: «Colpisco Ruggero con la spada»
+T2: round 1, phase Movimento, initiative per_schieramento, on turn [pg_ida, pg_corrado], order png_ruggero > pg_ida > pg_corrado; invited [pg_ida, pg_corrado]; pg_ida 8/8, pg_corrado 8/8, pg_teo 8/8
+  pg_ida: «Resto dietro Corrado»
+  pg_corrado: «Tengo la spada alta»
+T3: round 1, phase Proiettili, initiative per_schieramento, on turn [pg_ida, pg_corrado], order png_ruggero > pg_ida > pg_corrado; invited [pg_ida, pg_corrado]; pg_ida 8/8, pg_corrado 8/8, pg_teo 8/8
+  pg_ida: «Resto dietro Corrado»
+  pg_corrado: «Tengo la spada alta»
+T4: round 1, phase Magia, initiative per_schieramento, on turn [pg_ida, pg_corrado], order png_ruggero > pg_ida > pg_corrado; invited [pg_ida, pg_corrado]; pg_ida 8/8, pg_corrado 8/8, pg_teo 8/8
+  pg_ida: «Resto dietro Corrado»
+  pg_corrado: «Tengo la spada alta»
+T5: round 1, phase Mischia, initiative per_schieramento, on turn [pg_ida, pg_corrado], order png_ruggero > pg_ida > pg_corrado; invited [pg_ida, pg_corrado]; pg_ida 8/8, pg_corrado 8/8, pg_teo 8/8
+  pg_ida: «Resto dietro Corrado»
+  pg_corrado: «Colpisco Ruggero con la spada»
+T6: round 2, phase Movimento, initiative per_schieramento, on turn [pg_ida, pg_corrado], order png_ruggero > pg_ida > pg_corrado; invited [pg_ida, pg_corrado]; pg_ida 8/8, pg_corrado 8/8, pg_teo 8/8
+  pg_ida: «Resto dietro Corrado»
+  pg_corrado: «Tengo la spada alta»
+T7: round 2, phase Proiettili, initiative per_schieramento, on turn [pg_ida, pg_corrado], order png_ruggero > pg_ida > pg_corrado; invited [pg_ida, pg_corrado]; pg_ida 8/8, pg_corrado 8/8, pg_teo 8/8
+  pg_ida: «Resto dietro Corrado»
+  pg_corrado: «Tengo la spada alta»
+T8: round 2, phase Magia, initiative per_schieramento, on turn [pg_ida, pg_corrado], order png_ruggero > pg_ida > pg_corrado; invited [pg_ida, pg_corrado]; pg_ida 8/8, pg_corrado 8/8, pg_teo 8/8
+  pg_ida: «Resto dietro Corrado»
+  pg_corrado: «Tengo la spada alta»
+T9: round 2, phase Mischia, initiative per_schieramento, on turn [pg_ida, pg_corrado], order png_ruggero > pg_ida > pg_corrado; invited [pg_ida, pg_corrado]; pg_ida 8/8, pg_corrado 3/8, pg_teo 8/8
+  pg_ida: «Resto dietro Corrado»
+  pg_corrado: «Colpisco Ruggero con la spada»
+system lines:
+

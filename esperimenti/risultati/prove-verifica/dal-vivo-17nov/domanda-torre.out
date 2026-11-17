@@ -1,0 +1,13 @@
+T1 [L'ovile dei Benni, all'imbrunire]: no fight; pg_livia 9/9, pg_nespola 5/5
+  pg_livia: «Saliamo alla torre senza perdere tempo»
+  pg_nespola: «Vado con Livia»
+scene → scena_torre: {"ok":true}
+T3 [La Torre Mozza, a mezzanotte]: no fight; pg_livia 9/9, pg_nespola 5/5
+  pg_livia: «Tengo d'occhio Grosso vicino al fuoco»
+  pg_nespola: «Scendo piano in cantina e provo ad aprire la porta di ferro della cripta con il grimaldello»
+T4 [La Torre Mozza, a mezzanotte]: no fight; pg_livia 9/9, pg_nespola 5/5
+  pg_livia: «Resto vicino alla scala»
+  pg_nespola: «Guardo cosa c'è dietro la porta di ferro»
+system lines:
+  [T2] Nuova scena: La Torre Mozza, a mezzanotte.
+Game Master rolls: [{"id":"t1","turno":2,"origine":"o_sospetto#0","motivo":"o_sospetto: lascia_scena","dado":6,"almeno":4,"valore":3,"riuscito":false,"mostrato":false},{"id":"t4","turno":3,"origine":"d_zirra_porta","motivo":"Zirrà, Saggezza: Zirrà, dalla scala, si accorge di chi lavora alla porta di ferro della cripta?","dado":20,"almeno":17,"valore":8,"riuscito":false,"mostrato":false}]
