@@ -97,8 +97,10 @@ describe('pronunciation lexicon in an English game', () => {
         '  - {nome: Niamh, grafia: NEE-am}',
       ].join('\n'),
     });
-    const fileGioco = path.join(cartella, FILE_LESSICO_GIOCO);
+    // A test instance keeps what it learns in its log folder, never in the campaign's (Campagna.cartellaGioco).
+    const fileGioco = path.join(prova.cartella, 'log', FILE_LESSICO_GIOCO);
     await finché(() => fs.existsSync(fileGioco));
+    expect(fs.existsSync(path.join(cartella, FILE_LESSICO_GIOCO))).toBe(false);
     const gioco = YAML.parse(fs.readFileSync(fileGioco, 'utf8')) as { lessico: Array<Record<string, unknown>> };
     // Only the new name: a prepared name (Niamh) is never changed by a game proposal.
     expect(gioco.lessico).toEqual([{ nome: 'Brychan', en: { grafia: 'BRUH-khan', nota: 'ch as in loch' }, origine: { fonte: 'sceneggiatore', turno: 1 }, verificata: false }]);

@@ -27,7 +27,7 @@
 // `testo` qui è spesso un parametro o un campo (il testo di un'azione, di una frase).
 import path from 'node:path';
 import { LINGUA_PREDEFINITA, linguaAttiva, testo as testoFisso, type Lingua } from '../lingua';
-import { FILE_LESSICO, FILE_LESSICO_GIOCO, leggiLessico } from '../voce/pronuncia';
+import { FILE_LESSICO, fileLessicoGioco, leggiLessico } from '../voce/pronuncia';
 import type {
   AzionePrivata,
   Esito,
@@ -3481,10 +3481,12 @@ export class Regia {
 
   /** The campaign's names and ordinary words (coerenza/nomi-nuovi.ts), built once. */
   private nomiCampagna(): NomiDellaCampagna {
-    // The names of the pronunciation lexicon count as known too (a place or a god only the lexicon spells).
+    // The names of the pronunciation lexicon count as known too (a place or a god only the lexicon spells): the prepared
+    // one, and of the one learned in play only the entries the Preparer verified (round 7: «Oreste», learned from the
+    // scriptwriter in an earlier run, was taken for a campaign name and the invented-name line never fired).
     this.nomiCampagnaCache ??= nomiDellaCampagna(this.o.campagna, linguaAttiva(), this.statoRepertorio?.repertorio, [
       ...leggiLessico(path.join(this.o.campagna.cartella, FILE_LESSICO)).map((v) => v.nome),
-      ...leggiLessico(path.join(this.o.campagna.cartella, FILE_LESSICO_GIOCO)).map((v) => v.nome),
+      ...leggiLessico(fileLessicoGioco(this.o.campagna)).filter((v) => v.verificata === true).map((v) => v.nome),
     ]);
     return this.nomiCampagnaCache;
   }

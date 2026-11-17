@@ -85,6 +85,11 @@ export const FILE_LESSICO = 'pronunce.yaml';
 /** New names met in play (voce/lessico-vivo.ts), next to it: the Preparer reviews them between sessions. */
 export const FILE_LESSICO_GIOCO = 'pronunce-gioco.yaml';
 
+/** The lexicon learned in play of this instance (Campagna.cartellaGioco: a test instance keeps it in its logs). */
+export function fileLessicoGioco(campagna: Pick<Campagna, 'cartella' | 'cartellaGioco'>): string {
+  return path.join(campagna.cartellaGioco ?? campagna.cartella, FILE_LESSICO_GIOCO);
+}
+
 function stringa(v: unknown): string | null {
   return typeof v === 'string' && v.trim() ? v.trim() : null;
 }
@@ -207,7 +212,7 @@ export function vociDellaCampagna(campagna: Campagna): VocePronta[] {
     ['gioco', FILE_LESSICO_GIOCO],
   ];
   for (const [fonte, file] of fonti) {
-    for (const v of leggiLessico(path.join(campagna.cartella, file))) {
+    for (const v of leggiLessico(fonte === 'gioco' ? fileLessicoGioco(campagna) : path.join(campagna.cartella, file))) {
       const g = grafiaDi(v, lingua);
       const chiave = v.nome.trim().toLowerCase();
       if (!g || viste.has(chiave)) continue;

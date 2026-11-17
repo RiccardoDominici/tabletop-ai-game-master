@@ -59,6 +59,24 @@ describe('with the whole server, mode B', () => {
     expect(messaggi[1]).toContain('Nessuno in scena si chiama Oreste');
   }, 20_000);
 
+  // Round 7: the lexicon learned in an earlier run had «Oreste» (unverified), and he counted as a campaign name.
+  it.each([
+    [false, true],
+    [true, false],
+  ])('a name of the lexicon learned in play counts as known only once verified (verificata %s → neutral line %s)', async (verificata, neutra) => {
+    prova = new Prova();
+    fs.mkdirSync(path.join(prova.cartella, 'log'), { recursive: true });
+    fs.writeFileSync(path.join(prova.cartella, 'log', 'pronunce-gioco.yaml'), `lessico:\n  - {nome: Oreste, it: {grafia: Orèste}, verificata: ${verificata}}\n`);
+    const { url } = await prova.avvia(prova.campagna('prove'), () => '[narratore] Il fiume rumoreggia.\n[invito] tutti');
+    const schermo = await prova.proiettore(url);
+    const ida = await prova.telefono(url, 'pg_ida');
+    const s = await inizia(schermo, ida);
+    const dopo = attendi(ida, (x: StatoTavolo) => x.fase === 'finestra' && x.turno === s.turno + 1);
+    await agisci(ida, 'pg_ida', 'Chiedo a Oreste se ha visto passare il carro.', s.versione_scena);
+    const fine = await dopo;
+    expect(fine.trascrizione.some((v) => v.testo === 'Oreste? Qui nessuno conosce questo nome.')).toBe(neutra);
+  }, 20_000);
+
   it('with the scriptwriter on too: words to «Oreste» get the neutral line, no NPC answers for him, no subito', async () => {
     prova = new Prova();
     const radice = path.join(prova.cartella, 'sceneggiatore');

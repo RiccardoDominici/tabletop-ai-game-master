@@ -17,7 +17,7 @@ import type { Lingua } from '../lingua';
 import type { Logger } from '../logger';
 import type { Repertorio } from '../repertorio/tipi';
 import type { MemoriaSessione } from '../sessione/memoria';
-import { FILE_LESSICO, FILE_LESSICO_GIOCO, leggiLessico } from '../voce/pronuncia';
+import { FILE_LESSICO, fileLessicoGioco, leggiLessico } from '../voce/pronuncia';
 import path from 'node:path';
 import { impara } from './apprendimento';
 import { converti, picco, type AudioConvertito } from './converti';
@@ -130,7 +130,7 @@ export class ServizioDettato {
       pg: this.o.campagna.pg.map((p) => ({ nome: p.nome, alias: alias(p.pubblico), mio: p.id === id_pg })),
       png: (s.scena.personaggi ?? []).map((p) => ({ nome: p.nome, alias: alias(pngCampagna.get(p.id)?.dati), presente: p.presente })),
       appresi: [...this.appresi.values()],
-      lessico: [...leggiLessico(path.join(cartella, FILE_LESSICO)), ...leggiLessico(path.join(cartella, FILE_LESSICO_GIOCO))],
+      lessico: [...leggiLessico(path.join(cartella, FILE_LESSICO)), ...leggiLessico(fileLessicoGioco(this.o.campagna))],
       menzionato: (w) => this.detti.has(w),
       ...(this.o.termini ? { termini: this.o.termini } : {}),
     });

@@ -19,7 +19,7 @@ import YAML from 'yaml';
 import type { Campagna } from '../campagna/tipi';
 import type { Logger } from '../logger';
 import { LINGUA_PREDEFINITA } from '../lingua';
-import { creaPronunciatore, FILE_LESSICO_GIOCO, leggiLessico, vociDellaCampagna, type Pronunciatore, type VoceLessico } from './pronuncia';
+import { creaPronunciatore, fileLessicoGioco, leggiLessico, vociDellaCampagna, type Pronunciatore, type VoceLessico } from './pronuncia';
 import { estraiYaml } from '../sceneggiatore/valida';
 import type { NomeMotoreVoce } from './tipi';
 
@@ -99,7 +99,7 @@ export class LessicoVivo {
 
   /** `motore`: the voice engine in use right now (the selector's), whose respellings the voice gets. */
   constructor(private readonly o: { campagna: Campagna; log: Logger; motore?: () => NomeMotoreVoce | null }) {
-    this.file = path.join(o.campagna.cartella, FILE_LESSICO_GIOCO);
+    this.file = fileLessicoGioco(o.campagna);
     const voci = vociDellaCampagna(o.campagna);
     o.log.info({ voci: voci.length, lessico: voci.filter((v) => v.fonte === 'lessico').length, gioco: voci.filter((v) => v.fonte === 'gioco').length, schede: voci.filter((v) => v.fonte === 'scheda').length }, 'pronunciation: lexicon loaded');
   }

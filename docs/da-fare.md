@@ -90,9 +90,9 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   world clause after the PC's own words and cuts some quotes mid-phrase. All six fixed (9ee3ff6, 21d227c, b656a38,
   20c7f44, a506565, cb3a178); round 7 (opus judge, closes the coherence work for now): H heard 0 / 0 / 0 / 0 (CM 1
   unsure), tags 96–97%, 10 stall moves all right, the defeat path twice (docs/coerenza.md, «Measured, round 7»). Open
-  from round 7: the live lexicon (`pronunce-gioco.yaml`, written by test runs into the campaign's folder) made
+  from round 7: ~~the live lexicon (`pronunce-gioco.yaml`, written by test runs into the campaign's folder) made
   «Oreste» a known name, so the invented-name line never fired: count only verified lexicon entries, and keep test
-  runs out of the campaign folder; «Pugnale ancora» with a target named needs the go-on words in the named-target path
+  runs out of the campaign folder~~ **Done** (A35, see the next commit); «Pugnale ancora» with a target named needs the go-on words in the named-target path
   too; a commitment toward something that does not exist still resets the stall; the S3 leads sentence lists the last
   clock sign as a road; a scriptwriter line can confirm a place that does not exist; repeated catchphrases.
   Still open: a round 4 in profile B measured live (needs Riccardo: API credit for profile B; provider not chosen); a full measuring round of the judge (round 3 had one valid game of four; needs Riccardo: API credit for profile B); the private replies stay on the rules

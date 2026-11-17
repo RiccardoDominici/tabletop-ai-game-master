@@ -7,7 +7,8 @@ import './variabili-legacy';  // compatibilità CANTASTORIE_* → TAGM_*: deve p
 import { impostaLingua, percorsoPrompt, testo, type Lingua } from './lingua';
 import fs from 'node:fs';
 import path from 'node:path';
-import type { InfoServer } from '@tabletop-ai-gm/shared';
+import { PORTA_SERVER, type InfoServer } from '@tabletop-ai-gm/shared';
+import { CARTELLA_LOG } from './percorsi';
 import { creaApp, registraRotte, type App } from './app';
 import { caricaCampagna, idCampagna } from './campagna/caricatore';
 import { elencoPacchetti } from './campagna/pacchetti';
@@ -141,6 +142,11 @@ interface CampagnaPronta {
 function preparaCampagna(config: ConfigServer, numero: number | null, log: Logger): CampagnaPronta {
   // La lingua della configurazione serve già al caricamento (frasi dell'apertura) se campagna.yaml non la scrive.
   const campagna = caricaCampagna(config.cartellaCampagna, log.child({ modulo: 'campagna' }), { pacchetto: numero, linguaConfigurazione: config.lingua });
+  // A test instance (another port, or its own log folder) keeps its play data in its logs, never in campagne/<id>/.
+  if (config.porta !== PORTA_SERVER || path.resolve(config.cartellaLog) !== path.resolve(CARTELLA_LOG)) {
+    campagna.cartellaGioco = config.cartellaLog;
+    log.info({ cartella: config.cartellaLog }, 'campagna: test instance, the play data go to its log folder');
+  }
   // Lingua dei contenuti: quella della campagna vince sulla configurazione (prompt, frasi fisse, regole).
   const lingua = campagna.lingua ?? config.lingua;
   impostaLingua(lingua);

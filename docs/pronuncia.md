@@ -157,7 +157,10 @@ extra model call (`apps/server/src/voce/lessico-vivo.ts`):
 3. The Engine accepts a proposal only if the name was asked or appears in the accepted lines, is not already in the
    lexicon, and name and respelling are short plain text; it appends it to `campagne/<id>/pronunce-gioco.yaml` with
    `origine: {fonte, turno}` and `verificata: false`, and recompiles the pronouncer: from the next phrase the voice
-   uses it (and so does the audio of the scriptwriter's lines prepared in the background).
+   uses it (and so does the audio of the scriptwriter's lines prepared in the background). A test instance (another
+   port, or its own log folder, `TAGM_LOG`) writes and reads that file in its log folder instead (`Campagna.cartellaGioco`,
+   avvio.ts): a test run never writes into `campagne/<id>/` (round 6's run once taught the campaign «Oreste»). For the
+   check of the names the players invent (docs/coerenza.md) only the entries with `verificata: true` count as known.
 4. Between sessions the Preparer reviews those entries and moves the good ones into `pronunce.yaml`
    (`.claude/skills/preparatore/riferimenti/tra-le-sessioni.md`); `prepara.sh` tests them by ear.
 
