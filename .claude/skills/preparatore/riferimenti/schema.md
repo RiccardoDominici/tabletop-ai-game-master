@@ -312,6 +312,8 @@ code in `strumenti/valida/regole_schede.py`, tables in `srd.py`).
   sentinella], scheda: {…an NPC sheet of the set…}}]`; `scena.yaml` / `scene/*.yaml` → `gregari: [{tipo, quanti}]`
   (1–20, default 1). [V SCHEDA.gregari; warning SCHEDA.nemici_senza_statistiche when a scene names one without them]
 - `scena.yaml` and `scene/*.yaml` → `prove`: a list of `{id: p_…, quando, abilita | caratteristica | salvezza, cd, indizio?, se_fallisce?}`.
+  The `quando` opens with the PC's action («un PG apre…»): the rules arbiter matches that word (or one of `parole`) as
+  the intent, never shared nouns alone.
 - `scena.yaml` and `scene/*.yaml` → `domande`: world questions (shape in the scene sheet above). The odds (`tiro`) work
   in any campaign, also without sheets; `prova_png` needs dice and the NPC's sheet, and its `prova` and `difficolta`
   are the set's ids (SRD: `abilita:<skill>`, `caratteristica:<ability>`, `salvezza:<ability>`, difficulties

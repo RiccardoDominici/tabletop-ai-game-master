@@ -263,7 +263,11 @@ test/gregari.test.ts. Example: ponte-lanterne, the consul's two guards at the Ca
         not «spada in mano» (sword in hand)), against a target with a sheet named in what it does;
      2. help: «aiuto / do una mano a / copro» («help / give … a hand / I cover» in English) + a PC acting in the same turn;
      3. scene check: two content words of its `quando`, or one of its `parole` and one of the `quando` (a single word is
-        not enough); if the `quando` names an NPC, the action names it; two checks tied → nothing;
+        not enough), and its intent: one of its `parole`, or the action word of the `quando` (its first content word,
+        «guarda» in «un PG guarda la corda…»; root against root, «salgo» for «sale»: `intentoDelQuando`). Shared nouns
+        alone are no intent: «Resto vicino al camino» rolled Perception against «un PG guarda la corda a nodi appesa
+        vicino al camino» (17 November, live on ponte-lanterne). If the `quando` names an NPC, the action names it; two
+        checks tied → nothing;
      4. skill by keyword: the SRD table of the content language (`parole.abilita` in lingue/<codice>/prove.yaml); for a
         non-SRD rule set, `parole_chiave` in regole.yaml (weight 2), the `parole` of steps with `per:` (weight 1) and the
         `quando` of moves; two ids tied → nothing. Stealth and Sleight of Hand against an NPC are opposed. The attack skill

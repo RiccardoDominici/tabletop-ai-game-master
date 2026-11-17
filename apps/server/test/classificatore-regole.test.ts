@@ -72,6 +72,18 @@ describe('arbitro a regole, SRD', () => {
     expect(cl('pg_corrado', 'Ancora contro Ruggero!')).not.toMatchObject({ tipo: 'attacco' });
   });
 
+  // 17 November, live on ponte-lanterne: «Resto vicino al camino» rolled Perception against a check about a rope
+  // «appesa vicino al camino»: two shared nouns, no look. A scene check needs its intent: its action word or its parole.
+  it('a scene check needs the action word of its quando (or one of its parole), not shared nouns alone', () => {
+    const conCorda: IngressoClassificatore = { ...ing, proveScena: [...ing.proveScena, { id: 'p_corda', quando: 'un PG guarda la corda a nodi appesa vicino al camino' }, { id: 'p_tetto', quando: 'un PG sale sul tetto del casotto' }] };
+    const cc = (testo: string) => classificaARegole({ id: 'a1', autore: 'pg_teo', testo }, conCorda);
+    expect(cc('Resto vicino al camino')).not.toMatchObject({ prova_scena: 'p_corda' });
+    expect(cc('Guardo la corda appesa vicino al camino')).toMatchObject({ tipo: 'prova', prova_scena: 'p_corda' });
+    // An irregular verb still matches by its root («salgo» for «sale»); the others of this file are unchanged.
+    expect(cc('Salgo sul tetto del casotto')).toMatchObject({ tipo: 'prova', prova_scena: 'p_tetto' });
+    expect(cc('Do un’occhiata alla cassetta, piano')).toMatchObject({ tipo: 'prova', prova_scena: 'p_cassetta' });
+  });
+
   /*
    * DC choice on twenty actions (docs/prove-verifica.md §5, 15 November): four ordinary checks found no keyword and
    * rolled nothing with the rules arbiter.

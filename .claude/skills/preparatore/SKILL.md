@@ -135,7 +135,8 @@ the work of the Preparatore, and the form of the fields is in `riferimenti/schem
   the set) and the scene says how many: `gregari: [{tipo, quanti}]`. If a scene's text shows such creatures, write
   them there (the validator warns, `SCHEDA.nemici_senza_statistiche`); if it says there are none, do not write them.
 - **Scene**: for every obstacle or non-essential clue that the text describes, 2–4 `prove`, with DC 10 (easy),
-  15 (medium) or 20 (hard). An essential clue never sits behind a roll.
+  15 (medium) or 20 (hard). An essential clue never sits behind a roll. Each `quando` opens with what the PC does
+  («un PG apre…», «un PG guarda…»): without `parole`, the rules arbiter needs that word in the player's action.
 - **World questions** (`domande` of the scene, optional, 0–2 per scene): an uncertain fact the scene leaves to chance
   and no PC rolls for — is the guard awake, does the mule bray when strangers come, does the NPC on the stairs notice
   the noise at the door. Write the fact that asks it (`quando`, the grammar of the gates: `azione` with `temi`,

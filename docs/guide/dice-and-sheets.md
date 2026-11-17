@@ -253,7 +253,7 @@ prove:
 | `indizio` | optional: the clue the check lets the players find. It cannot be an essential clue: the validator returns an error for those |
 | `se_fallisce` | optional: the price of failure, for the narrator |
 
-When a scene check fits the action, it takes precedence over the referee's choice.
+When a scene check fits the action, it takes precedence over the referee's choice. Without a model, a check fits when the action does what its `quando` says (the same action word, «guardo» for «un PG guarda…», or one of the check's `parole`) and shares its words: «Resto vicino al camino» (I stay by the fireplace) does not fit «un PG guarda la corda appesa vicino al camino» (a PC looks at the rope hanging by the fireplace).
 
 In the repertoire, a line can come out only after a successful check: `richiede: {prova: persuasione}`. It accepts a skill, an ability, the `p_…` id of a scene check, the name of an attack, or the types `prova` (check), `salvezza` (saving throw), `attacco` (attack), and `contrapposta` (opposed check). The Engine compares the exact words: a name with different capitalization does not match.
 

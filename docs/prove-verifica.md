@@ -203,7 +203,7 @@ in `esperimenti/risultati/prove-verifica/dal-vivo-17nov/`).
 |---|---|---|
 | World question (torre-mozza, port 4971): `d_zirra_porta` in scena_torre, asked by an action on the crypt's door | Nespola «Scendo piano in cantina e provo ad aprire la porta di ferro della cripta con il grimaldello» → «prove: an NPC's own check (world question)»: Zirrà's Wisdom 8 against 17, no; «world: question answered by the dice»; on the panel's Game Master rolls, hidden (`nascosti`). The scripted narrator ignores its facts, so the `se_no` line's use by a narrator is covered by test/mondo-domande.test.ts, not seen here | works |
 | Minions (ponte-lanterne, port 4972): the consul's two guards (`gregari: guardia`, SRD 5.2 Guard, AC 16) in scena_casa_del_sale | Ghita «Colpisco la guardia alla porta dello studio con la spada lunga» → «Spada lunga 13 contro CA 16» against «guardia del console 1»; the fight takes in both guards (ids `png_guardia_casa_del_sale_1`, `_2`), not Vischi (not hostile); each guard strikes in its step («guardia del console 2: Lancia 13 contro CA 12, riuscita», Ghita 11 → 6) | works |
-| Also seen | the rules arbiter rolled Perception for «Resto vicino al camino» against the scene check about the rope «appesa vicino al camino» (two shared words, «vicino» and «camino»): an absurd card | open, reported |
+| Also seen | the rules arbiter rolled Perception for «Resto vicino al camino» against the scene check about the rope «appesa vicino al camino» (two shared words, «vicino» and «camino»): an absurd card | fixed: a scene check needs its intent, its action word or its `parole` (docs/prove.md §3) |
 
 ## 7. Live runs with manual rolls, SRD 5.2
 

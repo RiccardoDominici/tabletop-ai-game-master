@@ -10,7 +10,8 @@
  *    bersaglio con la scheda nominato in ciò che fa;
  * 2. AIUTO: «aiuto / do una mano a / copro» + un PG che agisce nello stesso turno;
  * 3. PROVA DELLA SCENA: almeno due parole di contenuto del suo `quando` (i nomi non contano), o una delle
- *    sue `parole` e una del `quando`; se il `quando` nomina un PNG, l'azione lo deve nominare; due prove
+ *    sue `parole` e una del `quando`; and the intent: one of its `parole`, or the action word of the `quando`
+ *    (intentoDelQuando: nouns alone are not enough); se il `quando` nomina un PNG, l'azione lo deve nominare; due prove
  *    a pari merito → nel dubbio niente;
  * 4. ABILITÀ O MOSSA per parole chiave: la tabella dell'SRD (prove/parole-chiave.ts), oppure per un set non SRD
  *    `parole_chiave` di regole.yaml, le `parole` dei passi del manuale legati a un'abilità o mossa
@@ -39,7 +40,7 @@ import { paroleProve } from './lingua';
 
 const parole0 = paroleProve;
 import { candidatiSrd, punteggiSet } from './parole-chiave';
-import { armaUsata, haVoce, inComune, paroleDi, pngRivolti, senzaParlato, soloDomande } from './parole-testo';
+import { armaUsata, haVoce, inComune, intentoDelQuando, paroleDi, pngRivolti, senzaParlato, soloDomande } from './parole-testo';
 import { difficoltaDa, scalaDifficolta, segnaliDifficolta } from './difficolta';
 
 /** Le abilità SRD sociali: chiedono un PNG a cui rivolgersi. */
@@ -219,7 +220,10 @@ export function classificaARegole(az: { id: string; testo: string; autore: strin
       // Una sua parola e una del `quando`, oppure due del `quando`: una parola sola («piano») non basta.
       const comuni = inComune(testo, p.quando, nomi);
       const n = comuni + (parolaGiusta ? 2 : 0);
-      const abbastanza = comuni >= 2 || (parolaGiusta && comuni >= 1);
+      // The intent must match too: one of the check's own `parole`, or the action word of its `quando` (shared nouns alone
+      // rolled Perception for «Resto vicino al camino» against «un PG guarda la corda … vicino al camino»).
+      const intento = parolaGiusta || intentoDelQuando(testo, p.quando, nomi);
+      const abbastanza = intento && (comuni >= 2 || (parolaGiusta && comuni >= 1));
       const chi = [...pngNominati(p.quando, nomiPng)];
       // Il PNG della prova: quello del `quando`; senza, per una prova sociale quello nominato (non per le altre).
       const nominato = chi.length ? (chi.find((id) => pngNominati(az.testo, nomiPng).has(id)) ?? null) : p.sociale ? png : null;

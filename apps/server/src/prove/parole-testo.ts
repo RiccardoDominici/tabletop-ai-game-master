@@ -104,6 +104,31 @@ export function paroleContenuto(t: string, nomi: ReadonlySet<string> = new Set()
   return paroleDi(t).filter((w) => w.length >= 4 && !c.vuote.has(w) && !c.generiche.has(w) && !nomi.has(w));
 }
 
+/**
+ * The action word of a scene check's `quando` («un PG guarda la corda…» → guarda): its first content word, the subject
+ * («un PG», «a PC») and the names being no content. null = none.
+ */
+export function verboDelQuando(quando: string, nomi: ReadonlySet<string> = new Set()): string | null {
+  return paroleContenuto(quando, nomi)[0] ?? null;
+}
+
+/**
+ * The action does what the check's `quando` says: one of its words has the root of the `quando`'s action word (one
+ * root the start of the other, three letters at least: «salgo» for «sale», «guardo» for «guarda»). Shared nouns alone
+ * are no intent: «Resto vicino al camino» shares «vicino» and «camino» with «un PG guarda la corda appesa vicino al
+ * camino» and is no look (17 November, live on ponte-lanterne). True when the `quando` has no action word to compare.
+ */
+export function intentoDelQuando(testo: string, quando: string, nomi: ReadonlySet<string> = new Set()): boolean {
+  const v = verboDelQuando(quando, nomi);
+  if (!v) return true;
+  const rv = radiceParola(v);
+  if (rv.length < 3) return true;
+  return paroleDi(testo).some((w) => {
+    const r = radiceParola(w);
+    return r.length >= 3 && (r.startsWith(rv) || rv.startsWith(r));
+  });
+}
+
 /** Quante parole di contenuto di `frase` sono anche nel testo (a parole intere, desinenze tolte). */
 export function inComune(testo: string, frase: string, nomi: ReadonlySet<string> = new Set()): number {
   const t = new Set(paroleContenuto(testo, nomi).map(radiceParola));
