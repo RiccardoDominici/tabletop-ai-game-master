@@ -136,7 +136,7 @@ import { guardiaAttori, type StoriaVisita } from '../coerenza/attori';
 import type { ModelloLinguaggio } from '../llm/modello';
 import { contestoMenzioni } from '../coerenza/menzioni';
 import { nomiDellaCampagna, nomiNuovi, nomiRivolti, type NomiDellaCampagna } from '../coerenza/nomi-nuovi';
-import { destinazioniIgnote, senzaDestinazioniIgnote } from '../coerenza/destinazioni';
+import { destinazioniIgnote, senzaDestinazioniIgnote, testaDestinazione } from '../coerenza/destinazioni';
 import { creatureAssenti, creatureNote, frasePresenti, guardiaInesistenti, nominateIn, rigaAssenti, type CreaturaAssente } from '../coerenza/inesistenti';
 import type { ModalitaTiri } from '../prove/modalita';
 import type { EsitoInserimento } from '../prove/attesa-tiri';
@@ -2159,7 +2159,7 @@ export class Regia {
       ...(nomi.length ? { nomi_senza_pronuncia: nomi } : {}),
       stato: { indizi_rivelati: [...s.indiziRivelati], fatti_noti: [...s.fattiNoti], battute_usate: [...s.usi.keys()], orologi: this.orologi.riepilogo() },
       // What is true now, as the narrator gets it: the scriptwriter writes for it and tags its lines with what they assume.
-      vero_adesso: righeVeroAdesso(this.diarioRegistro.registro ?? this.registroOra('sceneggiatore')),
+      vero_adesso: [...righeVeroAdesso(this.diarioRegistro.registro ?? this.registroOra('sceneggiatore')), ...this.righeInventate()],
       prefisso: `sc_${id.replace(/[^a-z0-9]+/gi, '_').toLowerCase()}_`,
       quante,
       ...(this.prove?.inCombattimento ? { scontro: true } : {}),
@@ -2201,6 +2201,7 @@ export class Regia {
       scontro: !!this.prove?.inCombattimento || this.scontroInVisita === this.mondo.visita.ingresso || (this.storiaVisita.ingresso === this.mondo.visita.ingresso && this.storiaVisita.carte.length > 0),
       ...this.combattentiDellaVisita(),
       ...(rq.stallo ? { stallo: rq.stallo.livello } : {}),
+      ...(this.paroleInventate().size ? { inventati: this.paroleInventate() } : {}),
     });
     for (const b of v.accettate) {
       // A scriptwriter's summary of the known leads (stallo 3) is true for a few turns: then the leads change.
@@ -3441,6 +3442,38 @@ export class Regia {
   }
 
   /** This turn's invented names, said once per name in a visit of the scene (mode B and the local reader only). */
+  /**
+   * The places and people the players invented in this visit of the scene (plain words): the scriptwriter hears that
+   * they do not exist, and its lines may not take them as true (sceneggiatore/valida.ts, `inventati`).
+   */
+  private inventatiVisita: { ingresso: number; luoghi: Set<string>; nomi: Set<string> } = { ingresso: -1, luoghi: new Set(), nomi: new Set() };
+
+  private ricordaInventati(dove: readonly string[]): void {
+    const ingresso = this.mondo.visita.ingresso;
+    if (this.inventatiVisita.ingresso !== ingresso) this.inventatiVisita = { ingresso, luoghi: new Set(), nomi: new Set() };
+    for (const d of dove) {
+      const t = testaDestinazione(d);
+      if (t) this.inventatiVisita.luoghi.add(t);
+    }
+    for (const nomi of this.nomiInventati?.perAzione.values() ?? []) for (const n of nomi) this.inventatiVisita.nomi.add(n);
+  }
+
+  /** The lines of «Cosa è vero adesso» for what the players invented in this visit. */
+  private righeInventate(): string[] {
+    if (this.inventatiVisita.ingresso !== this.mondo.visita.ingresso) return [];
+    const { luoghi, nomi } = this.inventatiVisita;
+    return [
+      ...(nomi.size ? [testoFisso('coerenza.nome_nuovo_riga', { nomi: [...nomi].join(', ') })] : []),
+      ...(luoghi.size ? [testoFisso('coerenza.luogo_nuovo_riga', { luoghi: [...luoghi].join(', ') })] : []),
+    ];
+  }
+
+  /** The plain words of what the players invented in this visit (sceneggiatore/valida.ts). */
+  private paroleInventate(): ReadonlySet<string> {
+    if (this.inventatiVisita.ingresso !== this.mondo.visita.ingresso) return new Set();
+    return new Set([...this.inventatiVisita.luoghi, ...[...this.inventatiVisita.nomi].flatMap((n) => normalizza(n).split(/\s+/).filter((w) => w.length > 2))]);
+  }
+
   /** This turn's movements to places the campaign does not have (coerenza/destinazioni.ts). */
   private destinazioniIgnote: { turno: number; dove: string[] } | null = null;
   /** `nomi`: the ones to say this turn (once per visit); `perAzione`: every invented name each PC's action used. */
@@ -3868,6 +3901,7 @@ export class Regia {
     ]);
     this.inesistenti = this.inesistentiDelTurno(r, registroTurno, !!tiri?.tiri.some((t) => t.tipo === 'attacco'), oraFuori);
     this.nomiInventati = this.nomiInventatiDelTurno(r);
+    this.ricordaInventati(this.destinazioniIgnote?.turno === r.turno ? this.destinazioniIgnote.dove : []);
     const veroAdesso = bloccoVeroAdesso(registroTurno);
     // The narrator hears that the noun the players used names nobody here (and the selector, through the same block).
     const rigaInesistenti = this.inesistenti ? rigaAssenti(this.inesistenti.pubbliche) : null;

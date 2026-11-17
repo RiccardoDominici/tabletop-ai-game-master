@@ -94,7 +94,7 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   «Oreste» a known name, so the invented-name line never fired: count only verified lexicon entries, and keep test
   runs out of the campaign folder~~ **Done** (86ad009); «Pugnale ancora» with a target named needs the go-on words in the named-target path
   too; a commitment toward something that does not exist still resets the stall; the S3 leads sentence lists the last
-  clock sign as a road; a scriptwriter line can confirm a place that does not exist; repeated catchphrases.
+  clock sign as a road; ~~a scriptwriter line can confirm a place that does not exist~~ **Done** (A39); repeated catchphrases.
   Still open: a round 4 in profile B measured live (needs Riccardo: API credit for profile B; provider not chosen); a full measuring round of the judge (round 3 had one valid game of four; needs Riccardo: API credit for profile B); the private replies stay on the rules
   (their raw text is now logged, for a replay set of their own); R-fuori's whole-sentence state check (the judge
   replaces it in profile B, not in profile A); the cart «impossibile» (11a);

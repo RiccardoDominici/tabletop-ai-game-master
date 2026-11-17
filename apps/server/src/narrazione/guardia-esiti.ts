@@ -130,6 +130,11 @@ export function paroleDelColpo(): { colpo: readonly string[][]; caduta: readonly
   return { colpo: [...p.colpito, ...p.mancato], caduta: p.sconfitta, pronomi: p.pronomi };
 }
 
+/** The negation words of the language pack (guardia_esiti.negazioni), plain forms. */
+export function paroleNegazione(): ReadonlySet<string> {
+  return parole().negazioni;
+}
+
 /** The words of a miss and of an absorbed blow, from this one compilation (prove/fatti-dovuti.ts reads them too). */
 export function paroleMancato(): { mancato: readonly string[][]; assorbito: readonly string[][] } {
   const p = parole();

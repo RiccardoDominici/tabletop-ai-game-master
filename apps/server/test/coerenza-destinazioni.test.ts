@@ -7,6 +7,9 @@ import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { destinazioniIgnote, senzaDestinazioniIgnote } from '../src/coerenza/destinazioni';
 import { impegna } from '../src/mondo/stallo';
 import { impostaLingua } from '../src/lingua';
+import fs from 'node:fs';
+import path from 'node:path';
+import { cartelle, leggiJson, scriviJson, type RichiestaSceneggiatore } from '../src/sceneggiatore/protocollo';
 import { inizia, Prova, turno } from './aiuti/partita';
 
 beforeAll(() => impostaLingua('it'));
@@ -44,5 +47,18 @@ describe('with the whole server, mode B', () => {
     expect(detto.some((t) => /^Da qui (le strade che conoscete portano soltanto verso|non parte nessuna strada)/.test(t))).toBe(true);
     // T1 and T2 brought nothing new and committed to nothing: T3 is a stall.
     expect(prova.turni().filter((r) => r['stallo']).map((r) => r['turno'])).toEqual([3]);
+  });
+
+  it('the scriptwriter hears that the invented place does not exist («Cosa è vero adesso»)', async () => {
+    prova = new Prova();
+    const radice = path.join(prova.cartella, 'sceneggiatore');
+    scriviJson(cartelle(radice).vivo, { ts: Date.now(), pid: 0, modello: 'prova' });
+    const { url } = await prova.avvia(prova.campagna('mondo'), () => '[narratore] Anna, la ruota cigola.\n[invito] tutti', {}, { sceneggiatore: { radice, tettoMs: 30_000 } });
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    const s = await inizia(schermo, tel);
+    await turno(tel, 'pg_anna', s, 'Vado alla grotta delle fate.');
+    const richieste = fs.readdirSync(cartelle(radice).richieste).map((f) => leggiJson<RichiestaSceneggiatore>(path.join(cartelle(radice).richieste, f))!);
+    expect(richieste.some((r) => (r.vero_adesso ?? []).some((x) => /nessun luogo come grotta/.test(x)))).toBe(true);
   });
 });

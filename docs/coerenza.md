@@ -891,6 +891,13 @@ Not as built, found by the judge and by the logs:
 The PC-state tag was used once (CA). The announcement: 0 H, every false claim attributed; one world clause kept (FB
 T9) and some questions and later own clauses dropped by the «one sentence» rule.
 
+## After round 7 (17 November, package P1)
+- The lexicon learned in play: a test instance keeps it in its log folder, and only its verified entries count as
+  known names (docs/pronuncia.md; the cause of round 7's silent invented-name line).
+- A scriptwriter line may not take as true a place or a person the players invented in this visit (an unknown
+  destination's head word, an invented name); a sentence that denies it passes, and «Cosa è vero adesso» of its
+  request lists them (docs/sceneggiatore.md). Test: test/sceneggiatore.test.ts, test/coerenza-destinazioni.test.ts.
+
 ## Characters the players invent (Riccardo's decision, 16 November)
 
 The blind off-the-rails script addressed «Oreste» and «Madre Carla», people the campaign never had; Berta and Ugo

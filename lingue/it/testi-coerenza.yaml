@@ -30,6 +30,8 @@ coerenza:
   # An action goes somewhere the campaign does not have (coerenza/destinazioni.ts): the roads that really leave the scene.
   strade: "Da qui le strade che conoscete portano soltanto verso: {luoghi}."
   strade_nessuna: "Da qui non parte nessuna strada per quel posto."
+  # The places the players invented in this visit, for «Cosa è vero adesso» (the narrator and the scriptwriter).
+  luogo_nuovo_riga: "Qui non c'è nessun luogo come {luoghi}: nessuna battuta lo dà per vero (al più un PNG presente dice di non conoscerlo)."
   nome_nuovo_riga: "Nessuno in scena si chiama {nomi}: nessun PNG risponde a quel nome, non dargli voce."
   # The Engine's answer to an action whose sentences the checker dropped (coerenza/risposta.ts): who tried, how it went.
   risposta:

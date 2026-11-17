@@ -121,6 +121,20 @@ describe('controllo delle battute dello sceneggiatore', () => {
     ]);
   });
 
+  it('a place or a person the players invented: a line that takes it as true is refused, one that denies it passes', () => {
+    // Round 6 and 7 (off the rails, T7): «Il guado è dall'altra parte, halfling.» for a ford the campaign does not have.
+    const r = validaBattute(
+      yaml([
+        battuta({ id: 'sc_x_1', testo: ['[png_oste] Il guado è dall\'altra parte, signora.'] }),
+        battuta({ id: 'sc_x_2', testo: ['[png_oste] Qui non c\'è nessun guado, signora.'] }),
+        battuta({ id: 'sc_x_3', testo: ['[png_oste] Il vino è buono, signora.'] }),
+      ]),
+      { ...ctx, inventati: new Set(['guado']) },
+    );
+    expect(r.accettate.map((b) => b.id)).toEqual(['sc_x_2', 'sc_x_3']);
+    expect(r.scartate).toEqual([{ id: 'sc_x_1', motivo: expect.stringMatching(/dà per vero «guado»/) }]);
+  });
+
   it('stall lines: the tag only at the level the request asked; elsewhere it is dropped and the line kept', () => {
     const righe = yaml([
       battuta({ id: 'sc_x_1', chi: 'narratore', tipo: 'momento', testo: ['[narratore] Fuori, un cane abbaia due volte.'], stallo: 1 }),

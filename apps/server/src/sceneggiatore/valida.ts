@@ -33,7 +33,7 @@ import type { EntitaRegistro } from '../coerenza/registro';
 import { nominatiSenzaSegno } from '../repertorio/fatti-battuta';
 import { pngNominati } from '../repertorio/pertinenza';
 import { normalizza } from '../azioni/regole';
-import { paroleDelColpo, paroleDi, posizione } from '../narrazione/guardia-esiti';
+import { paroleDelColpo, paroleDi, paroleNegazione, posizione } from '../narrazione/guardia-esiti';
 
 const FILE = 'sceneggiatore.yaml';
 export const TIPI_SCENEGGIATORE: ReadonlySet<TipoBattuta> = new Set<TipoBattuta>(['reazione', 'momento', 'richiesta', 'rifiuto', 'saluto']);
@@ -73,8 +73,30 @@ export interface ContestoValidazione {
   combattenti?: ReadonlySet<string>;
   /** A fight is on now. */
   inLotta?: boolean;
+  /**
+   * Words of places and people the players invented in this visit (plain forms: «guado», «oreste»): a line that names
+   * one is refused unless its sentence denies it (round 6 and 7: «Il guado è dall'altra parte, halfling.» confirmed a
+   * ford the campaign does not have).
+   */
+  inventati?: ReadonlySet<string>;
   /** The request asked for stall lines of this level (sceneggiatore/protocollo.ts, `stallo`); else no stall tag. */
   stallo?: 1 | 3;
+}
+
+/**
+ * The first invented word a line takes as true: one of `inventati` in a sentence with no negation of the language pack
+ * (guardia_esiti.negazioni: «non», «nessuno»…). «Qui nessuno si chiama Oreste.» denies it; «Il guado è di là.» does not.
+ */
+function confermaInventato(righe: readonly string[], inventati: ReadonlySet<string>): string | null {
+  const neg = paroleNegazione();
+  for (const r of righe) {
+    for (const frase of r.split(/(?<=[.!?…])\s+/)) {
+      const w = paroleDi(frase);
+      const x = w.find((p) => inventati.has(p));
+      if (x && !w.some((p) => neg.has(p) || p.startsWith('nessun'))) return x;
+    }
+  }
+  return null;
 }
 
 /** The first word of a blow, a miss or a fall in the text (language pack, guardia_esiti), or null. */
@@ -200,6 +222,8 @@ export function validaBattute(testo: string, ctx: ContestoValidazione): EsitoVal
       const parola = paroleDiEsito(b.testo.map((r) => r.testo).join(' '));
       if (parola) return void scartate.push({ id: b.id, motivo: `racconta un esito («${parola}») senza richiede.esito` }), false;
     }
+    const confermato = ctx.inventati?.size ? confermaInventato(b.testo.map((r) => r.testo), ctx.inventati) : null;
+    if (confermato) return void scartate.push({ id: b.id, motivo: `dà per vero «${confermato}», che la campagna non ha` }), false;
     if (!b.temi.length) return void scartate.push({ id: b.id, motivo: 'senza temi: non entrerebbe mai in catalogo' }), false;
     if (b.testo.length > MAX_RIGHE || b.testo.some((r) => r.testo.length > MAX_CARATTERI_RIGA)) return void scartate.push({ id: b.id, motivo: 'troppo lunga per la voce' }), false;
     const segreti = segretiNascosti(b.testo.map((r) => r.testo).join(' '), ctx.parole, ctx.pubblico, ctx.detto);

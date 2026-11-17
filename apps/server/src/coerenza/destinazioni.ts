@@ -37,6 +37,11 @@ export function destinazioniIgnote(testo: string, noti: ReadonlySet<string>): st
   return out;
 }
 
+/** The head word of a destination (the first of four letters or more, plain form): «grotta» for «grotta delle fate». */
+export function testaDestinazione(dove: string): string | null {
+  return normalizza(dove).replace(/[^\p{L}' ]/gu, ' ').split(/[\s']+/).find((w) => w.length >= MIN_PAROLA) ?? null;
+}
+
 /** The text without its movements to an unknown destination: what is left may still commit («prendo la chiave»). */
 export function senzaDestinazioniIgnote(testo: string, noti: ReadonlySet<string>): string {
   let t = testo;

@@ -30,6 +30,8 @@ coerenza:
   # An action goes somewhere the campaign does not have (coerenza/destinazioni.ts): the roads that really leave the scene.
   strade: "From here the roads you know lead only towards: {luoghi}."
   strade_nessuna: "No road leads from here to that place."
+  # The places the players invented in this visit, for «What is true now» (the narrator and the scriptwriter).
+  luogo_nuovo_riga: "There is no place like {luoghi} here: no line takes it as true (at most an NPC present says they do not know it)."
   nome_nuovo_riga: "Nobody in the scene is called {nomi}: no NPC answers to that name, do not voice one."
   # The Engine's answer to an action whose sentences the checker dropped (coerenza/risposta.ts): who tried, how it went.
   risposta:

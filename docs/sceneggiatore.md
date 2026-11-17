@@ -72,6 +72,10 @@ The same rules as the prepared repertoire, plus those for whoever writes on the 
   («il buio cade sulla torre») passes.
   The request says so (`scontro`) and asks, for each likely attack, a hit and a miss line with the same `quando`: the
   Engine says the one the card confirms, also for a `subito` answer. The refused lines are recorded with their text;
+- **invented places and people**: a line that names a place or a person the players invented in this visit (an
+  unknown destination's head word, a name nobody has) is refused unless its sentence denies it («Qui non c'è nessun
+  guado.»); the request's «Cosa è vero adesso» lists them («Qui non c'è nessun luogo come guado…»). Round 6 and 7 heard
+  «Il guado è dall'altra parte, halfling.» for a ford the campaign does not have;
 - **stall lines**: `stallo: 1` or `3` only, at the level the request asks for (elsewhere the key is dropped and the
   line kept as an ordinary one: round 6's `prossime` writer copied it onto ordinary lines) when the table is stalling
   (docs/mondo.md §5, «Prepared stall lines»); level 2 reveals a clue, so it stays the Preparer's. A level-3 summary is offered for the next
