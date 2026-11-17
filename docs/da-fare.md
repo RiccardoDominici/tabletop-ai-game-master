@@ -39,9 +39,11 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   - ~~a fight opened from the panel rolls the PCs' first initiative with the Engine's dice~~ **Done** (16 November, item
     11c): with manual rolls it starts at the next closed window, after its actions, and every PC rolls initiative there
     (docs/prove.md §8); side rolls stay the Engine's;
-  - to check: with automatic rolls the panel's fight still starts at the click, and the next window's `dopoAzioni`
+  - ~~to check: with automatic rolls the panel's fight still starts at the click, and the next window's `dopoAzioni`
     (prove/combattimento.ts) advances past step 0 before running any step, so an NPC first in the order seems to lose
-    its first step (read from the code, not reproduced; the manual path starts inside `dopoAzioni` and runs it);
+    its first step (read from the code, not reproduced; the manual path starts inside `dopoAzioni` and runs it)~~
+    **Done** (A3): reproduced, then fixed in the Engine (only a PC step at the head is consumed; the click's order is
+    said in that first turn). Left: with an NPC first, the PCs' actions of that window still resolve before its step;
   - ~~«the goblin» meant for a named NPC (Zirrà) without her name still finds no target (no roll)~~ **Done** (A4): it
     finds her by her alias since C5's re-targeting (the failure was Haiku's attack on an unknown target, skipped
     before C5); pinned by a test. A word that is no alias («la sentinella») still finds nobody;

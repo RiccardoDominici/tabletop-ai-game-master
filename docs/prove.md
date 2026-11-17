@@ -589,7 +589,11 @@ never wait. The startup log line `PROVE E DADI` says the value and its origin (o
   asked like any other roll («Ida, tira l'iniziativa.»), «Tira il Motore» works on it, and the real pass starts the fight
   with the dice entered; the world hears «scontro» once, in that turn. A window with no action still runs the wait. An interrupted turn leaves the request as it was
   (no half-open fight); «Termina combattimento» cancels a request not started yet; the panel shows «alla chiusura: si
-  tira l'iniziativa». Automatic rolls start the panel's fight at once, as before. Side rolls (surprise, initiative by
+  tira l'iniziativa». Automatic rolls start the panel's fight at once, as before; the first turn after the click says
+  the order at the table and runs an NPC step at the head of it (A3, 17 November: the window consumed that step as if
+  a PC had played it, so an NPC first in the order lost its first step, and the click's order was never said). The
+  PCs' actions written in that window are not deferred: with an NPC first they still resolve before its step. Test:
+  test/combattimento.test.ts, test/combattimento-master-manuale.test.ts. Side rolls (surprise, initiative by
   sides) stay the Engine's, being no one player's own. Test: test/combattimento-master-manuale.test.ts.
 - A restart during the wait loses the open requests (the requests are not in the session snapshot): the turn behaves as
   a turn caught in narration.

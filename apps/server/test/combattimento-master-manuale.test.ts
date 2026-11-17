@@ -3,7 +3,8 @@
  * players roll their own initiative. The fight starts at the next closed window, after its actions, as one an attack
  * opens does: the dry run asks each PC's initiative die like any other roll of theirs (the voice says «Ida, tira
  * l'iniziativa.»), the Game Master can still give one to the Engine, and the NPCs' initiative stays the Engine's. An
- * interrupted turn leaves no half-open fight; automatic rolls start it at once, as before. Invented fixture `prove`.
+ * interrupted turn leaves no half-open fight; automatic rolls start it at once, as before, and an NPC first in the order
+ * strikes in the first turn after the click (A3). Invented fixture `prove`.
  */
 import { afterEach, describe, expect, it } from 'vitest';
 import type { AudioFrase, RichiestaTiro, StatoTavolo } from '@tabletop-ai-gm/shared';
@@ -124,4 +125,27 @@ describe('a fight opened from the panel, manual rolls', () => {
     expect(sm.combattimento).toMatchObject({ attivo: true });
     expect(sm.combattimento?.chiesto).toBeUndefined();
   });
+
+  // A3 of docs/da-fare.md: the next window consumed the head step as if a PC had played it, so an NPC first in the
+  // order lost its first step, and the order rolled at the click was never said at the table.
+  it('automatic rolls, an NPC first: it strikes in the first window after the click, and the table hears the order', async () => {
+    prova = new Prova();
+    // Initiative at the click (Ida, Corrado, Ruggero): 2+2, 3+2, 18+1 → Ruggero, Corrado, Ida. Ruggero 15+4 hits the
+    // last PC who acted (Corrado) for 4+2.
+    const { url, messaggi } = await prova.avvia(prova.campagna('prove'), COPIONE, { TAGM_TIRI_GIOCATORI: 'automatico' }, { dadi: new DadiACopione([2, 3, 18, 15, 4]) });
+    const schermo = await prova.proiettore(url);
+    const ida = await prova.telefono(url, 'pg_ida');
+    const corrado = await prova.telefono(url, 'pg_corrado');
+    const master = await prova.master(url);
+    const s1 = await inizia(schermo, ida);
+    expect(await master.comanda({ tipo: 'combattimento_inizia' })).toEqual({ ok: true });
+    const dopo = attendi(ida, (x: StatoTavolo) => x.fase === 'finestra' && x.turno === 2);
+    await agisci(ida, 'pg_ida', 'Guardo il fiume', s1.versione_scena);
+    await agisci(corrado, 'pg_corrado', 'Aspetto', s1.versione_scena);
+    const s2 = await dopo;
+    expect(messaggi.find((m) => m.includes('Turno di Ruggero lo sgherro'))).toMatch(/Ruggero lo sgherro colpisce Corrado Lanzi: 6 danni/);
+    expect(s2.pg.find((p) => p.id === 'pg_corrado')?.pf).toEqual({ attuali: 6, massimi: 12 });
+    expect(s2.trascrizione.filter((v) => v.turno === 1).map((v) => v.testo)).toContain('Ordine del round: Ruggero, Corrado, Ida.');
+    expect(s2.combattimento?.turno_di).toEqual(['pg_corrado']);
+  }, 20_000);
 });

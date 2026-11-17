@@ -86,6 +86,34 @@ describe('combattimento SRD 5.2', () => {
     expect(v.turno_di).toEqual(['pg_b']);
   });
 
+  /*
+   * A3 of docs/da-fare.md: with automatic rolls the panel starts the fight at the click (`inizia`), and the next
+   * window's `dopoAzioni` consumed the step at the head as if a PC had just played it: an NPC first in the order lost
+   * its first step. The click's order was never said at the table either (`ordine` came only from `dopoAzioni`).
+   */
+  it('a fight opened at the click: an NPC first in the order strikes in the next window, and the order is said then', () => {
+    // Initiative: a 5, x 18 → x, a. x hits a for 3.
+    const { g, attacchi } = scontro(combattimentoSrd(), { pg_a: 10, png_x: 10 }, [5, 18], () => 3);
+    const cand = [{ id: 'pg_a', lato: 'pg' as const, mod: 0 }, { id: 'png_x', lato: 'png' as const, mod: 0 }];
+    expect(g.inizia(cand, [], null)).toBe('Inizia il combattimento. Iniziativa: x 18, a 5.');
+    expect(g.turnoDi()).toBeNull();
+    const r = g.dopoAzioni({ turno: 2, attacchi: [], autori: [], candidati: () => cand });
+    expect(attacchi).toEqual([{ png: 'png_x', pg: 'pg_a', fase: 'turno' }]);
+    expect(r.ordine).toEqual(['x', 'a']);
+    expect(r.invitati).toEqual(['pg_a']);
+    // a plays its step; then x again, in round 2. The order is said once.
+    const r2 = g.dopoAzioni({ turno: 3, attacchi: [], autori: ['pg_a'], candidati: () => cand });
+    expect(attacchi).toHaveLength(2);
+    expect(r2.ordine).toBeUndefined();
+    // A PC first after the click: its step is the one the window plays, as before.
+    const pgPrimo = scontro(combattimentoSrd(), { pg_a: 10, png_x: 10 }, [18, 5], () => 3);
+    pgPrimo.g.inizia(cand, [], null);
+    expect(pgPrimo.g.turnoDi()).toEqual(['pg_a']);
+    pgPrimo.g.dopoAzioni({ turno: 2, attacchi: [], autori: ['pg_a'], candidati: () => cand });
+    expect(pgPrimo.attacchi).toEqual([{ png: 'png_x', pg: 'pg_a', fase: 'turno' }]);
+    expect(pgPrimo.g.turnoDi()).toEqual(['pg_a']);
+  });
+
   it('round 2: il PNG passa al PG in piedi; un 20 naturale rimette in piedi con 1 PF', () => {
     const { g, stato, attacchi } = scontro(combattimentoSrd(), { pg_a: 10, pg_b: 10, png_x: 10 }, [10, 5, 18, 1, 20], (png) => (attacchi.length ? 1 : 20));
     const cand = [{ id: 'pg_a', lato: 'pg' as const, mod: 2 }, { id: 'pg_b', lato: 'pg' as const, mod: 0 }, { id: 'png_x', lato: 'png' as const, mod: 1 }];

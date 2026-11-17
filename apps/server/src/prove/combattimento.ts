@@ -93,7 +93,8 @@ export interface EsitoCombattimento {
   /**
    * The turn order just rolled (the fight starts, or a new round re-rolls individual initiative), names first to last:
    * the table hears it from the Engine (scena/regia.ts, annunciaOrdine). Third e2e pass, bug 6: the order was only in
-   * the narrator's facts and on the projector's bar, and no table line ever said it. Absent = not rolled in this turn.
+   * the narrator's facts and on the projector's bar, and no table line ever said it. Absent = not rolled in this turn
+   * (nor at the Game Master's click just before it: a fight opened from the panel with automatic rolls).
    */
   ordine?: string[];
 }
@@ -363,7 +364,8 @@ export class GestoreCombattimento {
     const tiri: TiroMostrato[] = [];
     this.morte = [];
     this.fuggiti = [];
-    this.ordineTirato = null;
+    // An order rolled at the Game Master's click (`inizia` from the panel, automatic rolls) is still to be said: it is
+    // kept for this call's result, so the table hears it in the fight's first turn (A3 of docs/da-fare.md).
     let appenaIniziato = false;
     if (!this.s) {
       if (!o.attacchi.length && !o.apri) return { ...VUOTO, morte: [], fuggiti: [] };
@@ -387,8 +389,10 @@ export class GestoreCombattimento {
       this.controllaFine(fatti, { turno: o.turno, tiri });
       return this.chiudi(o.turno, fatti, tiri);
     }
-    // Il passo di PG appena giocato è consumato; appena iniziato si parte dal primo passo.
-    if (!appenaIniziato) this.avanza(fatti);
+    // The PC step just played is consumed; a fight just started runs from its first step. An NPC step at the head was
+    // not played by anyone: it runs now. That is the fight the Game Master opened at the click (automatic rolls), whose
+    // next window used to skip an NPC first in the order (A3 of docs/da-fare.md).
+    if (!appenaIniziato && s.passi[s.indice]?.lato !== 'png') this.avanza(fatti);
     for (let guardia = 0; guardia < 60 && this.s; guardia++) {
       if (this.controllaFine(fatti, { turno: o.turno, tiri })) break;
       const p = this.s.passi[this.s.indice];
@@ -412,11 +416,13 @@ export class GestoreCombattimento {
   private chiudi(turno: number, fatti: string[], tiri: TiroMostrato[]): EsitoCombattimento {
     void turno;
     const { morte, fuggiti } = this;
+    const tirato = this.ordineTirato;
+    this.ordineTirato = null;
     const sconfitta = this.sconfittaPg;
     this.sconfittaPg = false;
     if (!this.s) return { fatti, tiri, intestazione: null, invitati: null, finito: fatti.at(-1) ?? testo('prove.combattimento.fine'), morte, fuggiti, ...(sconfitta ? { sconfitta: true } : {}) };
     const invitati = this.turnoDi();
-    const ordine = this.ordineTirato ? { ordine: this.ordineTirato } : {};
+    const ordine = tirato ? { ordine: tirato } : {};
     return { fatti, tiri, intestazione: this.intestazione(), invitati: invitati && invitati.length ? invitati : null, finito: null, morte, fuggiti, ...ordine };
   }
 
@@ -611,6 +617,7 @@ export class GestoreCombattimento {
     }
     fatti.push(testo('prove.combattimento.finito', { motivo }));
     this.s = null;
+    this.ordineTirato = null;
     return true;
   }
 
