@@ -80,7 +80,8 @@ conseguenze:
   - al_segno: 3
     cosa: "what happens in the world (canon; may be secret)"       # required
     detto: "sentence the table hears if the PCs are there"           # one of detto / battuta / regia
-    battuta: b_id                                                    # mode B: the Engine says this line
+    battuta: b_id                                                    # mode B: the Engine says this line (its own:
+                                                                     # never in the reader's catalogue; `temi: []`)
     regia: "directive for the narrator (mode A)"
     tracce: "sentence the table hears later, if it happened elsewhere"
     png: {png_x: {atteggiamento: ostile | {pg_y: amichevole}, scena: scena_y | via}}
@@ -100,6 +101,10 @@ clock's `pieni` (a jump of `orologi_in_scena` applies each crossed mark). The ma
 applied (they happened before the session), and so does every mark up to `pieni` when a snapshot without world state
 is resumed. State changes apply at once. With the clock active in the scene, `detto` (or the
 line) is said by the Engine in that response, before the invitation, and `regia` goes into the next turn's message.
+A line named by a consequence (or an omen) is the Engine's only: it never enters the reader's catalogue, so it cannot
+be used before its mark (A41: torre-mozza's mark-3 line was a filler the reader used first, and the consequence fell
+back to `detto`). It may be theme-less (`temi: []`, allowed only for such a line); the validator warns when a filler
+or a stall line is named (`FRONTI.battuta_della_conseguenza`: it would no longer come out as one).
 A consequence about NPCs (`png`) is seen only if at least one of them is in the scene: with a clock active in two scenes,
 the miller fleeing is not seen from the other one (and `detto` must be perceivable from every scene where the clock is
 active). Otherwise the event is **off-screen**: logged with `visto: false`, and its `tracce` surface when the PCs enter

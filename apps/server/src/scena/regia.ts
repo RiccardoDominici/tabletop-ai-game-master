@@ -2339,6 +2339,8 @@ export class Regia {
     if (this.o.modo !== 'repertorio') return null;
     if (!this.o.repertorio) throw new Error('modalità repertorio senza repertorio caricato');
     const s = new StatoRepertorio(this.o.repertorio, this.campagna, this.orologi);
+    // A clock consequence's line is the Engine's, said at its mark, never offered to the reader (docs/mondo.md §3).
+    s.soloMotore = new Set((this.campagna.mondo?.conseguenze ?? []).flatMap((c) => (c.battuta ? [c.battuta] : [])));
     // Chi parla nelle battute: i PNG in scena che possono parlare, decisi qui (anche a mano e dopo un colpo).
     s.presenza = () => this.pngInScena();
     s.negati = () => this.negatiTurno;

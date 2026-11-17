@@ -78,12 +78,12 @@ orologi:
       - {quando: lascia_scena, scena: scena_ovile}
       - "mai due segni nella stessa risposta"
     # Che cosa fa succedere un segno (docs/mondo.md §3). Al terzo segno, se è ancora all'ovile, Berta perde la pazienza:
-    # la sua battuta d'attesa la dice il Motore (modalità B), o la frase `detto` (modalità A). Se i PG sono già alla
+    # la sua battuta dedicata (ber_pazienza, solo del Motore) la dice il Motore (modalità B), o la frase `detto` (modalità A). Se i PG sono già alla
     # carbonaia succede fuori scena, e lo ritrovano tornando da lei.
     conseguenze:
       - al_segno: 3
         cosa: "Berta perde la pazienza: comincia a pensare di salire lei alla torre con la chiave."
-        battuta: ber_salgo_io
+        battuta: ber_pazienza
         detto: "Berta guarda il crinale e si stringe nella mantella: la notte avanza, e nessuno è ancora salito."
         tracce: "Berta ha già la mantella addosso e la chiave in mano: stava per salire da sola."
         png: {png_berta: {}}

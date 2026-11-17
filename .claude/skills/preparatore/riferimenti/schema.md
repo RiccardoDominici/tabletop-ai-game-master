@@ -81,9 +81,9 @@ chronology, abstract secrets and arcs go there.
       detto: "…"                           # sentence the table hears if the PCs are there; or battuta: <id>; or regia: "…"
                                            #   [V one; for a clock active in no scene, tracce instead]
                                            #   it must be perceivable from EVERY scene where the clock is active
-      # battuta: write a line for the consequence, with `temi: []` and not a filler, so only the Engine says it: a line
-      #   the selector can pick may be gone before the mark (live run on torre-mozza: ber_salgo_io was used as a filler,
-      #   the consequence fell back to detto)
+      # battuta: write a line for the consequence, with `temi: []` and not a filler: a line named here is the Engine's,
+      #   it never enters the reader's catalogue and is said only at the mark (a filler or stall line named here no longer
+      #   comes out as one) [V warning FRONTI.battuta_della_conseguenza]
       tracce: "…"                          # what the table hears later if it happened elsewhere [V warning, error if strict,
                                            #   for a clock not active in every scene]
       png: {png_…: {atteggiamento: ostile, scena: scena_… | via}}   # optional: attitude (or {pg_…: stato}), where it goes

@@ -237,11 +237,27 @@ CHIAVI_CONSEGUENZA = {"al_segno", "cosa", "detto", "battuta", "regia", "tracce",
 STATI_ATTEGGIAMENTO = {"ostile", "indifferente", "amichevole"}
 
 
+def battute_del_motore(c: Campagna) -> set[str]:
+    """The lines a clock's consequence or an omen names: the Engine's only, never in the reader's catalogue (A41)."""
+    voci = [x for o in c.orologi.values() for x in (o.get("conseguenze") or []) if isinstance(x, dict)]
+    for f in ((c.campagna.get("preparazione") or {}).get("fronti") or []):
+        for p in (f.get("pericoli") or []) if isinstance(f, dict) else []:
+            voci += [x for x in (p.get("presagi") or []) if isinstance(x, dict)] if isinstance(p, dict) else []
+    return {str(x["battuta"]) for x in voci if x.get("battuta")}
+
+
 def _controlla_effetti_mondo(c: Campagna, e: Esito, dove: str, d: dict) -> None:
     """The keys a consequence and an omen share: line, NPC changes, hidden NPCs that appear, clues offered."""
     scene = {s.get("id") for _, s in c.scene if isinstance(s, dict)}
     if d.get("battuta") and d["battuta"] not in c.per_id:
         e.errore("FRONTI.conseguenze", dove, f"battuta inesistente {d['battuta']}")
+    elif d.get("battuta"):
+        # A consequence's line is the Engine's (docs/mondo.md §3): it never enters the reader's catalogue, so a filler or
+        # a stall line named here never comes out as one (A41: torre-mozza's mark-3 line was a filler).
+        b = c.per_id[d["battuta"]]
+        if b.get("riempitivo") or b.get("stallo") is not None:
+            e.avviso("FRONTI.battuta_della_conseguenza", dove, f"{d['battuta']} è un riempitivo o una battuta di stallo: "
+                     "come conseguenza la dice solo il Motore al segno, e non esce più come tale; scrivi una battuta dedicata")
     png = d.get("png")
     if png is not None and not isinstance(png, dict):
         e.errore("FRONTI.conseguenze", dove, "png è {png_x: {atteggiamento, scena}}")

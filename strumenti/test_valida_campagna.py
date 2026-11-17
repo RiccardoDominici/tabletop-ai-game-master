@@ -439,6 +439,23 @@ def test_fronti_conseguenze_dei_segni(camp):
         assert "FRONTI.conseguenze" in errori(camp, rigoroso=True)
 
 
+def test_fronti_battuta_della_conseguenza_dedicata(camp):
+    # A41: a consequence's line is the Engine's; a filler named there never comes out as a filler: a warning.
+    d = leggi(camp, "campagna.yaml")
+    rep = sorted((camp / "repertorio").glob("*.yaml"))[0]
+    r = leggi(camp, f"repertorio/{rep.name}")
+    b = r["battute"][0]
+    modifica(camp, "campagna.yaml", lambda x: x["orologi"][0].__setitem__("conseguenze", [{"al_segno": 1, "cosa": "x", "battuta": b["id"]}]))
+    assert "FRONTI.battuta_della_conseguenza" not in avvisi(camp) or b.get("riempitivo")
+    modifica(camp, f"repertorio/{rep.name}", lambda x: x["battute"][0].__setitem__("riempitivo", True))
+    assert "FRONTI.battuta_della_conseguenza" in avvisi(camp)
+    # Theme-less only as a consequence's line: the reader never sees it, the Engine says it at the mark.
+    modifica(camp, f"repertorio/{rep.name}", lambda x: (x["battute"][0].pop("riempitivo"), x["battute"][0].__setitem__("temi", [])))
+    assert "REPERTORIO.temi" not in errori(camp, rigoroso=True)
+    scrivi(camp, "campagna.yaml", d)
+    assert "REPERTORIO.temi" in errori(camp)
+
+
 def test_fronti_conseguenze_di_un_orologio_mai_in_scena(camp):
     # A front's extra clock is active in no scene: its consequences are off-screen, so they need tracce, not detto.
     def extra(d, voce):

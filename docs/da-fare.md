@@ -156,8 +156,9 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   - **object state**: who has what, at least for the objects with an id in the scene (`elementi_interattivi`). Open;
   - ~~**lines "per state" without `> pg`**~~ for the endings: done 3 November (at full clock, the ending and the closing are stated by the Engine, c98b34b); the validator no longer warns (`COPERTURA.finale_senza_azione` is removed, 82b1d32).
 - **World that moves: still open** (docs/mondo.md, 15 November; live runs in esperimenti/risultati/mondo-live-B/):
-  lines with their own `effetti.atteggiamento`; a dedicated theme-less line for torre-mozza's mark-3 consequence (today
-  `ber_salgo_io`, a filler the reader may use first, so the consequence falls back to `detto`); a live run with Haiku
+  lines with their own `effetti.atteggiamento`; ~~a dedicated theme-less line for torre-mozza's mark-3 consequence (today
+  `ber_salgo_io`, a filler the reader may use first, so the consequence falls back to `detto`)~~ **Done** (A41:
+  `ber_pazienza`; a consequence's line is now the Engine's only, never in the reader's catalogue); a live run with Haiku
   (only the local reader was tried: no key on this machine; needs Riccardo: an API key for Haiku); the 38 turns/hour default rests on one human evening in
   the logs; «Decided (17 November): kept as the starting value; the Engine replaces it with the rate this table plays.» A log line when a social check is not applied because it would make an NPC hostile. Open.
 - **World: Game Master command to set an NPC's attitude by hand** (docs/mondo.md §4). The Engine and the panel's «Mondo» box

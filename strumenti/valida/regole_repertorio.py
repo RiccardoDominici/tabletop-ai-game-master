@@ -21,6 +21,7 @@ from .carica import Campagna
 from .esito import Esito
 from . import regole_fatti_battuta, regole_sconfitta, regole_stallo
 from .regole_scena import nomi_propri
+from .regole_campagna import battute_del_motore
 from .voce import solo_parole
 from .testo import frasi, limite_da_stile, n_parole, problemi_di_prosa, radici, vocativi
 
@@ -107,6 +108,7 @@ def controlla(c: Campagna, e: Esito) -> None:
 
 def _schema(c: Campagna, e: Esito) -> None:
     visti = set()
+    del_motore = battute_del_motore(c)
     scene = {s.get("id") for _, s in c.scene}
     for b in c.battute:
         bid = b.get("id", "?")
@@ -142,8 +144,10 @@ def _schema(c: Campagna, e: Esito) -> None:
             if rx.search(q.lower()):
                 e.errore("REPERTORIO.quando", dove, f"il quando dice chi mente, nasconde o confessa (/{rx.pattern}/): lo legge il selettore")
         temi = b.get("temi")
-        if not isinstance(temi, list) or not temi or not all(isinstance(t, str) and t == t.lower() for t in temi):
-            e.errore("REPERTORIO.temi", dove, "temi: lista non vuota di parole minuscole")
+        # A consequence's line is the Engine's (never in the reader's catalogue): it may be theme-less, `temi: []` (A41).
+        senza_temi = isinstance(temi, list) and not temi and b.get("id") in del_motore
+        if not senza_temi and (not isinstance(temi, list) or not temi or not all(isinstance(t, str) and t == t.lower() for t in temi)):
+            e.errore("REPERTORIO.temi", dove, "temi: lista non vuota di parole minuscole (vuota solo per la battuta di una conseguenza)")
         nvar = len(b.get("varianti") or [])
         if nvar > 2:
             e.errore("REPERTORIO.varianti", dove, f"{nvar} varianti (max 2)")

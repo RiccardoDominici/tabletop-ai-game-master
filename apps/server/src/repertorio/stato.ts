@@ -117,6 +117,12 @@ export class StatoRepertorio {
    */
   negati: (() => ReadonlySet<string>) | null = null;
   /**
+   * Lines only the Engine says: the `battuta` of a clock's consequence (docs/mondo.md §3). They never enter the
+   * reader's catalogue, so the reader cannot use the consequence before its mark (A41: torre-mozza's mark-3 line was a
+   * filler the reader picked first, and the consequence fell back to its sentence).
+   */
+  soloMotore: ReadonlySet<string> = new Set();
+  /**
    * NPCs out of play for the Engine (on the ground, dead, fled: prove/stato.ts), each with the words that name it in a
    * line's text (its name and first name, already normalised). A line whose TEXT names one of them is unavailable,
    * whoever speaks it: the third e2e pass had a narrator filler «Zirrà schiocca le dita.» out eight turns after Zirrà
@@ -286,6 +292,7 @@ export class StatoRepertorio {
    * - per stato: a orologio completo, le battute che lo richiedono completo (finali, folla, chiusura),
    *   anche senza parole dei giocatori;
    * - i `riempitivo` solo allo stallo (nessuno ha agito);
+   * - never a consequence's line (`soloMotore`): the Engine says it at its mark;
    * - sopra a tutto, il filtro dei segreti di `disponibiliPerTurno`.
    */
   catalogo(o: {
@@ -317,7 +324,7 @@ export class StatoRepertorio {
     const candidate = this.disponibili(o.turno).filter((b) => {
       // Le chiusure della serata le dice solo il Motore, a «Chiudi la sessione» (scena/regia.ts); the stall lines too, at
       // a stall move of their level (docs/mondo.md §5).
-      if (b.solo_esempio || b.tipo === 'chiusura' || (b.stallo ?? null) !== null || b.sconfitta) return false;
+      if (b.solo_esempio || b.tipo === 'chiusura' || (b.stallo ?? null) !== null || b.sconfitta || this.soloMotore.has(b.id)) return false;
       const testo = testoPer(b);
       // Cancello sull'azione: senza un'azione adatta (privata, del PG giusto) la battuta non entra.
       if (this.serveAzione(b) && testo === null) return false;
