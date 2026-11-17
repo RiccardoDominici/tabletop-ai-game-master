@@ -118,6 +118,19 @@ export class AtteggiamentiInGioco {
     return { ok: true, cambi: daFare.flatMap((x) => this.imposta(png, x, stato, turno, causa, o.perche ?? null)) };
   }
 
+  /**
+   * A social check aimed at an NPC (docs/mondo.md §4): a success warms it one step towards that PC, a failure cools
+   * it, never down to hostile, once per NPC per visit (`giàCambiato`). Every case that changes nothing says why, so the
+   * director logs it (A24: a failed check that would have made an NPC hostile left no trace in the log).
+   */
+  daProva(png: string, pg: string, riuscita: boolean, turno: number, o: { presenti: ReadonlySet<string>; giàCambiato: boolean }): EsitoProposta {
+    if (o.giàCambiato) return { ok: false, motivo: `${png} already changed by a check in this visit of the scene` };
+    const nuovo = this.passo(png, pg, riuscita ? 1 : -1);
+    if (!nuovo) return { ok: false, motivo: `${png} towards ${pg} is already at the end of the scale (${this.stato(png, pg) ?? 'unknown'})` };
+    if (nuovo === 'ostile') return { ok: false, motivo: `${png} towards ${pg}: a failed check would make it hostile, and a check never does` };
+    return this.proponi(png, pg, nuovo, turno, 'prova', { presenti: o.presenti, nonOstile: true, perche: riuscita ? 'check succeeded' : 'check failed' });
+  }
+
   /** One step up (+1) or down (−1) from the current attitude, or null at the end of the scale / unknown. */
   passo(png: string, pg: string, verso: 1 | -1): StatoAtteggiamento | null {
     const s = this.stato(png, pg) ?? 'indifferente';

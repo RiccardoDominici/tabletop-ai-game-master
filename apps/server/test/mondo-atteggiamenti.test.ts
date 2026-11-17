@@ -49,6 +49,19 @@ describe('AtteggiamentiInGioco: the Engine’s limits', () => {
   });
 });
 
+describe('a social check: every case that changes nothing says why (A24)', () => {
+  it('the step to hostile, the end of the scale, a second check in the visit', () => {
+    const a = new AtteggiamentiInGioco(caricaCampagna(MONDO));
+    const giàCambiato = false;
+    // The miller is indifferent to Anna: a failure would make him hostile, and a check never does.
+    expect(a.daProva('png_mugnaio', 'pg_anna', false, 1, { presenti, giàCambiato })).toMatchObject({ ok: false, motivo: expect.stringMatching(/would make it hostile/) });
+    // Friendly to Bruno already: a success has no step left.
+    expect(a.daProva('png_mugnaio', 'pg_bruno', true, 1, { presenti, giàCambiato })).toMatchObject({ ok: false, motivo: expect.stringMatching(/end of the scale/) });
+    expect(a.daProva('png_mugnaio', 'pg_anna', true, 1, { presenti, giàCambiato })).toMatchObject({ ok: true, cambi: [{ da: 'indifferente', a: 'amichevole', causa: 'prova' }] });
+    expect(a.daProva('png_ladra', 'pg_bruno', true, 2, { presenti, giàCambiato: true })).toMatchObject({ ok: false, motivo: expect.stringMatching(/already changed by a check/) });
+  });
+});
+
 describe('the [atteggiamento] line', () => {
   it('is a control line: never read aloud, NPC and PC resolved through the aliases', () => {
     const p = new ParserNarratore({ idPng: ['png_mugnaio'], idPg: ['pg_anna'], alias: { piero: 'png_mugnaio', anna: 'pg_anna' } });

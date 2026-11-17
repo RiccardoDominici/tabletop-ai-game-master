@@ -1559,14 +1559,11 @@ export class Regia {
   private atteggiamentiDaProve(turno: number, sociali: ReadonlyArray<{ png: string; autore: string; riuscita: boolean }>): void {
     const presenti = this.pngInScena();
     for (const s of sociali) {
-      if (this.mondo.visita.cambiatiDaProve.has(s.png)) continue;
-      const nuovo = this.mondo.atteggiamenti.passo(s.png, s.autore, s.riuscita ? 1 : -1);
-      if (!nuovo || nuovo === 'ostile') continue;
-      const e = this.mondo.atteggiamenti.proponi(s.png, s.autore, nuovo, turno, 'prova', { presenti, nonOstile: true, perche: s.riuscita ? 'check succeeded' : 'check failed' });
+      const e = this.mondo.atteggiamenti.daProva(s.png, s.autore, s.riuscita, turno, { presenti, giàCambiato: this.mondo.visita.cambiatiDaProve.has(s.png) });
       if (e.ok) {
         this.mondo.visita.cambiatiDaProve.add(s.png);
         for (const c of e.cambi) this.o.log.info({ turno, png: c.png, pg: c.pg, da: c.da, a: c.a, riuscita: s.riuscita }, 'world: attitude changed by a social check');
-      } else this.o.log.info({ turno, png: s.png, pg: s.autore, motivo: e.motivo }, 'world: attitude change from a check not applied');
+      } else this.o.log.info({ turno, png: s.png, pg: s.autore, riuscita: s.riuscita, motivo: e.motivo }, 'world: attitude change from a check not applied');
     }
   }
 

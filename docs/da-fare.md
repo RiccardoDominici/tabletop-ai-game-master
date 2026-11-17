@@ -160,7 +160,7 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   `ber_salgo_io`, a filler the reader may use first, so the consequence falls back to `detto`)~~ **Done** (A41:
   `ber_pazienza`; a consequence's line is now the Engine's only, never in the reader's catalogue); a live run with Haiku
   (only the local reader was tried: no key on this machine; needs Riccardo: an API key for Haiku); the 38 turns/hour default rests on one human evening in
-  the logs; «Decided (17 November): kept as the starting value; the Engine replaces it with the rate this table plays.» A log line when a social check is not applied because it would make an NPC hostile. Open.
+  the logs; «Decided (17 November): kept as the starting value; the Engine replaces it with the rate this table plays.» ~~A log line when a social check is not applied because it would make an NPC hostile.~~ **Done** (A24: every check that changes nothing is logged with why).
 - **World: Game Master command to set an NPC's attitude by hand** (docs/mondo.md §4). The Engine and the panel's «Mondo» box
   show attitudes changed in play, but the Game Master cannot change one from the panel yet. Postponed on 15 November while
   prove-tiri edits the /master panel. Open.
