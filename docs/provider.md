@@ -105,8 +105,9 @@ every local server URL has a watchdog, started by the first request of a local m
   name and the player's first short sentence that is the PC's own act, at most 12 words, or a whole sentence up to six
   words longer rather than a quote cut mid-phrase; a later clause that is a claim or someone else's act ends it
   («Pugnale ancora, il goblin si gira verso di me» → «Pugnale ancora»). The player's words are
-  attributed, never asserted in the narrator's voice: «Ida dice: «Guardo la scatolina».» (Ida says: "I look at the
-  little box."), in English «Ginestra says: "I open the door."». (The English pack used to turn the first person into
+  attributed, never asserted in the narrator's voice: an act framed neutrally, «Ida: «Guardo la scatolina».» (Ida: "I
+  look at the little box."), in English «Ginestra: "I open the door."», and speech with «dice» / «says» («Ida dice:
+  «Chi vi paga?».», docs/coerenza.md, «The frame by what the words are»). (The English pack used to turn the first person into
   the third, «Ginestra opens the door.», which told the act as done before any roll; the turn stays a pack option,
   `terza_persona`, off in both packs.) A clause that states the world or the
   PC's state («Ho zero punti ferita», «Vedo tre goblin», «Io sono il più veloce») or has someone else as subject («Il goblin mi tira la

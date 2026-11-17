@@ -101,7 +101,8 @@ of 4–6 s transcribed in about 2 s once warm.
   ```
 
   Seen in passing: the announcement quoted the action itself as the PC's speech («Livia Sarti dice: «Chiedo a Berta a
-  chi ha portato via Tonio stanotte».»), and Whisper added an «a» («a chi»).
+  chi ha portato via Tonio stanotte».»; now framed neutrally, «Livia Sarti: «…».», docs/coerenza.md), and Whisper
+  added an «a» («a chi»).
 
 ## Not verified yet
 

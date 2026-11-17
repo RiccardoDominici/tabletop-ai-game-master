@@ -29,6 +29,12 @@ export interface PrimaPersona {
 
 interface RegoleAnnuncio {
   citazione: string;
+  /** The neutral frame for what is not speech («{nome}: «{frase}».»); empty = always the citation. */
+  neutra: string;
+  /** Words addressed to someone in the announced sentence (a second person): then the citation with «dice». */
+  parlato: RegExp | null;
+  /** A question opening with an interrogative: words to someone. */
+  domanda: RegExp | null;
   terza: string;
   /** A PC out of play: «{nome} non agisce.». */
   fuori: string;
@@ -81,6 +87,9 @@ function compila(s: Sezione): RegoleAnnuncio {
   if (!prima || typeof prima !== 'object' || Array.isArray(prima)) throw new Error('motore.yaml: annuncio.prima_persona deve essere una sezione');
   return {
     citazione: campoTesto(s, 'citazione'),
+    neutra: typeof s['neutra'] === 'string' ? s['neutra'] : '',
+    parlato: campoRegex(s, 'parlato', 'iu'),
+    domanda: campoRegex(s, 'domanda', 'iu'),
     terza,
     fuori: campoTesto(s, 'fuori'),
     affermazione: campoRegex(s, 'affermazione', 'i'),
@@ -320,8 +329,9 @@ export function fraseAnnuncio(testo: string, max: number, r: RegoleAnnuncio = re
 }
 
 /**
- * L'annuncio deterministico: in italiano «Nome dice: «prima frase».» (the player's words attributed, never asserted as
- * the narrator's), con la frase di `fraseAnnuncio`, al massimo `max_parole` parole col nome; in inglese la stessa
+ * L'annuncio deterministico: «Nome: «prima frase».» for an act or anything that is not speech, «Nome dice: «prima
+ * frase».» for speech (`parlato`; the player's words attributed either way, never asserted as the narrator's), con la
+ * frase di `fraseAnnuncio`, al massimo `max_parole` parole col nome; in inglese la stessa
  * frase in terza persona quando è un atto del PG in prima persona. Only the PC's own act is announced: a claim about
  * the world or someone else's act is left out. Niente parole che il giocatore non ha scritto. Mai vuoto: senza niente
  * da dire, «Nome agisce.»; a PC out of play, «Nome non agisce.».
@@ -341,8 +351,36 @@ export function annuncioBreve(nome: string, testo: string, fuori = false): strin
   if (!frase || contenuto(frase, r) === 0) return riempi(r.vuoto, { nome });
   const terza = r.terza ? inTerzaPersona(frase, r.prima) : null;
   if (terza) return riempi(r.terza, { nome, frase: terza });
+  const modello = r.neutra && !parlato(testo, t, frase, r) ? r.neutra : r.citazione;
   // A question keeps its «?»; no full stop right after it inside the quotes («Who pays you?”», not «?.”»).
-  return riempi(r.citazione, { nome, frase: senzaVirgolette(`${frase.charAt(0).toUpperCase()}${frase.slice(1)}`) }).replace(/\?\.(["»”])/u, '?$1');
+  return riempi(modello, { nome, frase: senzaVirgolette(`${frase.charAt(0).toUpperCase()}${frase.slice(1)}`) }).replace(/\?\.(["»”])/u, '?$1');
+}
+
+/** A vocative at the head or at the end of a sentence: one or two capitalised words set off by a comma or a «!». */
+const VOCATIVO_TESTA = /^\p{Lu}[\p{L}'’-]*(\s+\p{Lu}[\p{L}'’-]*)?\s*[,!]/u;
+const VOCATIVO_CODA = /,\s*\p{Lu}[\p{L}'’-]*\s*[.!?…]*["»”]?\s*$/u;
+
+/**
+ * The announced words are speech (the lead's decision, 17 November): «dice» only then. Not when the announced sentence
+ * is the PC's own act in the first person («Chiedo a Berta chi…», «Vado al pozzo»: an act, framed neutrally even with
+ * a quote inside); speech when the player quoted words, opened or closed with a vocative («Berta, dimmi…», «Che
+ * fai, Livia?»), addressed someone (`parlato`: a second person, «grazie»), or asked a question that is not its own act
+ * («Chi vi paga?», «C'è qualcosa qui?»; not «Chiedo a Berta chi…»).
+ */
+function parlato(grezzo: string, pulito: string, frase: string, r: RegoleAnnuncio): boolean {
+  const f = frase.replace(/^[«"“(]+/, '').trim();
+  // A question to someone: an interrogative at its head («Chi vi paga?»), or any question that is not the PC's act.
+  const domanda = /\?["»”]?$/.test(f);
+  if (domanda && r.domanda?.test(f)) return true;
+  if (r.attoDelPg?.test(f)) return false;
+  if (domanda) return true;
+  if (/[«»“”"]/.test(grezzo)) return true;
+  const prima = pulito.split(/(?<=[.!?…])\s+/)[0] ?? '';
+  if (VOCATIVO_TESTA.test(prima) || VOCATIVO_CODA.test(prima)) return true;
+  // A call before more words («Ehi goblin! Dove sono gli altri?»): at most three words and a «!».
+  const chiamata = grezzo.trim().split(/(?<=[.!?…])\s+/);
+  if (chiamata.length > 1 && /!["»”]?$/.test(chiamata[0]!) && chiamata[0]!.split(/\s+/).length <= 3) return true;
+  return !!r.parlato?.test(frase);
 }
 
 /**

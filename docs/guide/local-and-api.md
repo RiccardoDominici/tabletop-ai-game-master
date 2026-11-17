@@ -74,7 +74,7 @@ On `altro` there is no local model yet: a real game needs an Anthropic key (`scr
 The reader is the part of the narrator that runs every turn.
 
 - **The model.** `mlx-community/Qwen3-8B-4bit`, about 4.6 GB, run by mlx-lm. On a Mac under 16 GB, the setup chooses the 4B model.
-- **Minimal mode.** A small model does not write the story. For each action it only picks one line from the prepared repertoire, among the few the Engine proposes, or says «nessuna» (none). The short announcement of the action is built by the code, from the first words the player wrote. All the prose comes from the repertoire, and from the scriptwriter (see below). Qwen3's "thinking" is switched off by the scripts.
+- **Minimal mode.** A small model does not write the story. For each action it only picks one line from the prepared repertoire, among the few the Engine proposes, or says «nessuna» (none). The short announcement of the action is built by the code, from the first words the player wrote: «Livia: «Vado al pozzo».» for an act, «Livia dice: «Chi vi paga?».» for words spoken to someone. All the prose comes from the repertoire, and from the scriptwriter (see below). Qwen3's "thinking" is switched off by the scripts.
 - **It needs a repertoire.** Minimal mode works in mode B. In mode A (`--modo A`), with no repertoire, the reader switches to full mode: it writes the prose itself, and locally it is much slower.
 - **The server.** It listens on `127.0.0.1:4613`. `scripts/partita.sh` starts it by itself when a component uses it, and leaves it on between one start and the next.
 

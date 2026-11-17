@@ -197,7 +197,7 @@ describe('lettore minimo', () => {
     const n = new NarratoreMinimo(locale(), { log: loggerMuto() });
     const delta: string[] = [];
     const e = await n.narra({ turno: 3, sistema: [], messaggio, signal: new AbortController().signal }, (d) => delta.push(d));
-    expect(e.testo).toBe('[narratore] Ida dice: «Guardo la scatolina da vicino».\n[usa] nar_neve > pg_ida\n[usa] nar_impronte > pg_livia\n[invito] tutti\n');
+    expect(e.testo).toBe('[narratore] Ida: «Guardo la scatolina da vicino».\n[usa] nar_neve > pg_ida\n[usa] nar_impronte > pg_livia\n[invito] tutti\n');
     expect(delta.join('')).toBe(e.testo);
   });
 
@@ -213,7 +213,7 @@ describe('lettore minimo', () => {
     const n = new NarratoreMinimo(new ModelloOpenAI({ url: 'http://lento/v1', modello: 'm', fetch: lento }), { log: loggerMuto() });
     const delta: Array<{ testo: string; risposto: boolean }> = [];
     await n.narra({ turno: 3, sistema: [], messaggio, signal: new AbortController().signal }, (d) => delta.push({ testo: d, risposto }));
-    expect(delta[0]).toEqual({ testo: '[narratore] Ida dice: «Guardo la scatolina da vicino».\n', risposto: false });
+    expect(delta[0]).toEqual({ testo: '[narratore] Ida: «Guardo la scatolina da vicino».\n', risposto: false });
     expect(delta.slice(1).every((d) => d.risposto)).toBe(true);
     expect(chiamate).toBe(1);
   });
@@ -255,7 +255,7 @@ describe('lettore minimo', () => {
       return delta;
     };
     // Con 'tutti' il secondo annuncio esce da solo prima delle battute; con 'primo' arriva insieme a esse.
-    expect((await prova('tutti'))[1]).toBe('[narratore] Livia dice: «Seguo le impronte».\n');
+    expect((await prova('tutti'))[1]).toBe('[narratore] Livia: «Seguo le impronte».\n');
     expect((await prova('primo'))[1]).toMatch(/^\[usa\] nar_scatolina > pg_ida\n\[narratore\] Livia/);
   }, 15_000);
 
@@ -263,13 +263,13 @@ describe('lettore minimo', () => {
     coda.push('{"risposte":[{"pg":"pg_ida","battuta":"inventata"}]}', 'non è JSON');
     const n = new NarratoreMinimo(locale(), { log: loggerMuto() });
     const e = await n.narra({ turno: 3, sistema: [], messaggio, signal: new AbortController().signal }, () => undefined);
-    expect(e.testo).toBe('[narratore] Ida dice: «Guardo la scatolina da vicino».\n[usa] nar_scatolina > pg_ida\n[invito] tutti\n');
+    expect(e.testo).toBe('[narratore] Ida: «Guardo la scatolina da vicino».\n[usa] nar_scatolina > pg_ida\n[invito] tutti\n');
   });
 
   it('annuncio deterministico: nome + prima frase, senza intercalari, al massimo 12 parole', () => {
-    expect(annuncioBreve('Nando', 'ok la fisarmonica la tiro fuori io, si balla!! gaspare dammi la mezza paga adesso')).toBe('Nando dice: «La fisarmonica la tiro fuori io».');
-    expect(annuncioBreve('Remo', 'adelina la scatolina vuota la peso a occhio, varra due fiorini')).toBe('Remo dice: «Adelina la scatolina vuota la peso a occhio, varra due fiorini».');
-    expect(annuncioBreve('Sorella Teodora', 'mi avvicino alle ceste del pane dei lumi e dico la preghiera della sera per tutti')).toBe('Sorella Teodora dice: «Mi avvicino alle ceste del pane dei lumi».');
+    expect(annuncioBreve('Nando', 'ok la fisarmonica la tiro fuori io, si balla!! gaspare dammi la mezza paga adesso')).toBe('Nando: «La fisarmonica la tiro fuori io».');
+    expect(annuncioBreve('Remo', 'adelina la scatolina vuota la peso a occhio, varra due fiorini')).toBe('Remo: «Adelina la scatolina vuota la peso a occhio, varra due fiorini».');
+    expect(annuncioBreve('Sorella Teodora', 'mi avvicino alle ceste del pane dei lumi e dico la preghiera della sera per tutti')).toBe('Sorella Teodora: «Mi avvicino alle ceste del pane dei lumi».');
     expect(annuncioBreve('Ida', 'ahah ok!!')).toBe('Ida agisce.');
     const n = annuncioBreve('Ida', 'guardo la porta del ripostiglio con calma senza farmi vedere da nessuno della sala grande')!;
     expect(n.split(' ').length).toBeLessThanOrEqual(18);

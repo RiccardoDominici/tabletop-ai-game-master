@@ -10,6 +10,14 @@ annuncio:
   # The player's words quoted ({nome}, {frase}): always valid, used whenever the third person is unsure. Attributed
   # («says»): the narrator's voice reports what the player wrote, it does not assert it (docs/coerenza.md).
   citazione: '{nome} says: “{frase}.”'
+  # The neutral frame: the PC's act in the first person («I ask Berta…», «I go to the well»), or anything that is not
+  # speech, with no «says». The citation with «says» stays for speech: quoted words, a vocative, words addressed to
+  # someone (`parlato`).
+  neutra: '{nome}: “{frase}.”'
+  # A question opening with an interrogative is words to someone (flag i).
+  domanda: '^(who|whom|what|where|when|why|how|which|whose)\b'
+  # Words addressed to someone, in the announced sentence (flag i): the second person, a thanks or an apology.
+  parlato: '\b(you|your|yours|yourself|yourselves|you''re|you''ve|you''ll|you''d|thanks|thank|sorry|please)\b'
   # A PC out of play when the window closed (0 HP, dead): it does not act, and what it wrote is not said.
   fuori: '{nome} does not act.'
   # A clause that states the world or the PC's state instead of saying what the PC does: not announced (flag i).

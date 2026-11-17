@@ -648,6 +648,17 @@ rules no longer judge a sentence inside an announcement (`FraseDaVerificare.attr
 player's words, and round 4's R-inesistente over-fire at CM T13 was the rule replacing the announcement of the very
 blow that killed Zirrà. Tests: test/annuncio-d4.test.ts, test/coerenza-prima-frase.test.ts.
 
+**The frame by what the words are (the lead's decision, 18 November).** «Dice» made an act sound like speech: the
+dictated «Chiedo a Berta chi ha portato via Tonio» came out as «Livia Sarti dice: «Chiedo a Berta…».». Now the frame
+follows the words (`llm/annuncio.ts`, `parlato`; pack fields `neutra`, `parlato`, `domanda`): the PC's own act in the
+first person, or anything that is not speech, is framed neutrally, «Livia Sarti: «Chiedo a Berta chi ha portato via
+Tonio stanotte».», «Livia Sarti: «Vado al pozzo».»; «dice» stays for speech: quoted words (unless the sentence opens
+with the PC's act), a vocative or a call («Berta, dimmi…», «Che fai, Livia?», «Ehi goblin! Chi vi paga?»), a second
+person or a thanks (`parlato`), a question that is not the PC's act («Sei Oreste?», «Chi vi paga?»; an interrogative
+at its head counts even when it ends like a verb, «Quando hai visto Tonio?»). The neutral frame of before round 4 read
+as narration because claims and other people's acts were in it; those are still left out, so only the PC's own act
+is ever framed neutrally.
+
 ### Outcome lines carry their outcome; a `subito` line is bound to its action
 Round 4's two outcome errors were both lines that tell a blow: a scriptwriter's miss («… la lancia taglia l'aria dove
 nessuno c'è più») heard while Zirrà's card hit, and a miss written for T6 picked at T9 for a dagger that hit. Now a line

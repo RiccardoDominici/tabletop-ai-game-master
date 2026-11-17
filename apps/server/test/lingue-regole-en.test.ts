@@ -73,21 +73,21 @@ describe('announcement in English: the player\'s words attributed', () => {
   // Round 4 of the coherence layer (docs/coerenza.md): a turned «Ginestra opens the door.» told the act as done, in
   // the narrator's voice, before any roll. The English pack attributes, like the Italian one.
   it('«I open the door» → «Ginestra says: "I open the door."»', () => {
-    expect(annuncioBreve('Ginestra', 'I open the door')).toBe('Ginestra says: “I open the door.”');
-    expect(annuncioBreve('Ginestra', 'ok so I try to pick the lock, quietly')).toBe('Ginestra says: “I try to pick the lock, quietly.”');
-    expect(annuncioBreve('Ida', "I'm going down the stairs")).toBe('Ida says: “I\'m going down the stairs.”');
-    expect(annuncioBreve('Ida', 'I do not trust him')).toBe('Ida says: “I do not trust him.”');
+    expect(annuncioBreve('Ginestra', 'I open the door')).toBe('Ginestra: “I open the door.”');
+    expect(annuncioBreve('Ginestra', 'ok so I try to pick the lock, quietly')).toBe('Ginestra: “I try to pick the lock, quietly.”');
+    expect(annuncioBreve('Ida', "I'm going down the stairs")).toBe("Ida: “I'm going down the stairs.”");
+    expect(annuncioBreve('Ida', 'I do not trust him')).toBe('Ida: “I do not trust him.”');
   });
 
   it('someone else\'s clause first: the announcement starts at the PC\'s own act; at most 12 words', () => {
-    expect(annuncioBreve('Ginestra', 'the door, I kick it open')).toBe('Ginestra says: “I kick it open.”');
-    expect(annuncioBreve('Ginestra', 'Quietly towards the stairs')).toBe('Ginestra says: “Quietly towards the stairs.”');
-    expect(annuncioBreve('Ginestra', 'I tell the innkeeper "I need a room"')).toBe('Ginestra says: “I tell the innkeeper I need a room.”');
+    expect(annuncioBreve('Ginestra', 'the door, I kick it open')).toBe('Ginestra: “I kick it open.”');
+    expect(annuncioBreve('Ginestra', 'Quietly towards the stairs')).toBe('Ginestra: “Quietly towards the stairs.”');
+    expect(annuncioBreve('Ginestra', 'I tell the innkeeper "I need a room"')).toBe('Ginestra: “I tell the innkeeper I need a room.”');
     expect(annuncioBreve('Ginestra', '"Open up!" I shout')).toBe('Ginestra says: “Open up.”');
     expect(annuncioBreve('Ida', 'haha ok!!')).toBe('Ida acts.');
     const lungo = annuncioBreve('Ida', 'I walk slowly along the wall of the great hall towards the kitchen door without being seen')!;
     expect(lungo.split(' ').length).toBeLessThanOrEqual(12);
-    expect(lungo).toBe('Ida says: “I walk slowly along the wall of the great hall.”');
+    expect(lungo).toBe('Ida: “I walk slowly along the wall of the great hall.”');
   });
 
   it('the first-person turn stays a pack option (off in en): subject removed, verb and pronouns turned', () => {
@@ -253,7 +253,7 @@ describe('lettore minimo: il turno come dati, uguale in ogni lingua', () => {
     const n = new NarratoreMinimo(m, { log: loggerMuto() });
     // Il testo del messaggio non serve: il lettore usa i dati.
     const e = await n.narra({ turno: 3, sistema: [], messaggio: '(ignored)', dati, signal: new AbortController().signal }, () => undefined);
-    expect(e.testo).toBe('[narratore] Ida says: “I look at the little box up close.”\n[usa] nar_neve > pg_ida\n[usa] nar_impronte > pg_livia\n[invito] tutti\n');
+    expect(e.testo).toBe('[narratore] Ida: “I look at the little box up close.”\n[usa] nar_neve > pg_ida\n[usa] nar_impronte > pg_livia\n[invito] tutti\n');
     expect(viste[0]!.sistema[0]!.testo).toMatch(/^You are the reader of a D&D game in English/);
     expect(viste[0]!.messaggi[0]!.testo).toMatch(/^Actions of the turn:\n1\. Ida \(pg_ida\): I look at the little box up close\n {3}Candidates \(id: when\):/);
     expect(viste[0]!.messaggi[0]!.testo).toContain('Livia (pg_livia) [PRIVATE]: I follow the footprints');

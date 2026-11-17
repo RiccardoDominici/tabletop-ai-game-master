@@ -82,8 +82,8 @@ test('dictation: hold the microphone, the transcript lands in the box with the n
 
   if (TOKEN) {
     // The turn to its answer: the Game Master closes the window, and a narration or NPC row that is not the player's
-    // own action nor its announcement («Nome dice: «…»») reaches the phone's transcript.
-    const risposte = tel.locator('[data-testid="trascrizione"] :is([data-tipo="battuta"], [data-tipo="narrazione"])').filter({ hasNotText: /\s(dice|says):\s«/ });
+    // own action nor its announcement («Nome: «…»», «Nome dice: «…»») reaches the phone's transcript.
+    const risposte = tel.locator('[data-testid="trascrizione"] :is([data-tipo="battuta"], [data-tipo="narrazione"])').filter({ hasNotText: /:\s[«“]/ });
     const prima = await risposte.count();
     const master = await (await browser.newContext()).newPage();
     await master.goto(`/master?token=${TOKEN}`);

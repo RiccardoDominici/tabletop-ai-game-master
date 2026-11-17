@@ -152,7 +152,7 @@ describe('the announcement is the player\'s words, not the narrator\'s assertion
       { turno: 4, sistema: [], messaggio: '', signal: new AbortController().signal, misuratore: new MisuratoreTurno(4, 0, 0, 'mock', 0), ora: () => Date.now(), onFrase: () => undefined, pronuncia: (t) => t, lineeDette: new Set(), dati: { azioni: [{ id_pg: 'pg_ida', nome: 'Ida Marchi', testo: 'Carico quello al centro, spada in pugno!' }] } as never },
     );
     const righe = esito.uscita.filter((u) => u.tipo === 'improvvisata').map((u) => [u.testo, u.tipo === 'improvvisata' && u.attribuita === true]);
-    expect(righe).toEqual([['Ida Marchi dice: «Carico quello al centro, spada in pugno».', true], ['Il ponte scricchiola.', false]]);
+    expect(righe).toEqual([['Ida Marchi: «Carico quello al centro, spada in pugno».', true], ['Il ponte scricchiola.', false]]);
   });
 
   it('a question in the announcement reaches the voice as one sentence, still attributed', async () => {
@@ -172,7 +172,7 @@ describe('the announcement is the player\'s words, not the narrator\'s assertion
   it('no fact rule on a sentence inside it; the same words as a narrator sentence are judged', async () => {
     const goblin = (t: string): CorrezioneEsito => (t.includes('sgherro') ? { testo: 'Ruggero giace a terra, senza vita.', motivo: 'creatura_inesistente' } : null);
     const dati = { azioni: [{ id_pg: 'pg_ida', nome: 'Ida Marchi', testo: 'Spingo lo sgherro contro il ponte.' }] };
-    const r = await turno('[narratore] Ida Marchi dice: «Spingo lo sgherro contro il ponte».\n[narratore] Lo sgherro cade nel fiume.\n[invito] tutti', 'no', { correggiEsito: goblin, dati, giudice: null });
-    expect(r.dopo).toEqual(['Ida Marchi dice: «Spingo lo sgherro contro il ponte».', 'Ruggero giace a terra, senza vita.']);
+    const r = await turno('[narratore] Ida Marchi: «Spingo lo sgherro contro il ponte».\n[narratore] Lo sgherro cade nel fiume.\n[invito] tutti', 'no', { correggiEsito: goblin, dati, giudice: null });
+    expect(r.dopo).toEqual(['Ida Marchi: «Spingo lo sgherro contro il ponte».', 'Ruggero giace a terra, senza vita.']);
   });
 });
