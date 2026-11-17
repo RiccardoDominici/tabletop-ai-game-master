@@ -144,7 +144,7 @@ function attaccoAncora(
  * pass of the final end-to-end run Haiku gave «no roll» to «Lancio il dardo incantato contro il goblin che sta
  * arrivando», and the narrator killed the goblin with no damage. null = not such a clear attack.
  * In order: a named target (an NPC with a sheet, by name or alias, or a minion of the scene) with an attack verb
- * (`attacco`, or the first-person `attacco_mio`) or a weapon used; then, in a fight only, a go-on (`attaccoAncora`)
+ * (`attacco`, or in a fight the first-person `attacco_mio`) or a weapon used; then, in a fight only, a go-on (`attaccoAncora`)
  * and the PC's own attack in the first person with no target named, both at the PC's last target.
  */
 export function attaccoDiRegole(az: { id: string; testo: string; autore: string }, i: IngressoClassificatore): DecisioneProva | null {
@@ -157,7 +157,9 @@ export function attaccoDiRegole(az: { id: string; testo: string; autore: string 
   const nominato = bersaglioDi(fatti);
   const arma = armi.find((a) => armaUsata(fatti, [a])) ?? null;
   const attacco = (bersaglio: string, conArma: string | null): DecisioneProva => ({ ...vuota(az.id), tipo: 'attacco', bersaglio, arma: conArma }) as DecisioneProva;
-  if (nominato && (paroleProve().attacco.test(t) || paroleProve().attaccoMio.test(t) || arma)) return attacco(nominato, arma);
+  // The first-person words count with a named target only in a fight: «Tiro ancora la corda verso Ruggero» outside one
+  // is no attack (attacco_mio has «tiro ancora»), and an attack would open a fight.
+  if (nominato && (paroleProve().attacco.test(t) || (!!i.bersaglioImplicito && paroleProve().attaccoMio.test(t)) || arma)) return attacco(nominato, arma);
   if (!i.bersaglioImplicito) return null;
   // In a fight, a go-on with no verb: at the target named in its own clause, else at the PC's last target.
   const ancora = attaccoAncora(fatti, armi, bersaglioDi, (id) => new Set((nomi.get(id) ?? []).flatMap((n) => n.split(/\s+/))));

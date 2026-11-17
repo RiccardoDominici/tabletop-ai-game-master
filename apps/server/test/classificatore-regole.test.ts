@@ -66,8 +66,10 @@ describe('arbitro a regole, SRD', () => {
     expect(cf('Ancora non capisco Ruggero.')).not.toMatchObject({ tipo: 'attacco' });
     expect(cf('Ancora contro il fiume.')).not.toMatchObject({ tipo: 'attacco' });
     expect(cf('Ancora contro Ruggero e Bertoldo.')).not.toMatchObject({ tipo: 'attacco' });
-    // Outside a fight (no implicit target) nothing changes.
+    // Outside a fight (no implicit target) nothing changes: the first-person words do not make a named NPC a target.
     expect(cl('pg_corrado', 'Lo colpisco ancora, poi mi sposto.')).not.toMatchObject({ tipo: 'attacco' });
+    expect(cl('pg_corrado', 'Tiro ancora la corda verso Ruggero')).not.toMatchObject({ tipo: 'attacco' });
+    expect(cl('pg_corrado', 'Ancora contro Ruggero!')).not.toMatchObject({ tipo: 'attacco' });
   });
 
   /*

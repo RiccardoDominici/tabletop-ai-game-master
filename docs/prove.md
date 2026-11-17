@@ -233,8 +233,9 @@ test/gregari.test.ts. Example: ponte-lanterne, the consul's two guards at the Ca
      round 7, CA T11, still no roll, because a named target wanted an attack verb). A go-on whose own clause names one
      enemy («Ancora contro il goblin», «Di nuovo su Ruggero»: only the aiming words `parole.attacco_verso`, weapon
      words and that enemy's name words) goes to that enemy; a bare go-on keeps the last target, whoever is named later
-     («Ancora! Bertoldo, scappa» does not hit Bertoldo). A named target with the first-person words («Tiro ancora a
-     Ruggero») is an attack on it. A player's claim («il goblin mi colpisce») is not an attack;
+     («Ancora! Bertoldo, scappa» does not hit Bertoldo). In a fight, a named target with the first-person words («Tiro
+     ancora a Ruggero») is an attack on it; outside one they do not make a named NPC a target («Tiro ancora la corda
+     verso Ruggero»). A player's claim («il goblin mi colpisce») is not an attack;
      an invented foe («quello con la lancia») is rolled against a real enemy.
    - «Impossibile» needs a reason the scene records (prove/impossibile.ts, after every arbiter; A1, 17 November): Haiku
      called lifting an overturned cart impossible three runs of three, its own `motivo` saying a strong fighter can
