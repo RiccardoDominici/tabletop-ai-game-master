@@ -1,5 +1,8 @@
 """tavolo.md of a run plus the dice cards the projector showed, turn by turn (for the blind judge).
 
+Superseded (A32): the harness now writes these cards into its own tavolo.md (apps/server/src/esperimenti/carte-tavolo.ts).
+This script stays for the runs made before that change.
+
     python3 -I tavolo_con_carte.py <results dir> <server logs dir> > tavolo-con-carte.md
 
 The harness's tavolo.md has what the table heard, not the dice cards: the cards come from the server log

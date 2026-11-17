@@ -21,7 +21,7 @@
  *    (come il pannello), invia le azioni (le private con `privata: true`, come il telefono), poi
  *    «Risolvi ora» dal master (chi non agisce in quel turno del copione non si aspetta).
  * 4. Scrive esperimenti/risultati/<etichetta>/: trascrizione.md (verbatim, [usa] espansi e marcati),
- *    tavolo.md (solo ciò che il tavolo ha sentito e visto, per il giudice cieco), turni.jsonl,
+ *    tavolo.md (solo ciò che il tavolo ha sentito e visto, con le carte dei dadi del proiettore dal log, per il giudice cieco), turni.jsonl,
  *    costo.json, riepilogo.json (latenze, fughe di segreti, quota pre-scritta, costo).
  * 5. Con --chiudi, «Chiudi la sessione» a copione finito: in riepilogo.json (`serata`) le righe della chiusura,
  *    il riassunto e i turni in cui il narratore ha avuto il consiglio di fine vicina (--ore lo fa arrivare presto).
@@ -49,6 +49,7 @@ import { nomiDeiPng } from '../repertorio/pertinenza';
 import { MasterHeadless } from './master';
 import { ProiettoreVirtuale } from './proiettore';
 import { azioniPrivate, OsservatoreTavolo, testoTavolo } from './tavolo';
+import { carteDelTavolo, conCarte, righeLogDelServer } from './carte-tavolo';
 import { trascrizione } from './trascrizione';
 import { versioneCodice } from './versione';
 import { testo } from '../lingua';
@@ -476,7 +477,10 @@ async function main(): Promise<void> {
   fs.writeFileSync(path.join(cartellaRisultati, 'riepilogo.json'), JSON.stringify(riepilogo, null, 2) + '\n');
   fs.writeFileSync(path.join(cartellaRisultati, 'trascrizione.md'), trascrizione(etichetta, modo, sessione, o.campagna, narrazioni, copione));
   const nomePg = (id: string): string => campagna.pg.find((p) => p.id === id)?.nome ?? id;
-  fs.writeFileSync(path.join(cartellaRisultati, 'tavolo.md'), testoTavolo(osservatore, azioniPrivate(narrazioni, nomePg)));
+  // Le carte dei dadi che il proiettore ha mostrato (dal log del server di questa esecuzione): il giudice non ha bisogno di un passo a parte.
+  const logServer = path.join(o.cartellaLog, 'server.jsonl');
+  const carteTavolo = carteDelTavolo(righeLogDelServer(fs.existsSync(logServer) ? fs.readFileSync(logServer, 'utf8') : ''), inizioEsperimento);
+  fs.writeFileSync(path.join(cartellaRisultati, 'tavolo.md'), conCarte(testoTavolo(osservatore, azioniPrivate(narrazioni, nomePg)), carteTavolo));
   console.log(`[${etichetta}] fatto → ${path.relative(RADICE_REPO, cartellaRisultati)} (costo $${costo.totale_usd.toFixed(5)})`);
   // Il server della prova non resta acceso (salvo --lascia-server, per ispezionarlo).
   if (!o.lasciaServer) arrestaServer(o);
