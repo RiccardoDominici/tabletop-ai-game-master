@@ -132,7 +132,9 @@ The attitude of each NPC towards each PC starts from `atteggiamento_pg.<pg>.stat
 - **lines** (mode B, A23): a line's own `effetti.atteggiamento` applies when it comes out, `{png_x: amichevole}`
   towards the PC the line answers (every PC when it answers none, an Engine's line), or `{png_x: {pg_y: ostile,
   tutti: indifferente}}`; written by the big model with the line, so any state, like a consequence (cause `battuta`);
-- **consequences** and **Game Master**: any state, no limits (prepared, or decided by a person).
+- **consequences** and **Game Master**: any state, no limits (prepared, or decided by a person). The Game Master sets
+  one from the panel's «Mondo» box, «Cambia a mano» (an NPC, one PC or every PC, a state; the command
+  `{tipo: 'atteggiamento', id_png, id_pg, stato}`, cause `master`, A25).
 The current attitudes reach the turn's message (changes only), the checks (advantage, disadvantage, who reacts), the
 Game Master panel, the snapshot, and `registro.yaml` (`atteggiamenti`, with turn and cause). The Preparer cites them
 in `stato/stato.yaml` (`evento: {atteggiamento: png_x}`), and `strumenti/tra_sessioni.py pacchetto` writes them into

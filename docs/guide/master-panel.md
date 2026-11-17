@@ -136,9 +136,12 @@ The threat clocks of the scene: a row of boxes, filled up to the tick already sh
 - **Stalli di fila** (Stalls in a row): how many windows in a row closed without actions, and which move the world makes
   next (S1 a sign of the danger, S2 a clue that arrives, S3 a summary of the leads).
 - The ticks a clock owes to facts of the game (a gate of `avanza_quando`), also of clocks that are not on stage.
+- **Cambia a mano** (Set by hand): choose an NPC, «tutti i PG» (every PC) or one PC, and the attitude (ostile,
+  indifferente, amichevole), then press «Imposta» (Set). It applies at once, with no limits, and the narrator's next
+  message knows it; the box shows the current attitude of the pair you chose («ora: …»).
 - **Atteggiamenti cambiati** (Attitudes changed): each NPC whose attitude towards a PC is no longer the one of its sheet,
   with the turn and the cause (`narratore`, `prova` for a social check, `conseguenza` of a tick, `battuta` for a
-  prepared line that changes it, `effetti.atteggiamento`).
+  prepared line that changes it, `effetti.atteggiamento`, `master` for your own change).
 - **Cronaca** (Log): the consequences of ticks and omens, newest first, each «visto» (seen: the PCs were there) or
   «fuori scena» (off-screen), and «emerso al tN» when its traces reached the table.
 

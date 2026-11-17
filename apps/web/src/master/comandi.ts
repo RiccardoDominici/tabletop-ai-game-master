@@ -10,7 +10,7 @@ import { turni } from './etichette';
 import { tabella } from './tabella';
 
 /** Zona del pannello in cui si mostra l'esito di un comando. */
-export type ZonaComando = 'controlli' | 'scena' | 'situazioni' | 'orologi' | 'finestra' | 'azioni' | 'note' | 'audio' | 'sessione' | 'combattimento' | 'tiri';
+export type ZonaComando = 'controlli' | 'scena' | 'situazioni' | 'orologi' | 'finestra' | 'azioni' | 'note' | 'audio' | 'sessione' | 'combattimento' | 'tiri' | 'mondo';
 
 export const ZONA_COMANDO: Record<TipoComandoMaster, ZonaComando> = {
   pausa: 'controlli',
@@ -35,6 +35,7 @@ export const ZONA_COMANDO: Record<TipoComandoMaster, ZonaComando> = {
   dispositivo: 'sessione',
   presenza: 'scena',
   rivela: 'scena',
+  atteggiamento: 'mondo',
   combattimento_inizia: 'combattimento',
   combattimento_termina: 'combattimento',
   pf: 'combattimento',
@@ -67,6 +68,7 @@ export const ETICHETTA_COMANDO: Record<TipoComandoMaster, string> = tabella({
   dispositivo: 'master.cmd.dispositivo',
   presenza: 'master.cmd.presenza',
   rivela: 'master.cmd.rivela',
+  atteggiamento: 'master.cmd.atteggiamento',
   combattimento_inizia: 'master.cmd.combattimento_inizia',
   combattimento_termina: 'master.cmd.combattimento_termina',
   pf: 'master.cmd.pf',
@@ -114,6 +116,8 @@ export function chiaveComando(comando: ComandoMaster): string {
       return `tiro:${comando.id}`;
     case 'chiedi_prova':
       return 'chiedi_prova';
+    case 'atteggiamento':
+      return `atteggiamento:${comando.id_png}:${comando.id_pg}`;
     default:
       // «umore»: una chiave sola, due umori di fila non si accavallano.
       return comando.tipo;
@@ -135,6 +139,8 @@ export function descriviComando(comando: ComandoMaster): string {
       return `${nome}: ${comando.id_png} ${comando.presente === null ? t('master.presenza.automatica') : comando.presente ? t('master.presenza.in_scena') : t('master.presenza.altrove')}`;
     case 'rivela':
       return `${nome}: ${comando.id_png} ${t('master.presenza.rivelato')}`;
+    case 'atteggiamento':
+      return `${nome}: ${comando.id_png} → ${comando.id_pg} ${comando.stato}`;
     case 'situazione':
       return comando.id === null ? t('master.situazioni.togli_immagine') : `${nome}: ${comando.id}`;
     case 'orologio':

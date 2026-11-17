@@ -55,6 +55,7 @@ const TIPI: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>([
   'dispositivo',
   'presenza',
   'rivela',
+  'atteggiamento',
   'combattimento_inizia',
   'combattimento_termina',
   'pf',
@@ -291,6 +292,17 @@ export class ControlliMaster {
         const esito = regia.rivela(id);
         if (!esito.ok) return rifiuto(esito.errore);
         return { esito, dettagli: dettaglio('rivelato', { nome }), dati: { id_png: id } };
+      }
+      case 'atteggiamento': {
+        const png = typeof c.id_png === 'string' && ID_VALIDO.test(c.id_png) ? c.id_png : null;
+        const pg = typeof c.id_pg === 'string' && ID_VALIDO.test(c.id_pg) ? c.id_pg : null;
+        const stato = typeof c.stato === 'string' && ID_VALIDO.test(c.stato) ? c.stato : null;
+        if (!png || !pg || !stato) return rifiutoDi('atteggiamento_non_valido');
+        const esito = regia.impostaAtteggiamento(png, pg, stato);
+        if (!esito.ok) return rifiuto(esito.errore);
+        const nome = this.o.campagna.png.find((p) => p.id === png)?.nome ?? png;
+        const verso = pg === 'tutti' ? dettaglio('tutti') : (this.o.campagna.pg.find((p) => p.id === pg)?.nome ?? pg);
+        return { esito, dettagli: dettaglio('atteggiamento', { nome, verso, stato }), dati: { id_png: png, id_pg: pg, stato } };
       }
       case 'nuova_sessione': {
         const prima = regia.infoRegistro.sessione;

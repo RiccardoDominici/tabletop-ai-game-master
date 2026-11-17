@@ -196,3 +196,36 @@ describe('server, mode B: a line with its own effetti.atteggiamento (A23)', () =
     );
   });
 });
+
+describe('server: the Game Master sets an attitude by hand (A25)', () => {
+  let prova: Prova;
+  afterEach(async () => prova?.chiudi());
+
+  it('any state, towards one PC or every PC, cause master; a wrong NPC, PC or state is refused', async () => {
+    prova = new Prova();
+    const cartella = prova.campagna('mondo');
+    const { url } = await prova.avvia(cartella, () => '[narratore] Anna, la ruota gira.\n[invito] tutti', { TAGM_MODO: 'improvvisa' });
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    const master = await prova.master(url);
+    await inizia(schermo, tel);
+    // The choices on the panel: every NPC with its attitude now towards each PC.
+    expect((await master.stato()).mondo?.scelte?.png.find((p) => p.id === 'png_ladra')?.verso).toEqual({ pg_anna: 'ostile', pg_bruno: 'indifferente' });
+    // Two steps at once (hostile → friendly): a person decides, no limit.
+    expect(await master.comanda({ tipo: 'atteggiamento', id_png: 'png_ladra', id_pg: 'pg_anna', stato: 'amichevole' })).toEqual({ ok: true });
+    expect(await master.comanda({ tipo: 'atteggiamento', id_png: 'png_mugnaio', id_pg: 'tutti', stato: 'ostile' })).toEqual({ ok: true });
+    const st = await master.stato();
+    expect(st.mondo?.atteggiamenti).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ png: 'png_ladra', pg: 'pg_anna', stato: 'amichevole', causa: 'master' }),
+        expect.objectContaining({ png: 'png_mugnaio', pg: 'pg_anna', stato: 'ostile', causa: 'master' }),
+        expect.objectContaining({ png: 'png_mugnaio', pg: 'pg_bruno', stato: 'ostile', causa: 'master' }),
+      ]),
+    );
+    for (const cattivo of [
+      { tipo: 'atteggiamento', id_png: 'png_nessuno', id_pg: 'pg_anna', stato: 'ostile' },
+      { tipo: 'atteggiamento', id_png: 'png_ladra', id_pg: 'pg_nessuno', stato: 'ostile' },
+      { tipo: 'atteggiamento', id_png: 'png_ladra', id_pg: 'pg_anna', stato: 'furioso' },
+    ] as const) expect(await master.comanda(cattivo as never)).toMatchObject({ ok: false });
+  });
+});

@@ -26,6 +26,7 @@ const UNO_PER_TIPO: Record<TipoComandoMaster, ComandoMaster> = {
   dispositivo: { tipo: 'dispositivo', dispositivo: 'tel-anna-0123456789', id_pg: null },
   presenza: { tipo: 'presenza', id_png: 'png_oste', presente: true },
   rivela: { tipo: 'rivela', id_png: 'png_oste' },
+  atteggiamento: { tipo: 'atteggiamento', id_png: 'png_oste', id_pg: 'pg_anna', stato: 'ostile' },
   combattimento_inizia: { tipo: 'combattimento_inizia' },
   combattimento_termina: { tipo: 'combattimento_termina' },
   pf: { tipo: 'pf', id: 'pg_anna', valore: 4 },

@@ -246,6 +246,11 @@ export interface MondoMaster {
   debiti: Array<{ orologio: string; nome: string; debito: number }>;
   /** Consecutive stalls so far (0 = none). */
   stallo: number;
+  /**
+   * What the Game Master can set by hand (A25): every NPC with its attitude now towards each PC (null = no card entry),
+   * and the PCs. Absent from older servers.
+   */
+  scelte?: { png: Array<{ id: string; nome: string; verso: Record<string, string | null> }>; pg: Array<{ id: string; nome: string }> };
 }
 
 export interface CombattimentoMaster {
@@ -396,7 +401,12 @@ export type ComandoMaster =
   /** Mette un PNG in scena o altrove a mano (null = torna a quanto dice la scena). Vale finché non cambia scena. */
   | { tipo: 'presenza'; id_png: string; presente: boolean | null }
   /** Rivela a mano un PNG nascosto (scheda `nascosto: true`): si mostra al tavolo anche senza aver parlato. */
-  | { tipo: 'rivela'; id_png: string };
+  | { tipo: 'rivela'; id_png: string }
+  /**
+   * Sets an NPC's attitude by hand (docs/mondo.md §4, A25): towards one PC or every PC (`tutti`), any state, no limits;
+   * cause `master` in the log, the snapshot and registro.yaml.
+   */
+  | { tipo: 'atteggiamento'; id_png: string; id_pg: string; stato: 'ostile' | 'indifferente' | 'amichevole' };
 
 export type TipoComandoMaster = ComandoMaster['tipo'];
 

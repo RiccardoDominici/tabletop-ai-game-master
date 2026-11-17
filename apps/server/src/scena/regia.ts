@@ -87,7 +87,7 @@ import { nomiDeiPng, pngNominati, temaPresente } from '../repertorio/pertinenza'
 import { personaggiScena, pngIncontrati, presenzaEffettiva, presenzeMaster } from './presenze';
 import { sommaCosti } from '../llm/costi';
 import type { Battuta, Repertorio } from '../repertorio/tipi';
-import { TUTTI_I_PG } from '../campagna/mondo';
+import { STATI_ATTEGGIAMENTO, TUTTI_I_PG, type StatoAtteggiamento } from '../campagna/mondo';
 import { haCancelloAzione, StatoRepertorio } from '../repertorio/stato';
 import { provaFallita } from '../repertorio/condizioni';
 import { righeMenzogneDette } from '../repertorio/menzogne';
@@ -1521,7 +1521,25 @@ export class Regia {
         .filter(([, s]) => (s.debito ?? 0) > 0)
         .map(([id, s]) => ({ orologio: id, nome: this.orologi.trova(id)?.nome ?? id, debito: s.debito ?? 0 })),
       stallo: this.mondo.stallo.n,
+      scelte: {
+        png: this.campagna.png.map((p) => ({ id: p.id, nome: p.nome, verso: Object.fromEntries(this.campagna.pg.map((g) => [g.id, att.stato(p.id, g.id)])) })),
+        pg: this.campagna.pg.map((g) => ({ id: g.id, nome: g.nome })),
+      },
     };
+  }
+
+  /**
+   * The Game Master sets an NPC's attitude by hand (docs/mondo.md §4, A25): towards one PC or every PC (`tutti`), any
+   * state, no limits (a person decides), cause `master`. Unknown NPC, PC or state: refused.
+   */
+  impostaAtteggiamento(id_png: string, id_pg: string, stato: string): Esito {
+    if (!this.campagna.png.some((p) => p.id === id_png)) return { ok: false, errore: testoFisso('regia.errori.personaggio_sconosciuto') };
+    if (id_pg !== TUTTI_I_PG && !this.campagna.pg.some((p) => p.id === id_pg)) return { ok: false, errore: testoFisso('regia.errori.personaggio_sconosciuto') };
+    if (!(STATI_ATTEGGIAMENTO as readonly string[]).includes(stato)) return { ok: false, errore: testoFisso('regia.errori.atteggiamento_non_valido') };
+    const cambi = this.mondo.atteggiamenti.imposta(id_png, id_pg, stato as StatoAtteggiamento, this.turno, 'master', 'Game Master');
+    this.o.log.info({ turno: this.turno, png: id_png, pg: id_pg, stato, cambi: cambi.map((c) => `${c.pg} ${c.da}→${c.a}`) }, 'world: attitude set by the Game Master');
+    this.notifica();
+    return { ok: true };
   }
 
   /** Presenze per il pannello del master (anche i PNG mai incontrati). */

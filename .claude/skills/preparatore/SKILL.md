@@ -364,6 +364,25 @@ Read `riferimenti/repertorio.md` in full. First the list, then the text:
 Voice in the lines: the direction goes after the label, in square brackets and brief, for example the format in «the examples in lingue/<lingua>/preparatore/skill.md»; a whisper is closed in the same line: `<whisper>…</whisper>`. Syntax in `docs/f0-contratti.md`,
 «Voce espressiva» (expressive voice); the validator (class `VOCE`) checks that the tags are closed.
 
+**When to write a direction (the rule for every line).** A direction is the exception. Write one only where the
+tone really changes inside the line or from the speaker's default: a lie with its giveaway sign (the small
+tell the PCs can notice: a voice that goes too even, a hand that hides something), a confession, a threat,
+a sudden fear. A line with no direction is correct: the server gives it the speaker's default voice
+(`voce.tts.direzione` of the NPC sheet, or `direzione_voce` of the style sheet). Do not put
+a direction on every line, on the filler, on the waiting lines or on the closings of a scene unless the tone
+of that line changes. Do not repeat the same direction on the lines of one speaker: the default already does that.
+- **Limits** (the validator checks them, class `VOCE`): at most three marks per line (direction, sounds and paired
+  tags together); a direction under eight words, under 80 characters, in Italian (docs/ricerca-voce-drama3.md §2), with no full stop, `!` or `?`
+  inside it; a direction at the start of the line, and in the middle only for a change of tone (the validator
+  warns); a paired tag (`<whisper>…</whisper>`, `<emphasis>`, `<soft>`, `<fast>`, `<slow>`, `<stress>`,
+  `<forceful>`) always closed in the same line.
+- **What a direction says**: how the words are spoken (a tone, a pace, an effort, a breath), never what the
+  PCs feel, think or understand. «[con voce troppo piatta]» is correct; «[il gruppo si fida]» or «[il personaggio
+  intuisce la bugia]» is not: the listeners' reaction is the scene's business, written in the words.
+- **Default directions** (`voce.tts.direzione`, `direzione_voce`): they describe the speaker's usual voice, not a
+  mood of the moment; no brackets, no tags (`VOCE.direzione_markup`); at most 110 characters (the server shortens
+  them beyond that).
+
 Order: clock signs, clues, lies, confessions, moments, endings, closings of the evening, voice examples, filler, transitions. When you write the
 endings, add each scene's `esiti`.
 

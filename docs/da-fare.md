@@ -166,9 +166,9 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   `ber_pazienza`; a consequence's line is now the Engine's only, never in the reader's catalogue); a live run with Haiku
   (only the local reader was tried: no key on this machine; needs Riccardo: an API key for Haiku); the 38 turns/hour default rests on one human evening in
   the logs; «Decided (17 November): kept as the starting value; the Engine replaces it with the rate this table plays.» ~~A log line when a social check is not applied because it would make an NPC hostile.~~ **Done** (A24: every check that changes nothing is logged with why).
-- **World: Game Master command to set an NPC's attitude by hand** (docs/mondo.md §4). The Engine and the panel's «Mondo» box
+- ~~**World: Game Master command to set an NPC's attitude by hand** (docs/mondo.md §4). The Engine and the panel's «Mondo» box
   show attitudes changed in play, but the Game Master cannot change one from the panel yet. Postponed on 15 November while
-  prove-tiri edits the /master panel. Open.
+  prove-tiri edits the /master panel. Open.~~ **Done** (A25: «Cambia a mano» in the «Mondo» box, command `atteggiamento`).
 - **Line selector that does not find the lines** (trial run of nozze-neve, conclusions §4; 115 lines out of 139 never came out). ~~In the code since 9 November (commit 2597566, with unit tests): preselection by the action's `temi` (with the right voice, at most two per action, a section «Battute indicate» (Indicated lines) in the message) and "> pg" deduced or corrected when only one action can be the right one.~~ **Done** (2597566). To do:
   - the before/after measurement with the harness on the same scripts (`esegui.ts nozze-neve/<copione> B --campagna nozze-neve --uscita correzioni-motore/<cartella>`, port 4740), postponed for the token budget: compare the pre-written quota, the lines used, `usa_rifiutati_per_motivo`, `battute_indicate_usate`, `pg_dedotti`;
   - decide whether the Engine must have a clue that was indicated and ignored say it by itself: replaying the catalogues, the filter by themes also indicates wrong lines (the Custode's rules for «prima della benedizione» (before the blessing)), so today it does not. «Decided (17 November): the Engine does not force an ignored clue; the stall's S2 brings a proactive clue instead (docs/mondo.md).»

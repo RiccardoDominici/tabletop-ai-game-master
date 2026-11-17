@@ -42,3 +42,18 @@ describe('SezioneMondo (Game Master panel)', () => {
     expect([0, 1, 2, 3].map(prossimoLivelloStallo)).toEqual([1, 2, 3, 1]);
   });
 });
+
+describe('setting an attitude by hand (A25)', () => {
+  it('an NPC, a PC or every PC, a state; shown only when the server sends the choices', () => {
+    const scelte = { png: [{ id: 'png_oste', nome: 'Oste Bruno', verso: { pg_anna: 'amichevole' } }], pg: [{ id: 'pg_anna', nome: 'Anna' }] };
+    const out = render({ ...MONDO, scelte });
+    expect(out).toContain('data-testid="master-mondo-imposta"');
+    expect(out).toContain('<option value="png_oste" selected="">Oste Bruno</option>');
+    expect(out).toContain('<option value="tutti" selected="">tutti i PG</option>');
+    expect(out).toContain('<option value="pg_anna">Anna</option>');
+    expect(out).toContain('<option value="amichevole">amichevole</option>');
+    // Even an untouched world offers it; an older server sends no choices.
+    expect(render({ atteggiamenti: [], cronaca: [], debiti: [], stallo: 0, scelte })).toContain('master-mondo-imposta');
+    expect(render(MONDO)).not.toContain('master-mondo-imposta');
+  });
+});
