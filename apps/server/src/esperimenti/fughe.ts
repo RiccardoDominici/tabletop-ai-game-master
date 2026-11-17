@@ -10,6 +10,10 @@
  * privata, una battuta detta a un'azione privata, una riga `[privato pg_x]` li sente solo quel PG.
  *
  * In modo A non ci sono battute: resta solo la regola dei giocatori (conteggio grezzo).
+ *
+ * Una battuta di RILASCIO uscita per un'azione che non le è pertinente (`fuoriContesto`, E2E finale B2) non
+ * rende pubblico niente: non è una rivelazione, quindi le sue righe con la parola segreta sono fughe. Senza
+ * questa regola la misura contava come legittime proprio le righe che avevano rivelato il segreto.
  */
 import type { ParolaSegreta } from '../repertorio/segreti';
 import type { Repertorio } from '../repertorio/tipi';
@@ -29,7 +33,18 @@ type VoceUscita =
   | { tipo: 'usa_rifiutato'; id: string }
   | { tipo: 'improvvisata'; etichetta: string; testo: string; privato?: string };
 
-export function misuraFughe(narrazioni: Array<Record<string, unknown>>, parole: ParolaSegreta[], repertorio: Repertorio | null): Fuga[] {
+/**
+ * `fuoriContesto(idBattuta, testoAzione)`: true se la battuta di rilascio è uscita per un'azione che non le è
+ * pertinente (la misura è in repertorio/rilascio.ts). Senza, si comporta come prima.
+ */
+export type FuoriContesto = (idBattuta: string, testoAzione: string) => boolean;
+
+export function misuraFughe(
+  narrazioni: Array<Record<string, unknown>>,
+  parole: ParolaSegreta[],
+  repertorio: Repertorio | null,
+  fuoriContesto?: FuoriContesto,
+): Fuga[] {
   const usate = new Set<string>();
   const indizi = new Set<string>();
   let detteDaiGiocatori = '';
@@ -48,9 +63,15 @@ export function misuraFughe(narrazioni: Array<Record<string, unknown>>, parole: 
     const azioni = (n['azioni'] as Array<{ id_pg?: string; testo: string | null; privata?: boolean }>) ?? [];
     const autoriPrivati = new Set(azioni.filter((a) => a.privata && a.id_pg).map((a) => a.id_pg!));
     for (const a of azioni) if (a.testo && !a.privata) detteDaiGiocatori += `\n${a.testo.toLowerCase()}`;
+    const testoDi = new Map(azioni.filter((a) => a.id_pg && a.testo).map((a) => [a.id_pg!, a.testo!]));
     for (const u of (n['uscita'] as VoceUscita[] | undefined) ?? []) {
       if (u.tipo === 'usa') {
         if (u.per && autoriPrivati.has(u.per)) continue; // detta al telefono: né fuga né rivelazione pubblica
+        // Rilascio uscito per un'azione che non gli è pertinente: le sue righe sono fughe, non rivelazioni.
+        if (fuoriContesto && u.per && fuoriContesto(u.id, testoDi.get(u.per) ?? '')) {
+          for (const r of u.righe) controlla(turno, r.etichetta, r.testo, 'prescritta', u.id);
+          continue;
+        }
         usate.add(u.id);
         for (const i of repertorio?.perId.get(u.id)?.effetti.rivela_indizi ?? []) indizi.add(i);
         for (const r of u.righe) controlla(turno, r.etichetta, r.testo, 'prescritta', u.id);
@@ -61,6 +82,18 @@ export function misuraFughe(narrazioni: Array<Record<string, unknown>>, parole: 
     }
   }
   return fughe;
+}
+
+/**
+ * La regola di misuraFughe sul repertorio: una battuta di rilascio (èRilascio, non riempitiva) è fuori contesto
+ * se la sua pertinenza (motivoFuoriContesto) non regge per il testo dell'azione. Senza repertorio: nessuna.
+ */
+export function fuoriContestoDi(repertorio: Repertorio | null, nomiPng: Map<string, string[]>): FuoriContesto | undefined {
+  if (!repertorio) return undefined;
+  return (id, azione) => {
+    const b = repertorio.perId.get(id);
+    return !!b && èRilascio(b) && !b.riempitivo && motivoFuoriContesto(b, azione, nomiPng) !== null;
+  };
 }
 
 /** Un rilascio uscito per un'azione che non gli è pertinente (E2E finale, B2). */
