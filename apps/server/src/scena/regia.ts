@@ -1660,6 +1660,9 @@ export class Regia {
    * mark; at S2 an available `indizio` line that reveals the clue and has no gate on the action; at S3 the sentence with
    * the leads. Returns what was said (a line id, «piste»), or null.
    */
+  /** The S3 sentences of the leads said in this visit of the scene (each at most once). */
+  private pisteDette: { ingresso: number; frasi: Set<string> } = { ingresso: -1, frasi: new Set() };
+
   private diciMossaDiStallo(turno: number, esito: { uscita: VoceUscita[] }, segni: SegniInRisposta, m: MossaStallo, log: Logger): string | null {
     const s = this.statoRepertorio!;
     if (m.livello === 1 && !m.duro) {
@@ -1693,7 +1696,17 @@ export class Regia {
     const riassunto = m.livello === 3 ? this.lineaDiStallo(turno, 3) : null;
     if (riassunto && this.aggiungiBattutaMotore(turno, esito, segni, log, riassunto, false)) return riassunto.id;
     if (m.livello === 3 && m.piste.length) {
-      const frase = testoFisso('mondo.stallo_riga_piste', { piste: m.piste.map(senzaPuntoFinale).join('; ') });
+      // Never the same sentence twice in a visit (round 7, ST T9 and T12, word for word): the second time a variant,
+      // the third time nothing (the leads have not changed: the S1 and S2 material keep the world moving).
+      const elenco = m.piste.map(senzaPuntoFinale).join('; ');
+      const ingresso = this.mondo.visita.ingresso;
+      if (this.pisteDette.ingresso !== ingresso) this.pisteDette = { ingresso, frasi: new Set() };
+      const frase = [testoFisso('mondo.stallo_riga_piste', { piste: elenco }), testoFisso('mondo.stallo_riga_piste_ancora', { piste: elenco })].find((f) => !this.pisteDette.frasi.has(f));
+      if (!frase) {
+        log.info({ turno, piste: m.piste }, 'world: S3 leads already said twice in this visit, not again');
+        return null;
+      }
+      this.pisteDette.frasi.add(frase);
       const voce: VoceUscita = { tipo: 'improvvisata', etichetta: ID_NARRATORE, testo: frase, frasi: [`t${turno}-z0`], motore: true };
       this.righeDelMotore(turno, esito, [{ etichetta: ID_NARRATORE, testo: frase, testo_voce: this.pronuncia(frase) }], voce, false, 'z');
       this.notifica();

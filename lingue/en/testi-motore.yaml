@@ -177,6 +177,7 @@ mondo:
   stallo_indizio: "Material: the lead to bring ({id}): {come}"
   stallo_piste: "Material: leads the PCs know: {piste}."
   stallo_riga_piste: "The roads still open come back to mind: {piste}."
+  stallo_riga_piste_ancora: "The roads are still those: {piste}. The choice is yours."
 
 # Urgent pace section at the end of the turn message (apps/server/src/narrazione/ritmo.ts).
 ritmo:

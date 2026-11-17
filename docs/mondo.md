@@ -166,7 +166,9 @@ in mode B, after an answer that brought something new). Level `((n − 1) mod 3)
 - **S3** an NPC present, or a memory, sums up 2–3 concrete leads, built from what the PCs know: places of the map
   known to them, not visited yet and not kept for the next session (`prossima_sessione`), facts already found; the
   last sign of the threat is material for the narrator apart (mode A), never one of the «roads» of the Engine's
-  sentence (round 7, ST T9 heard a clock sign listed as a road). Mode A: a directive with the
+  sentence (round 7, ST T9 heard a clock sign listed as a road). In mode B the Engine's sentence is never said twice
+  word for word in a visit: the second time its variant (`mondo.stallo_riga_piste_ancora`, «Le strade restano quelle:
+  …»), the third time nothing (round 7, ST T9 and T12). Mode A: a directive with the
   leads; mode B: the Engine says them in one sentence of the language pack.
 Never an empty «cosa fate?»: every level carries material. On an E12 stall the move comes together with the
 answers to the actions; in mode B the fillers also enter the catalogue.

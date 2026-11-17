@@ -250,6 +250,23 @@ describe('server, mode B: prepared stall lines (stallo: 1 | 2 | 3) are kept for 
   });
 });
 
+describe('server, mode B: the S3 sentence is never said twice word for word in a visit (round 7, ST T9 and T12)', () => {
+  let prova: Prova;
+  afterEach(async () => prova?.chiudi());
+
+  it('the second S3 says the variant', async () => {
+    prova = new Prova();
+    const { url } = await prova.avvia(prova.campagna('mondo'), () => '[narratore] Anna, la ruota cigola.\n[invito] tutti');
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    let s = await inizia(schermo, tel);
+    for (let k = 0; k < 8; k++) s = await turno(tel, 'pg_anna', s, k % 2 ? 'Ci penso su, intanto.' : 'Mi siedo sul muretto del mulino.');
+    const tutto = s.trascrizione.map((v) => v.testo);
+    expect(tutto.filter((t) => /^Vi tornano in mente le strade ancora aperte/.test(t))).toHaveLength(1);
+    expect(tutto.filter((t) => /^Le strade restano quelle/.test(t))).toHaveLength(1);
+  });
+});
+
 describe('server, mode B: S3 says only what the table heard', () => {
   let prova: Prova;
   afterEach(async () => prova?.chiudi());

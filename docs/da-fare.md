@@ -98,7 +98,7 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   Still open: a round 4 in profile B measured live (needs Riccardo: API credit for profile B; provider not chosen); a full measuring round of the judge (round 3 had one valid game of four; needs Riccardo: API credit for profile B); the private replies stay on the rules
   (their raw text is now logged, for a replay set of their own); R-fuori's whole-sentence state check (the judge
   replaces it in profile B, not in profile A); the cart «impossibile» (11a);
-  `R-eco` and the projector mark; the stall's S3 sentence said twice word for word; profile A (the reader plus the
+  `R-eco` and the projector mark; ~~the stall's S3 sentence said twice word for word~~ **Done** (A10); profile A (the reader plus the
   Mac's swap were too much on 16 November) and the dictated action not run. The «Coerenza» box was seen in headless
   Chromium on a live test instance (16 November, 0 console errors), not on a real tablet (needs Riccardo: a real tablet).
 - **Duration in sessions and game layers** (Riccardo's request, 3 November 2026): the brief states the estimated duration in *number of sessions*, and that determines how many layers the framework generates. A one-shot has few things (situation, a few scenes and NPCs: this is what the skill does today); a campaign of years has more phases or arcs and a complete world, and the material for the next session is prepared between sessions, starting from what actually happened.

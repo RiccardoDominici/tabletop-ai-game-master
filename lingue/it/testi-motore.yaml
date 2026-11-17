@@ -178,6 +178,7 @@ mondo:
   stallo_indizio: "Materiale: la pista da far arrivare ({id}): {come}"
   stallo_piste: "Materiale: piste che i PG conoscono: {piste}."
   stallo_riga_piste: "Vi tornano in mente le strade ancora aperte: {piste}."
+  stallo_riga_piste_ancora: "Le strade restano quelle: {piste}. La scelta è vostra."
 
 # Sezione del ritmo concitato in fondo al messaggio del turno (apps/server/src/narrazione/ritmo.ts).
 ritmo:
