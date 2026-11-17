@@ -1,0 +1,191 @@
+{
+ "etichetta": "coerenzaA7-torre-mozza-stallo-A-manuale",
+ "turni": {
+  "giocati": 14,
+  "copione": 14,
+  "fine_prima": null,
+  "finale": null,
+  "cambi_scena": [],
+  "orologi_max": {
+   "o_mezzanotte": "3/8"
+  }
+ },
+ "fughe": {
+  "improvvisate": 0,
+  "prescritte": 0,
+  "elenco": [],
+  "righe_segrete_fermate": 0,
+  "selettore_con_parola_segreta": []
+ },
+ "coerenza": {
+  "violazioni": 0,
+  "per_regola": {},
+  "esempi": []
+ },
+ "private": {
+  "azioni_private": 2,
+  "righe_privato": 0,
+  "esiti_privati_log": 4,
+  "spostate_dalla_guardia": 0,
+  "righe_al_tavolo_sospette": 0,
+  "sospette": [],
+  "al_tavolo_candidate": 1,
+  "al_tavolo": [
+   {
+    "turno": 9,
+    "turno_privata": 9,
+    "pg": "Livia Sarti",
+    "chi": "Narratore",
+    "riga": "L'ombra del fienile si allunga sul cortile fino al cancello.",
+    "comuni": [
+     "cance"
+    ],
+    "regola": "turno privato+1"
+   }
+  ]
+ },
+ "prove": {
+  "azioni_risolte": 15,
+  "con_tiro": 0,
+  "tipi": {
+   "nessuna": 15
+  },
+  "dadi": {},
+  "regole_tipo": {},
+  "set": "basic-fantasy-r142",
+  "arbitro": "regole (classificatore del Motore, senza modello)"
+ },
+ "combattimento": {
+  "eventi": {},
+  "fatti_morale_terra": 0,
+  "esempi": [],
+  "fatti_morale": [],
+  "fatti_a_terra": [],
+  "fuori_gioco_log": {}
+ },
+ "lettore": {
+  "scelte": 15,
+  "nessuna": 13,
+  "ms_classifica_med": 637,
+  "ms_classifica_peggiore": 2195
+ },
+ "sceneggiatore": {
+  "richieste": {
+   "subito:ok": 13,
+   "prossime:ok": 11,
+   "prossime:saltata": 2
+  },
+  "consegnate": 11,
+  "dette_a_finestra_aperta": 11,
+  "accettate": 81,
+  "scartate": {
+   "tipo «risposta» non ammesso per lo sceneggiatore (ammessi: reazione, momento, ri": 1,
+   "parole segrete: Ugo ha visto il ragazzo salire": 1
+  },
+  "ms_claude_med": 8816,
+  "ms_totale_med_subito": 10231,
+  "processo": {
+   "avvio": 1,
+   "ok": 24,
+   "saltata": 2,
+   "arresto": 1
+  }
+ },
+ "tempi": {
+  "finestra_ms": {
+   "mediana": 20064.5,
+   "peggiore": 20213,
+   "n": 14
+  },
+  "llm_prima_frase": {
+   "mediana": 30.5,
+   "peggiore": 61,
+   "n": 12
+  },
+  "voce_primo_audio": {
+   "mediana": 684,
+   "peggiore": 2995,
+   "n": 13
+  },
+  "schermo_inizio_audio": {
+   "mediana": 836,
+   "peggiore": 868,
+   "n": 5
+  },
+  "llm_fine": {
+   "mediana": 620,
+   "peggiore": 2183,
+   "n": 14
+  },
+  "audio_fine": {
+   "mediana": 11854.5,
+   "peggiore": 24494,
+   "n": 14
+  },
+  "s_tra_turni_med": 32,
+  "s_tra_turni_peggiore": 44.601
+ },
+ "voce": {
+  "motore": "mock",
+  "buchi": {
+   "totale": 18,
+   "in_frase": 0,
+   "tra_frasi": 18,
+   "silenzio_ms": 19931,
+   "per_turno": [
+    1,
+    2,
+    2,
+    1,
+    1,
+    3,
+    0,
+    2,
+    1,
+    2,
+    1,
+    0,
+    0,
+    2
+   ]
+  },
+  "proiettore_secondi": 245,
+  "errori_voce": {}
+ },
+ "log": {
+  "errori": 0,
+  "avvisi": 18,
+  "per_messaggio": [
+   "40 ×10 llm: risposta strutturata non valida",
+   "40 ×5 llm: si usa il ripiego deterministico",
+   "40 ×1 https: the certificate does not cover this LAN address: run scripts/certificato.sh again",
+   "40 ×1 repertorio: rilascio fuori contesto, al suo posto la deviazione di chi è interpellato",
+   "40 ×1 repertorio: [usa] rifiutato"
+  ],
+  "provider": [
+   "lettore         → locale (minimo) mlx-community/Qwen3-0.6B-4bit — configurato (.",
+   "arbitro_azioni  → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "arbitro_prove   → regole (completo) — configurato (../../../../private/tmp/claud",
+   "riassunto       → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "regole          → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "voce            → finto — variabile d'ambiente TAGM_TTS",
+   "ascolto         → nessuno — configurato (../../../../private/tmp/claude-501/-Use",
+   "immagini        → nessuno — configurato (../../../../private/tmp/claude-501/-Use"
+  ]
+ },
+ "serata": {
+  "ore": null,
+  "consiglio_ai_turni": [],
+  "chiusura": {}
+ },
+ "costo_usd": 0,
+ "righe": {
+  "prescritte": 11,
+  "improvvisate": 13,
+  "usa_rifiutati": 1,
+  "azioni_pubbliche": 13,
+  "azioni_senza_risposta": 8,
+  "riparazioni": 0,
+  "conferme_motore": 0
+ }
+}
