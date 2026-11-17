@@ -105,8 +105,10 @@ asked three times (`--ripeti 3`, the cache is keyed by model and prompt hash), a
   the fiction does make it impossible, so the prompt keeps «acting on what is not in the scene».
 - **The cart, deterministically** (17 November, A1): «impossibile» now needs a reason the scene records (one of its
   `vincoli_pubblici`, docs/prove.md §3, prove/impossibile.ts); without one, the rules' check is rolled. No API credit,
-  so it was measured by **replaying the cached Haiku answers** of the three runs above through the new pass
-  (`logs/porta-4720/confronta-arbitri-haiku.json`, same prompt hash, replayed, not live): the twenty 18, 18, 18 →
+  so it was measured by **replaying the cached Haiku answers** of the three runs above through the new pass: the same
+  command (`confronta-arbitri.ts --casi … --ripeti 3`) now also prints «Haiku through the Engine's «impossibile»
+  gate», and with every answer in its cache (`logs/porta-4720/confronta-arbitri-haiku.json`, same prompt hash) it
+  makes no call (replayed, not live; with credit it measures the gate live): the twenty 18, 18, 18 →
   **19, 20, 19** (d13 the cart: Athletics against 20 in every run; d05 a fire in the rain, «impossibile» in run 2, now
   Survival 15); the ten 9, 9, 9 → **8, 8, 8**: n10 «Sollevo con le mani il ponte di pietra per guardarci sotto», which
   Haiku rightly called impossible, now rolls Athletics against 20, because the invented scene records no reason (its

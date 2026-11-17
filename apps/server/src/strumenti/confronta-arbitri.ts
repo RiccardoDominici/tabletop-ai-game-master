@@ -30,6 +30,7 @@ import { RADICE_REPO } from '../percorsi';
 import { riassuntoPubblico } from '../azioni/contesto';
 import { ArbitroProveHaiku, promptArbitroProve } from '../prove/arbitro-haiku';
 import { classificaARegole, provaSocialeSrd, type IngressoClassificatore } from '../prove/classificatore-regole';
+import { vagliaImpossibile, vincoliPubblici } from '../prove/impossibile';
 import { MotoreProve, type ContestoProve } from '../prove/motore';
 import { frasiDi } from '../prove/difficolta';
 import type { DecisioneProva } from '../prove/tipi';
@@ -125,8 +126,11 @@ async function tabellaCd(
   const accetta = (v: string | number | undefined, x: string | number | null | undefined): boolean => v === undefined || String(v).split('|').includes(String(x));
   let okR = 0;
   let okH = 0;
+  let okG = 0;
   let abR = 0;
   let abH = 0;
+  // Haiku's answer as the Engine uses it: through the «impossibile» gate (prove/impossibile.ts, A1), as in play.
+  const vaglia = (h: DecisioneProva | undefined, az: Azione): DecisioneProva | undefined => (h ? (vagliaImpossibile(h, az, ingressoRegole(c, schede, [], narrazione), vincoliPubblici(c)).decisione as DecisioneProva) : h);
   console.log('| # | action | expected skill · DC | rules arbiter | Haiku |');
   console.log('|---|---|---|---|---|');
   for (const caso of casi) {
@@ -138,28 +142,36 @@ async function tabellaCd(
     const cosa = (d: DecisioneProva | undefined): string | null => (d && tira(d) ? (d.abilita ?? d.caratteristica) : null);
     if (accetta(caso.atteso.cd, cdR)) okR++;
     if (accetta(caso.atteso.cd, cdH)) okH++;
+    if (accetta(caso.atteso.cd, cdDi(vaglia(h, az), c, schede))) okG++;
     if (accetta(caso.atteso.abilita, cosa(r))) abR++;
     if (accetta(caso.atteso.abilita, cosa(h))) abH++;
     const cella = (d: DecisioneProva | undefined, cd: number | null): string => (d && tira(d) ? `${cosa(d) ?? d.prova_scena ?? d.tipo} · ${cd ?? '—'}${d.difficolta ? ` (${d.difficolta})` : ''}` : `no roll (${d?.tipo ?? '—'})`);
     console.log(`| ${caso.id} | ${caso.testo} | ${caso.atteso.abilita ?? '—'} · ${caso.atteso.cd} | ${cella(r, cdR)}${accetta(caso.atteso.cd, cdR) ? '' : ' ✗'} | ${cella(h, cdH)}${accetta(caso.atteso.cd, cdH) ? '' : ' ✗'} |`);
   }
-  console.log(`\nDC as the rule set calls for: rules arbiter ${okR}/${casi.length}, Haiku ${okH}/${casi.length}; skill: rules ${abR}/${casi.length}, Haiku ${abH}/${casi.length}`);
+  console.log(`\nDC as the rule set calls for: rules arbiter ${okR}/${casi.length}, Haiku ${okH}/${casi.length}, Haiku through the Engine's «impossibile» gate ${okG}/${casi.length}; skill: rules ${abR}/${casi.length}, Haiku ${abH}/${casi.length}`);
   // Haiku is not deterministic (no temperature on these models): the same cases asked again, each run scored apart.
   if (ripeti > 1) {
     const giri: number[] = [okH];
+    const giriG: number[] = [okG];
     const sbagli = new Map<string, number>();
     for (const caso of casi) if (!accetta(caso.atteso.cd, cdDi((await chiedi(c, schede, [{ id: caso.id, autore: caso.autore, testo: caso.testo, privata: !!caso.privata }], narrazione))[caso.id], c, schede))) sbagli.set(caso.id, 1);
     for (let g = 1; g < ripeti; g++) {
       let ok = 0;
+      let okGiro = 0;
       for (const caso of casi) {
-        const h = (await chiedi(c, schede, [{ id: caso.id, autore: caso.autore, testo: caso.testo, privata: !!caso.privata }], narrazione, g))[caso.id];
+        const az = { id: caso.id, autore: caso.autore, testo: caso.testo, privata: !!caso.privata };
+        const h = (await chiedi(c, schede, [az], narrazione, g))[caso.id];
         if (accetta(caso.atteso.cd, cdDi(h, c, schede))) ok++;
         else sbagli.set(caso.id, (sbagli.get(caso.id) ?? 0) + 1);
+        if (accetta(caso.atteso.cd, cdDi(vaglia(h, az), c, schede))) okGiro++;
       }
       giri.push(ok);
+      giriG.push(okGiro);
     }
     const media = giri.reduce((x, y) => x + y, 0) / giri.length;
     console.log(`Haiku over ${ripeti} runs: ${giri.map((x) => `${x}/${casi.length}`).join(', ')} (mean ${media.toFixed(1)}); missed: ${[...sbagli].map(([id, n]) => `${id} ${n}/${ripeti}`).join(', ') || 'none'}`);
+    const mediaG = giriG.reduce((x, y) => x + y, 0) / giriG.length;
+    console.log(`Haiku through the «impossibile» gate over ${ripeti} runs: ${giriG.map((x) => `${x}/${casi.length}`).join(', ')} (mean ${mediaG.toFixed(1)})`);
   }
 }
 

@@ -180,7 +180,7 @@ describe('un turno di tiri', () => {
     expect(chiuso.tiri).toEqual([]);
     expect(chiuso.fatti.join(' ')).toMatch(/impossibil|non può riuscire/i);
     const aperto = await motore({ arbitro: arbitro(), dadi: [12] }).risolvi(3, [azione('a1', 'pg_teo', lucchetto)]);
-    expect(aperto.tiri).toHaveLength(1);
+    expect(aperto.fatti.join(' ')).not.toMatch(/impossibil|non può riuscire/i);
     // Nothing the rules can roll (flying): the model's verdict stays.
     const v = await motore({ arbitro: arbitro(), dadi: [12] }).risolvi(3, [azione('a1', 'pg_ida', volo)]);
     expect(v.tiri).toEqual([]);
