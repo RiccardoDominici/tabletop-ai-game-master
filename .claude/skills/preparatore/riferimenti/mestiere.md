@@ -65,7 +65,9 @@ those campaigns are in «lingue/<lingua>/preparatore/riferimenti.md», mestiere.
   thing is also secret, the constraint says that only the line describes it ("the stone around the lion is described by the
   line"). The scene must not say the opposite: senses, description and elements respect it ("all except the big one").
   For the other facts that improvisation tends to contradict (who has the letter, how many brothers the grandmother has)
-  there are the scene's `vincoli_pubblici`, with the same rules.
+  there are the scene's `vincoli_pubblici`, with the same rules. They are also what lets an arbiter's «impossibile»
+  stand: an action the rules can roll (lifting, climbing, forcing) is rolled, hard at worst, unless a public constraint
+  of the scene says why it cannot succeed, so write the impossible things of the scene there too.
 - Two clues on the same object (the mark on the sack and the grains inside) make the solution too quick. It is fine if the
   climax holds anyway; otherwise, separate them.
 

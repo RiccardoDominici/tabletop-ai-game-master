@@ -30,9 +30,12 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
      (apps/web/e2e/tiro-dettato.spec.ts); a Basic Fantasy fight on torre-mozza with every die manual, morale failed and
      the goblin fled (docs/prove-verifica.md §6b).
   Still open:
-  - Haiku still answers «impossibile» for lifting a cart, with a `motivo` that contradicts the verdict (the verdict
+  - ~~Haiku still answers «impossibile» for lifting a cart, with a `motivo` that contradicts the verdict (the verdict
     field comes before the reason): a reason-first field or a deterministic check (docs/prove-verifica.md §5). A
-    reason-first field was measured on 16 November: the cart solved, the twenty down from 18.0 to 15.7: dropped;
+    reason-first field was measured on 16 November: the cart solved, the twenty down from 18.0 to 15.7: dropped~~
+    **Done** (A1): the deterministic check: «impossibile» needs a reason in the scene's `vincoli_pubblici`, else the
+    rules' check is rolled. Replayed on the cached Haiku answers (no credit): twenty 18.0 → 19.3, ten 9.0 → 8.0 (a
+    stone bridge lifted by hand now rolls hard unless the scene says why not); Haiku's own path untested live;
   - ~~initiative by sides is unit-tested only (no example campaign's set uses it)~~ **Done** (A2): a whole-server
     test and a live run on the invented fixture `bx` with the scripted narrator (docs/prove-verifica.md §6c);
   - ~~the told-facts guard added a duplicate «Zirrà fugge.» after a narration that told the flight («sparisce oltre il
@@ -104,7 +107,7 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   clock sign as a road~~ **Done** (dd19b25); ~~a scriptwriter line can confirm a place that does not exist~~ **Done** (35c8290); ~~a commitment toward something that does not exist still resets the stall~~ **Done** (15ff25b); ~~repeated catchphrases~~ **Done** (8e618aa).
   Still open: a round 4 in profile B measured live (needs Riccardo: API credit for profile B; provider not chosen); a full measuring round of the judge (round 3 had one valid game of four; needs Riccardo: API credit for profile B); ~~the private replies stay on the rules
   (their raw text is now logged, for a replay set of their own)~~ **Done** (59d5954: insieme-private.json, the rules 6 of 7); ~~R-fuori's whole-sentence state check (the judge
-  replaces it in profile B, not in profile A)~~ **Done** (9804a24: per clause); the cart «impossibile» (11a);
+  replaces it in profile B, not in profile A)~~ **Done** (9804a24: per clause); ~~the cart «impossibile» (11a)~~ **Done** (A1, above);
   ~~`R-eco` and the projector mark~~ **Done** (f9847ff R-eco, a70e783 mark); ~~the stall's S3 sentence said twice word for word~~ **Done** (88baf0c); profile A (the reader plus the
   Mac's swap were too much on 16 November) and ~~the dictated action not run~~ **Done** (26daa19: end to end in profile A, docs/ascolto.md). The «Coerenza» box was seen in headless
   Chromium on a live test instance (16 November, 0 console errors), not on a real tablet (needs Riccardo: a real tablet).

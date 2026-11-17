@@ -236,6 +236,15 @@ test/gregari.test.ts. Example: ponte-lanterne, the consul's two guards at the Ca
      («Ancora! Bertoldo, scappa» does not hit Bertoldo). A named target with the first-person words («Tiro ancora a
      Ruggero») is an attack on it. A player's claim («il goblin mi colpisce») is not an attack;
      an invented foe («quello con la lancia») is rolled against a real enemy.
+   - «Impossibile» needs a reason the scene records (prove/impossibile.ts, after every arbiter; A1, 17 November): Haiku
+     called lifting an overturned cart impossible three runs of three, its own `motivo` saying a strong fighter can
+     try. A model's «impossibile» stands when one of the scene's `vincoli_pubblici` shares at least two content words
+     with the action (names count): the public facts the Preparer writes are the recorded reason. A constraint only
+     licenses the verdict, it never makes one: the Engine never turns an action into «impossibile». Without a
+     licence, if the rules arbiter rolls a check for the action, that check is rolled, on the set's ladder from the
+     signals (at worst hard: the cart is Athletics against 20); if the rules find nothing to roll (flying), the model's
+     verdict stays. That last path, and Haiku's side of the whole rule, are not measured live (no API credit since 16
+     November): replayed on the cached answers of §5 of docs/prove-verifica.md only. Test: test/prove-motore.test.ts.
    - Speech is not a perception check (`soloParlato`, after every arbiter): an action that is speech only (speech
      removed, what is left are ways of saying it, `parole.modi_del_dire`: «sottovoce», «a bassa voce», «mi avvicino»,
      and the names of those spoken to; or it opens with a vocative, or it is only questions) keeps its check only if it

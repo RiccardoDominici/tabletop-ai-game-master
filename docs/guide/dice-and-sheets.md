@@ -22,7 +22,7 @@ Words you need:
 
 You roll only when the outcome is uncertain and interesting: when failing is possible and matters (SRD 5.2, «D20 Tests»).
 - A trivial action does not roll: it succeeds, and that's that.
-- An impossible action does not roll: it fails.
+- An impossible action does not roll: it fails. «Impossible» needs a reason the scene writes down: when the arbiter calls an action impossible but nothing in the scene's public facts (`vincoli_pubblici`) says why, and the action is an ordinary check («sollevo il carro rovesciato», I lift the overturned cart), the check is rolled instead, hard at worst. Hard is not impossible.
 
 Without numeric character sheets, nothing is ever rolled: the narrator resolves things with «sì, ma…» (roughly "yes, but…"; see "A campaign without dice" below).
 

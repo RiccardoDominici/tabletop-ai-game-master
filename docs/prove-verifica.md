@@ -103,6 +103,16 @@ asked three times (`--ripeti 3`, the cache is keyed by model and prompt hash), a
   there» (14.3 / 10.0). Their new misses were «impossibile» for things absent from the scene's description (the
   baron's letter, locked in the box; runes on a pier the scene calls wooden; a boat on an empty river): the case where
   the fiction does make it impossible, so the prompt keeps «acting on what is not in the scene».
+- **The cart, deterministically** (17 November, A1): «impossibile» now needs a reason the scene records (one of its
+  `vincoli_pubblici`, docs/prove.md §3, prove/impossibile.ts); without one, the rules' check is rolled. No API credit,
+  so it was measured by **replaying the cached Haiku answers** of the three runs above through the new pass
+  (`logs/porta-4720/confronta-arbitri-haiku.json`, same prompt hash, replayed, not live): the twenty 18, 18, 18 →
+  **19, 20, 19** (d13 the cart: Athletics against 20 in every run; d05 a fire in the rain, «impossibile» in run 2, now
+  Survival 15); the ten 9, 9, 9 → **8, 8, 8**: n10 «Sollevo con le mani il ponte di pietra per guardarci sotto», which
+  Haiku rightly called impossible, now rolls Athletics against 20, because the invented scene records no reason (its
+  bridge is a wooden one, and nothing says a bridge cannot be lifted). That is the price of the rule: a truly
+  impossible feat needs its reason written in the scene. Haiku's own path (the verdict where the rules find nothing to
+  roll) is unchanged and untested live.
 - With data, the DC is the data's (scene checks, Influence from the NPC's sheet, AC): the arbiter's choice does not
   count there, by design (BF baseline T5: arbiter «difficile», card CD 17 from the scene check `p_berta_chiave`:
   correct).
@@ -253,7 +263,9 @@ roll at the scene change hidden by default («nascosto»).
 
 - ~~**Dictation into the roll card**~~: run end to end with the real local Whisper (§6b).
 - ~~**The rules arbiter cannot tell easy from hard**~~: it follows the set's ladder from signals (§5: 20/20 and 9/10).
-  Haiku still calls lifting a cart «impossibile» (§5), with a reason that contradicts its own verdict.
+  ~~Haiku still calls lifting a cart «impossibile» (§5), with a reason that contradicts its own verdict~~: «impossibile»
+  needs a reason the scene records, else the rules' check is rolled (§5, replayed on the cached answers: the cart is
+  Athletics against 20; a stone bridge lifted by hand now rolls too, unless the scene says why not).
 - ~~**Attacks on creatures without a sheet**~~ (C5): minions with a stat line by type (`gregari`, docs/prove.md §2),
   and an attack in a scene with nobody with stats tells the narrator not to invent the creature
   (test/gregari.test.ts). ~~No example campaign uses minions yet~~: ponte-lanterne has the consul's two guards at the

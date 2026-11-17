@@ -38,6 +38,7 @@ import { regolePerNarratore } from '../regole/narratore';
 import { etichettaProva, etichettaSalvezza, regolaEsiti } from './testi';
 import { GestoreCombattimento } from './combattimento';
 import { attaccoDiRegole, classificaARegole, provaSocialeSrd, type IngressoClassificatore } from './classificatore-regole';
+import { vagliaImpossibile, vincoliPubblici } from './impossibile';
 import { combattimentoSrd, type Combattimento, type Fase } from '../regole/combattimento';
 import { strumentiRegole } from './risolutore-regole';
 import { attaccoPngSrd } from './risolutore';
@@ -427,6 +428,18 @@ export class MotoreProve {
         if (!att) continue;
         decisioni.set(a.id, { ...att, ...(this.generico ? { mossa: null } : {}) } as Decisione);
         this.o.log.warn({ turno, azione: a.id, arbitro: d?.tipo ?? null, bersaglio: att.bersaglio, arma: att.arma }, 'prove: clear attack, decided by the rules instead of the arbiter');
+      }
+      // «Impossibile» needs a reason the scene records (A1 of docs/da-fare.md, prove/impossibile.ts): without one, the
+      // rules' check is rolled if they find one (Haiku called lifting a cart impossible, with a reason saying the opposite).
+      const vincoli = vincoliPubblici(c.campagna);
+      for (const a of azioni) {
+        const d = decisioni.get(a.id);
+        if (d?.tipo !== 'impossibile') continue;
+        const v = vagliaImpossibile(d, a, ing, vincoli);
+        if (v.perche === 'regole') {
+          decisioni.set(a.id, v.decisione);
+          this.o.log.warn({ turno, azione: a.id, motivo: d.motivo, ora: { tipo: v.decisione.tipo, abilita: v.decisione.abilita, caratteristica: v.decisione.caratteristica, prova_scena: v.decisione.prova_scena, difficolta: v.decisione.difficolta } }, 'prove: «impossible» with no reason the scene records, the rules\' check instead');
+        } else this.o.log.info({ turno, azione: a.id, perche: v.perche, vincolo: v.vincolo ?? null }, 'prove: «impossible» kept');
       }
       // Speech is not a perception check (second pass of the final run: «chiedo sottovoce a Berta…» rolled Ascoltare).
       // A check on an action that is speech only stays if it is social (or reading the person, SRD Insight); otherwise

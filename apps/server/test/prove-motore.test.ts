@@ -55,10 +55,10 @@ class ArbitroFinto implements ArbitroProve {
   }
 }
 
-function motore(o: { arbitro?: ArbitroProve | null; dadi?: number[]; orologio?: OrologioFinto; versione?: () => number; schede?: typeof schede }) {
+function motore(o: { arbitro?: ArbitroProve | null; dadi?: number[]; orologio?: OrologioFinto; versione?: () => number; schede?: typeof schede; campagna?: typeof campagna }) {
   const orologio = o.orologio ?? new OrologioFinto();
   const contesto = (): ContestoProve => ({
-    campagna,
+    campagna: o.campagna ?? campagna,
     scenaPubblica: 'Il guado del Vallone.',
     narrazione: 'Ruggero sbarra il ponte.',
     versione: o.versione?.() ?? 1,
@@ -157,6 +157,34 @@ describe('un turno di tiri', () => {
     const sentinella = 'Tiro con la balestra leggera alla sentinella';
     const r = await motore({ arbitro: new ArbitroFinto({ [sentinella]: { tipo: 'attacco', bersaglio: 'sentinella' } }), dadi: [15, 4] }).risolvi(3, [azione('a1', 'pg_corrado', sentinella)]);
     expect(r.tiri).toEqual([]);
+  });
+
+  /*
+   * A1 of docs/da-fare.md (docs/prove-verifica.md §5): Haiku answered «impossibile» for lifting the overturned cart in
+   * three runs of three, its own `motivo` saying a strong fighter can try. «Impossibile» now needs a reason the scene
+   * records (`vincoli_pubblici`); without one the rules' check is rolled, on the set's ladder (prove/impossibile.ts).
+   */
+  it('«impossible» with no reason in the scene: the rules\' check, at worst hard; a public constraint keeps it', async () => {
+    const carro = 'Sollevo il carro rovesciato per liberare la ruota incastrata';
+    const lucchetto = 'Apro il lucchetto della catena del ponte';
+    const volo = 'Volo sopra il fiume fino all\'altra riva';
+    const arbitro = () => new ArbitroFinto(Object.fromEntries([carro, lucchetto, volo].map((t) => [t, { tipo: 'impossibile', motivo: 'Un guerriero forte può tentare: prova di Forza difficile' }])));
+    // The cart: Athletics against the hard DC (20), from the «rovesciato» signal, not «impossibile».
+    const r = await motore({ arbitro: arbitro(), dadi: [12] }).risolvi(3, [azione('a1', 'pg_corrado', carro)]);
+    expect(r.tiri[0]).toMatchObject({ chi: 'pg_corrado', contro: { valore: 20 } });
+    expect(r.tiri[0]!.etichetta).toMatch(/Atletica/);
+    // The chain's padlock: without a constraint the rules would roll the scene's padlock check; with the scene's public
+    // fact that only the baron has its key, the arbiter's «impossibile» stands (no roll, the narrator says why not).
+    const conVincolo = { ...campagna, scena: { ...campagna.scena, dati: { ...campagna.scena.dati, vincoli_pubblici: ['La catena del ponte è chiusa con il lucchetto del barone, e la chiave ce l\'ha solo il barone.'] } } };
+    const chiuso = await motore({ arbitro: arbitro(), dadi: [12], campagna: conVincolo }).risolvi(3, [azione('a1', 'pg_teo', lucchetto)]);
+    expect(chiuso.tiri).toEqual([]);
+    expect(chiuso.fatti.join(' ')).toMatch(/impossibil|non può riuscire/i);
+    const aperto = await motore({ arbitro: arbitro(), dadi: [12] }).risolvi(3, [azione('a1', 'pg_teo', lucchetto)]);
+    expect(aperto.tiri).toHaveLength(1);
+    // Nothing the rules can roll (flying): the model's verdict stays.
+    const v = await motore({ arbitro: arbitro(), dadi: [12] }).risolvi(3, [azione('a1', 'pg_ida', volo)]);
+    expect(v.tiri).toEqual([]);
+    expect(v.fatti.join(' ')).toMatch(/impossibil|non può riuscire/i);
   });
 
   /*

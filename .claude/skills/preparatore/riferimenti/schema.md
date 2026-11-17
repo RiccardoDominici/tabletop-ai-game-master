@@ -192,7 +192,9 @@ indizi:                        # [V shape; see below]
   - {id: i_…, conclusione: r_…, tipo: png|oggetto|luogo|evento|documento|visione, nodo: n_…|png_…,
      essenziale: true|false, tiro: "nessuno", modi: 1, come_si_trova: "…",
      vincolo_pubblico: "what anyone perceives, without the why"}   # physical clues [R], no secrets [V]
-vincoli_pubblici: ["…"]        # optional: other perceivable facts that improvisation tends to contradict
+vincoli_pubblici: ["…"]        # optional: other perceivable facts that improvisation tends to contradict; also the only
+                               # reason the Engine accepts for an arbiter's «impossibile» (docs/prove.md §3): write here
+                               # what the fiction makes impossible («the iron door stays shut until someone turns the key»)
 uscite: [{verso: n_…, segnalata_da: [i_…, …]}]      # at least 2 (except climax: true) [V]; 3 clues per node (warning)
 mossa_morbida_pronta: "…"      # prose §5 [V]
 apertura: "…?"                 # at most 3 sentences, closes with an invitation [V]
