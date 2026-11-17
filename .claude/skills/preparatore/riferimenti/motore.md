@@ -27,21 +27,14 @@ does not immediately make a tick due.
   `orologi_in_scena: {o_…: {pieni_almeno: 6}}`; there the clock can also run at another pace (`segno_almeno_ogni: 2`
   inside the same entry). Between sessions, `pieni_all_inizio` of the package still applies.
 
-<!-- limite: finali -->
-## Endings come out on their own only at a full clock
-The Engine does not know when "the dramatic question has an answer". A line enters the catalogue by state only if its
-`richiede.orologio` asks for a full clock and the clock is full; otherwise it enters, like all others, only if an action
-touches its `temi` or names the speaker.
-- **What to do**: the endings that close the scene before the clock is full have distinctive themes and the gates of the
-  outcome (`battute_usate`, `indizi_rivelati`); those of the climax have `richiede.orologio` at a full clock.
-
 <!-- limite: senza_azione -->
 ## A line comes out only tied to an action, except for due ticks, fillers and endings
 The selector uses a line by tying it to a PC's action (`[usa] id > pg`); if it forgets or gets the PC wrong, the Engine
 deduces it when only one action of the turn can be the right one. Without an action the Engine accepts only the due tick
 of ITS clock, the fillers at a stall, and the endings. At a full clock the Engine itself says the ending: the first
 `tipo: finale` available in the order of the repertoire and without gates on the action, then the closing (a `momento`
-that asks for a full clock), and the table goes into pause. Every other line that enters the catalogue "by state" (the
+that asks for a full clock), and the table goes into pause. Before the full clock it says the ending of a scene outcome
+whose gates hold (`esiti[].richiede` on the scene sheet, schema.md: «the dramatic question has an answer»). Every other line that enters the catalogue "by state" (the
 crowd, a moment at a full clock) comes out only tied to a public action of the turn.
 - **What to do**: put the endings in the order in which they must win (the most specific first, with the outcome gates:
   `battute_usate`, `indizi_rivelati`), without `privata` or `da_pg`, and close with an ending without outcome gates as a

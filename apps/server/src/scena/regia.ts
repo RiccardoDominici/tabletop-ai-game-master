@@ -89,6 +89,8 @@ import { sommaCosti } from '../llm/costi';
 import type { Battuta, Repertorio } from '../repertorio/tipi';
 import { STATI_ATTEGGIAMENTO, TUTTI_I_PG, type StatoAtteggiamento } from '../campagna/mondo';
 import { MarcheRivelate } from './marche';
+import { esitiDellaScena, esitoRaggiunto } from './esiti-scena';
+import { classeDi } from '../repertorio/fatti-battuta';
 import { haCancelloAzione, StatoRepertorio } from '../repertorio/stato';
 import { provaFallita } from '../repertorio/condizioni';
 import { righeMenzogneDette } from '../repertorio/menzogne';
@@ -4354,6 +4356,17 @@ export class Regia {
     const debitiDetti = esito.esito && !controllo.signal.aborted ? this.pagaDebitiInRisposta(turno, esito, segniInRisposta, this.dovutiAlMessaggio, log) : [];
     this.mondo.fatti(this.fattiDellaNarrazione(esito.uscita), turno);
     const mondoDetto = esito.esito && !controllo.signal.aborted ? this.diciMondo(turno, esito, segniInRisposta, log) : [];
+    // A21: an outcome of the scene whose gates hold (`esiti[].richiede`): the dramatic question has an answer, and the
+    // Engine closes the scene with that outcome's ending, before the clock is full. After this turn's clocks, marks
+    // ([indizio] in mode A) and the world's consequences, so the gates read the state the answer left.
+    let esitoScena: string | null = null;
+    if (!finale && !this.sceneConFinale.has(this.campagna.scena.id) && !controllo.signal.aborted) {
+      const e = this.diciEsitoDellaScena(turno, esito, segniInRisposta, log);
+      if (e) {
+        esitoScena = e.id;
+        finale = e.finale;
+      }
+    }
     // Mode B at S2/S3: the Engine brings the clue line or says the leads (the selector has only fillers).
     const stalloDetto = esito.esito && !controllo.signal.aborted && this.statoRepertorio && this.mossaStallo ? this.diciMossaDiStallo(turno, esito, segniInRisposta, this.mossaStallo, log) : null;
     // The stall counts answers that brought nothing new to the table (mondo/stallo.ts, `fermi`): new information is a
@@ -4431,6 +4444,7 @@ export class Regia {
       // Fatti dello scontro che la narrazione non aveva detto, aggiunti dal Motore («tipo:id»).
       fatti_aggiunti: fattiAggiunti,
       finale,
+      ...(esitoScena ? { esito_scena: esitoScena } : {}),
     };
     this.o.registroTurni.scrivi({ ...record, ...conteggi, sessione: this.sessione });
     this.o.registroNarrazioni.scrivi({
@@ -4621,6 +4635,51 @@ export class Regia {
     this.scenaFinitaAlTurno = turno;
     this.sceneConFinale.add(this.campagna.scena.id);
     return { finale: id, righe };
+  }
+
+  /**
+   * A21 (docs/repertorio.md, «Il finale»): the first outcome of the scene sheet whose gates hold now closes the scene
+   * with its ending: mode B the outcome's `finale` line if it can be said, else its `detto`; the narrator's invitation is
+   * withdrawn and the scene has had its ending (as at a full clock). Gates read the clues revealed (mode A: the
+   * narrator's checked [indizio] marks), the lines used, the clocks and the coherence ledger's states.
+   */
+  private diciEsitoDellaScena(turno: number, esito: { uscita: VoceUscita[] }, segni: SegniInRisposta, log: Logger): { id: string; finale: string } | null {
+    const esiti = esitiDellaScena(this.campagna.scena, (m) => log.warn({ avviso: m }, 'scene: an outcome gate cannot be read'));
+    if (!esiti.some((e) => e.richiede)) return null;
+    const s = this.statoRepertorio;
+    const registro = this.registroOra('esiti della scena');
+    const raggiunto = esitoRaggiunto(esiti, {
+      indizi: s ? s.indiziRivelati : new Set(this.marche.indizi.keys()),
+      battute: new Set(s ? [...s.usi].filter(([, n]) => n > 0).map(([id]) => id) : []),
+      pieni: (id) => this.orologi.trova(id)?.pieni ?? null,
+      classe: (id) => {
+        const x = registro.entita.find((e) => e.id === id);
+        return x ? classeDi(x.stato) : null;
+      },
+    });
+    if (!raggiunto) return null;
+    const b = raggiunto.finale && s ? s.repertorio.perId.get(raggiunto.finale) : undefined;
+    // The line only if it can be said now (its own conditions); else the outcome's sentence; else nothing is withdrawn.
+    const linea = b && s && s.motivoIndisponibile(b, turno) === null ? b : null;
+    if (!linea && !raggiunto.detto) {
+      log.warn({ turno, esito: raggiunto.id, finale: raggiunto.finale, motivo: b && s ? s.motivoIndisponibile(b, turno) : 'no line' }, 'scene: an outcome\'s gates hold, but its ending cannot be said and it has no detto');
+      return null;
+    }
+    this.ritiraInvito(turno, esito, log);
+    let detto: string | null = null;
+    if (linea && this.aggiungiBattutaMotore(turno, esito, segni, log, linea, true)) detto = linea.id;
+    else if (raggiunto.detto) {
+      const righe = [{ etichetta: ID_NARRATORE, testo: raggiunto.detto, testo_voce: this.pronuncia(raggiunto.detto) }];
+      const voce: VoceUscita = { tipo: 'improvvisata', etichetta: ID_NARRATORE, testo: raggiunto.detto, frasi: [`t${turno}-e0`], motore: true };
+      this.righeDelMotore(turno, esito, righe, voce, true, 'e');
+      detto = raggiunto.id;
+    }
+    if (!detto) return null;
+    this.scenaFinitaAlTurno = turno;
+    this.sceneConFinale.add(this.campagna.scena.id);
+    log.info({ turno, esito: raggiunto.id, detto }, 'scene: an outcome\'s gates hold, the Engine closes the scene with its ending');
+    this.notifica();
+    return { id: raggiunto.id, finale: detto };
   }
 
   /**

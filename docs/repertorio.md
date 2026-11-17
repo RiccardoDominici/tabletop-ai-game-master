@@ -207,6 +207,14 @@ lines instead of answering the actions. It therefore changes as follows:
     its own `segno_almeno_ogni` (nozze-neve: at the Sasso the sunset is at least six and runs at one sign every two).
 - **Listed by state, not by themes**: endings, crowd lines and the closing come out based on the state of the clock (at
   full clock), because they have no players' words in their `temi`.
+- **Scene outcomes with gates** (A21): «the dramatic question has an answer» is said on the scene sheet, `esiti[].richiede`
+  (`indizi_rivelati`, `indizi_non_rivelati`, `battute_usate`, `battute_non_usate`, `orologio`, `stati` in the coherence
+  ledger). After each answer (after its clocks, marks and the world's consequences) the Engine checks the outcomes in the
+  sheet's order; the first whose gates all hold closes the scene with its `finale` line, or with its `detto` when the line
+  cannot come out now or in mode A (where clues are the narrator's checked `[indizio]` marks); the invitation is
+  withdrawn, the scene has had its ending (as at a full clock), and turni.jsonl records `esito_scena`
+  (`scena/esiti-scena.ts`). An outcome without `richiede` is told as before (themes, full clock). torre-mozza: the
+  descent from the tower once Tonio is free and neither goblin stands.
 - **NPC aliases** for relevance: nano (dwarf) → Baldrin; ostessa/oste (innkeeper) → Ottavia; forestiero (stranger)/
   prigioniero (prisoner)/«quello là dentro» (that one in there) → Sebastiano. The Engine reads them from the `alias`
   field of the NPC sheet (no list in the code).

@@ -204,6 +204,10 @@ musica: {tag: …, transizione: "…"}                  # tag and tags cited in 
 immagine: {invarianti: [...], prompt_luogo: "… in English"}   # [V]
 taglio: "…"                    # all the outcomes, including "if the PCs hesitate"; goes to the selector: no secrets
 esiti: [{id, descrizione, finale: <id of line>}]    # written with the endings (step 9); every ending exists [V]
+                               # optional per outcome: `richiede` (indizi_rivelati, indizi_non_rivelati, battute_usate,
+                               # battute_non_usate, orologio, stati) = the gates that answer the dramatic question: when
+                               # they all hold, the Engine says that ending and closes the scene, before the full clock;
+                               # `detto: "…"` = its sentence when the line cannot come out (mode A) [V SCENA.esiti]
 climax: true                   # optional: allows fewer than two exits
 audio: {musica: [...], ambiente: [...], umore_iniziale: …}   # optional, see "Audio" below [V]
 domande:                       # optional: world questions the Engine rolls Game Master side (docs/prove.md §9) [V DOMANDE]

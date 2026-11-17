@@ -212,6 +212,10 @@ It prints the level (one-shot, arc, campaign, saga), what that involves, and how
 - A **scene** is a place at a moment. For a session of 20–40 minutes one scene is enough; for 2–3 hours, 3 to 5.
   The first is `scena.yaml`, the others `scene/<id>.yaml`. The same place can come back at two different moments.
 - The Game Master moves from one scene to another from the panel (see [the Game Master panel](master-panel.md)).
+- A scene ends with one of its **outcomes** (`esiti` in the scene sheet, each with its ending line). An outcome can
+  carry the facts that answer the scene's dramatic question (`richiede`: a clue revealed, a line said, a clock's
+  marks, who is down or fled, like `richiede: {indizi_rivelati: [i_tonio_libero], stati: {png_zirra: [a_terra,
+  morto, fuggito]}}`): when they all hold, the Engine says that ending at once, even before the clock is full.
 
 ### The world that moves
 

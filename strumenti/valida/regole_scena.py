@@ -22,6 +22,48 @@ from .testo import frasi, problemi_di_prosa
 _TITOLI = {"sorella", "fratello", "padre", "madre", "mastro", "messer", "donna", "don", "zio", "zia", "nonna", "nonno"}
 
 
+
+CHIAVI_ESITO = {"id", "descrizione", "finale", "richiede", "detto"}
+CANCELLI_ESITO = {"indizi_rivelati", "indizi_non_rivelati", "battute_usate", "battute_non_usate", "orologio", "stati"}
+CLASSI_STATO = ("in_gioco", "a_terra", "morto", "fuggito")
+
+
+def _controlla_cancelli_esito(c: Campagna, e: Esito, dove: str, es: dict) -> None:
+    """`esiti[].richiede` (A21, repertorio.md «Il finale»): the gates that answer the dramatic question; when they all
+    hold the Engine closes the scene with that outcome's ending, before the clock is full. Keys and ids must exist."""
+    for k in sorted(set(es) - CHIAVI_ESITO):
+        e.errore("SCENA.esiti", dove, f"chiave sconosciuta {k!r} (ammesse: {sorted(CHIAVI_ESITO)})")
+    r = es.get("richiede")
+    if r is None:
+        return
+    if not isinstance(r, dict) or not r:
+        e.errore("SCENA.esiti", dove, "richiede è un blocco di cancelli (indizi_rivelati, battute_usate, orologio, stati…)")
+        return
+    for k in sorted(set(r) - CANCELLI_ESITO):
+        e.errore("SCENA.esiti", dove, f"richiede.{k} non previsto (ammessi: {sorted(CANCELLI_ESITO)})")
+    for k in ("indizi_rivelati", "indizi_non_rivelati"):
+        for i in r.get(k) or []:
+            if i not in c.indizi:
+                e.errore("SCENA.esiti", dove, f"richiede.{k}: indizio inesistente {i}")
+    for k in ("battute_usate", "battute_non_usate"):
+        for b in r.get(k) or []:
+            if b not in c.per_id:
+                e.errore("SCENA.esiti", dove, f"richiede.{k}: battuta inesistente {b}")
+    o = r.get("orologio")
+    if o is not None and not (isinstance(o, dict) and o.get("id") in c.orologi):
+        e.errore("SCENA.esiti", dove, "richiede.orologio: {id: <orologio esistente>, min, max}")
+    stati = r.get("stati")
+    if stati is not None:
+        if not isinstance(stati, dict):
+            e.errore("SCENA.esiti", dove, "richiede.stati: un blocco {id: stato o [stati]}")
+        else:
+            for pid, v in stati.items():
+                classi = [v] if isinstance(v, str) else v
+                if pid not in c.png and pid not in c.pg_ids:
+                    e.errore("SCENA.esiti", dove, f"richiede.stati: {pid} non è un PNG con scheda né un PG")
+                if not isinstance(classi, list) or not classi or any(x not in CLASSI_STATO for x in classi):
+                    e.errore("SCENA.esiti", dove, f"richiede.stati.{pid}: uno o più di {', '.join(CLASSI_STATO)}")
+
 def nomi_propri(d: dict) -> list[str]:
     """Le parole maiuscole del nome di un PNG, senza titoli: «Leandro Vischi» → [Leandro, Vischi]."""
     return [w for w in re.findall(r"[A-ZÀÈÉÌÒÙ][\wàèéìòù']+", str(d.get("nome") or ""))
@@ -234,3 +276,5 @@ def _scena(c: Campagna, e: Esito, dove: str, s: dict) -> None:
                 e.errore("SCENA.esiti", dove, "ogni esito ha id e finale (id della battuta di chiusura)")
             elif es["finale"] not in c.per_id:
                 e.errore("SCENA.esiti", dove, f"esito {es['id']}: battuta finale inesistente {es['finale']}")
+            if isinstance(es, dict):
+                _controlla_cancelli_esito(c, e, f"{dove} esito {es.get('id')}", es)

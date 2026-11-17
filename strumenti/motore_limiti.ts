@@ -56,15 +56,6 @@ const codice = sorgenti(SERVER);
     `impostaScena cambia solo gli orologi attivi: segni prima ${JSON.stringify(prima)}, dopo ${JSON.stringify(dopo)}`);
 }
 
-// 4. Finali: nessuna regola li fa uscire per «la domanda ha risposta»; per stato entra solo ciò che chiede l'orologio pieno.
-{
-  const stato = codice.find(([f]) => f === path.join('repertorio', 'stato.ts'))?.[1] ?? '';
-  const soloOrologio = /const perStato = segmentiCompleti != null && oro!\.min >= segmentiCompleti;/.test(stato);
-  const nienteFinali = !/tipo === 'finale'/.test(stato);
-  verifica('finali', soloOrologio && nienteFinali,
-    "repertorio/stato.ts: una battuta entra «per stato» solo con richiede.orologio a orologio pieno; nessun trattamento a parte dei finali");
-}
-
 // 5. Oggetti: il Motore non tiene chi ha che cosa; resta solo nella trascrizione.
 {
   const tipi = ['sessione/tipi.ts', 'repertorio/stato.ts', 'repertorio/tipi.ts'].map((f) => codice.find(([g]) => g === f)?.[1] ?? '');

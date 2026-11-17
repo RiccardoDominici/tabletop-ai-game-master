@@ -228,6 +228,22 @@ def test_scena_orologi_in_scena(camp):
     assert "SCENA.orologi_in_scena" in errori(camp)
 
 
+def test_scena_esiti_con_cancelli(camp):
+    # A21: an outcome's gates answer the dramatic question; the Engine closes the scene when they hold. Keys and ids exist.
+    rep = sorted((camp / "repertorio").glob("*.yaml"))[0].name
+    fine = leggi(camp, f"repertorio/{rep}")["battute"][0]["id"]
+    indizio = leggi(camp, "scena.yaml")["indizi"][0]["id"]
+    png = sorted(p.stem for p in (camp / "png").glob("*.yaml"))[0]
+    buona = {"id": "es_x", "descrizione": "x", "finale": fine, "detto": "Finisce qui.",
+             "richiede": {"indizi_rivelati": [indizio], "stati": {png: ["a_terra", "fuggito"]}}}
+    modifica(camp, "scena.yaml", lambda d: d.update(esiti=[buona]))
+    assert "SCENA.esiti" not in errori(camp)
+    for cattiva in ({**buona, "richiede": {"indizi_rivelati": ["i_mai"]}}, {**buona, "richiede": {"stati": {png: ["svenuto"]}}},
+                    {**buona, "richiede": {"oppure": []}}, {**buona, "richiede": {"orologio": {"id": "o_mai"}}}, {**buona, "chissa": 1}):
+        modifica(camp, "scena.yaml", lambda d: d.update(esiti=[cattiva]))
+        assert "SCENA.esiti" in errori(camp), cattiva
+
+
 def test_scena_rientro_con_battuta_inesistente(camp):
     modifica(camp, "scena.yaml", lambda d: d.update(rientro="nar_cera"))
     assert "SCENA.rientro" not in errori(camp)
