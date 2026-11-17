@@ -854,6 +854,43 @@ table only).
   really go (docs/mondo.md §5; round 6, FB: a mill, a ford, a cave). Test: test/coerenza-destinazioni.test.ts.
 Tests: test/sceneggiatore.test.ts, test/sconfitta.test.ts. Not measured live yet.
 
+## Measured, round 7 (profile A, 17 November, `b656a38`)
+
+Runs: `esperimenti/risultati/e2e-finale-3b/coerenzaA7-*`, the same four scripts and setup as rounds 4–6 (0.6B reader,
+rules arbiters, the sceneggiatore in the background, mock voice, ports 4950–4953, a clean log per run, memory 69–74%
+free), after the fixes of «After round 6». Judge: opus, the same rubric, the brief adapted to the new by-design lines
+(`coerenzaA7-evidenza-opus.md`). This round closes the coherence work for now.
+
+| | CM | CA | FB | ST |
+|---|---|---|---|---|
+| H heard, opus, round 4 → 5 → 6 → 7 | 4 → 1 → 0 → 0 (1 unsure) | 3 → 1 → 1 → 0 | 1 → 0 → 0 → 0 | 0 → 0 → 0 → 0 |
+| of which in the announcement, round 4 → 7 | 4 → 0 | 2 → 0 | 1 → 0 | 0 → 0 |
+| median first audio (ms), round 4 → 7 | 674 → 669 | 670 → 668 | 670 → 674 | 678 → 684 |
+| scriptwriter tag rate in the fights (with `richiede.esito` / needed one) | 103 / 106 | 47 / 49 | — | — |
+| tagged outcome not on the card at delivery (refused) | 6 | 4 | 0 | 0 |
+| stall moves | — | — | 1 (T5, the prepared S1) | 9 (T4–T12) |
+| defeat path | T24: every PC dead, «Nessuno di voi si rialza…» | T15: the prepared ending | — | — |
+
+Private content heard: 0. A fallen or absent character acting or speaking: 0. Every death save present. Nothing heard
+contradicts a card; some outcomes are only on the cards (misses; CA T15 Zirrà's hit that downed Nespola, which is not
+among the facts the Engine owes the table). The unsure one: CM T22, «La mazza cala di taglio, e il colpo rimbomba
+contro i muri…» for T21's hit, which may be heard as a miss. All 10 stall moves right (judge); the who-is-there,
+due-fact and scriptwriter-filter events right but two unsure. The roads sentence answered FB's mill (T3).
+Not as built, found by the judge and by the logs:
+- **the invented-name line never fired** (FB T7: Ugo answered «Chiedo a Oreste…» again). Cause: the live lexicon
+  (`pronunce-gioco.yaml`, written during play in the campaign's folder) had learned «Oreste» and «Carla» from the
+  scriptwriter's pronunciations in round 6's off-the-rails run, so for the Engine they were campaign names. The file
+  came from the test runs and was moved out of `campagne/torre-mozza/`; the rule should count only verified lexicon
+  entries as known, and test runs should not write into a campaign's folder;
+- **«Pugnale ancora» did not roll at CA T11**: the action also names «il goblin», and the named-target path of the
+  clear-attack step still needs an attack verb (the go-on words count only when no target is named);
+- the stall's count still resets on a commitment toward something that does not exist (FB T8 «Vado lì, adesso», a
+  cave with no name; T11 seizing a cart nobody has);
+- the S3 sentence of the leads lists the last clock sign as a «road»; a scriptwriter line confirmed a ford that does not
+  exist (FB T7); repeated catchphrases («Le pecore non aspettano.», «Ugo batte la pala per terra due volte.»).
+The PC-state tag was used once (CA). The announcement: 0 H, every false claim attributed; one world clause kept (FB
+T9) and some questions and later own clauses dropped by the «one sentence» rule.
+
 ## Characters the players invent (Riccardo's decision, 16 November)
 
 The blind off-the-rails script addressed «Oreste» and «Madre Carla», people the campaign never had; Berta and Ugo
