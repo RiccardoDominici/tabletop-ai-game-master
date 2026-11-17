@@ -166,7 +166,9 @@ lines instead of answering the actions. It therefore changes as follows:
   answer was there but the coherence checker dropped it (it named someone out of play, or a creature nobody here
   answers to), there is no second call for that action: the Engine says a short line from the card and the ledger
   («Livia ci prova, ma Zirrà non si muove più.»; docs/coerenza.md, «After round 3»). A PC whose `[usa]` was refused for a
-  reason another pick can mend (not in the turn's catalogue, a nonexistent id, a clock's pace) and that got no other
+  reason another pick can mend (not in the turn's catalogue, a nonexistent id, a clock's limit: a second sign of the
+  same clock or a third clock in one reply, a clock full or not started; the maximum pace itself holds only signs
+  without «> pg», which answer no action) and that got no other
   line counts as unanswered even if a sentence names it (the selector's announcement always does), so the repair call
   comes, with the reason in its message («la battuta che avevi scelto è stata rifiutata: …»); a refusal by a gate or a
   release out of context does not (its deviation answers). In profile A no second call goes to the small model.
