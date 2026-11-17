@@ -224,6 +224,9 @@ parole:
   # A short go-on with no verb («Ancora!», «Pugnale ancora»: these words alone, or after a weapon of the PC's sheet): in
   # a fight the same PC's attack again, at its last target (round 6, CM T11).
   attacco_ancora: [ancora, di nuovo, ancora una volta, un altro colpo, ancora un colpo]
+  # Whole words that may aim a go-on at a target named in the same clause («Ancora contro il goblin», «Di nuovo sul
+  # capo»): with the target's words and the PC's weapon words, nothing else may be in that clause (round 7, CA T11).
+  attacco_verso: [contro, su, sul, sullo, sulla, sui, sugli, sulle, sull, a, ad, al, allo, alla, ai, agli, alle, all, addosso, verso, con, col, coi, il, lo, la, l, i, gli, le, quel, quello, quella, quei, quegli, quelle]
   # Aiutare un compagno (con il nome di un PG che agisce nello stesso turno).
   aiuto: ['aiuto\b', 'do una mano a\b', 'copro\b', 'sostengo\b', 'faccio luce a\b']
   # L'arma scelta dall'arbitro (id in snake_case) che vuol dire «a mani nude»: qualsiasi punto dell'id.

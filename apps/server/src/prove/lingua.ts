@@ -44,6 +44,11 @@ export interface PacchettoProve {
     attacco_mio?: string[];
     /** A short go-on with no verb (whole clause, or after a weapon of the sheet): the PC's attack again, in a fight. */
     attacco_ancora?: string[];
+    /**
+     * Whole words that may aim a go-on at a target in the same clause («Ancora contro il goblin», «Again at the
+     * goblin»): prepositions and articles. Anything else there and it is no go-on.
+     */
+    attacco_verso?: string[];
     aiuto: string[];
     senz_armi: string[];
     /** Parole intere dell'arbitro a regole (prove/parole-testo.ts). */
@@ -94,8 +99,13 @@ export interface ParoleCompilate {
   attacco: RegExp;
   /** `attacco_mio`, whole words. */
   attaccoMio: RegExp;
-  /** `attacco_ancora`: the words that make the whole clause, after an optional word (the weapon). */
+  /**
+   * `attacco_ancora`: the go-on words opening the clause, after an optional word (group 1, the weapon), and the rest of
+   * the clause (group 2, the target's words, if any). Longest first, so «ancora una volta» is not «ancora» + a rest.
+   */
   attaccoAncora: RegExp;
+  /** `attacco_verso`, the words that aim a go-on at the target named in its clause. */
+  attaccoVerso: ReadonlySet<string>;
   aiuto: RegExp;
   /** Sull'id dell'arma scelta dall'arbitro (snake_case), in qualsiasi punto. */
   senzArmi: RegExp;
@@ -123,7 +133,8 @@ export function paroleProve(): ParoleCompilate {
       abilita: Object.entries(parole.abilita).map(([abilita, voci]) => ({ abilita, re: inizioParola(voci) })),
       attacco: inizioParola(parole.attacco),
       attaccoMio: parole.attacco_mio?.length ? new RegExp(`\\b(${parole.attacco_mio.join('|')})\\b`) : MAI,
-      attaccoAncora: parole.attacco_ancora?.length ? new RegExp(`^(?:(\\S+)\\s+)?(?:${parole.attacco_ancora.join('|')})$`) : MAI,
+      attaccoAncora: parole.attacco_ancora?.length ? new RegExp(`^(?:(\\S+)\\s+)?(?:${[...parole.attacco_ancora].sort((a, b) => b.length - a.length).join('|')})(?:\\s+(.+))?$`) : MAI,
+      attaccoVerso: new Set(parole.attacco_verso ?? []),
       aiuto: inizioParola(parole.aiuto),
       senzArmi: parole.senz_armi.length ? new RegExp(parole.senz_armi.join('|')) : MAI,
       seDifficile: Object.entries(parole.abilita_se_difficile ?? {}).map(([abilita, voci]) => ({ abilita, re: inizioParola(voci) })),

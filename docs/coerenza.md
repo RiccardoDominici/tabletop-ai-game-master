@@ -883,7 +883,9 @@ Not as built, found by the judge and by the logs:
   came from the test runs and was moved out of `campagne/torre-mozza/`; the rule should count only verified lexicon
   entries as known, and test runs should not write into a campaign's folder;
 - **«Pugnale ancora» did not roll at CA T11**: the action also names «il goblin», and the named-target path of the
-  clear-attack step still needs an attack verb (the go-on words count only when no target is named);
+  clear-attack step still needs an attack verb (the go-on words count only when no target is named). **Fixed** after
+  round 7: the go-on is read before giving up on a named target, and a name in its own clause aims it (docs/prove.md
+  §3; test/classificatore-regole.test.ts);
 - the stall's count still resets on a commitment toward something that does not exist (FB T8 «Vado lì, adesso», a
   cave with no name; T11 seizing a cart nobody has);
 - the S3 sentence of the leads lists the last clock sign as a «road»; a scriptwriter line confirmed a ford that does not

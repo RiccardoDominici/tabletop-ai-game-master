@@ -105,16 +105,37 @@ function unico<T>(xs: ReadonlyArray<{ x: T; n: number }>): T | null {
 }
 
 /**
- * A short go-on with no verb in the action's first clause («Ancora!», «Pugnale ancora»; `attacco_ancora` of the pack):
- * the words alone, or after one word that is one of the PC's weapons (its id's words). Round 6, CM T11: «Pugnale
- * ancora, il goblin si gira verso di me» got no roll.
+ * A short go-on in the action's first clause, in a fight («Ancora!», «Pugnale ancora», «Ancora contro il goblin»):
+ * `attacco_ancora` of the pack opening the clause, after at most one word that is one of the PC's weapons (its id's
+ * words), and then nothing, or only words that aim it (`attacco_verso`: «contro», «sul»), weapon words and the words of
+ * ONE target with stats. Round 6, CM T11: «Pugnale ancora, il goblin si gira verso di me» got no roll; round 7, CA T11
+ * the same action still got none, because «il goblin» named later sent it down the named-target path, which wanted an
+ * attack verb. `bersaglio`: the target named in the go-on's own clause, or null for a bare go-on (the PC's last
+ * target: a name in a later clause is not where the blow goes, «Ancora! Bertoldo, scappa»). null = no go-on
+ * («Ancora non capisco…», «Fiume ancora»).
  */
-function attaccoAncora(fatti: string, armi: readonly string[]): boolean {
+function attaccoAncora(
+  fatti: string,
+  armi: readonly string[],
+  bersaglioDi: (testo: string) => string | null,
+  nomeDi: (bersaglio: string) => ReadonlySet<string>,
+): { bersaglio: string | null; arma: string | null } | null {
   const primo = normalizza(fatti.split(/[,;:.!?…]/)[0] ?? '').replace(/[^\p{L}\p{N}' ]/gu, ' ').replace(/\s+/g, ' ').trim();
-  const m = paroleProve().attaccoAncora.exec(primo);
-  if (!m) return false;
-  const parola = m[1];
-  return !parola || armi.some((a) => a.split(/[_\s]+/).map(normalizza).includes(parola));
+  const parole = paroleProve();
+  const m = parole.attaccoAncora.exec(primo);
+  if (!m) return null;
+  const [, parola, coda] = m;
+  const pezzi = (a: string): string[] => a.split(/[_\s]+/).map(normalizza);
+  const arma = parola ? (armi.find((a) => pezzi(a).includes(parola)) ?? null) : null;
+  if (parola && !arma) return null;
+  if (!coda) return { bersaglio: null, arma };
+  const bersaglio = bersaglioDi(coda);
+  if (!bersaglio) return null;
+  const diArmi = new Set(armi.flatMap(pezzi));
+  // Each word left must aim, be a weapon's, or be the target's: a word of one of its names, or one naming it alone.
+  const suo = nomeDi(bersaglio);
+  const resto = coda.split(' ').filter((w) => !parole.attaccoVerso.has(w) && !diArmi.has(w) && !suo.has(w) && bersaglioDi(w) !== bersaglio);
+  return resto.length ? null : { bersaglio, arma: arma ?? armi.find((a) => pezzi(a).some((w) => coda.split(' ').includes(w))) ?? null };
 }
 
 /**
@@ -122,19 +143,34 @@ function attaccoAncora(fatti: string, armi: readonly string[]): boolean {
  * what the PC does. Deterministic: the Engine applies it after ANY arbiter (Haiku included), because in the second
  * pass of the final end-to-end run Haiku gave «no roll» to «Lancio il dardo incantato contro il goblin che sta
  * arrivando», and the narrator killed the goblin with no damage. null = not such a clear attack.
+ * In order: a named target (an NPC with a sheet, by name or alias, or a minion of the scene) with an attack verb
+ * (`attacco`, or the first-person `attacco_mio`) or a weapon used; then, in a fight only, a go-on (`attaccoAncora`)
+ * and the PC's own attack in the first person with no target named, both at the PC's last target.
  */
 export function attaccoDiRegole(az: { id: string; testo: string; autore: string }, i: IngressoClassificatore): DecisioneProva | null {
   const fatti = senzaParlato(az.testo);
+  const t = normalizza(fatti);
+  const armi = i.armi(az.autore);
+  const nomi = nomiDeiPng(i.campagna);
   // A named NPC with a sheet, or else a minion of the scene named by its type's words (C5: «colpisco la sentinella»).
-  const nominato = [...pngNominati(fatti, nomiDeiPng(i.campagna))].find((id) => id !== az.autore && i.haScheda(id)) ?? i.gregario?.(fatti) ?? null;
+  const bersaglioDi = (testo: string): string | null => [...pngNominati(testo, nomi)].find((id) => id !== az.autore && i.haScheda(id)) ?? i.gregario?.(testo) ?? null;
+  const nominato = bersaglioDi(fatti);
+  const arma = armi.find((a) => armaUsata(fatti, [a])) ?? null;
+  const attacco = (bersaglio: string, conArma: string | null): DecisioneProva => ({ ...vuota(az.id), tipo: 'attacco', bersaglio, arma: conArma }) as DecisioneProva;
+  if (nominato && (paroleProve().attacco.test(t) || paroleProve().attaccoMio.test(t) || arma)) return attacco(nominato, arma);
+  if (!i.bersaglioImplicito) return null;
+  // In a fight, a go-on with no verb: at the target named in its own clause, else at the PC's last target.
+  const ancora = attaccoAncora(fatti, armi, bersaglioDi, (id) => new Set((nomi.get(id) ?? []).flatMap((n) => n.split(/\s+/))));
+  if (ancora) {
+    const bersaglio = ancora.bersaglio ?? i.bersaglioImplicito(az.autore);
+    return bersaglio ? attacco(bersaglio, arma ?? ancora.arma) : null;
+  }
   // In a fight, the PC's own attack in the first person with no target named («lo colpisco ancora», «carico quello al
   // centro»): its last target, so the attack is rolled (round 5: «nessun tiro» for five declared attacks). Only the
   // first-person words (`attacco_mio`): «il goblin mi colpisce» is a player's claim, not an attack.
-  const bersaglio = nominato ?? (i.bersaglioImplicito && (paroleProve().attaccoMio.test(normalizza(fatti)) || attaccoAncora(fatti, i.armi(az.autore))) ? i.bersaglioImplicito(az.autore) : null);
-  if (!bersaglio) return null;
-  if (!nominato) return { ...vuota(az.id), tipo: 'attacco', bersaglio, arma: i.armi(az.autore).find((a) => armaUsata(fatti, [a])) ?? null } as DecisioneProva;
-  const arma = i.armi(az.autore).find((a) => armaUsata(fatti, [a])) ?? null;
-  return paroleProve().attacco.test(normalizza(fatti)) || arma ? ({ ...vuota(az.id), tipo: 'attacco', bersaglio, arma } as DecisioneProva) : null;
+  if (nominato || !paroleProve().attaccoMio.test(t)) return null;
+  const bersaglio = i.bersaglioImplicito(az.autore);
+  return bersaglio ? attacco(bersaglio, arma) : null;
 }
 
 export function classificaARegole(az: { id: string; testo: string; autore: string }, i: IngressoClassificatore): DecisioneProva | DecisioneRegole {

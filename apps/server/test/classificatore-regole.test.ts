@@ -50,6 +50,22 @@ describe('arbitro a regole, SRD', () => {
     expect(cf('Balestra ancora, poi mi riparo.')).toMatchObject({ tipo: 'attacco', bersaglio: 'png_ruggero' });
     expect(cf('Ancora non capisco cosa vuole.')).not.toMatchObject({ tipo: 'attacco' });
     expect(cf('Fiume ancora.')).not.toMatchObject({ tipo: 'attacco' });
+    // Round 7, CA T11: the same go-on with an enemy named in a later clause («Pugnale ancora, il goblin si gira verso di
+    // me») went down the named-target path, which wanted an attack verb: no roll. «sgherro» is Ruggero's alias.
+    expect(cf('Spada ancora, lo sgherro si gira verso di me.')).toMatchObject({ tipo: 'attacco', bersaglio: 'png_ruggero', arma: 'spada_lunga' });
+    // A target named in the go-on's own clause is where the blow goes; a bare go-on keeps the last target, whoever is
+    // named later (Bertoldo has a sheet too: never hit for being named).
+    const contro: IngressoClassificatore = { ...ing, bersaglioImplicito: () => 'png_bertoldo' };
+    const cc = (testo: string) => classificaARegole({ id: 'a1', autore: 'pg_corrado', testo }, contro);
+    expect(cc('Ancora contro lo sgherro!')).toMatchObject({ tipo: 'attacco', bersaglio: 'png_ruggero' });
+    expect(cc('Di nuovo su Ruggero, con la spada')).toMatchObject({ tipo: 'attacco', bersaglio: 'png_ruggero' });
+    expect(cc('Ancora una volta contro Ruggero')).toMatchObject({ tipo: 'attacco', bersaglio: 'png_ruggero' });
+    expect(cf('Ancora! Bertoldo, scappa.')).toMatchObject({ tipo: 'attacco', bersaglio: 'png_ruggero' });
+    expect(cf('Tiro ancora a Ruggero.')).toMatchObject({ tipo: 'attacco', bersaglio: 'png_ruggero' });
+    // Not a go-on: other words in its clause, or a target that is not one.
+    expect(cf('Ancora non capisco Ruggero.')).not.toMatchObject({ tipo: 'attacco' });
+    expect(cf('Ancora contro il fiume.')).not.toMatchObject({ tipo: 'attacco' });
+    expect(cf('Ancora contro Ruggero e Bertoldo.')).not.toMatchObject({ tipo: 'attacco' });
     // Outside a fight (no implicit target) nothing changes.
     expect(cl('pg_corrado', 'Lo colpisco ancora, poi mi sposto.')).not.toMatchObject({ tipo: 'attacco' });
   });
@@ -175,5 +191,10 @@ describe('arbitro a regole in inglese: parlato, domande, arma in mano', () => {
     const lotta: IngressoClassificatore = { ...ing, bersaglioImplicito: () => 'png_guard' };
     expect(classificaARegole({ id: 'a1', autore: 'pg_mara', testo: 'I hit him again' }, lotta)).toMatchObject({ tipo: 'attacco', bersaglio: 'png_guard' });
     expect(classificaARegole({ id: 'a1', autore: 'pg_mara', testo: 'The guard hits me hard' }, lotta)).not.toMatchObject({ tipo: 'attacco' });
+    // The go-on (`attacco_ancora`, `attacco_verso` of the English pack), with an enemy named in its clause or later.
+    const contro: IngressoClassificatore = { ...ing, bersaglioImplicito: () => 'png_keeper' };
+    expect(classificaARegole({ id: 'a1', autore: 'pg_mara', testo: 'Shortsword again, Guard Lia turns to me' }, lotta)).toMatchObject({ tipo: 'attacco', bersaglio: 'png_guard', arma: 'shortsword' });
+    expect(classificaARegole({ id: 'a1', autore: 'pg_mara', testo: 'Again at Guard Lia!' }, contro)).toMatchObject({ tipo: 'attacco', bersaglio: 'png_guard' });
+    expect(classificaARegole({ id: 'a1', autore: 'pg_mara', testo: 'Again I do not understand Guard Lia' }, contro)).not.toMatchObject({ tipo: 'attacco' });
   });
 });
