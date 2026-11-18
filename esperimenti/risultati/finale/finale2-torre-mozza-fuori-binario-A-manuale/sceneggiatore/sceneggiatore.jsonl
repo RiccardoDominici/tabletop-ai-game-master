@@ -1,0 +1,4 @@
+{"ts":"2026-11-18T10:43:42.423Z","esito":"avvio","modelli":{"subito":"sonnet","chiusura":"sonnet","prossime":"haiku"},"pid":51020}
+{"ts":"2026-11-18T10:47:48.938Z","id":"subito-t1-mwlzvf8p-1","tipo":"subito","turno":1,"esito":"errore","errore":"claude -p è uscito con 143: ","ms_in_coda":367}
+{"ts":"2026-11-18T10:50:50.270Z","id":"subito-t2-mwlzw2kw-3","tipo":"subito","turno":2,"esito":"errore","errore":"claude -p è uscito con 143: ","ms_in_coda":151483}
+{"ts":"2026-11-18T10:51:04.109Z","esito":"arresto","pid":51020}

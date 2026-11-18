@@ -1,0 +1,17 @@
+[torre-mozza-fuori-binario-B] campagna torre-mozza, porta 4962, modalità repertorio: riavvio del server di prova…
+[torre-mozza-fuori-binario-B] server: {"ok":true,"fase":"attesa","turno":0,"versione_scena":0,"voce":"mock","schermo":false,"narratore":"minimo","modello":"mlx-community/Qwen3-0.6B-4bit","campagna":"torre-mozza","immagini":17,"audio":26,"sessione":"","modo":"repertorio","ripresa":null,"pacchetto":null,"lingua":"it","lingua_contenuti":"it"}
+[torre-mozza-fuori-binario-B] pg_nespola rolls Carisma (1d20 +1): 12
+[torre-mozza-fuori-binario-B] turno 1/13 fatto (server 1)
+[torre-mozza-fuori-binario-B] turno 2/13 fatto (server 2)
+[torre-mozza-fuori-binario-B] turno 3/13 fatto (server 3)
+[torre-mozza-fuori-binario-B] turno 4/13 fatto (server 4)
+[torre-mozza-fuori-binario-B] turno 5/13 fatto (server 5)
+[torre-mozza-fuori-binario-B] turno 6/13 fatto (server 6)
+[torre-mozza-fuori-binario-B] turno 7/13 fatto (server 7)
+[torre-mozza-fuori-binario-B] turno 8/13 fatto (server 8)
+[torre-mozza-fuori-binario-B] turno 9/13 fatto (server 9)
+[torre-mozza-fuori-binario-B] turno 10/13 fatto (server 10)
+[torre-mozza-fuori-binario-B] turno 11/13 fatto (server 11)
+[torre-mozza-fuori-binario-B] turno 12/13 fatto (server 12)
+[torre-mozza-fuori-binario-B] turno 13/13 fatto (server 13)
+[torre-mozza-fuori-binario-B] fatto → esperimenti/risultati/finale/finale2-torre-mozza-fuori-binario-A-manuale (costo $0.00000)
