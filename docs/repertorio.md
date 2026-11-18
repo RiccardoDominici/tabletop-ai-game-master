@@ -215,8 +215,10 @@ lines instead of answering the actions. It therefore changes as follows:
   sheet's order; the first whose gates all hold closes the scene with its `finale` line, or with its `detto` when the line
   cannot come out now or in mode A (where clues are the narrator's checked `[indizio]` marks); the invitation is
   withdrawn, the scene has had its ending (as at a full clock), and turni.jsonl records `esito_scena`
-  (`scena/esiti-scena.ts`). An outcome without `richiede` is told as before (themes, full clock). torre-mozza: the
-  descent from the tower once Tonio is free and neither goblin stands.
+  (`scena/esiti-scena.ts`). An outcome without `richiede` is told as before (themes, full clock). A gate should be a
+  state of the world, not the PCs' next choice: an ending that tells what the PCs do («i PG scendono dalla torre»)
+  stays on its themes, or the Engine would decide for them. torre-mozza: midnight at the sheepfold and at the
+  charcoal kiln (`orologio: {id: o_mezzanotte, min: 8}`, with `detto` for mode A, which has no full-clock ending).
 - **NPC aliases** for relevance: nano (dwarf) → Baldrin; ostessa/oste (innkeeper) → Ottavia; forestiero (stranger)/
   prigioniero (prisoner)/«quello là dentro» (that one in there) → Sebastiano. The Engine reads them from the `alias`
   field of the NPC sheet (no list in the code).

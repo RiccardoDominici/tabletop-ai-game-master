@@ -66,7 +66,7 @@ export interface Registro {
   /** NPCs who refused this turn after a failed social check, toward whom (the refusal guard's input). */
   negati: Array<{ png: string; autore: string; privata: boolean }>;
   /** Who holds what (A22): objects with an id someone holds or that moved; `chi` null = in its place. */
-  oggetti?: Array<{ id: string; nome: string; chi: string | null }>;
+  oggetti?: Array<{ id: string; nome: string; chi: string | null; privato?: string | null }>;
 }
 
 /** What the director hands over: plain data and lookups on the Engine's sources (no copies of the state). */
@@ -91,7 +91,7 @@ export interface FontiRegistro {
   carte: readonly TiroMostrato[];
   negati: ReadonlyArray<{ png: string; autore: string; privata: boolean }>;
   /** Objects with an id someone holds or that moved (scena/oggetti.ts, A22); absent = none tracked. */
-  oggetti?: ReadonlyArray<{ id: string; nome: string; chi: string | null }>;
+  oggetti?: ReadonlyArray<{ id: string; nome: string; chi: string | null; privato?: string | null }>;
 }
 
 /** The band of the hit points: full or a scratch, wounded (half or less), badly wounded (a quarter or less). */

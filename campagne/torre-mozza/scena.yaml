@@ -112,7 +112,13 @@ audio:
   umore_iniziale: esplorazione_tesa
 taglio: "La scena si chiude quando i PG partono per il bosco o per la torre, con la chiave o senza. Ugo torna comunque alla carbonaia prima di loro, perché una carbonaia accesa non si lascia sola: se i PG lo accusano, il paese lo lascia andare lo stesso, a male parole. Se Berta non affida la chiave, la tiene al collo e resta all'ovile ad aspettare. Se i PG esitano, il corno della torre e i cani che scappano verso il sentiero li spingono a partire."
 esiti:
-  - {id: es_ovile_mezzanotte, descrizione: "Arriva la mezzanotte mentre i PG sono ancora all'ovile.", finale: fin_ovile_mezzanotte}
+  # La domanda ha risposta per stato (docs/repertorio.md, «Il finale»): a mezzanotte, se i PG sono ancora qui. In modalità
+  # B lo dice anche l'orologio pieno; in modalità A, senza battute, il Motore dice `detto`.
+  - id: es_ovile_mezzanotte
+    descrizione: "Arriva la mezzanotte mentre i PG sono ancora all'ovile."
+    finale: fin_ovile_mezzanotte
+    richiede: {orologio: {id: o_mezzanotte, min: 8}}
+    detto: "Spinalba spegne le lanterne a una a una. Berta resta sulla soglia, e il sentiero del bosco aspetta nel buio."
   - {id: es_ovile_chiave, descrizione: "I PG partono per il bosco con la chiave di Berta.", finale: fin_ovile_chiave}
   - {id: es_ovile_senza, descrizione: "I PG partono per il bosco senza la chiave: Berta la tiene al collo.", finale: fin_ovile_senza}
 prove:

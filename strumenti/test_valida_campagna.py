@@ -256,6 +256,9 @@ def test_oggetti_tenuti_dal_motore(camp):
         scrivi(camp, "scena.yaml", originale_scena)
         modifica(camp, "scena.yaml", lambda d: d["elementi_interattivi"].append(cattivo))
         assert "SCENA.oggetti" in errori(camp), cattivo
+    # The same id twice is one object with two places: refused.
+    modifica(camp, "scena.yaml", lambda d: d["elementi_interattivi"].extend([{"id": "ogg_y", "cosa": "a"}, {"id": "ogg_y", "cosa": "b"}]))
+    assert "SCENA.oggetti" in errori(camp)
     scrivi(camp, "scena.yaml", originale_scena)
     assert "REPERTORIO.effetti" in errori(camp)   # ogg_chiave no longer exists
     scrivi(camp, f"repertorio/{rep}", originale_rep)

@@ -32,7 +32,7 @@ battute:
     riempitivo: true
     quando: "nessuno dei PG si offre di salire alla torre"
     temi: [attesa]
-    richiede: {battute_non_usate: [ber_chiave, nar_chiave_presa]}
+    richiede: {battute_non_usate: [ber_chiave, nar_chiave_presa, ber_pazienza]}
     testo:
       - "[narratore] Berta si alza dalla panca, con gli occhi sul crinale."
       - "[png_berta] Se non sale nessuno, aspetto qui con la chiave. E all'alba sarò sola."
@@ -44,7 +44,8 @@ battute:
     tipo: momento
     quando: "al terzo segno della notte Berta perde la pazienza (la dice il Motore)"
     temi: []
-    richiede: {battute_non_usate: [ber_chiave, nar_chiave_presa]}
+    # Non dopo ber_salgo_io («aspetto qui con la chiave»): Berta si contraddirebbe.
+    richiede: {battute_non_usate: [ber_chiave, nar_chiave_presa, ber_salgo_io]}
     testo:
       - "[narratore] Berta si getta la mantella sulle spalle e si stringe la chiave al petto."
       - "[png_berta] La notte non aspetta nessuno. Se non salite voi, lassù ci salgo io."

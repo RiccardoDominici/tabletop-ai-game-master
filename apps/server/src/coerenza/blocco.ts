@@ -43,7 +43,8 @@ export function righeVeroAdesso(r: Registro): string[] {
   });
   if (esiti.length) righe.push(testo('coerenza.esiti', { elenco: esiti.join('; ') }));
   // Who holds what (A22): an object in someone's hands is a fact the answer must not contradict.
-  const tenuti = (r.oggetti ?? []).filter((o) => o.chi !== null);
+  // A move a private action made (a pickpocket) is that PC's to tell: not here (the table may know only the public).
+  const tenuti = (r.oggetti ?? []).filter((o) => o.chi !== null && !o.privato);
   if (tenuti.length) {
     const nome = (id: string): string => r.entita.find((e) => e.id === id)?.nome ?? id;
     righe.push(testo('coerenza.oggetti', { elenco: tenuti.map((o) => testo('coerenza.oggetto', { oggetto: o.nome, chi: nomeBreve(nome(o.chi!)) })).join('; ') }));

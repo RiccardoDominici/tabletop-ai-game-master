@@ -210,7 +210,9 @@ esiti: [{id, descrizione, finale: <id of line>}]    # written with the endings (
                                # optional per outcome: `richiede` (indizi_rivelati, indizi_non_rivelati, battute_usate,
                                # battute_non_usate, orologio, stati) = the gates that answer the dramatic question: when
                                # they all hold, the Engine says that ending and closes the scene, before the full clock;
-                               # `detto: "…"` = its sentence when the line cannot come out (mode A) [V SCENA.esiti]
+                               # `detto: "…"` = its sentence when the line cannot come out (mode A) [V SCENA.esiti];
+                               # gate on a state of the world (a clock, who is down, a clue found), never on the PCs'
+                               # next choice: an ending that tells what they do stays on its themes
 climax: true                   # optional: allows fewer than two exits
 audio: {musica: [...], ambiente: [...], umore_iniziale: …}   # optional, see "Audio" below [V]
 domande:                       # optional: world questions the Engine rolls Game Master side (docs/prove.md §9) [V DOMANDE]

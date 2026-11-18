@@ -82,6 +82,9 @@ def riassunto(cartella: Path, n: int) -> int:
     for i in d.get("png_improvvisati") or []:
         print(f"  PNG improvvisato t{i.get('turno')}: {i.get('nome')} ({i.get('ruolo') or 'senza ruolo'}, {i.get('scena')}): "
               "da tenere (una scheda), rifondere in un PNG del canone o lasciare")
+    # Who holds what at the end (A22): the objects that changed hands, for `effetti.oggetti` in stato/stato.yaml.
+    for o in d.get("oggetti") or []:
+        print(f"  oggetto t{o.get('turno')}: {o.get('id')} → {o.get('chi') or 'al suo posto'}")
     cambi = d.get("atteggiamenti") or []
     for a in cambi:
         print(f"  atteggiamento t{a.get('turno')}: {a.get('id')} verso {a.get('pg')} {a.get('da')} → {a.get('a')} ({a.get('causa')})")

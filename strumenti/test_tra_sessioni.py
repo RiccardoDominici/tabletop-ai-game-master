@@ -124,3 +124,15 @@ def test_riassunto_dei_png_improvvisati(giocata, capsys):
     assert T.riassunto(giocata, 1) == 0
     out = capsys.readouterr().out
     assert "PNG improvvisato t9: Oreste (pastore, scena_uno): da tenere (una scheda), rifondere in un PNG del canone o lasciare" in out
+
+
+def test_riassunto_degli_oggetti(giocata, capsys):
+    # A22 (docs/coerenza.md §1): the objects that changed hands are listed for the next package's state.
+    f = giocata / "sessioni" / "01" / "registro.yaml"
+    d = yaml.safe_load(f.read_text(encoding="utf-8"))
+    d["oggetti"] = [{"id": "ogg_chiave", "chi": "pg_anna", "turno": 4}, {"id": "ogg_lettera", "chi": None, "turno": 6}]
+    f.write_text(yaml.safe_dump(d, allow_unicode=True, sort_keys=False), encoding="utf-8")
+    assert T.riassunto(giocata, 1) == 0
+    out = capsys.readouterr().out
+    assert "oggetto t4: ogg_chiave → pg_anna" in out
+    assert "oggetto t6: ogg_lettera → al suo posto" in out

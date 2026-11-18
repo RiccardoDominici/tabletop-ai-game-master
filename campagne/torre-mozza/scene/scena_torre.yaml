@@ -87,15 +87,7 @@ esiti:
   - {id: es_fontana, descrizione: "A Spinalba si racconta che Tonio ha aiutato i goblin.", finale: fin_alba_fontana}
   - {id: es_silenzio, descrizione: "A Spinalba Tonio è soltanto un prigioniero liberato, e la colpa resta su Ugo.", finale: fin_alba_silenzio}
   - {id: es_riserva, descrizione: "I PG scagionano Ugo con la sua caccia nella riserva, e tacciono sul ragazzo.", finale: fin_alba_riserva}
-  # La domanda ha risposta quando Tonio è libero e nessuno dei due goblin è più in piedi: il Motore dice la discesa
-  # anche prima della mezzanotte (docs/repertorio.md, «Il finale»).
-  - id: es_discesa
-    descrizione: "I PG scendono dalla torre con il ragazzo, e la scelta su che cosa raccontare resta aperta."
-    finale: fin_alba_discesa
-    richiede:
-      indizi_rivelati: [i_tonio_libero]
-      stati: {png_zirra: [a_terra, morto, fuggito], png_grosso: [a_terra, morto, fuggito]}
-    detto: "La torre è vostra, e il ragazzo è libero. Giù a Spinalba vi chiederanno che cosa è successo lassù: che cosa direte?"
+  - {id: es_discesa, descrizione: "I PG scendono dalla torre con il ragazzo, e la scelta su che cosa raccontare resta aperta.", finale: fin_alba_discesa}
 # Domanda al mondo (docs/prove.md §9): se Zirrà, dalla scala, si accorge della porta di ferro lo tira il Motore con la
 # sua scheda (Saggezza, normale), nascosto di default; il narratore riceve solo la risposta. Non si sovrappone a
 # p_cantina_silenzio (chi risale dalla cantina tira il suo Muoversi in silenzio).

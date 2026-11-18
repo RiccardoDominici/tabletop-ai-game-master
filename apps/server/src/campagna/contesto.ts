@@ -26,8 +26,10 @@ import { ID_NARRATORE, type Campagna, type DatiYaml } from './tipi';
  * `conseguenze` of the clocks (docs/mondo.md §3): what will happen at a mark must not be read in advance.
  * `domande` of the scenes (docs/prove.md §9): the odds and both answers of a world question are the Game Master's; the
  * narrator gets only the answer the dice gave, as a world line of the turn.
+ * `richiede` and `detto` of the scenes' `esiti` (A21): when an outcome closes the scene and the sentence the Engine says
+ * then are the Engine's, not read in advance (as the consequences).
  */
-const CHIAVI_ESCLUSE = new Set(['prompt_immagine', 'prompt_luogo', 'stile_immagini', 'immagine', 'registro_attivita', 'scheda', 'prove', 'conseguenze', 'domande']);
+const CHIAVI_ESCLUSE = new Set(['prompt_immagine', 'prompt_luogo', 'stile_immagini', 'immagine', 'registro_attivita', 'scheda', 'prove', 'conseguenze', 'domande', 'richiede', 'detto']);
 
 function senzaChiavi(valore: unknown): unknown {
   if (Array.isArray(valore)) return valore.map(senzaChiavi);

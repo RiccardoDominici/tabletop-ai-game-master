@@ -297,7 +297,9 @@ truth? If not, add a proactive clue, something that arrives by itself.
 
 ### 5. Scene sheets → `scena.yaml` (+ `scene/*.yaml`)
 All the fields of the manual §4 (see `riferimenti/schema.md`), including `immagine` (`prompt_luogo` in English and
-invariants, `riferimenti/immagini.md`), except `esiti`, which you write at step 9 together with the endings.
+invariants, `riferimenti/immagini.md`), except `esiti`, which you write at step 9 together with the endings. An
+object that will change hands and matter later (a key, a letter) gets `id: ogg_…` in `elementi_interattivi`, and `chi`
+if someone holds it at the start: the Engine keeps who holds it (`riferimenti/schema.md`).
 - In `descrizione` put the layout and the rule **who hears what**: a privacy condition must mean something verifiable.
 - `descrizione`, `taglio`, `sensi` and the elements that are not HIDDEN go to the selector of mode B (rule 1): write
   them as they can be read by someone who does not know the solution. What reveals goes into an element marked
@@ -384,7 +386,10 @@ of that line changes. Do not repeat the same direction on the lines of one speak
   them beyond that).
 
 Order: clock signs, clues, lies, confessions, moments, endings, closings of the evening, voice examples, filler, transitions. When you write the
-endings, add each scene's `esiti`.
+endings, add each scene's `esiti`. An outcome the world decides (midnight comes, the boss is down) gets its gates,
+`richiede` (and a `detto` for mode A): the Engine then closes the scene when they hold; an outcome the PCs choose keeps
+none (`riferimenti/schema.md`, «esiti»). A line that hands over or steals an object with an id gets `effetti.oggetti`,
+one that turns an NPC `effetti.atteggiamento` (`riferimenti/repertorio.md`, §6).
 
 **Waiting lines and deviations (always)**: for every scene one waiting line of the narrator (`chi: narratore`,
 `riempitivo: true`, without `scena` or with that scene); for every NPC present in a scene, one of their waiting lines

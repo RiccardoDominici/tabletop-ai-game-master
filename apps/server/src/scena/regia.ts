@@ -1618,15 +1618,16 @@ export class Regia {
    * A line's `effetti.oggetti` (A22): the objects change hands when it comes out; `pg` is the PC the line answers (a line
    * that answers none gives nothing to «pg»), `scena` puts it back in its place.
    */
-  private oggettiDellaBattuta(b: Battuta, per: string | null, turno: number): void {
+  private oggettiDellaBattuta(b: Battuta, per: string | null, turno: number, privato: string | null): void {
     for (const o of b.effetti.oggetti) {
       const chi = o.chi === 'pg' ? per : o.chi;
       if (!chi) {
         this.o.log.warn({ turno, battuta: b.id, oggetto: o.id }, 'world: a line gives an object to «pg» but answers no PC');
         continue;
       }
-      const e = this.oggetti.sposta(o.id, chi === AL_SUO_POSTO ? AL_SUO_POSTO : chi, turno);
-      if (e.ok) this.o.log.info({ turno, battuta: b.id, oggetto: o.id, da: e.da, a: chi }, 'world: an object changed hands by a line');
+      // A line that answers a private action moves the object privately: known to that PC only (A22).
+      const e = this.oggetti.sposta(o.id, chi === AL_SUO_POSTO ? AL_SUO_POSTO : chi, turno, privato);
+      if (e.ok) this.o.log.info({ turno, battuta: b.id, oggetto: o.id, da: e.da, a: chi, privato }, 'world: an object changed hands by a line');
       else this.o.log.warn({ turno, battuta: b.id, oggetto: o.id, motivo: e.motivo }, 'world: a line\'s object change refused');
     }
   }
@@ -2538,7 +2539,7 @@ export class Regia {
     this.rivelateNelTurno.push(esito.battuta.id, ...esito.battuta.effetti.rivela_indizi);
     if (esito.orologiPartiti.length) this.o.log.info({ turno, battuta: id, orologi: esito.orologiPartiti }, 'orologio: partito (parte_dopo)');
     this.atteggiamentiDellaBattuta(esito.battuta, per, turno);
-    this.oggettiDellaBattuta(esito.battuta, per, turno);
+    this.oggettiDellaBattuta(esito.battuta, per, turno, per && t?.azioni.get(per)?.privata ? per : null);
     const audio = this.cueBattuta(esito.battuta);
     return {
       ok: true,

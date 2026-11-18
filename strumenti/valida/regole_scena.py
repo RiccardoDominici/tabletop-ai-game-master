@@ -98,6 +98,10 @@ def controlla(c: Campagna, e: Esito) -> None:
                                         "evento a parte (riferimenti/mestiere.md, «Più scene»)")
     for nome, s in c.scene:
         _scena(c, e, nome, s)
+    # An object id names one object in the whole campaign (A22): the Engine keeps one holder per id.
+    oggetti = [el.get("id") for _, s in c.scene for el in (s.get("elementi_interattivi") or []) if isinstance(el, dict) and el.get("id")]
+    for x in sorted({o for o in oggetti if oggetti.count(o) > 1}):
+        e.errore("SCENA.oggetti", "scene", f"id di oggetto ripetuto in più elementi: {x}")
     _voci_fuori_scena(c, e)
 
 

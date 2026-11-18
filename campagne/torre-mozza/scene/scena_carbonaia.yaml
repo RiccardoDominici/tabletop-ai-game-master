@@ -87,7 +87,11 @@ audio:
   umore_iniziale: esplorazione_tesa
 taglio: "La scena si chiude quando i PG salgono alla torre, per il sentiero o per un'altra via. Se aiutano Ugo con la carbonaia, lui li ripaga con un consiglio; se lo accusano, tace e torna alla pala. Ugo resta comunque alla carbonaia. Se i PG esitano, il corno della torre e la carbonaia che sbuffa li spingono a decidere."
 esiti:
-  - {id: es_carbonaia_mezzanotte, descrizione: "Arriva la mezzanotte mentre i PG sono ancora alla carbonaia.", finale: fin_carbonaia_mezzanotte}
+  - id: es_carbonaia_mezzanotte
+    descrizione: "Arriva la mezzanotte mentre i PG sono ancora alla carbonaia."
+    finale: fin_carbonaia_mezzanotte
+    richiede: {orologio: {id: o_mezzanotte, min: 8}}
+    detto: "Ugo si toglie il cappello e guarda il crinale, senza dire niente. Sopra gli alberi, il fuoco della torre è una brace rossa."
   - {id: es_postierla, descrizione: "I PG entrano nella torre dalla postierla sotto i rovi.", finale: fin_carbonaia_cunicolo}
   - {id: es_sentiero, descrizione: "I PG salgono alla torre per il sentiero dei goblin.", finale: fin_carbonaia_sentiero}
 prove:

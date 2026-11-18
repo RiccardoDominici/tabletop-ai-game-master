@@ -22,14 +22,17 @@ export interface Oggetto {
   iniziale: string | null;
 }
 
-/** The objects in a snapshot: id, holder (null = in its place), turn of the last change. */
-export type OggettiSalvati = Array<[string, string | null, number]>;
+/**
+ * The objects in a snapshot: id, holder (null = in its place), turn of the last change, and the PC who alone knows of
+ * that change (a private action moved it) or null.
+ */
+export type OggettiSalvati = Array<[string, string | null, number, (string | null)?]>;
 
 export type EsitoOggetto = { ok: true; da: string | null } | { ok: false; motivo: string };
 
 export class StatoOggetti {
   readonly definiti = new Map<string, Oggetto>();
-  private readonly ora = new Map<string, { chi: string | null; turno: number }>();
+  private readonly ora = new Map<string, { chi: string | null; turno: number; privato: string | null }>();
   private readonly personaggi: ReadonlySet<string>;
 
   constructor(c: Campagna) {
@@ -53,28 +56,29 @@ export class StatoOggetti {
    * A change of holder: `chi` a PC or NPC of the campaign, or AL_SUO_POSTO. Refused for an unknown object or holder;
    * a change to the holder it already has is accepted and changes nothing.
    */
-  sposta(id: string, chi: string, turno: number): EsitoOggetto {
+  sposta(id: string, chi: string, turno: number, privato: string | null = null): EsitoOggetto {
     if (!this.definiti.has(id)) return { ok: false, motivo: `unknown object ${id}` };
     const nuovo = chi === AL_SUO_POSTO ? null : chi;
     if (nuovo !== null && !this.personaggi.has(nuovo)) return { ok: false, motivo: `unknown holder ${chi}` };
     const da = this.chi(id);
-    if (da !== nuovo) this.ora.set(id, { chi: nuovo, turno });
+    // A private action's move (a pickpocket) is known to that PC alone, until a public move.
+    if (da !== nuovo || (this.ora.get(id)?.privato ?? null) !== privato) this.ora.set(id, { chi: nuovo, turno, privato });
     return { ok: true, da };
   }
 
   /** Every object someone holds now, or that moved from its start: for the ledger and the session log. */
-  tenuti(): Array<{ id: string; nome: string; chi: string | null; turno: number | null }> {
+  tenuti(): Array<{ id: string; nome: string; chi: string | null; turno: number | null; privato: string | null }> {
     return [...this.definiti.values()]
-      .map((o) => ({ id: o.id, nome: o.nome, chi: this.chi(o.id), turno: this.ora.get(o.id)?.turno ?? null }))
+      .map((o) => ({ id: o.id, nome: o.nome, chi: this.chi(o.id), turno: this.ora.get(o.id)?.turno ?? null, privato: this.ora.get(o.id)?.privato ?? null }))
       .filter((o) => o.chi !== null || o.turno !== null);
   }
 
   esporta(): OggettiSalvati {
-    return [...this.ora].map(([id, v]) => [id, v.chi, v.turno]);
+    return [...this.ora].map(([id, v]) => [id, v.chi, v.turno, v.privato]);
   }
 
   importa(x: OggettiSalvati | undefined): void {
     this.ora.clear();
-    for (const [id, chi, turno] of x ?? []) if (this.definiti.has(id)) this.ora.set(id, { chi, turno });
+    for (const [id, chi, turno, privato] of x ?? []) if (this.definiti.has(id)) this.ora.set(id, { chi, turno, privato: privato ?? null });
   }
 }

@@ -19,7 +19,7 @@ describe('StatoOggetti and the [oggetto] line', () => {
     const prova = new Prova();
     const o = new StatoOggetti(caricaCampagna(prova.campagna('mini', { ritocchi: conChiave })));
     expect(o.chi('ogg_chiave')).toBe('png_oste');
-    expect(o.tenuti()).toEqual([{ id: 'ogg_chiave', nome: 'la chiave della cantina', chi: 'png_oste', turno: null }]);
+    expect(o.tenuti()).toEqual([{ id: 'ogg_chiave', nome: 'la chiave della cantina', chi: 'png_oste', turno: null, privato: null }]);
     expect(o.sposta('ogg_chiave', 'pg_anna', 2)).toEqual({ ok: true, da: 'png_oste' });
     expect(o.sposta('ogg_chiave', 'pg_nessuno', 3)).toMatchObject({ ok: false, motivo: 'unknown holder pg_nessuno' });
     expect(o.sposta('ogg_nulla', 'pg_anna', 3)).toMatchObject({ ok: false, motivo: 'unknown object ogg_nulla' });
@@ -58,6 +58,23 @@ describe('with the server', () => {
     expect(messaggi.at(-1)).toContain("Chi ha che cosa: la chiave della cantina: ce l'ha Anna.");
     // At the start the key was at the oste's belt: said too, before the line (the sheet's holder is a fact).
     expect(messaggi.find((m) => m.includes("Chiedo la chiave all'oste"))).toContain("la chiave della cantina: ce l'ha Oste");
+  }, 20_000);
+
+  it('mode B: a line that answers a private action moves the object privately: the public block does not say it', async () => {
+    prova = new Prova();
+    const cartella = prova.campagna('mini', {
+      ritocchi: conChiave,
+      battute: { 'png_oste.yaml': [{ id: 'oste_borsa', chi: 'narratore', tipo: 'momento', quando: "un PG sfila la chiave all'oste", temi: ['chiave'], richiede: { privata: true }, testo: ["[narratore] La chiave scivola dalla cintura dell'oste alla tua mano."], effetti: { oggetti: { ogg_chiave: 'pg' } }, max_usi: 1 }] },
+    });
+    prova.nomeNarratore = 'minimo';
+    const { url, messaggi } = await prova.avvia(cartella, (t) => (t === 1 ? '[usa] oste_borsa > pg_anna\n[invito] tutti' : '[narratore] Piove.\n[invito] tutti'));
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    let s = await inizia(schermo, tel);
+    s = await turno(tel, 'pg_anna', s, "Sfilo di nascosto la chiave dalla cintura dell'oste.", true);
+    s = await turno(tel, 'pg_anna', s, 'Bevo il mio vino.');
+    // The key moved (the log knows it), but the table's block never says who holds it now, nor the oste any more.
+    expect(messaggi.at(-1)).not.toContain('la chiave della cantina');
   }, 20_000);
 
   it('mode A: the narrator\'s [oggetto] is checked: a known holder here is accepted, an unknown object refused', async () => {

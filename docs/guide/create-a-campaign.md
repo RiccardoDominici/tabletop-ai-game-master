@@ -214,8 +214,9 @@ It prints the level (one-shot, arc, campaign, saga), what that involves, and how
 - The Game Master moves from one scene to another from the panel (see [the Game Master panel](master-panel.md)).
 - A scene ends with one of its **outcomes** (`esiti` in the scene sheet, each with its ending line). An outcome can
   carry the facts that answer the scene's dramatic question (`richiede`: a clue revealed, a line said, a clock's
-  marks, who is down or fled, like `richiede: {indizi_rivelati: [i_tonio_libero], stati: {png_zirra: [a_terra,
-  morto, fuggito]}}`): when they all hold, the Engine says that ending at once, even before the clock is full.
+  marks, who is down or fled, like `richiede: {orologio: {id: o_mezzanotte, min: 8}}` or `richiede: {stati:
+  {png_zirra: [morto, fuggito]}}`): when they all hold, the Engine says that ending at once, even before the clock is
+  full. Gate an outcome on a state of the world, never on what the PCs will choose next.
 - An object that changes hands and matters later (a key, a letter) gets an id in the scene's `elementi_interattivi`
   (`id: ogg_chiave`, and `chi: png_berta` if someone holds it at the start): the Engine keeps who holds it and tells
   the narrator, so the key Berta gave a PC is not «still at her neck» two turns later.

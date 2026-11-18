@@ -153,5 +153,9 @@ describe('a fight opened from the panel, manual rolls', () => {
     expect(prova.narrazioni().find((r) => r['tipo'] === 'turno' && r['turno'] === 1)).toMatchObject({ azioni: [] });
     expect(s2.trascrizione.filter((v) => v.turno === 1 && v.tipo === 'azione')).toEqual([]);
     expect(messaggi.find((m) => m.includes('Turno di Ruggero lo sgherro'))).not.toMatch(/Stallo/);
+    // Corrado's deferred action resolves in his step, the next turn, with nothing written again.
+    await attendi(ida, (x: StatoTavolo) => x.fase === 'finestra' && x.turno === 3, 15_000);
+    const t2 = prova.narrazioni().find((r) => r['tipo'] === 'turno' && r['turno'] === 2)!;
+    expect((t2['azioni'] as Array<{ id_pg: string; testo: string }>).map((a) => [a.id_pg, a.testo])).toEqual([['pg_corrado', 'Aspetto']]);
   }, 20_000);
 });
