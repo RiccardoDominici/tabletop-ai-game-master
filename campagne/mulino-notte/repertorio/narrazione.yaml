@@ -64,7 +64,7 @@ battute:
     tipo: segno_orologio
     quando: "è il momento del settimo segno"
     temi: [orologio]
-    richiede: {orologio: {id: o_mezzanotte, min: 6, max: 6}}
+    richiede: {orologio: {id: o_mezzanotte, min: 6, max: 6}, battute_non_usate: [nar_fermo_prima]}
     testo:
       - "[narratore] Si sente un rombo d'acqua, e il legno della ruota del mulino geme."
       - "[narratore] Poi arriva il cigolio lungo della ruota che gira, da sola."
@@ -366,7 +366,7 @@ battute:
     temi: [campana, colpi]
     scena: scena_aia
     attori: [png_folco, png_adalgisa]
-    richiede: {orologio: {id: o_mezzanotte, min: 4, max: 8}}
+    richiede: {orologio: {id: o_mezzanotte, min: 4, max: 4}}
     testo:
       - "[narratore] Al terzo colpo Folco arrotola la supplica e se la mette sotto il braccio."
       - "[narratore] Adalgisa prende la lanterna grande e lo segue verso la piazza."
@@ -459,7 +459,7 @@ battute:
         - {battute_usate: [nar_fermo_prima], orologio: {id: o_mezzanotte, min: 6, max: 8}}
         - {battute_usate: [nar_fermo_ruota]}
     testo:
-      - "[narratore] Quando l'acqua arriva, la ruota trema contro il fermo, e resta ferma."
+      - "[narratore] La ruota resta ferma col fermo tra i raggi, e l'acqua passa sotto schiumando."
       - "[narratore] Al muretto qualcuno ride piano, poi un altro, e le lanterne si abbassano."
       - "[narratore] Folco piega la supplica e la mette via, senza una parola."
       - "[narratore] Delle galline, stanotte, non parla più nessuno."

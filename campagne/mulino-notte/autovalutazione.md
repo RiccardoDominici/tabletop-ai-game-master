@@ -47,7 +47,12 @@ confirms that the default run read the real context.
 3. **The price of road 1 can arrive early.** Folco names Viola in his key confessions, which can come out in the yard
    if a PC steals the key ring there and shows it. Then the climax has its price before midnight.
 4. **The brake ending closes the scene at mark 6** (NOTE W8): putting the brake back before the water and then also
-   exposing Folco needs both to happen before mark 6.
+   exposing Folco needs both to happen before mark 6. If the brake line and the due seventh sign come out in the
+   same answer at mark 6, the table hears the wheel turn and then stop: the gate on `nar_segno_7` covers only later
+   answers.
+5. **Going back to the yard after the bell.** The yard's sheet lists Folco and Adalgisa as present, but after the third
+   bell they are on their way to the mill. Its bell ending is bounded to mark 4, so a return no longer closes the scene
+   at once, but the presences stay wrong: the Game Master should not return to the yard after mark 4.
 
 ## Three main risks for a small, fast narrator
 1. **The weir has no scene sheet.** Its lines play from the mill scene; the reader must map «vado a monte», «salgo alla
@@ -66,3 +71,7 @@ confirms that the default run read the real context.
 - Red clay in the weir's image prompt would have linked Folco's boots on the projector; removed.
 - The audio deduction put the mill's ambience on a still wheel and a bright track on the climax; corrected with
   `audio` fields and a tense music tag.
+- A hand trace of the orders a table may take (in place of step 14) found four more: the brake ending said «when the
+  water arrives» also when the brake had stopped a turning wheel; the seventh sign could follow the brake; Folco's
+  deal could be struck at the yard at sunset, after which the water would still come; and the bell ending, with no upper
+  bound, would have closed the yard at once on a later return. All four are fixed.

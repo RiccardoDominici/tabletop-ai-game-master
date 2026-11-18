@@ -69,7 +69,7 @@ taglio: "La scena si chiude quando i PG lasciano l'aia per il mulino o per la pi
 # Esiti (passo 9): l'unico che decide il mondo è la campana; gli altri li sceglie la tavola.
 esiti:
   - {id: e_aia_campana, descrizione: "La campana batte i tre colpi, e Folco e Adalgisa vanno in piazza.", finale: fin_aia_campana,
-     richiede: {orologio: {id: o_mezzanotte, min: 4}},
+     richiede: {orologio: {id: o_mezzanotte, min: 4, max: 4}},
      detto: "Al terzo colpo di campana il fattore e Adalgisa vanno verso la piazza, e l'aia resta vuota."}
   - {id: e_aia_mulino, descrizione: "I PG salgono al mulino.", finale: fin_aia_mulino}
   - {id: e_aia_piazza, descrizione: "I PG vanno in piazza.", finale: fin_aia_piazza}

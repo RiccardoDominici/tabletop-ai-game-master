@@ -116,6 +116,7 @@ battute:
     tipo: momento
     quando: "in privato, un PG mette Folco davanti a una prova"
     temi: [patto, accordo, prova, prove]
+    scena: scena_ruota
     richiede:
       privata: true
       oppure:
@@ -124,7 +125,7 @@ battute:
         - {indizi_rivelati: [i_galline_granaio]}
     testo:
       - "[narratore] Folco si sfila un guanto, dito per dito, e abbassa la voce."
-      - "[png_folco] Va bene. Stanotte chiudo la chiusa, e all'alba le galline tornano nei pollai."
+      - "[png_folco] Va bene. Adesso chiudo la chiusa, e all'alba le galline tornano nei pollai."
       - "[png_folco] Ma la supplica è della gente, non mia."
       - "[png_folco] E nessuno tocca la ruota davanti a loro, o parlo della nipote del mugnaio."
     effetti: {fatti_noti: [f_folco_apre_chiusa, f_folco_galline]}
