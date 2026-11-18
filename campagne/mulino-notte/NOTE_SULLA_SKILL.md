@@ -74,6 +74,9 @@ Each finding: where in the skill, what happened, suggested fix.
   says to tick omits all of them, plus the waiting lines. A reader who ticks §8 ships without them, and since they
   are warnings they survive `--rigoroso`. The tags are what CLAUDE.md's «the small model relays, it never decides»
   rests on.
+- **Evidence**: on a copy of this campaign I removed the yard's three stall lines, both defeat endings and one
+  `attori` tag, and ran `--rigoroso --avvisi`: **0 errors**, 6 warnings (`stallo_scarso`, `sconfitta_mancante` twice,
+  `png_non_segnato`). A literal reader of step 9 ships without them and the strict run stays green.
 - **Fix**: add to step 9 a bullet «Stall lines, defeat ending, tags (always)» with the three codes, and add the rows
   to the §8 table. Consider making `REPERTORIO.png_non_segnato` an error in strict mode.
 
@@ -255,6 +258,31 @@ Each finding: where in the skill, what happened, suggested fix.
   check, which the skill says not to duplicate.
 - **Fix**: mention them in step 5 («0–2 per scene, check `--solo DOMANDE`»).
 
+### W16 (low) schema.md says a line has «nothing else» than its list of fields, but the list misses two fields
+- **Where**: riferimenti/schema.md «Repertoire» («Fields of a line: `id, chi, tipo, quando, temi, richiede, testo,
+  varianti, effetti, max_usi, solo_esempio, riempitivo, scena, audio, attori, menzionati` [V]. Nothing else [V].»).
+- **What happened**: `stallo` (repertorio.md §2) and `sconfitta` (the defeat ending) are not in the list. I used them
+  on the strength of repertorio.md, guessing that the list was stale; the validator accepted both.
+- **Fix**: add `stallo` and `sconfitta` to the list.
+
+### W17 (low) In which language do README.md and autovalutazione.md go?
+- **Where**: SKILL «Language of the campaign» («Campaign files are written in that language»), steps 14–15.
+- **What happened**: the section lists the content the players read or hear, then says «campaign files» in general.
+  README.md and autovalutazione.md are for the Game Master and the project; I wrote them in English, like the
+  project's design documents, which is a guess.
+- **Fix**: one line: «README.md and autovalutazione.md are notes for the project: English» (or the campaign language).
+
+### W18 (medium) An outcome gated on a clock minimum closes a revisited scene at the first answer
+- **Where**: schema.md «esiti» and docs/repertorio.md «Scene outcomes with gates» (example `orologio: {…, min: 8}`),
+  mestiere.md §9 (several scenes).
+- **What happened**: the yard closes at the third bell (`e_aia_campana`, `min: 4`). A table that goes back to the yard
+  later (for the hens) would re-enter at mark 5 or more, and the outcome, already true, would close the scene on the first
+  answer. Only a hand trace of the order showed it; I bounded it to `min: 4, max: 4`. The same scene sheet also keeps
+  Folco and Adalgisa «present» after the bell sent them away: `png_presenti` cannot follow the clock.
+- **Fix**: in schema.md «esiti», «a world outcome on a clock that keeps running needs an upper bound, or it fires again
+  when the table comes back»; and in mestiere.md §9, say what to do with a place the table may revisit after its NPCs
+  left (a second sheet, as for the same place at two moments).
+
 ## Summary
 
 - **Result**: `python3 -I strumenti/valida_campagna.py campagne/mulino-notte --rigoroso --avvisi` with node: **0 errors,
@@ -264,8 +292,11 @@ Each finding: where in the skill, what happened, suggested fix.
   produced a campaign that passes strict mode without opening any existing campaign or the Engine's code. The gaps are
   in what a literal reader cannot know (no worked multi-scene example, steps that omit what the references require)
   and in checks that are lexical where the rule is semantic (`SCELTA.premio`, `VINCOLI`).
-- **Findings**: 26 in all. **High 2** (N5, W5), **medium 9** (N1, N2, N3, N4, W1, W7, W8, W10, W11), **low 15**
-  (N6–N11, W2, W3, W4, W6, W9, W12, W13, W14, W15).
+- **Findings**: 29 in all. **High 2** (N5, W5), **medium 10** (N1, N2, N3, N4, W1, W7, W8, W10, W11, W18), **low 17**
+  (N6–N11, W2, W3, W4, W6, W9, W12, W13, W14, W15, W16, W17).
+- **Step 14 by hand**: the independent review was not run; a hand trace of four orders a table may take found four
+  defects of the campaign after the strict run was green (see autovalutazione.md and W18). That is the part of the
+  skill a validator cannot replace, and the blind test is weaker without it.
 - **The five most useful fixes**:
   1. Step 9 and the §8 coverage table: add stall lines, the defeat ending and the `attori`/`menzionati`/`stati` tags
      (N5); consider `REPERTORIO.png_non_segnato` as an error in strict mode.
