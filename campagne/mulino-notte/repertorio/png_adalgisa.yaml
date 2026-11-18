@@ -1,0 +1,130 @@
+# Battute di Adalgisa (voce nadine). Stile: frasi di quattro-nove parole, tu a tutti, «figlioli», un proverbio.
+# Adalgisa è all'aia e nel cortile a mezzanotte, mai al mulino all'imbrunire (dove c'è Viola).
+battute:
+  - {id: ada_saluto, chi: png_adalgisa, tipo: saluto, solo_esempio: true, quando: "i PG salutano Adalgisa", temi: [salve, buonasera, saluto], max_usi: 1,
+     testo: ["[narratore] Adalgisa sparge granaglie per terra, per galline che non ci sono.", "[png_adalgisa] Venite, figlioli. Qui c'è posto, adesso."]}
+  - {id: ada_domanda_gentile, chi: png_adalgisa, tipo: reazione, solo_esempio: true, quando: "un PG chiede ad Adalgisa come sta", temi: [stai, salute], max_usi: 1,
+     testo: ["[png_adalgisa] Come vuoi che stia? Con un pollaio vuoto."]}
+  - {id: ada_accusa, chi: png_adalgisa, tipo: reazione, solo_esempio: true, quando: "un PG accusa Adalgisa", temi: [accuso, accusare], max_usi: 1,
+     testo: ["[png_adalgisa] Io ho perso tutto, figlioli. Vergognatevi."]}
+  - {id: ada_minaccia, chi: png_adalgisa, tipo: reazione, solo_esempio: true, quando: "un PG minaccia Adalgisa", temi: [minaccio, minaccia], max_usi: 1,
+     testo: ["[png_adalgisa] Alza le mani su una vecchia, e poi vedi il paese."]}
+  - {id: ada_offerta, chi: png_adalgisa, tipo: reazione, solo_esempio: true, quando: "un PG offre denaro ad Adalgisa", temi: [soldi, monete, denaro], max_usi: 1,
+     testo: ["[png_adalgisa] I soldi non fanno uova, figlioli."]}
+  - {id: ada_aiuto, chi: png_adalgisa, tipo: reazione, solo_esempio: true, quando: "un PG aiuta Adalgisa nell'aia", temi: [aiuto, aiutare], max_usi: 1,
+     testo: ["[png_adalgisa] Che Dio te ne renda merito. Gallina vecchia, figlioli."]}
+  - {id: ada_rifiuto, chi: png_adalgisa, tipo: rifiuto, solo_esempio: true, quando: "un PG chiede ad Adalgisa di cose che non sa", temi: [domando], max_usi: 1,
+     testo: ["[png_adalgisa] Non lo so, figlioli. Io so di galline e di uova."]}
+
+  - id: ada_attesa
+    chi: png_adalgisa
+    tipo: richiesta
+    riempitivo: true
+    quando: "i PG indugiano nell'aia senza chiedere niente"
+    temi: [granaglie]
+    scena: scena_aia
+    testo: ["[png_adalgisa] Granaglie per nessuno, figlioli. Guardate come le spreco."]
+    max_usi: 1
+
+  - id: ada_attesa_ruota
+    chi: png_adalgisa
+    tipo: richiesta
+    riempitivo: true
+    quando: "i PG indugiano nel cortile senza dire niente al paese"
+    temi: [lanternone]
+    scena: scena_ruota
+    testo: ["[png_adalgisa] Che si aspetta, figlioli? Che venga lei a dircelo?"]
+    max_usi: 1
+
+  - id: ada_mugnaia
+    chi: png_adalgisa
+    tipo: reazione
+    quando: "un PG chiede ad Adalgisa chi ha preso le galline"
+    temi: [galline, gallina, rubate, sparite]
+    testo: ["[png_adalgisa] La mugnaia, figlioli. Se le porta sott'acqua, per i suoi pulcini."]
+    max_usi: 1
+
+  # menzogna: ieri notte
+  - id: ada_notte_domanda
+    chi: png_adalgisa
+    tipo: menzogna
+    quando: "un PG chiede ad Adalgisa che cosa ha sentito ieri notte"
+    temi: [ieri, sentito, rumori, rumore]
+    testo:
+      - "[narratore] Adalgisa si stringe lo scialle sul petto e guarda il pollaio vuoto."
+      - "[png_adalgisa] Ieri notte non ho sentito niente. Dormivo con le imposte chiuse."
+    varianti:
+      - ["[narratore] Adalgisa si stringe lo scialle sul petto e guarda il pollaio vuoto.", "[png_adalgisa] Niente, figlioli. Le imposte erano chiuse."]
+    effetti: {menzogna_detta: ada_notte}
+    max_usi: 2
+
+  # confessioni
+  - id: ada_piuma_mostrata
+    chi: png_adalgisa
+    tipo: confessione
+    quando: "un PG mostra ad Adalgisa la piuma trovata tra i raggi"
+    temi: [piuma, piume, raggi]
+    richiede: {indizi_rivelati: [i_piuma_carro], battute_non_usate: [ada_promessa]}
+    testo:
+      - "[narratore] Adalgisa prende la piuma tra le dita, e smette di spargere granaglie."
+      - "[png_adalgisa] Ieri notte, verso mezzanotte, ho sentito il carro del conte sull'argine."
+      - "[png_adalgisa] Cigolava così. Non l'ho detto, per via della decima."
+    effetti: {rivela_indizi: [i_adalgisa_carro], fatti_noti: [f_adalgisa_carro, f_adalgisa_debito], atteggiamento: {png_adalgisa: amichevole}}
+    max_usi: 1
+  - id: ada_promessa
+    chi: png_adalgisa
+    tipo: confessione
+    quando: "nel pollaio, da solo con lei, un PG promette ad Adalgisa le galline"
+    temi: [prometto, promessa, giuro, riporto]
+    scena: scena_aia
+    richiede: {privata: true, battute_non_usate: [ada_piuma_mostrata]}
+    testo:
+      - "[narratore] Adalgisa abbassa la voce, e si guarda la porta di rete."
+      - "[png_adalgisa] Ieri notte ho sentito il carro del conte, verso mezzanotte."
+      - "[png_adalgisa] Il fattore mi ha condonato la decima. Come facevo a dirlo?"
+    effetti: {rivela_indizi: [i_adalgisa_carro], fatti_noti: [f_adalgisa_carro, f_adalgisa_debito], atteggiamento: {png_adalgisa: amichevole}}
+    max_usi: 1
+
+  # momento: la vergogna, dopo che Folco ha parlato delle galline
+  - id: ada_dopo_galline
+    chi: png_adalgisa
+    tipo: momento
+    quando: "il fattore ha parlato delle galline davanti ad Adalgisa"
+    temi: [vergogna, decima, carro]
+    richiede:
+      oppure:
+        - {battute_usate: [fol_galline_mostrate]}
+        - {battute_usate: [fol_piuma_mostrata]}
+    testo:
+      - "[narratore] Adalgisa si stringe lo scialle, poi lo lascia cadere sulle spalle."
+      - "[png_adalgisa] Il carro l'avevo sentito, figlioli. E ho taciuto per la decima."
+      - "[png_adalgisa] Vergogna a me."
+    effetti: {fatti_noti: [f_adalgisa_carro, f_adalgisa_debito]}
+    max_usi: 1
+
+  # stallo S3 dell'aia: le piste che i PG hanno già
+  - id: ada_stallo3_aia
+    chi: png_adalgisa
+    tipo: momento
+    stallo: 3
+    quando: "nessuno agisce da un po', e Adalgisa ripensa al pollaio"
+    temi: [pollaio]
+    scena: scena_aia
+    richiede: {indizi_rivelati: [i_pollaio]}
+    testo:
+      - "[png_adalgisa] Niente sangue, figlioli, e la rete intera."
+      - "[png_adalgisa] Il carro è là, e il mulino è su per il fiume."
+    max_usi: 1
+
+  # stallo S1 del cortile a mezzanotte: il paese prega la mugnaia
+  - id: ada_stallo1_ruota
+    chi: png_adalgisa
+    tipo: momento
+    stallo: 1
+    quando: "nessuno agisce da un po' nel cortile del mulino"
+    temi: [lanterna]
+    scena: scena_ruota
+    testo:
+      - "[narratore] Adalgisa alza la lanterna grande verso la ruota."
+      - "[png_adalgisa] Mugnaia, se ci sei, rendimi le mie galline."
+    max_usi: 1

@@ -1,0 +1,20 @@
+# Carta di stile (C1, E14). Va per intero al selettore del modo B: niente segreti, neanche come divieto.
+id: mulino-notte
+titolo: "La ruota che gira da sola"
+premessa: "A Ronchetto la ruota del mulino gira da sola a mezzanotte e spariscono le galline, e il paese vuole cacciare il vecchio mugnaio prima di San Martino."
+tono: "Fiaba inquieta di paese: la paura sta nei rumori e nelle cose fuori posto, mai nel sangue."
+tema: "La paura che cerca un colpevole; il prezzo di dire la verità davanti a tutti; chi vuole partire e chi vuole restare."
+registro_narratore: "Voce calma e bassa, da racconto accanto al fuoco, che lascia parlare i rumori della notte."
+direzione_voce: "calma e bassa, da racconto accanto al fuoco, con pause brevi"
+regole_prosa:
+  - "Il narratore descrive ciò che si vede e si sente, e non dice mai la causa: la conclusione la tirano i PG."
+  - "La leggenda della mugnaia annegata la raccontano i paesani, mai il narratore come un fatto."
+  - "Lessico di mulino e di cortile: gora, macina, pale, farina, crusca, pollaio, granaglie."
+  - "Niente sangue e niente corpi: la paura sta nei suoni, nei gesti e nelle cose spostate."
+  - "La notte si sente prima di vederla: acqua, legno che cigola, campane, cani lontani."
+stile_immagini: "ink and watercolor illustration in the manner of an old storybook, late autumn light, muted ochre and slate-blue palette, soft mist over water, quiet uneasy mood"
+tavolozza_musicale:
+  tag: [esplorazione_tesa, lutto, rito_sacro]
+  strumenti: "fisarmonica lontana, clarinetto, arpa"
+linee: ["violenza sui bambini", "animali torturati o uccisi in scena", "orrore esplicito: sangue, corpi, mutilazioni"]
+veli: ["l'annegamento della nonna di Viola, dodici anni fa", "la morte di un animale"]

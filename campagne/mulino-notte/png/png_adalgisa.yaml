@@ -1,0 +1,64 @@
+id: png_adalgisa
+nome: "Adalgisa"
+pronuncia: "Adalgìsa"
+alias: [comare, pollaia]
+livello: principale
+ruolo: "la pollaia derubata; testimone che tace per riconoscenza"
+fronte: fronte_ruota
+scheda:
+  gs: 0
+  caratteristiche: {forza: 10, destrezza: 9, costituzione: 11, intelligenza: 10, saggezza: 12, carisma: 13}
+  competenze: [intuizione]
+  ca: 9
+  pf: 4
+  attacchi: []
+aspetto:
+  lettura: "Una donna robusta sulla sessantina, con lo scialle di lana marrone e un grembiule pieno di granaglie. Ha le guance rosse e la voce forte."
+  invarianti: ["sessant'anni", "robusta", "scialle di lana marrone", "grembiule pieno di granaglie", "guance rosse"]
+  prompt_immagine: "sturdy woman in her sixties, brown wool shawl, an apron full of grain, ruddy cheeks, standing in an empty farmyard by a henhouse, [STILE]"
+personalita:
+  superficie: ["chiacchierona e generosa", "superstiziosa"]
+  sotto_pressione: ["smette di parlare e conta le granaglie a mezza voce"]
+  contraddizione: "Crede alla mugnaia annegata, ma ha sentito un carro, non uno spettro."
+desiderio: "Riavere le sue galline prima della fiera, per pagarsi l'inverno."
+paura: "Un inverno senza uova, a chiedere la carità al fattore."
+segreto:
+  testo: "La notte del furto ha sentito il carro del conte, e tace per riconoscenza al fattore."
+  chi_altro_sa: []
+  se_rivelato: "Si vergogna del condono, e chiede perdono a Ermete davanti a tutti."
+voce:
+  tts: {voce_id: nadine, eta_apparente: "60", altezza: media, velocita: 1.0, timbro: "caldo, pieno", direzione: "calda e chiacchierona, da comare di cortile"}
+  registro: "Dà del tu a tutti, e chiama i forestieri «figlioli»."
+  stile: "Frasi di quattro-nove parole, con un proverbio ogni tanto."
+  tic: ["«Gallina vecchia, figlioli.»"]
+  gesto: "sparge granaglie per terra, per galline che non ci sono"
+  mai_dice: ["il carro del conte, finché non ha ceduto", "una parola contro il fattore davanti a lui"]
+  battuta_campione: "Quattordici galline, figlioli. E neanche una goccia di sangue."
+sa: [f_adalgisa_galline, f_galline_sparite, f_leggenda, f_moglie_annegata, f_adalgisa_carro, f_adalgisa_debito, f_supplica, f_fiera, f_granaio_conte]
+non_sa: [f_folco_galline, f_galline_granaio, f_folco_apre_chiusa, f_viola_fermo]
+crede_a_torto:
+  - {testo: "È la mugnaia annegata che si prende le galline, per i suoi pulcini sott'acqua.", contraddice: f_folco_galline}
+mente_su:
+  - id: ada_notte
+    argomento: "ieri notte"
+    verita: f_adalgisa_carro
+    versione: "Ieri notte non ho sentito niente. Dormivo con le imposte chiuse."
+    perche: "Il fattore le ha condonato la decima, e lei non vuole accusare chi l'ha aiutata."
+    segnale: "si stringe lo scialle sul petto e guarda il pollaio vuoto"
+    cede_se: "Dice la verità quando un PG le mostra la piuma trovata tra i raggi del carro del conte. Oppure quando un PG, da solo con lei nel pollaio, le promette di riportarle le galline."
+atteggiamento_pg:
+  pg_cosma: {stato: amichevole, perche: "l'ha cresciuto lei, da bambino", vuole: "che preghi per le sue galline"}
+  pg_nerina: {stato: indifferente, perche: "una forestiera di fiera", vuole: "che non le tocchi le uova rimaste"}
+  pg_tarcisio: {stato: indifferente, perche: "lavora per il mugnaio", vuole: "che le dica se la ruota è stregata"}
+  pg_ilde: {stato: amichevole, perche: "l'ha chiamata il paese per la volpe", vuole: "che trovi chi le ha prese"}
+  pg_benno: {stato: indifferente, perche: "i cantastorie ridono delle comari", vuole: "che non canti di lei alla fiera"}
+relazioni: {png_ermete: "vicino di quarant'anni", png_folco: "il fattore che le ha condonato la decima", png_viola: "le contava le favole della mugnaia, da piccola"}
+info_chiave: [i_adalgisa_carro]
+iniziative:
+  - "Se un PG la aiuta a cercare le galline, gli offre pane e due uova."
+  - "Al terzo colpo di campana prende la lanterna grande e va con il paese."
+evoluzione:
+  - {se: "riavere le galline", allora: "difende Ermete davanti al paese"}
+  - {se: "le provano che è stato il fattore", allora: "si vergogna del condono e lo dice a tutti"}
+statistiche: "popolana (SRD 5.2)"
+registro_attivita: []

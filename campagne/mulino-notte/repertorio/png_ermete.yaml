@@ -1,0 +1,129 @@
+# Battute di Ermete (voce vincent). Stile: frasi di tre-sette parole, tu a tutti, lessico di mulino.
+battute:
+  # esempi di voce (non selezionabili: vanno al selettore come modello)
+  - {id: erm_saluto, chi: png_ermete, tipo: saluto, solo_esempio: true, quando: "i PG salutano Ermete", temi: [salve, buonasera, saluto], max_usi: 1,
+     testo: ["[narratore] Ermete soffia la farina dal dorso della mano.", "[png_ermete] Sera. Il mulino è chiuso."]}
+  - {id: erm_domanda_gentile, chi: png_ermete, tipo: reazione, solo_esempio: true, quando: "un PG chiede a Ermete come sta", temi: [stai, salute], max_usi: 1,
+     testo: ["[png_ermete] Vecchio. Come la macina."]}
+  - {id: erm_accusa, chi: png_ermete, tipo: reazione, solo_esempio: true, quando: "un PG accusa Ermete della ruota", temi: [accuso, accusare], max_usi: 1,
+     testo: ["[png_ermete] Io la fermo, la ruota. Tutte le sere."]}
+  - {id: erm_minaccia, chi: png_ermete, tipo: reazione, solo_esempio: true, quando: "un PG minaccia Ermete", temi: [minaccio, minaccia], max_usi: 1,
+     testo: ["[png_ermete] Fuori dal mio mulino. Adesso."]}
+  - {id: erm_offerta, chi: png_ermete, tipo: reazione, solo_esempio: true, quando: "un PG offre denaro a Ermete", temi: [soldi, monete, denaro], max_usi: 1,
+     testo: ["[png_ermete] Tienili. Stanotte la farina non si compra."]}
+  - {id: erm_aiuto, chi: png_ermete, tipo: reazione, solo_esempio: true, quando: "un PG aiuta Ermete con i sacchi", temi: [aiuto, aiutare, sacchi], max_usi: 1,
+     testo: ["[png_ermete] Grazie. Contro il muro, quelli."]}
+  - {id: erm_rifiuto, chi: png_ermete, tipo: rifiuto, solo_esempio: true, quando: "un PG chiede a Ermete di cose che non sa", temi: [domando], max_usi: 1,
+     testo: ["[png_ermete] Non lo so. Chiedi all'acqua."]}
+
+  # attesa (riempitivo)
+  - id: erm_attesa
+    chi: png_ermete
+    tipo: richiesta
+    riempitivo: true
+    quando: "i PG indugiano nel mulino senza chiedere niente"
+    temi: [macina]
+    testo: ["[png_ermete] Il mulino non aspetta. E nemmeno l'acqua."]
+    max_usi: 1
+
+  # indizio: la gora asciutta, seconda via
+  - id: erm_ruota_acqua
+    chi: png_ermete
+    tipo: indizio
+    quando: "un PG chiede a Ermete come gira la ruota"
+    temi: [gira, girare, funziona, muove]
+    testo: ["[png_ermete] Senz'acqua da monte non si muove una pala. E al tramonto la chiusa è chiusa."]
+    effetti: {rivela_indizi: [i_gora_asciutta]}
+    max_usi: 1
+
+  # domande precise
+  - id: erm_chiave_chiusa
+    chi: png_ermete
+    tipo: reazione
+    quando: "un PG chiede a Ermete chi apre la chiusa di monte"
+    temi: [chiusa, apre, lucchetto]
+    testo: ["[png_ermete] Il fattore, per il conte. La sera la chiave torna al castello, dice lui."]
+    max_usi: 1
+  - id: erm_teodora
+    chi: png_ermete
+    tipo: reazione
+    quando: "un PG chiede a Ermete della moglie annegata"
+    temi: [teodora, moglie, annegata]
+    scena: scena_mulino
+    testo:
+      - "[narratore] Ermete guarda la gora, e per un poco non risponde."
+      - "[png_ermete] Sapeva nuotare. Quella notte la gora era in piena."
+    max_usi: 1
+
+  # menzogna: il fermo
+  - id: erm_fermo_domanda
+    chi: png_ermete
+    tipo: menzogna
+    quando: "un PG chiede a Ermete del fermo della ruota"
+    temi: [fermo, quercia, raggi]
+    testo:
+      - "[narratore] Ermete si toglie il berretto e lo rigira tra le mani."
+      - "[png_ermete] Il fermo lo metto io ogni sera. La mattina è sempre lì."
+    varianti:
+      - ["[narratore] Ermete si toglie il berretto e lo rigira tra le mani.", "[png_ermete] Te l'ho detto. Il fermo è sempre lì."]
+    effetti: {menzogna_detta: erm_fermo}
+    max_usi: 2
+
+  # confessioni: una per condizione di cede_se, che si escludono
+  - id: erm_piume_passerella
+    chi: png_ermete
+    tipo: confessione
+    quando: "sulla passerella, un PG mostra a Ermete le piume legate col filo"
+    temi: [piume, piuma, filo, nodi]
+    richiede: {privata: true, indizi_rivelati: [i_piume_pale], battute_non_usate: [erm_giuramento]}
+    menzionati: [png_viola]
+    testo:
+      - "[narratore] Ermete guarda il filo rosso, e si rimette il berretto piano."
+      - "[png_ermete] Quattro mattine fa il fermo era per terra. Sulla ruota c'era lo scialle di Viola."
+      - "[png_ermete] Non l'ho detto a nessuno. È mia nipote."
+    effetti: {rivela_indizi: [i_ermete_scialle], fatti_noti: [f_ermete_fermo_tolto], atteggiamento: {png_ermete: amichevole}}
+    max_usi: 1
+  - id: erm_giuramento
+    chi: png_ermete
+    tipo: confessione
+    quando: "in privato, un PG giura a Ermete di non dire niente al paese"
+    temi: [giuro, giurare, prometto, promessa]
+    richiede: {privata: true, battute_non_usate: [erm_piume_passerella]}
+    menzionati: [png_viola]
+    testo:
+      - "[narratore] Ermete soffia la farina dal dorso della mano, a lungo."
+      - "[png_ermete] Allora ascolta. Quattro mattine fa il fermo era per terra."
+      - "[png_ermete] E sulla ruota c'era lo scialle di Viola."
+    effetti: {rivela_indizi: [i_ermete_scialle], fatti_noti: [f_ermete_fermo_tolto], atteggiamento: {png_ermete: amichevole}}
+    max_usi: 1
+
+  # momento: il paese guarda la casa (dopo che Folco ha nominato la nipote)
+  - id: erm_porta_casa
+    chi: png_ermete
+    tipo: momento
+    quando: "il paese guarda verso la casa di Ermete"
+    temi: [viola, nipote, strega]
+    scena: scena_ruota
+    menzionati: [png_viola]
+    richiede:
+      oppure:
+        - {battute_usate: [fol_chiave_mostrata]}
+        - {battute_usate: [fol_chiusa_vista]}
+    testo:
+      - "[narratore] Ermete si mette davanti alla porta di casa, con le braccia larghe."
+      - "[png_ermete] Qui non entra nessuno. La ragazza è mia."
+    max_usi: 1
+
+  # stallo S3: le piste che i PG conoscono già
+  - id: erm_stallo3
+    chi: png_ermete
+    tipo: momento
+    stallo: 3
+    quando: "nessuno agisce da un po', e Ermete guarda la gora"
+    temi: [gora]
+    scena: [scena_mulino, scena_ruota]
+    richiede: {indizi_rivelati: [i_gora_asciutta]}
+    testo:
+      - "[png_ermete] Al tramonto la gora era secca. L'acqua viene da monte."
+      - "[png_ermete] Chi ha la chiave della chiusa?"
+    max_usi: 1

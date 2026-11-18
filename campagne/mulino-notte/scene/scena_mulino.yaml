@@ -1,0 +1,76 @@
+# Scena 2: il mulino all'imbrunire. Ermete e Viola, la ruota ferma, la gora.
+id: scena_mulino
+nodo: n_mulino
+nome: "Il mulino sulla Lenta, all'imbrunire"
+descrizione: "Un mulino di pietra sulla Lenta, con la ruota di legno sul fianco, sopra la gora che arriva da monte, e una passerella stretta lungo la ruota. Dentro c'è la stanza delle macine, bianca di farina; fuori il cortile, e di là dal cortile la casa bassa di Ermete. Nella stanza delle macine, con le macine ferme, si sente tutto. Chi parla sulla passerella, dietro la ruota, non lo sente chi sta dentro; dalla casa non si sente niente del mulino."
+scopo: {tipo: rivelare_indizio, rif: i_gora_asciutta}
+domanda_drammatica: "Ermete lascerà ai forestieri la veglia della ruota per stanotte?"
+posta:
+  si_guadagna: {cosa: "La fiducia di Ermete e un posto per vegliare la ruota.", per_chi: [png_ermete]}
+  si_perde: {cosa: "Il mulino di Ermete e la casa di Viola.", per_chi: [png_ermete, png_viola]}
+intensita: 3
+sensi:
+  - "Farina nell'aria, che si posa sulle ciglia e sa di pane crudo."
+  - "La ruota ferma scricchiola nel vento, con un colpo di legno ogni tanto."
+  - "Dalla gora sale odore di fango e di foglie marce."
+elementi_interattivi:
+  - {cosa: "la ruota", dove: "sul fianco del mulino, sopra la gora", azioni: "ha le pale di legno scuro; dalla passerella si arriva alle pale e ai raggi."}
+  - {cosa: "il fermo di quercia", dove: "tra i raggi della ruota", azioni: "si sfila e si infila a mano; dove tocca i raggi è unto di sego nero."}
+  - {cosa: "la gora", dove: "sotto la ruota, fino a monte", azioni: "si scende sul fondo da una scaletta; c'è un palo di legno con le tacche dell'acqua."}
+  - {cosa: "la stanza delle macine", dove: "dentro il mulino", azioni: "le macine sono ferme; i sacchi del paese stanno contro il muro, segnati col gesso."}
+  - {cosa: "la cassapanca della farina", dove: "nella stanza delle macine", azioni: "ha il coperchio pesante; dentro c'è farina, e un sacchetto di crusca."}
+  - {cosa: "la casa di Ermete", dove: "di là dal cortile", azioni: "ha una porta bassa e una finestra con le tendine; Viola cuce lì, vicino al fuoco."}
+  - {id: ogg_lettera, cosa: "la lettera col sigillo", dove: "nella cassapanca, sotto il sacchetto della crusca", azioni: "NASCOSTA: è piegata in quattro, col sigillo rosso del conte; promette a Viola un posto di serva in città, firmata dal fattore."}
+  - {cosa: "le pale dalla parte del muro", dove: "sotto la passerella", azioni: "NASCOSTA: tra le pale ci sono piume rossicce legate con un filo rosso, a nodi piccoli."}
+png_presenti: [png_ermete, png_viola]
+orologi_attivi: [o_mezzanotte]
+indizi:
+  - {id: i_gora_asciutta, conclusione: r_chiusa, tipo: luogo, nodo: n_mulino, essenziale: true, tiro: "nessuno", modi: 2,
+     come_si_trova: "Chi guarda la gora la trova asciutta, col fango crepato sul fondo. Chi chiede a Ermete come gira la ruota sente che senz'acqua da monte non si muove una pala.",
+     vincolo_pubblico: "Al tramonto la gora è asciutta, e la ruota è ferma."}
+  - {id: i_riga_palo, conclusione: r_chiusa, tipo: oggetto, nodo: n_mulino, essenziale: false, tiro: "nessuno", modi: 1,
+     come_si_trova: "Chi esamina il palo della gora vede una riga bagnata di stanotte, in alto, all'altezza della tacca che si raggiunge solo con la chiusa aperta tutta.",
+     vincolo_pubblico: "Il palo della gora ha una tacca incisa per ogni palmo d'acqua."}
+  - {id: i_piume_pale, conclusione: r_viola, tipo: oggetto, nodo: n_mulino, essenziale: true, tiro: "nessuno", modi: 1,
+     come_si_trova: "Chi sale sulla passerella e guarda le pale dalla parte del muro trova piume rossicce legate con un filo rosso, a nodi piccoli e stretti.",
+     vincolo_pubblico: "Le pale dalla parte del muro si vedono solo dalla passerella."}
+  - {id: i_grembiule, conclusione: r_viola, tipo: oggetto, nodo: png_viola, essenziale: false, tiro: "nessuno", modi: 1,
+     come_si_trova: "Chi guarda da vicino il grembiule di Viola vede sull'orlo macchie di sego nero, lo stesso grasso che unge il fermo.",
+     vincolo_pubblico: "Viola porta un grembiule chiaro, infarinato."}
+  - {id: i_lettera, conclusione: r_viola, tipo: documento, nodo: png_viola, essenziale: false, tiro: "nessuno", modi: 1,
+     come_si_trova: "Chi fruga nella cassapanca della farina trova, sotto il sacchetto della crusca, una lettera col sigillo del conte: promette a Viola un posto di serva in città, ed è firmata dal fattore.",
+     vincolo_pubblico: "La cassapanca della farina ha il coperchio pesante, che cigola."}
+  - {id: i_ermete_scialle, conclusione: r_viola, tipo: png, nodo: png_ermete, essenziale: false, tiro: "nessuno", modi: 2,
+     come_si_trova: "Quando Ermete cede: quattro mattine fa ha trovato il fermo per terra e lo scialle di Viola sulla ruota, e non l'ha detto a nessuno."}
+  - {id: i_viola_racconta, conclusione: r_viola, tipo: png, nodo: png_viola, essenziale: false, tiro: "nessuno", modi: 2,
+     come_si_trova: "Quando Viola cede: ogni sera, mentre il nonno dorme, toglie il fermo e lega le piume tra le pale; il fattore le ha dato una lettera per la città, e lui fa arrivare l'acqua da monte."}
+prove:
+  - {id: p_palo, quando: "un PG esamina le tacche del palo nella gora", abilita: indagare, cd: 10,
+     indizio: i_riga_palo, se_fallisce: "il fango cede, e uno stivale affonda fino al polpaccio"}
+  - {id: p_passerella, quando: "un PG cammina sulla passerella bagnata lungo la ruota", abilita: acrobazia, cd: 10,
+     se_fallisce: "un piede scivola su una pala, e il colpo di legno rimbomba nel cortile"}
+  - {id: p_cassapanca, quando: "un PG fruga di nascosto nella cassapanca della farina", abilita: rapidita_di_mano, cd: 10,
+     indizio: i_lettera, se_fallisce: "il coperchio cigola forte, e dalla finestra la tendina si sposta"}
+vincoli_pubblici:
+  - "Con la gora asciutta nessuna forza fa girare la ruota."
+  - "Con il fermo tra i raggi la ruota non gira."
+  - "Dalla casa di Ermete non si vede la ruota: c'è di mezzo il mulino."
+uscite:
+  - {verso: n_chiusa, segnalata_da: [i_gora_asciutta, i_riga_palo]}
+  - {verso: n_mezzanotte, segnalata_da: [i_piume_pale, i_ermete_scialle, i_viola_racconta]}
+  - {verso: n_aia, segnalata_da: [i_grembiule, i_lettera]}
+mossa_morbida_pronta: "Un colpo di vento spinge la ruota contro il fermo, con un tonfo di legno. Dalla casa una tendina si sposta, e torna giù."
+apertura: "Il mulino sta sulla Lenta, con la ruota ferma e la porta socchiusa. Sulla soglia Ermete scuote la farina dal berretto, e dalla finestra della casa una ragazza vi guarda. Il vecchio vi chiede che cosa volete a quest'ora: chi gli risponde?"
+musica: {tag: esplorazione_tesa, transizione: "verso lutto quando Ermete parla di Teodora e della gora"}
+# La deduzione metteva l'ambiente «mulino», ma la ruota è ferma e la gora asciutta: si sentono il vento e il fiume.
+audio: {ambiente: [vento, {tag: fiume, volume: 0.3}]}
+immagine:
+  invarianti: ["mulino di pietra sul fiume", "grande ruota di legno scuro", "gora con un palo a tacche", "trave di quercia tra i raggi", "casa bassa di là dal cortile"]
+  prompt_luogo: "old stone watermill on a small river at dusk, a large dark wooden waterwheel standing still, an oak beam wedged between its spokes, a narrow wooden walkway along the wheel, a dry millrace with a notched wooden gauge post, flour dust on the doorstep, a low cottage with a lit window across the yard"
+taglio: "La scena si chiude quando i PG lasciano il mulino per la chiusa o per il paese, o quando le lanterne del paese si mettono in fila verso il fiume. Se i PG esitano, Ermete chiude la porta e dice che a mezzanotte la ruota girerà comunque."
+# Esiti (passo 9): le lanterne li decide il mondo; tornare in paese lo sceglie la tavola.
+esiti:
+  - {id: e_mulino_lanterne, descrizione: "Le lanterne del paese salgono verso il mulino, ed Ermete chiude la casa.", finale: fin_mulino_lanterne,
+     richiede: {orologio: {id: o_mezzanotte, min: 5}},
+     detto: "Dalla strada del fiume salgono le lanterne, ed Ermete chiude a chiave la casa."}
+  - {id: e_mulino_via, descrizione: "I PG lasciano il mulino e tornano in paese.", finale: fin_mulino_via}

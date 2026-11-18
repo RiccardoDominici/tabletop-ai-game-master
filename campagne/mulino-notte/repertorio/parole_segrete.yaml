@@ -1,0 +1,74 @@
+# Parole segrete (repertorio.md §7): una voce per ogni fatto nascosto del canone. Le regex cercano il legame,
+# non la parola sola, sul testo in minuscolo, e cominciano con \b. `pubblica_dopo` elenca le battute e gli indizi
+# che rendono pubblico il fatto.
+parole:
+  - parola: "il fattore apre la chiusa di notte"
+    regex: "\\bla chiusa la apro io\\b|\\bla chiusa l'ho aperta io\\b|\\bfa venire l'acqua\\b|\\bl'acqua la fa venire\\b|\\b(folco|fattore)\\b[^.]{0,40}\\b(apre|riapre|alza)\\b[^.]{0,20}\\b(chiusa|tavole)\\b[^.]{0,30}\\b(notte|undici)\\b"
+    fatti: [f_folco_apre_chiusa]
+    pubblica_dopo: [fol_chiave_mostrata, fol_chiusa_vista, vio_lettera_mostrata, vio_citta_contessa]
+    nota: "chi alza le tavole della chiusa di notte; la scena dell'appostamento lo mostra senza nome"
+  - parola: "la chiave della chiusa ce l'ha Folco"
+    regex: "\\bchiave\\b[^.]{0,30}\\b(è mia|la tengo io|alla cintura|sotto il cappotto)\\b|\\b(cintura|cappotto)\\b[^.]{0,40}\\bchiave\\b[^.]{0,30}\\bchiusa\\b"
+    fatti: [f_folco_chiave]
+    pubblica_dopo: [i_chiave, nar_chiave_cintura, nar_mazzo_sfilato, fol_chiave_mostrata, fol_chiusa_vista]
+    nota: "la chiave alla cintura del fattore, che dice di riportarla al castello"
+  - parola: "le galline le ha prese Folco"
+    regex: "\\ble ho prese io\\b|\\b(folco|fattore)\\b[^.]{0,50}\\b(prese|preso|prende|ruba|rubato|carica)\\b[^.]{0,30}\\bgallin\\w*|\\bgallin\\w*[^.]{0,30}\\ble ha prese\\b[^.]{0,30}\\b(folco|fattore)\\b"
+    fatti: [f_folco_galline]
+    pubblica_dopo: [fol_galline_mostrate, fol_piuma_mostrata, fol_patto]
+    nota: "chi prende le galline, col carro del conte"
+  - parola: "le galline vive nel granaio"
+    regex: "\\bgallin\\w*[^.]{0,40}\\b(granaio|soppalco)\\b|\\b(granaio|soppalco)\\b[^.]{0,40}\\bgallin\\w*|\\bgallin\\w*[^.]{0,20}\\bvive\\b|\\bgallin\\w*[^.]{0,40}\\btornano nei pollai\\b"
+    fatti: [f_galline_granaio]
+    pubblica_dopo: [i_galline_granaio, nar_soppalco, fol_galline_mostrate, fol_piuma_mostrata, fol_patto]
+    nota: "dove sono le galline; il chiocciare dal granaio è l'indizio, non il fatto"
+  - parola: "il cognato del fattore"
+    regex: "\\bcognat\\w*"
+    fatti: [f_folco_cognato]
+    pubblica_dopo: []
+    nota: "il movente di Folco; nessuna battuta lo dice, e Valbassa da sola è pubblica (l'aggancio di Nerina)"
+  - parola: "Viola toglie il fermo"
+    regex: "\\b(viola|nipote)\\b[^.]{0,40}\\b(toglie|tolto|toglieva|sfila)\\b[^.]{0,20}\\bfermo\\b|\\btolgo il fermo\\b|\\bchiedete alla nipote\\b|\\bparlo della nipote\\b"
+    fatti: [f_viola_fermo]
+    pubblica_dopo: [fol_chiave_mostrata, fol_chiusa_vista, fol_patto, vio_lettera_mostrata, vio_citta_contessa, i_viola_racconta]
+    nota: "chi toglie il fermo dalla ruota: il prezzo della prima strada"
+  - parola: "Viola lega le piume"
+    regex: "\\b(viola|nipote)\\b[^.]{0,50}\\bpium\\w*|\\bpium\\w*[^.]{0,50}\\b(viola|nipote)\\b|\\blego le piume\\b"
+    fatti: [f_viola_piume]
+    pubblica_dopo: [vio_lettera_mostrata, vio_citta_contessa, i_viola_racconta]
+    nota: "le piume col filo rosso tra le pale; l'indizio le descrive senza nome"
+  - parola: "la lettera del fattore per Viola"
+    regex: "\\blettera\\b[^.]{0,60}\\b(fattore|folco|sigillo|serva|servizio)\\b|\\b(fattore|folco)\\b[^.]{0,40}\\blettera\\b|\\bserva in città\\b"
+    fatti: [f_viola_lettera]
+    pubblica_dopo: [i_lettera, nar_lettera, vio_lettera_mostrata, vio_citta_contessa]
+    nota: "il compenso di Viola"
+  - parola: "la lettera non vale niente"
+    regex: "\\blettera\\b[^.]{0,40}\\b(non vale|contessa)\\b|\\bcontessa\\b[^.]{0,40}\\blettera\\b|\\bnon apre nessuna porta\\b"
+    fatti: [f_lettera_falsa]
+    pubblica_dopo: [vio_citta_contessa]
+    nota: "la conoscenza privata di Benno; arriva al tavolo solo se Benno la dice"
+  - parola: "Adalgisa ha sentito il carro"
+    regex: "\\b(sentito|sentivo)\\b[^.]{0,40}\\bcarro\\b|\\bcarro\\b[^.]{0,40}\\b(l'ho sentito|l'avevo sentito|cigolava)\\b"
+    fatti: [f_adalgisa_carro]
+    pubblica_dopo: [i_adalgisa_carro, ada_piuma_mostrata, ada_promessa, ada_dopo_galline]
+    nota: "ciò che Adalgisa tace; il carro che cigola nell'aia è pubblico"
+  - parola: "la decima condonata"
+    regex: "\\bcondon\\w*|\\bper (via della |la )decima\\b"
+    fatti: [f_adalgisa_debito]
+    pubblica_dopo: [ada_piuma_mostrata, ada_promessa, ada_dopo_galline]
+    nota: "perché Adalgisa tace"
+  - parola: "lo scialle di Viola sulla ruota"
+    regex: "\\bscialle\\b[^.]{0,40}\\b(ruota|pale|raggi)\\b|\\b(ruota|pale|raggi)\\b[^.]{0,40}\\bscialle\\b|\\bquattro mattine\\b"
+    fatti: [f_ermete_fermo_tolto]
+    pubblica_dopo: [i_ermete_scialle, erm_piume_passerella, erm_giuramento]
+    nota: "ciò che Ermete ha trovato; il fermo per terra stanotte, nella scena della ruota, è pubblico"
+  - parola: "l'argilla rossa della chiusa"
+    regex: "\\bargilla\\b[^.]{0,70}\\bchiusa\\b|\\bchiusa\\b[^.]{0,40}\\bargilla\\b"
+    fatti: [f_argilla_chiusa]
+    pubblica_dopo: [i_lucchetto]
+    nota: "lega gli stivali di Folco alla chiusa; conoscenza privata di Ilde"
+  - parola: "più di un'ora d'acqua"
+    regex: "\\b(più di|poco più di) un'ora\\b[^.]{0,40}\\b(ruota|gora|acqua)\\b|\\b(acqua|gora)\\b[^.]{0,80}\\b(più di|poco più di) un'ora\\b"
+    fatti: [f_acqua_ora]
+    pubblica_dopo: []
+    nota: "il conto dell'acqua, conoscenza privata di Tarcisio"

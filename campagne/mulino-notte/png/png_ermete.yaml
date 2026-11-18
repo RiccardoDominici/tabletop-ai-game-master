@@ -1,0 +1,65 @@
+id: png_ermete
+nome: "Ermete"
+pronuncia: "Èrmete"
+alias: [mugnaio, nonno]
+livello: principale
+ruolo: "il mugnaio; testimone che tace per proteggere la nipote"
+fronte: fronte_conte
+scheda:
+  gs: 0
+  caratteristiche: {forza: 12, destrezza: 8, costituzione: 12, intelligenza: 10, saggezza: 13, carisma: 9}
+  competenze: [percezione, intuizione]
+  ca: 9
+  pf: 5
+  attacchi:
+    - {nome: "Bastone da mugnaio", caratteristica: forza, danno: "1d4", tipo_danno: contundente}
+aspetto:
+  lettura: "Un vecchio mugnaio curvo, bianco di farina dalla testa ai piedi. Ha un berretto di lana grigio e le mani grandi, nodose."
+  invarianti: ["settanta anni", "curvo", "bianco di farina", "berretto di lana grigio", "mani grandi e nodose"]
+  prompt_immagine: "old hunched miller about seventy years old, covered in white flour from head to toe, grey wool cap, large knotted hands, standing at the doorway of a stone mill, [STILE]"
+personalita:
+  superficie: ["burbero e di poche parole", "orgoglioso del suo mulino"]
+  sotto_pressione: ["diventa calmo e lentissimo, e guarda la gora invece di chi parla"]
+  contraddizione: "Odia la gora che gli ha preso la moglie, ma non sa vivere lontano dall'acqua."
+desiderio: "Tenere il mulino e la nipote, e fermare la ruota prima che il paese guardi Viola."
+paura: "Che la gora si prenda anche Viola, come si è presa Teodora."
+segreto:
+  testo: "Ha trovato il fermo per terra e lo scialle di Viola sulla ruota, e tace per proteggerla."
+  chi_altro_sa: []
+  se_rivelato: "Il paese guarda Viola, ed Ermete si mette davanti alla porta di casa."
+voce:
+  tts: {voce_id: vincent, eta_apparente: "70", altezza: bassa, velocita: 0.85, timbro: "roco, impolverato", direzione: "roco e lento, da vecchio mugnaio di poche parole"}
+  registro: "Dà del tu a tutti, e chiama i forestieri col mestiere."
+  stile: "Frasi di tre-sette parole. Lessico di mulino: gora, macina, pale, sacchi."
+  tic: ["«L'acqua sa.» per chiudere un discorso"]
+  gesto: "soffia la farina dal dorso della mano"
+  mai_dice: ["il nome di Teodora davanti al paese", "lo scialle sulla ruota, finché non ha ceduto"]
+  battuta_campione: "La ruota gira con l'acqua. Senz'acqua è legna."
+sa: [f_ruota_gira, f_moglie_annegata, f_fermo, f_ermete_fermo_tolto, f_chiusa_conte, f_supplica, f_affitto, f_leggenda, f_mulino_monte, f_fiera]
+non_sa: [f_folco_apre_chiusa, f_folco_chiave, f_viola_lettera, f_galline_granaio, f_folco_cognato]
+crede_a_torto:
+  - {testo: "Viola toglie il fermo per un ragazzo del paese, che viene di notte a vedere la ruota.", contraddice: f_viola_lettera}
+mente_su:
+  - id: erm_fermo
+    argomento: "il fermo della ruota"
+    verita: f_ermete_fermo_tolto
+    versione: "Il fermo lo metto io ogni sera. La mattina è sempre lì."
+    perche: "Ha paura che il paese se la prenda con Viola."
+    segnale: "si toglie il berretto e lo rigira tra le mani"
+    cede_se: "Dice la verità quando un PG, da solo con lui sulla passerella, gli mostra le piume legate col filo rosso. Oppure quando un PG, in privato, gli giura che non dirà niente di Viola al paese."
+atteggiamento_pg:
+  pg_cosma: {stato: indifferente, perche: "i preti parlano troppo di mugnaie e di anime", vuole: "che non benedica la ruota davanti al paese"}
+  pg_nerina: {stato: indifferente, perche: "una forestiera di fiera, svelta di mani", vuole: "che stia lontana dai sacchi"}
+  pg_tarcisio: {stato: amichevole, perche: "l'ha chiamato lui, per le pale nuove", vuole: "che gli dica perché la ruota gira"}
+  pg_ilde: {stato: indifferente, perche: "cerca una volpe che lui sa non esserci", vuole: "che non metta trappole nel cortile"}
+  pg_benno: {stato: indifferente, perche: "i cantastorie fanno sognare la nipote", vuole: "che non le parli della città"}
+relazioni: {png_viola: "nipote, l'ha cresciuta lui", png_folco: "il fattore che gli dà l'acqua del conte", png_adalgisa: "vicina di quarant'anni, mezza comare"}
+info_chiave: [i_gora_asciutta, i_ermete_scialle]
+iniziative:
+  - "Se un PG gli chiede della ruota, lo porta sulla passerella a vedere i raggi."
+  - "Quando vede le lanterne sulla strada, chiude Viola in casa a chiave."
+evoluzione:
+  - {se: "i PG gli provano che la ruota la muove l'acqua di monte", allora: "si fida di loro e li lascia vegliare la ruota"}
+  - {se: "il paese accusa Viola", allora: "si mette davanti alla porta di casa e non la apre a nessuno"}
+statistiche: "popolano (SRD 5.2)"
+registro_attivita: []

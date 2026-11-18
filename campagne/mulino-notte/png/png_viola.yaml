@@ -1,0 +1,64 @@
+id: png_viola
+nome: "Viola"
+pronuncia: "Viòla"
+alias: [nipote, mugnaina]
+livello: principale
+ruolo: "la nipote del mugnaio; complice che non sa di esserlo"
+fronte: fronte_ruota
+scheda:
+  gs: 0
+  caratteristiche: {forza: 8, destrezza: 13, costituzione: 10, intelligenza: 11, saggezza: 12, carisma: 12}
+  competenze: [furtivita, inganno]
+  ca: 11
+  pf: 4
+  attacchi: []
+aspetto:
+  lettura: "Una ragazza magra di diciassette anni, col grembiule chiaro e infarinato. Ha un nastro rosso nei capelli e gli occhi sempre verso la strada."
+  invarianti: ["diciassette anni", "magra", "grembiule chiaro infarinato", "nastro rosso nei capelli", "scialle grigio sulle spalle"]
+  prompt_immagine: "thin seventeen-year-old village girl, pale apron dusted with flour, a red ribbon in her brown hair, grey shawl on her shoulders, looking toward a road, [STILE]"
+personalita:
+  superficie: ["svelta e curiosa", "gentile con i forestieri"]
+  sotto_pressione: ["si fa piccola, e risponde solo con altre domande"]
+  contraddizione: "Vuole scappare dal mulino, ma non sopporta di far male al nonno."
+desiderio: "Andare a servizio in città con la lettera del fattore, prima dell'inverno."
+paura: "Restare tutta la vita al mulino, la nipote dell'annegata."
+segreto:
+  testo: "Ogni sera toglie il fermo e lega le piume tra le pale, in cambio della lettera di Folco."
+  chi_altro_sa: [png_folco]
+  se_rivelato: "Il paese la chiama la strega della gora, ed Ermete la difende."
+voce:
+  tts: {voce_id: tabitha, eta_apparente: "17", altezza: alta, velocita: 1.1, timbro: "chiaro, svelto", direzione: "svelta e curiosa, da ragazza che guarda sempre la strada"}
+  registro: "Dà del lei ai forestieri, del tu al nonno."
+  stile: "Frasi di quattro-dieci parole, svelte, spesso chiuse da una domanda."
+  tic: ["«E in città, com'è?»"]
+  gesto: "si arrotola sul dito il nastro rosso dei capelli"
+  mai_dice: ["la lettera, finché non ha ceduto", "il nome del fattore davanti al nonno"]
+  battuta_campione: "Il nonno dice che la gora sente tutto. Lei ci crede?"
+sa: [f_viola_fermo, f_viola_piume, f_viola_lettera, f_folco_apre_chiusa, f_ruota_gira, f_fermo, f_moglie_annegata, f_leggenda]
+non_sa: [f_folco_cognato, f_galline_granaio, f_lettera_falsa, f_folco_galline, f_ermete_fermo_tolto]
+crede_a_torto:
+  - {testo: "Folco vuole solo far paura al paese per una scommessa, e dopo San Martino tutto torna come prima.", contraddice: f_folco_cognato}
+mente_su:
+  - id: vio_notte
+    argomento: "dove sta di notte"
+    verita: f_viola_fermo
+    versione: "Di notte dormo. Il nonno chiude la casa a chiave."
+    perche: "Ha paura di perdere la lettera, e con la lettera la città."
+    segnale: "si tira le maniche fin sopra le mani"
+    cede_se: "Dice la verità quando un PG, in privato, le mostra la lettera del fattore trovata nella cassapanca. Oppure quando Benno, in privato, le dice che in città quella lettera non apre nessuna porta."
+atteggiamento_pg:
+  pg_cosma: {stato: indifferente, perche: "un prete potrebbe dirlo al nonno", vuole: "che non le chieda delle sue notti"}
+  pg_nerina: {stato: amichevole, perche: "una che ha girato le fiere", vuole: "sapere come si vive per strada"}
+  pg_tarcisio: {stato: indifferente, perche: "lavora per il nonno, sulla ruota", vuole: "che non salga sulla passerella"}
+  pg_ilde: {stato: amichevole, perche: "una donna che va dove vuole", vuole: "sapere come si parte da soli"}
+  pg_benno: {stato: amichevole, perche: "le ha promesso le canzoni della città", vuole: "che le racconti le case dei signori"}
+relazioni: {png_ermete: "il nonno, che l'ha cresciuta", png_folco: "le ha dato la lettera, e le chiede un favore ogni sera", png_adalgisa: "la comare che le contava le favole della mugnaia"}
+info_chiave: [i_viola_racconta]
+iniziative:
+  - "Se un PG le parla della città, gli chiede com'è una casa di signori."
+  - "Se vede qualcuno vicino alla cassapanca, trova una scusa per mandarlo in cortile."
+evoluzione:
+  - {se: "scopre che la lettera non vale niente", allora: "racconta tutto e chiede di non dirlo al nonno"}
+  - {se: "il nonno la difende davanti ai PG", allora: "piange e restituisce la lettera"}
+statistiche: "popolana (SRD 5.2)"
+registro_attivita: []

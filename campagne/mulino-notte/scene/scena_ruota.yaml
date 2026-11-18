@@ -1,0 +1,74 @@
+# Scena 3: la ruota a mezzanotte. Lo stesso mulino, in un altro momento: un nodo evento (mestiere.md §9).
+id: scena_ruota
+nodo: n_mezzanotte
+nome: "La ruota a mezzanotte"
+descrizione: "Il cortile del mulino a mezzanotte, con la ruota sopra la gora e la porta del mulino aperta. Il paese arriva con le lanterne dalla strada del fiume e si ferma al muretto del cortile. La casa di Ermete, di là dal cortile, ha la porta chiusa a chiave. Al muretto tutti sentono tutto. Dentro il mulino, a porta chiusa, non sente nessuno."
+scopo: {tipo: far_avanzare_fronte, rif: fronte_ruota}
+domanda_drammatica: "Il paese lascerà il mulino a Ermete dopo questa notte?"
+posta:
+  si_guadagna: {cosa: "Il mulino di Ermete e le galline di Adalgisa.", per_chi: [png_ermete, png_adalgisa]}
+  si_perde: {cosa: "Il buon nome di Viola, oppure il mulino.", per_chi: [png_viola, png_ermete]}
+intensita: 5
+sensi:
+  - "Le lanterne friggono nella nebbia, e sanno di olio e di cera."
+  - "Al muretto il paese mormora, a voce bassa, tutto insieme."
+  - "Nella gora asciutta le foglie frusciano nel vento."
+elementi_interattivi:
+  - {cosa: "la ruota", dove: "sopra la gora", azioni: "è ferma e senza fermo tra i raggi; dalla passerella si arriva alle pale."}
+  - {cosa: "il fermo di quercia", dove: "per terra, sotto la passerella", azioni: "è unto di sego nero; si raccoglie e si infila tra i raggi, se si fa in fretta."}
+  - {cosa: "il muretto del cortile", dove: "tra il cortile e la strada", azioni: "il paese si ferma lì con le lanterne; ci si sale per parlare a tutti."}
+  - {cosa: "la porta della casa di Ermete", dove: "di là dal cortile", azioni: "è chiusa a chiave da fuori; la chiave ce l'ha Ermete in tasca."}
+  - {cosa: "la gora", dove: "sotto la ruota", azioni: "è asciutta finché l'acqua non arriva da monte; ci si scende da una scaletta."}
+  - {cosa: "la paglia del paese", dove: "in mano a due paesani, al muretto", azioni: "sono due fasci legati con lo spago; con una lanterna prendono fuoco subito."}
+png_presenti: [png_ermete, png_folco, png_adalgisa]
+orologi_attivi: [o_mezzanotte]
+orologi_in_scena:
+  o_mezzanotte: {pieni_almeno: 5, segno_almeno_ogni: 3}
+gregari: [{tipo: paesano, quanti: 6}]
+indizi:
+  - {id: i_acqua_salici, conclusione: r_chiusa, tipo: evento, nodo: n_mezzanotte, essenziale: false, tiro: "nessuno", modi: 1,
+     come_si_trova: "Quando l'acqua arriva nella gora porta foglie strette di salice e schiuma gialla: i salici di questo fiume stanno a monte, alla chiusa.",
+     vincolo_pubblico: "L'acqua arriva nella gora da monte, tutta in una volta."}
+prove:
+  - {id: p_fermo_ruota, quando: "un PG infila il fermo tra i raggi della ruota che gira", abilita: atletica, cd: 15,
+     se_fallisce: "il fermo rimbalza sui raggi e cade nella gora, e la ruota gira ancora"}
+  - {id: p_calmare, quando: "un PG parla al paese dal muretto per calmarlo", abilita: persuasione, cd: 15,
+     se_fallisce: "dal fondo qualcuno grida più forte, e un fascio di paglia passa di mano in mano"}
+  - {id: p_mazzo_ruota, quando: "un PG sfila di nascosto il mazzo di chiavi dalla cintura di Folco", abilita: rapidita_di_mano, cd: 15,
+     indizio: i_chiave, se_fallisce: "Folco sente la mano e si stringe il cappotto addosso"}
+vincoli_pubblici:
+  - "La porta della casa di Ermete resta chiusa a chiave per tutta la scena."
+  - "Il paese resta dietro il muretto finché nessuno lo spinge."
+  - "Con la gora piena e senza fermo nessuna forza tiene ferma la ruota a mani nude."
+climax: true
+uscite:
+  - {verso: n_chiusa, segnalata_da: [i_acqua_salici]}
+mossa_morbida_pronta: "Una lanterna passa di mano in mano fino al primo del muretto. Dietro, qualcuno comincia a contare le pale della ruota, a voce alta."
+apertura: "Il cortile del mulino è pieno di lanterne, ferme al muretto. Il paese guarda la ruota in silenzio, e il fattore sta davanti a tutti. Ermete è sulla soglia, con le mani bianche di farina: chi di voi gli sta accanto?"
+musica: {tag: esplorazione_tesa, transizione: "verso inseguimento quando la ruota comincia a girare"}
+# All'inizio la ruota è ferma: niente ambiente «mulino», ma la folla al muretto e la notte.
+audio: {ambiente: [{tag: folla, volume: 0.4}, notte], umore_iniziale: esplorazione_tesa}
+immagine:
+  invarianti: ["cortile del mulino di notte", "grande ruota di legno sopra la gora", "muretto con le lanterne", "casa bassa con la porta chiusa"]
+  prompt_luogo: "yard of an old stone watermill at midnight, a large dark wooden waterwheel over a narrow millrace, many lanterns hung along a low stone wall glowing in the mist, a small cottage with a shut door across the yard"
+taglio: "La scena si chiude quando il paese decide della ruota: se ne va con la verità, se ne va calmato col fermo, oppure la brucia. Se i PG esitano quando la ruota gira, il paese porta la paglia sotto la ruota."
+# Esiti (passo 9), nell'ordine in cui vincono: la verità detta a tutti, il patto, il fermo, il rogo.
+esiti:
+  - {id: e_verita_chiave, descrizione: "Folco ammette la chiave davanti al paese, e nomina la nipote del mugnaio.", finale: fin_chiave_al_paese,
+     richiede: {battute_usate: [fol_chiave_mostrata]},
+     detto: "Il paese si volta verso il fattore, e poi verso la casa chiusa di là dal cortile."}
+  - {id: e_verita_chiusa, descrizione: "Folco ammette la chiusa davanti al paese, e nomina la nipote del mugnaio.", finale: fin_chiave_al_paese,
+     richiede: {battute_usate: [fol_chiusa_vista]},
+     detto: "Il paese si volta verso il fattore, e poi verso la casa chiusa di là dal cortile."}
+  - {id: e_patto, descrizione: "Il patto con Folco regge: la ruota si ferma, la supplica parte.", finale: fin_patto,
+     richiede: {battute_usate: [fol_patto], orologio: {id: o_mezzanotte, min: 7}},
+     detto: "Verso l'una l'acqua cala, la ruota si ferma, e il paese torna a casa con la supplica."}
+  - {id: e_fermo_prima, descrizione: "Col fermo rimesso prima dell'acqua, la ruota non gira.", finale: fin_fermo,
+     richiede: {battute_usate: [nar_fermo_prima], orologio: {id: o_mezzanotte, min: 6}},
+     detto: "La ruota resta ferma col fermo tra i raggi, e il paese abbassa le lanterne."}
+  - {id: e_fermo_dopo, descrizione: "Il fermo ferma la ruota che girava, davanti a tutti.", finale: fin_fermo,
+     richiede: {battute_usate: [nar_fermo_ruota]},
+     detto: "La ruota si ferma di colpo, e il paese abbassa le lanterne."}
+  - {id: e_rogo, descrizione: "Il paese accende la paglia sotto la ruota.", finale: fin_rogo,
+     richiede: {orologio: {id: o_mezzanotte, min: 8}},
+     detto: "La paglia prende fuoco sotto la ruota, e il paese guarda bruciare le pale."}

@@ -1,0 +1,144 @@
+# Battute di Folco Rasi (voce lucian). Stile: frasi di sei-dodici parole, lei a tutti, da notaio.
+# Folco è all'aia e nel cortile a mezzanotte: niente `scena` dove la battuta vale in tutte e due.
+battute:
+  - {id: fol_saluto, chi: png_folco, tipo: saluto, solo_esempio: true, quando: "i PG salutano Folco", temi: [salve, buonasera, saluto], max_usi: 1,
+     testo: ["[narratore] Folco si liscia i guanti di pelle, dito per dito.", "[png_folco] Buonasera. Folco Rasi, fattore del conte, per servirvi."]}
+  - {id: fol_domanda_gentile, chi: png_folco, tipo: reazione, solo_esempio: true, quando: "un PG chiede a Folco come sta", temi: [stai, salute], max_usi: 1,
+     testo: ["[png_folco] Bene, grazie. Il conte è servito, e la gente firma."]}
+  - {id: fol_accusa, chi: png_folco, tipo: reazione, solo_esempio: true, quando: "un PG accusa Folco", temi: [accuso, accusare], max_usi: 1,
+     testo: ["[png_folco] Accusare un fattore del conte è un'imprudenza. Ci pensi bene, prima."]}
+  - {id: fol_minaccia, chi: png_folco, tipo: reazione, solo_esempio: true, quando: "un PG minaccia Folco", temi: [minaccio, minaccia], max_usi: 1,
+     testo: ["[png_folco] Il conte non ama chi alza la voce sulle sue terre. Nemmeno io."]}
+  - {id: fol_offerta, chi: png_folco, tipo: reazione, solo_esempio: true, quando: "un PG offre denaro a Folco", temi: [soldi, monete, denaro], max_usi: 1,
+     testo: ["[png_folco] Il denaro lo tenga. Mi dia una firma, piuttosto."]}
+  - {id: fol_aiuto, chi: png_folco, tipo: reazione, solo_esempio: true, quando: "un PG aiuta Folco con la supplica", temi: [aiuto, aiutare], max_usi: 1,
+     testo: ["[png_folco] Molto gentile. Il conte saprà ricordarsene, a San Martino."]}
+  - {id: fol_rifiuto, chi: png_folco, tipo: rifiuto, solo_esempio: true, quando: "un PG chiede a Folco di cose che non sa", temi: [domando], max_usi: 1,
+     testo: ["[png_folco] Di questo non so niente. Chieda al mugnaio, che ha la ruota."]}
+
+  - id: fol_attesa
+    chi: png_folco
+    tipo: richiesta
+    riempitivo: true
+    quando: "i PG indugiano davanti a Folco senza firmare"
+    temi: [firma, firmare]
+    testo: ["[png_folco] Io aspetto, per conto del conte. La gente, invece, no."]
+    max_usi: 1
+
+  - id: fol_supplica
+    chi: png_folco
+    tipo: reazione
+    quando: "un PG chiede a Folco perché raccoglie le firme"
+    temi: [supplica, firme, foglio]
+    testo: ["[png_folco] La gente ha paura, e la paura ha diritto a una firma. A San Martino deciderà il conte."]
+    max_usi: 1
+
+  # menzogne
+  - id: fol_chiave_domanda
+    chi: png_folco
+    tipo: menzogna
+    quando: "un PG chiede a Folco della chiave della chiusa"
+    temi: [chiave, chiusa, lucchetto]
+    testo:
+      - "[narratore] Folco si abbottona il cappotto fino all'ultimo bottone."
+      - "[png_folco] La chiave della chiusa la riporto al castello ogni sera. Sta nella cassa del conte."
+    varianti:
+      - ["[narratore] Folco si abbottona il cappotto fino all'ultimo bottone.", "[png_folco] Gliel'ho detto: sta al castello, nella cassa del conte."]
+    effetti: {menzogna_detta: fol_chiave}
+    max_usi: 2
+  - id: fol_granaio_domanda
+    chi: png_folco
+    tipo: menzogna
+    quando: "un PG chiede a Folco che cosa c'è nel granaio"
+    temi: [granaio, grano, sigillato]
+    scena: scena_aia
+    testo:
+      - "[narratore] Folco fa un passo e si mette davanti alla porta del granaio."
+      - "[png_folco] Nel granaio c'è il grano del conte, contato e sigillato. Nient'altro."
+    effetti: {menzogna_detta: fol_granaio}
+    max_usi: 1
+
+  # confessioni: la chiave (nomina la nipote del mugnaio: è il prezzo della verità detta a tutti)
+  - id: fol_chiave_mostrata
+    chi: png_folco
+    tipo: confessione
+    quando: "un PG mostra a Folco la chiave grossa del suo mazzo"
+    temi: [chiave, mazzo, chiavi]
+    richiede: {battute_usate: [nar_mazzo_sfilato], battute_non_usate: [fol_chiusa_vista]}
+    testo:
+      - "[narratore] Folco guarda la chiave, poi la gente, e si sfila piano i guanti."
+      - "[png_folco] Sì, la chiave è mia, e la chiusa la apro io."
+      - "[png_folco] Ma da sola la ruota non gira. Chiedete alla nipote del mugnaio chi toglie il fermo."
+    effetti: {fatti_noti: [f_folco_chiave, f_folco_apre_chiusa, f_viola_fermo], atteggiamento: {png_folco: {tutti: ostile}}}
+    max_usi: 1
+  - id: fol_chiusa_vista
+    chi: png_folco
+    tipo: confessione
+    quando: "un PG dice a Folco del lucchetto unto della chiusa"
+    temi: [lucchetto, unto, tavole, impronte]
+    richiede: {indizi_rivelati: [i_lucchetto], battute_non_usate: [fol_chiave_mostrata]}
+    testo:
+      - "[narratore] Folco smette di lisciarsi i guanti."
+      - "[png_folco] La chiusa l'ho aperta io, sì. È l'acqua del conte, e la chiave la tengo io."
+      - "[png_folco] Ma il fermo non lo tolgo io. Chiedete alla nipote del mugnaio."
+    effetti: {fatti_noti: [f_folco_chiave, f_folco_apre_chiusa, f_viola_fermo], atteggiamento: {png_folco: {tutti: ostile}}}
+    max_usi: 1
+
+  # confessioni: il granaio
+  - id: fol_galline_mostrate
+    chi: png_folco
+    tipo: confessione
+    quando: "un PG mostra a Folco le galline trovate sul soppalco"
+    temi: [galline, gallina, gabbie, soppalco]
+    richiede: {indizi_rivelati: [i_galline_granaio], battute_non_usate: [fol_piuma_mostrata]}
+    testo:
+      - "[narratore] Folco si liscia un guanto, poi l'altro, più piano."
+      - "[png_folco] Le galline le tengo per la fiera, per conto del conte. Sono vive, come vede."
+      - "[png_folco] Le ho prese io, col carro. Nessuna mugnaia."
+    effetti: {fatti_noti: [f_galline_granaio, f_folco_galline], atteggiamento: {png_folco: {tutti: ostile}}}
+    max_usi: 1
+  - id: fol_piuma_mostrata
+    chi: png_folco
+    tipo: confessione
+    quando: "un PG mostra a Folco la piuma incastrata nel carro"
+    temi: [piuma, carro, raggi]
+    richiede: {indizi_rivelati: [i_piuma_carro], battute_non_usate: [fol_galline_mostrate]}
+    testo:
+      - "[narratore] Folco guarda la piuma, poi il carro, e si sfila un guanto."
+      - "[png_folco] Il carro è del conte, e le galline anche, fino alla fiera."
+      - "[png_folco] Sono nel granaio, vive. Nessuna mugnaia, se è questo che vuole sentire."
+    effetti: {fatti_noti: [f_galline_granaio, f_folco_galline], atteggiamento: {png_folco: {tutti: ostile}}}
+    max_usi: 1
+
+  # momento: il patto in privato (la seconda strada)
+  - id: fol_patto
+    chi: png_folco
+    tipo: momento
+    quando: "in privato, un PG mette Folco davanti a una prova"
+    temi: [patto, accordo, prova, prove]
+    richiede:
+      privata: true
+      oppure:
+        - {indizi_rivelati: [i_chiave]}
+        - {indizi_rivelati: [i_lucchetto]}
+        - {indizi_rivelati: [i_galline_granaio]}
+    testo:
+      - "[narratore] Folco si sfila un guanto, dito per dito, e abbassa la voce."
+      - "[png_folco] Va bene. Stanotte chiudo la chiusa, e all'alba le galline tornano nei pollai."
+      - "[png_folco] Ma la supplica è della gente, non mia."
+      - "[png_folco] E nessuno tocca la ruota davanti a loro, o parlo della nipote del mugnaio."
+    effetti: {fatti_noti: [f_folco_apre_chiusa, f_folco_galline]}
+    max_usi: 1
+
+  # stallo S1 dell'aia: il fattore raccoglie firme
+  - id: fol_stallo1_aia
+    chi: png_folco
+    tipo: momento
+    stallo: 1
+    quando: "nessuno agisce da un po' nell'aia"
+    temi: [croce]
+    scena: scena_aia
+    testo:
+      - "[narratore] Folco chiama un nome verso la strada, e un uomo viene a firmare con una croce."
+      - "[png_folco] Una croce qui, per conto del conte. Grazie."
+    max_usi: 1

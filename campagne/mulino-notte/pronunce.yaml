@@ -1,0 +1,19 @@
+# Lessico di pronuncia (docs/pronuncia.md): ogni nome proprio dei testi, con la grafia che la voce legge.
+# `verificata` la scrive la prova d'orecchio (strumenti/pronuncia/prova.ts), mai a mano: qui manca apposta.
+lessico:
+  - {nome: Ermete, tipo: png, it: {grafia: Èrmete, nota: "sdrucciola: accento sulla prima"}}
+  - {nome: Viola, tipo: png, solo_maiuscolo: true, it: {grafia: Viòla, nota: "come il fiore; con la maiuscola è il nome"}}
+  - {nome: Folco, tipo: png, it: {grafia: Fòlco}}
+  - {nome: Rasi, tipo: png, it: {grafia: Ràsi}}
+  - {nome: Adalgisa, tipo: png, it: {grafia: Adalgìsa, candidate: [Adalgìsa, Adalgìza], nota: "s sorda, accento sulla i"}}
+  - {nome: Teodora, tipo: altro, it: {grafia: Teodòra}}
+  - {nome: Cosma, tipo: pg, it: {grafia: Còsma}}
+  - {nome: Nerina, tipo: pg, it: {grafia: Nerìna}}
+  - {nome: Tarcisio, tipo: pg, it: {grafia: Tarcìsio}}
+  - {nome: Ilde, tipo: pg, it: {grafia: Ìlde}}
+  - {nome: Benno, tipo: pg, it: {grafia: Bènno}}
+  - {nome: Ronchetto, tipo: luogo, it: {grafia: Ronchétto}}
+  - {nome: Lenta, tipo: luogo, solo_maiuscolo: true, it: {grafia: Lènta, nota: "il fiume; in minuscolo è l'aggettivo"}}
+  - {nome: Valbassa, tipo: luogo, it: {grafia: Valbàssa}}
+  - {nome: San Martino, tipo: altro, it: {grafia: San Martìno}}
+  - {nome: Dio, tipo: dio, solo_maiuscolo: true, it: {grafia: Dìo}}

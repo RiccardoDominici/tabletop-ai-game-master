@@ -1,0 +1,113 @@
+# Personaggi pregenerati: cinque, uno più dei giocatori massimi (3-4). La scena regge con qualunque sottoinsieme.
+# Tutto è pubblico tranne `conoscenze_private`, che va solo al telefono del giocatore (T9).
+situazione_comune: "Siete arrivati a Ronchetto per la vigilia di San Martino, ognuno per una ragione sua, e il tramonto vi trova insieme all'aia di Adalgisa, dove il paese parla solo della ruota e delle galline."
+personaggi:
+  - id: pg_cosma
+    nome: "Cosma"
+    pronomi: "lui"
+    specie: "umano"
+    classe: "chierico"
+    livello: 1
+    aspetto: "Un uomo sulla trentina, largo di spalle, col saio color terra e un mazzo di spighe secche legato alla cintura."
+    concetto: "Chierico di campagna, benedice le semine e i pozzi della valle. Crede che la paura faccia più danni della grandine."
+    aggancio: "Adalgisa ti ha cresciuto da bambino, quando tua madre andava a servizio, e ti ha scritto di venire per San Martino."
+    cosa_sai_fare: ["preghi e benedici ad alta voce davanti a tutti", "curi le piccole ferite", "conosci le leggende delle acque"]
+    conoscenze_private:
+      - {testo: "Adalgisa ti ha sempre detto a quattr'occhi quello che davanti agli altri tace: se le parli da solo, ti ascolta.", fatti: [f_adalgisa_galline]}
+    scheda:
+      caratteristiche: {forza: 12, destrezza: 10, costituzione: 14, intelligenza: 10, saggezza: 16, carisma: 12}
+      competenze: [religione, intuizione, medicina, persuasione]
+      tiri_salvezza: [saggezza, carisma]
+      armatura: {tipo: giaco di maglia, scudo: true}
+      pf: 10
+      attacchi:
+        - {nome: "Mazza", caratteristica: forza, danno: "1d6", tipo_danno: contundente}
+
+  - id: pg_nerina
+    nome: "Nerina"
+    pronomi: "lei"
+    specie: "halfling"
+    classe: "ladra"
+    livello: 1
+    aspetto: "Una halfling svelta, con le trecce nere raccolte sotto un fazzoletto verde e le dita sempre in movimento."
+    concetto: "Borseggiatrice di fiere, gira i mercati di San Martino da quando era piccola. Ruba ai prepotenti, mai a chi ha le mani rotte dal lavoro."
+    aggancio: "Il fattore Folco ti deve la paga di un lavoretto al mercato di Valbassa, e non te l'ha mai data."
+    cosa_sai_fare: ["apri i lucchetti", "sfili le cose da tasche e cinture", "ti arrampichi sui tetti bassi"]
+    conoscenze_private:
+      - {testo: "Folco porta sempre un mazzo di chiavi alla cintura, sotto il cappotto: l'hai visto al mercato di Valbassa, e sai che non lo lascia mai.", fatti: [f_chiusa_conte]}
+    scheda:
+      caratteristiche: {forza: 8, destrezza: 16, costituzione: 12, intelligenza: 12, saggezza: 12, carisma: 14}
+      competenze: [rapidita_di_mano, furtivita, acrobazia, inganno]
+      maestrie: [rapidita_di_mano, furtivita]
+      tiri_salvezza: [destrezza, intelligenza]
+      armatura: {tipo: armatura di cuoio, scudo: false}
+      pf: 9
+      attacchi:
+        - {nome: "Pugnale", caratteristica: destrezza, danno: "1d4", tipo_danno: perforante}
+        - {nome: "Fionda", caratteristica: destrezza, danno: "1d4", tipo_danno: contundente, distanza: true}
+
+  - id: pg_tarcisio
+    nome: "Tarcisio"
+    pronomi: "lui"
+    specie: "nano"
+    classe: "guerriero"
+    livello: 1
+    aspetto: "Un nano tozzo con la barba color ruggine, il grembiule di cuoio da carpentiere e un'ascia sulla spalla."
+    concetto: "Carpentiere di mulini, ha rifatto ruote su mezza Lenta. Si fida del legno e dell'acqua più che delle persone."
+    aggancio: "Ermete ti ha chiamato per rifare due pale della ruota prima dell'inverno, e ti paga in farina."
+    cosa_sai_fare: ["conosci ruote, gore e chiuse", "sollevi travi e sacchi", "combatti con l'ascia"]
+    conoscenze_private:
+      - {testo: "Una ruota da mulino non gira senza acqua nella gora, e l'acqua aperta a una chiusa ci mette più di un'ora a scendere fino alla ruota.", fatti: [f_acqua_ora]}
+      - {testo: "Sul palo di una gora la riga più alta si raggiunge solo con la chiusa aperta tutta.", fatti: [f_mulino_monte]}
+    scheda:
+      caratteristiche: {forza: 16, destrezza: 10, costituzione: 14, intelligenza: 12, saggezza: 12, carisma: 8}
+      competenze: [atletica, percezione]
+      tiri_salvezza: [forza, costituzione]
+      armatura: {tipo: cotta di maglia, scudo: false}
+      pf: 12
+      attacchi:
+        - {nome: "Ascia da battaglia", caratteristica: forza, danno: "1d8", tipo_danno: tagliente}
+
+  - id: pg_ilde
+    nome: "Ilde"
+    pronomi: "lei"
+    specie: "umana"
+    classe: "ranger"
+    livello: 1
+    aspetto: "Una donna alta e asciutta, col mantello di pelle di volpe e l'arco corto a tracolla."
+    concetto: "Cacciatrice di volpi e di lupi per i paesi della valle. Legge le tracce come altri leggono le lettere."
+    aggancio: "Il paese ti ha mandato a chiamare per la volpe delle galline: la paga è un sacco di farina per ogni pelle."
+    cosa_sai_fare: ["leggi tracce e impronte", "conosci le terre e le rive della Lenta", "tiri con l'arco"]
+    conoscenze_private:
+      - {testo: "Una volpe in un pollaio lascia sangue, penne strappate e la rete graffiata: non alza un chiavistello.", fatti: [f_galline_sparite]}
+      - {testo: "Su questo tratto di Lenta l'argilla rossa c'è solo sulla riva della chiusa di monte.", fatti: [f_argilla_chiusa]}
+    scheda:
+      caratteristiche: {forza: 12, destrezza: 16, costituzione: 13, intelligenza: 10, saggezza: 14, carisma: 8}
+      competenze: [sopravvivenza, natura, percezione, furtivita]
+      tiri_salvezza: [forza, destrezza]
+      armatura: {tipo: armatura di cuoio, scudo: false}
+      pf: 11
+      attacchi:
+        - {nome: "Arco corto", caratteristica: destrezza, danno: "1d6", tipo_danno: perforante, distanza: true}
+        - {nome: "Spada corta", caratteristica: destrezza, danno: "1d6", tipo_danno: perforante}
+
+  - id: pg_benno
+    nome: "Benno"
+    pronomi: "lui"
+    specie: "gnomo"
+    classe: "bardo"
+    livello: 1
+    aspetto: "Uno gnomo dalla voce grande, col cappello piumato storto e un liuto avvolto in una coperta."
+    concetto: "Cantastorie di città, canta le fiere e le nozze dei paesi. Sa come si parla ai signori e come si parla alle piazze."
+    aggancio: "Viola, la nipote del mugnaio, l'anno scorso alla fiera ti ha chiesto di insegnarle le canzoni della città."
+    cosa_sai_fare: ["canti e racconti davanti a una piazza intera", "conosci le case dei signori in città", "suoni il liuto"]
+    conoscenze_private:
+      - {testo: "In città le serve di un conte si prendono solo con una lettera della contessa: quella di un fattore di campagna non apre nessuna porta.", fatti: [f_lettera_falsa]}
+    scheda:
+      caratteristiche: {forza: 8, destrezza: 14, costituzione: 12, intelligenza: 12, saggezza: 10, carisma: 16}
+      competenze: [intrattenere, persuasione, intuizione]
+      tiri_salvezza: [destrezza, carisma]
+      armatura: {tipo: armatura di cuoio, scudo: false}
+      pf: 9
+      attacchi:
+        - {nome: "Stocco", caratteristica: destrezza, danno: "1d8", tipo_danno: perforante}

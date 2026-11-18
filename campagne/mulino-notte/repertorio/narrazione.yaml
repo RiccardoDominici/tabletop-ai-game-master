@@ -1,0 +1,645 @@
+# Battute del narratore: segni dell'orologio, indizi, momenti, finali, chiusure della serata, stallo, attese,
+# transizioni. Nessun nome di PG; ogni PNG nominato in una riga del narratore è in `attori` o in `menzionati`.
+battute:
+  # ---------------------------------------------------------------- segni di o_mezzanotte (uno per segmento)
+  # Senza `scena`: l'orologio è attivo in tutte e tre le scene, e ogni segno si sente da tutte.
+  - id: nar_segno_1
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del primo segno"
+    temi: [orologio]
+    richiede: {orologio: {id: o_mezzanotte, min: 0, max: 0}}
+    testo: ["[narratore] Dal campanile batte l'ave maria, e in paese si chiudono le imposte."]
+    effetti: {avanza_orologio: o_mezzanotte}
+    audio: {effetto: campana}
+    max_usi: 1
+  - id: nar_segno_2
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del secondo segno"
+    temi: [orologio]
+    richiede: {orologio: {id: o_mezzanotte, min: 1, max: 1}}
+    testo: ["[narratore] Lungo la strada del fiume un cane abbaia, poi tace di colpo."]
+    effetti: {avanza_orologio: o_mezzanotte}
+    max_usi: 1
+  - id: nar_segno_3
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del terzo segno"
+    temi: [orologio]
+    richiede: {orologio: {id: o_mezzanotte, min: 2, max: 2}}
+    testo: ["[narratore] Voci d'uomini passano sulla strada, e qualcuno nomina il mulino."]
+    effetti: {avanza_orologio: o_mezzanotte}
+    max_usi: 1
+  - id: nar_segno_4
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del quarto segno"
+    temi: [orologio]
+    richiede: {orologio: {id: o_mezzanotte, min: 3, max: 3}}
+    testo: ["[narratore] La campana batte tre colpi lenti: il paese si raduna in piazza."]
+    effetti: {avanza_orologio: o_mezzanotte}
+    audio: {effetto: campana}
+    max_usi: 1
+  - id: nar_segno_5
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del quinto segno"
+    temi: [orologio]
+    richiede: {orologio: {id: o_mezzanotte, min: 4, max: 4}}
+    testo: ["[narratore] Le lanterne del paese si mettono in fila verso il fiume."]
+    effetti: {avanza_orologio: o_mezzanotte}
+    max_usi: 1
+  - id: nar_segno_6
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del sesto segno"
+    temi: [orologio]
+    richiede: {orologio: {id: o_mezzanotte, min: 5, max: 5}}
+    testo: ["[narratore] Il fiume cambia voce: l'acqua sale e gorgoglia tra i sassi."]
+    effetti: {avanza_orologio: o_mezzanotte}
+    max_usi: 1
+  - id: nar_segno_7
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento del settimo segno"
+    temi: [orologio]
+    richiede: {orologio: {id: o_mezzanotte, min: 6, max: 6}}
+    testo:
+      - "[narratore] Si sente un rombo d'acqua, e il legno della ruota del mulino geme."
+      - "[narratore] Poi arriva il cigolio lungo della ruota che gira, da sola."
+    effetti: {avanza_orologio: o_mezzanotte}
+    max_usi: 1
+  - id: nar_segno_8
+    chi: narratore
+    tipo: segno_orologio
+    quando: "è il momento dell'ultimo segno"
+    temi: [orologio]
+    richiede: {orologio: {id: o_mezzanotte, min: 7, max: 7}}
+    testo: ["[narratore] Il paese grida tutto insieme, e si sente odore di paglia accesa."]
+    effetti: {avanza_orologio: o_mezzanotte}
+    max_usi: 1
+
+  # ---------------------------------------------------------------- indizi dell'aia
+  - id: nar_pollaio_dentro
+    chi: narratore
+    tipo: indizio
+    quando: "un PG entra nel pollaio vuoto di Adalgisa"
+    temi: [pollaio, posatoi, paglia, entro]
+    scena: scena_aia
+    testo:
+      - "[narratore] Nel pollaio c'è odore di paglia e di penne."
+      - "[narratore] Non c'è una goccia di sangue, né una penna strappata, e la rete è intatta."
+    effetti: {rivela_indizi: [i_pollaio]}
+    max_usi: 1
+  - id: nar_chiavistello
+    chi: narratore
+    tipo: indizio
+    quando: "un PG esamina il chiavistello della porta del pollaio"
+    temi: [chiavistello, catenaccio, rete, serratura]
+    scena: scena_aia
+    testo:
+      - "[narratore] Il chiavistello è di ferro, e si alza solo da fuori, con la mano."
+      - "[narratore] Sul legno intorno non c'è un graffio."
+    effetti: {rivela_indizi: [i_pollaio]}
+    max_usi: 1
+  - id: nar_raggi_carro
+    chi: narratore
+    tipo: indizio
+    quando: "un PG esamina le ruote o il pianale del carro del conte"
+    temi: [carro, raggi, pianale, gabbie]
+    scena: scena_aia
+    testo:
+      - "[narratore] Tra i raggi di una ruota c'è una piuma rossiccia, incastrata nel ferro."
+      - "[narratore] È uguale a quelle rimaste nella paglia del pollaio."
+    effetti: {rivela_indizi: [i_piuma_carro]}
+    max_usi: 1
+  - id: nar_chiocciare
+    chi: narratore
+    tipo: indizio
+    quando: "un PG accosta l'orecchio alla porta del granaio"
+    temi: [orecchio, ascolto, origlio, granaio]
+    scena: scena_aia
+    testo:
+      - "[narratore] Il vento cala per un momento."
+      - "[narratore] Da dietro la porta di quercia arriva un chiocciare sommesso, poi più niente."
+    effetti: {rivela_indizi: [i_chiocciare]}
+    max_usi: 1
+  - id: nar_soppalco
+    chi: narratore
+    tipo: indizio
+    quando: "un PG entra nel granaio del conte e sale sul soppalco"
+    temi: [soppalco, telo, granaio, entro]
+    scena: scena_aia
+    richiede:
+      oppure:
+        - {prova: p_lucchetto_granaio}
+        - {prova: p_lucchetto_granaio, privata: true}
+        - {prova: p_tetto_granaio}
+        - {prova: p_tetto_granaio, privata: true}
+        - {prova: p_porta_granaio}
+        - {battute_usate: [nar_mazzo_sfilato]}
+        - {battute_usate: [nar_mazzo_sfilato], privata: true}
+    testo:
+      - "[narratore] Il granaio odora di grano e di polvere."
+      - "[narratore] Sul soppalco, sotto un telo, ci sono gabbie piene di galline rossicce, vive."
+      - "[narratore] Hanno l'acqua e il becchime, e vi guardano di traverso."
+    effetti: {rivela_indizi: [i_galline_granaio], fatti_noti: [f_galline_granaio]}
+    max_usi: 1
+  - id: nar_stivali
+    chi: narratore
+    tipo: indizio
+    quando: "un PG guarda gli stivali di Folco"
+    temi: [stivali, stivale, suole, chiodi]
+    scena: [scena_aia, scena_ruota]
+    attori: [png_folco]
+    testo:
+      - "[narratore] Tra i chiodi delle suole di Folco c'è argilla rossa, secca."
+      - "[narratore] Il fango sotto i suoi piedi, qui, è grigio."
+    effetti: {rivela_indizi: [i_argilla]}
+    max_usi: 1
+  - id: nar_chiave_cintura
+    chi: narratore
+    tipo: indizio
+    quando: "un PG osserva Folco mentre si china col foglio"
+    temi: [cappotto, cintura, osservo, scruto]
+    scena: [scena_aia, scena_ruota]
+    attori: [png_folco]
+    testo:
+      - "[narratore] Folco si china sul foglio, e il cappotto si apre per un momento."
+      - "[narratore] Alla cintura gli pende un mazzo di chiavi."
+      - "[narratore] Una è grossa, di ferro nero, col marchio del conte."
+    effetti: {rivela_indizi: [i_chiave]}
+    max_usi: 1
+  - id: nar_mazzo_sfilato
+    chi: narratore
+    tipo: indizio
+    quando: "un PG sfila il mazzo di chiavi dalla cintura di Folco"
+    temi: [sfilo, sfilare, mazzo, chiavi]
+    scena: [scena_aia, scena_ruota]
+    attori: [png_folco]
+    richiede:
+      oppure:
+        - {prova: p_mazzo_folco}
+        - {prova: p_mazzo_folco, privata: true}
+        - {prova: p_mazzo_ruota}
+        - {prova: p_mazzo_ruota, privata: true}
+    testo:
+      - "[narratore] Il mazzo scivola via senza un tintinnio, e Folco non si volta."
+      - "[narratore] In mano hai le chiavi del conte, anche quella del granaio."
+      - "[narratore] Una è grossa, di ferro nero, da lucchetto grande."
+    effetti: {rivela_indizi: [i_chiave], oggetti: {ogg_chiavi: pg}}
+    max_usi: 1
+
+  # ---------------------------------------------------------------- indizi della chiusa (nodo senza scheda)
+  # Senza `scena`: la chiusa si raggiunge risalendo la gora, dalla scena del mulino o da quella della ruota.
+  - id: nar_chiusa_chiusa
+    chi: narratore
+    tipo: indizio
+    quando: "un PG arriva alla chiusa di monte in prima serata"
+    temi: [chiusa, tavole, lucchetto, salici]
+    richiede: {orologio: {id: o_mezzanotte, min: 0, max: 3}}
+    testo:
+      - "[narratore] La chiusa è un muro di tavole tra i salici, e sotto la gora è asciutta."
+      - "[narratore] Il lucchetto del conte è chiuso, ma lucido di grasso fresco."
+      - "[narratore] Nell'argilla rossa della riva ci sono impronte di stivali chiodati."
+    effetti: {rivela_indizi: [i_lucchetto]}
+    max_usi: 1
+  - id: nar_chiusa_appostati
+    chi: narratore
+    tipo: indizio
+    quando: "un PG si apposta tra i salici della chiusa e aspetta"
+    temi: [apposto, appostato, aspetto, salici]
+    richiede: {orologio: {id: o_mezzanotte, min: 4, max: 4}}
+    menzionati: [png_folco]
+    testo:
+      - "[narratore] Una lanterna sale lungo l'argine, e un cappotto scuro si ferma alla chiusa."
+      - "[narratore] Una mano guantata apre il lucchetto, e le tavole si alzano una per una."
+      - "[narratore] Poi la lanterna torna giù verso il paese, svelta."
+    effetti: {rivela_indizi: [i_lucchetto]}
+    max_usi: 1
+  - id: nar_chiusa_aperta
+    chi: narratore
+    tipo: indizio
+    quando: "un PG arriva alla chiusa di monte a notte fonda"
+    temi: [chiusa, tavole, lucchetto, salici]
+    richiede: {orologio: {id: o_mezzanotte, min: 5, max: 8}}
+    testo:
+      - "[narratore] Le tavole della chiusa sono alzate, e l'acqua scende nella gora con un rombo."
+      - "[narratore] Il lucchetto del conte pende aperto, lucido di grasso fresco."
+      - "[narratore] Nell'argilla rossa ci sono impronte di stivali chiodati, che tornano verso il paese."
+    effetti: {rivela_indizi: [i_lucchetto]}
+    max_usi: 1
+
+  # ---------------------------------------------------------------- indizi del mulino
+  - id: nar_gora_asciutta
+    chi: narratore
+    tipo: indizio
+    quando: "un PG guarda dentro la gora sotto la ruota"
+    temi: [gora, fondo, fango, scaletta]
+    scena: [scena_mulino, scena_ruota]
+    richiede: {orologio: {id: o_mezzanotte, min: 0, max: 5}}
+    testo:
+      - "[narratore] La gora è asciutta. Sul fondo il fango è crepato, e ci sono foglie secche."
+      - "[narratore] Da monte non arriva un filo d'acqua."
+    effetti: {rivela_indizi: [i_gora_asciutta]}
+    max_usi: 1
+  - id: nar_riga_palo
+    chi: narratore
+    tipo: indizio
+    quando: "un PG esamina le tacche del palo nella gora"
+    temi: [palo, tacche, tacca, riga]
+    scena: [scena_mulino, scena_ruota]
+    richiede: {prova: p_palo}
+    testo:
+      - "[narratore] Il palo è nero di fango fino in alto."
+      - "[narratore] In cima c'è una riga bagnata di stanotte, all'ultima tacca."
+      - "[narratore] Lassù l'acqua arriva solo con la chiusa aperta tutta."
+    effetti: {rivela_indizi: [i_riga_palo]}
+    max_usi: 1
+  - id: nar_piume_pale
+    chi: narratore
+    tipo: indizio
+    quando: "un PG sale sulla passerella e guarda le pale dal lato del muro"
+    temi: [passerella, pale, pala, muro]
+    scena: [scena_mulino, scena_ruota]
+    testo:
+      - "[narratore] Dal lato del muro, tra due pale, ci sono piume rossicce."
+      - "[narratore] Sono legate al legno con un filo rosso, a nodi piccoli e stretti."
+    effetti: {rivela_indizi: [i_piume_pale]}
+    max_usi: 1
+  - id: nar_grembiule
+    chi: narratore
+    tipo: indizio
+    quando: "un PG guarda da vicino il grembiule di Viola"
+    temi: [grembiule, orlo, macchie, sego]
+    scena: scena_mulino
+    attori: [png_viola]
+    testo:
+      - "[narratore] L'orlo del grembiule di Viola ha macchie nere e lucide."
+      - "[narratore] Sanno di sego, come il fermo della ruota."
+    effetti: {rivela_indizi: [i_grembiule]}
+    max_usi: 1
+  - id: nar_lettera
+    chi: narratore
+    tipo: indizio
+    quando: "un PG fruga nella cassapanca della farina"
+    temi: [cassapanca, crusca, sacchetto, frugo]
+    scena: scena_mulino
+    menzionati: [png_viola, png_folco]
+    richiede:
+      oppure:
+        - {prova: p_cassapanca}
+        - {prova: p_cassapanca, privata: true}
+    testo:
+      - "[narratore] Sotto il sacchetto della crusca c'è una lettera piegata in quattro."
+      - "[narratore] Ha il sigillo rosso del conte."
+      - "[narratore] Promette a Viola un posto di serva in città, ed è firmata dal fattore."
+    effetti: {rivela_indizi: [i_lettera], fatti_noti: [f_viola_lettera]}
+    max_usi: 1
+  - id: nar_acqua_salici
+    chi: narratore
+    tipo: indizio
+    quando: "un PG guarda l'acqua che arriva nella gora"
+    temi: [acqua, schiuma, foglie, torbida]
+    scena: [scena_mulino, scena_ruota]
+    richiede: {orologio: {id: o_mezzanotte, min: 6, max: 8}}
+    testo:
+      - "[narratore] L'acqua arriva nella gora tutta in una volta, torbida e fredda."
+      - "[narratore] Porta foglie strette di salice e schiuma gialla."
+      - "[narratore] I salici, su questo fiume, stanno a monte, alla chiusa."
+    effetti: {rivela_indizi: [i_acqua_salici]}
+    max_usi: 1
+
+  # ---------------------------------------------------------------- domande precise e momenti
+  - id: nar_leggenda
+    chi: narratore
+    tipo: momento
+    quando: "un PG chiede ai paesani della mugnaia annegata"
+    temi: [mugnaia, leggenda, annegata, paesani]
+    scena: [scena_aia, scena_ruota]
+    testo:
+      - "[narratore] Al pozzo una vecchia racconta la storia a voce bassa."
+      - "[narratore] La mugnaia annegata torna a macinare quando la gora è piena."
+      - "[narratore] E si prende le galline, per i suoi pulcini sott'acqua."
+    effetti: {fatti_noti: [f_leggenda]}
+    max_usi: 1
+  - id: nar_fermo_prima
+    chi: narratore
+    tipo: momento
+    quando: "un PG infila il fermo tra i raggi della ruota ferma"
+    temi: [fermo, infilo, rimetto, quercia]
+    scena: scena_ruota
+    richiede: {orologio: {id: o_mezzanotte, min: 0, max: 6}}
+    testo:
+      - "[narratore] Il fermo di quercia entra tra i raggi con un colpo secco."
+      - "[narratore] Al muretto qualcuno smette di pregare, e guarda."
+    max_usi: 1
+  - id: nar_fermo_ruota
+    chi: narratore
+    tipo: momento
+    quando: "un PG infila il fermo tra i raggi della ruota che gira"
+    temi: [fermo, infilo, rimetto, quercia]
+    scena: scena_ruota
+    richiede: {prova: p_fermo_ruota, orologio: {id: o_mezzanotte, min: 7, max: 8}}
+    testo:
+      - "[narratore] Il fermo entra tra i raggi con uno schianto, e la ruota si ferma di colpo."
+      - "[narratore] L'acqua passa sotto schiumando, e al muretto cala il silenzio."
+    max_usi: 1
+  - id: nar_paese_calmo
+    chi: narratore
+    tipo: momento
+    quando: "un PG parla al paese dal muretto per calmarlo"
+    temi: [calmatevi, ascoltate, fermi, preghiera]
+    scena: scena_ruota
+    richiede: {prova: p_calmare}
+    testo:
+      - "[narratore] Le lanterne si abbassano una dopo l'altra."
+      - "[narratore] Per il tempo di una risposta, al muretto non parla nessuno."
+    max_usi: 1
+
+  # ---------------------------------------------------------------- finali (nell'ordine in cui devono vincere)
+  - id: fin_aia_campana
+    chi: narratore
+    tipo: finale
+    quando: "la campana batte tre colpi e il paese va a radunarsi"
+    temi: [campana, colpi]
+    scena: scena_aia
+    attori: [png_folco, png_adalgisa]
+    richiede: {orologio: {id: o_mezzanotte, min: 4, max: 8}}
+    testo:
+      - "[narratore] Al terzo colpo Folco arrotola la supplica e se la mette sotto il braccio."
+      - "[narratore] Adalgisa prende la lanterna grande e lo segue verso la piazza."
+      - "[narratore] Nell'aia restano il pozzo, il carro e la rete che sbatte."
+    max_usi: 1
+  - id: fin_aia_mulino
+    chi: narratore
+    tipo: finale
+    quando: "i PG lasciano l'aia e salgono verso il mulino"
+    temi: [mulino, mugnaio, saliamo]
+    scena: scena_aia
+    testo:
+      - "[narratore] La strada del fiume sale tra i pioppi, e il paese resta alle spalle."
+      - "[narratore] In fondo, contro il cielo rosso, c'è la ruota ferma del mulino."
+    max_usi: 1
+  - id: fin_aia_piazza
+    chi: narratore
+    tipo: finale
+    quando: "i PG lasciano l'aia e vanno verso la piazza"
+    temi: [piazza, campanile, fontana]
+    scena: scena_aia
+    testo:
+      - "[narratore] La piazza è a due passi, con la fontana e le imposte che si chiudono."
+      - "[narratore] Sulle porte delle case pendono rami di ruta, freschi."
+    max_usi: 1
+  - id: fin_mulino_lanterne
+    chi: narratore
+    tipo: finale
+    quando: "le lanterne del paese si mettono in fila verso il fiume"
+    temi: [lanterne, lanterna]
+    scena: scena_mulino
+    attori: [png_ermete]
+    richiede: {orologio: {id: o_mezzanotte, min: 5, max: 8}}
+    testo:
+      - "[narratore] Dalla strada del fiume le lanterne vengono su, una dietro l'altra."
+      - "[narratore] Ermete chiude la casa a chiave, e si mette la chiave in tasca."
+      - "[narratore] Poi aspetta sulla soglia del mulino, con le mani bianche."
+    max_usi: 1
+  - id: fin_mulino_via
+    chi: narratore
+    tipo: finale
+    quando: "i PG lasciano il mulino e tornano in paese"
+    temi: [torniamo, paese, piazza]
+    scena: scena_mulino
+    testo:
+      - "[narratore] Il mulino resta alle spalle, con la ruota ferma e una finestra accesa."
+      - "[narratore] Dal paese arriva odore di fumo e di cera."
+    max_usi: 1
+  - id: fin_chiave_al_paese
+    chi: narratore
+    tipo: finale
+    quando: "il paese ha sentito il fattore parlare della chiave e della chiusa"
+    temi: [fattore, chiave, chiusa]
+    scena: scena_ruota
+    attori: [png_folco, png_ermete]
+    menzionati: [png_viola]
+    richiede:
+      oppure:
+        - {battute_usate: [fol_chiave_mostrata]}
+        - {battute_usate: [fol_chiusa_vista]}
+    testo:
+      - "[narratore] Il paese si volta verso Folco, e le lanterne si alzano tutte insieme."
+      - "[narratore] Poi, piano, si voltano anche verso la casa chiusa di là dal cortile."
+      - "[narratore] Al muretto una voce dice la parola strega, e un'altra la ripete."
+      - "[narratore] Ermete resta davanti alla porta, e stanotte nessuno la apre."
+    max_usi: 1
+  - id: fin_patto
+    chi: narratore
+    tipo: finale
+    quando: "l'acqua cala nella gora e il paese torna a casa"
+    temi: [patto, accordo]
+    scena: scena_ruota
+    attori: [png_folco]
+    richiede: {battute_usate: [fol_patto], orologio: {id: o_mezzanotte, min: 7, max: 8}}
+    testo:
+      - "[narratore] Verso l'una l'acqua cala nella gora, e la ruota rallenta fino a fermarsi."
+      - "[narratore] Il paese guarda ancora un poco, poi torna a casa con le lanterne."
+      - "[narratore] Folco va per ultimo, con la supplica arrotolata sotto il braccio."
+      - "[narratore] All'alba partirà per il castello."
+    max_usi: 1
+  - id: fin_fermo
+    chi: narratore
+    tipo: finale
+    quando: "la ruota resta ferma col fermo davanti al paese"
+    temi: [fermo, ferma]
+    scena: scena_ruota
+    attori: [png_folco]
+    richiede:
+      oppure:
+        - {battute_usate: [nar_fermo_prima], orologio: {id: o_mezzanotte, min: 6, max: 8}}
+        - {battute_usate: [nar_fermo_ruota]}
+    testo:
+      - "[narratore] Quando l'acqua arriva, la ruota trema contro il fermo, e resta ferma."
+      - "[narratore] Al muretto qualcuno ride piano, poi un altro, e le lanterne si abbassano."
+      - "[narratore] Folco piega la supplica e la mette via, senza una parola."
+      - "[narratore] Delle galline, stanotte, non parla più nessuno."
+    max_usi: 1
+  - id: fin_rogo
+    chi: narratore
+    tipo: finale
+    quando: "il paese accende la paglia sotto la ruota"
+    temi: [paglia, fuoco, rogo]
+    scena: scena_ruota
+    attori: [png_ermete]
+    richiede: {orologio: {id: o_mezzanotte, min: 8, max: 8}}
+    testo:
+      - "[narratore] La paglia prende fuoco sotto la ruota, e le pale si accendono una per una."
+      - "[narratore] Ermete guarda dalla soglia, e non si muove."
+      - "[narratore] Il paese torna a casa con le facce rosse di fuoco."
+      - "[narratore] All'alba la supplica parte per il castello."
+    max_usi: 1
+  - id: fin_sconfitta_aia
+    chi: narratore
+    tipo: finale
+    sconfitta: true
+    quando: "tutto il gruppo è a terra nell'aia"
+    temi: [sconfitta]
+    scena: scena_aia
+    attori: [png_folco]
+    richiede: {stati: {png_folco: in_gioco}}
+    testo:
+      - "[narratore] Quando riaprite gli occhi, l'aia è buia e il carro del conte non c'è più."
+      - "[narratore] Sulla porta del granaio pende un lucchetto nuovo."
+    max_usi: 1
+  - id: fin_sconfitta_ruota
+    chi: narratore
+    tipo: finale
+    sconfitta: true
+    quando: "tutto il gruppo è a terra nel cortile del mulino"
+    temi: [sconfitta]
+    scena: scena_ruota
+    attori: [png_folco]
+    richiede: {stati: {png_folco: in_gioco}}
+    testo:
+      - "[narratore] Quando riaprite gli occhi, il cortile è pieno di fumo, e la ruota brucia."
+      - "[narratore] Il paese se ne va in silenzio, e la supplica partirà all'alba."
+    max_usi: 1
+
+  # ---------------------------------------------------------------- chiusure della serata (una per scena)
+  - id: nar_chiusura_aia
+    chi: narratore
+    tipo: chiusura
+    quando: "il master chiude la serata nell'aia di Adalgisa"
+    temi: [aia, pollaio]
+    scena: scena_aia
+    testo:
+      - "[narratore] Il sole è sceso dietro l'argine, e la rete del pollaio sbatte ancora."
+      - "[narratore] In paese si accendono le prime lanterne: a mezzanotte, dicono, la ruota girerà di nuovo."
+    max_usi: 1
+  - id: nar_chiusura_mulino
+    chi: narratore
+    tipo: chiusura
+    quando: "il master chiude la serata al mulino"
+    temi: [mulino, macine]
+    scena: scena_mulino
+    testo:
+      - "[narratore] Nel mulino la farina si posa piano sulle macine ferme."
+      - "[narratore] La ruota aspetta sopra la gora, e mezzanotte non è lontana."
+    max_usi: 1
+  - id: nar_chiusura_ruota
+    chi: narratore
+    tipo: chiusura
+    quando: "il master chiude la serata nel cortile del mulino"
+    temi: [cortile, muretto]
+    scena: scena_ruota
+    testo:
+      - "[narratore] Le lanterne si allontanano sulla strada del fiume, e il cortile torna buio."
+      - "[narratore] San Martino è fra tre giorni, e il conte deciderà del mulino."
+    max_usi: 1
+
+  # ---------------------------------------------------------------- stallo (S1, S2, S3 per scena)
+  - id: nar_stallo2_aia
+    chi: narratore
+    tipo: indizio
+    stallo: 2
+    quando: "nessuno agisce da un po' nell'aia"
+    temi: [granaio]
+    scena: scena_aia
+    testo:
+      - "[narratore] Il vento cala, e nell'aia si sente solo il secchio che gocciola nel pozzo."
+      - "[narratore] Da dietro la porta del granaio arriva un chiocciare sommesso, poi più niente."
+    effetti: {rivela_indizi: [i_chiocciare]}
+    max_usi: 1
+  - id: nar_stallo1_mulino
+    chi: narratore
+    tipo: momento
+    stallo: 1
+    quando: "nessuno agisce da un po' al mulino"
+    temi: [ruota]
+    scena: scena_mulino
+    attori: [png_viola]
+    testo:
+      - "[narratore] Un colpo di vento spinge la ruota contro il fermo, con un tonfo di legno."
+      - "[narratore] Dalla casa una tendina si sposta, e torna giù."
+    max_usi: 1
+  - id: nar_stallo2_mulino
+    chi: narratore
+    tipo: indizio
+    stallo: 2
+    quando: "nessuno agisce da un po' al mulino, e tira vento"
+    temi: [piume]
+    scena: scena_mulino
+    testo:
+      - "[narratore] Il vento spinge la ruota di un palmo contro il fermo."
+      - "[narratore] Dal lato del muro si stacca una piuma rossiccia, e scende piano nella gora."
+      - "[narratore] In fondo ha ancora un filo rosso, legato a un nodo piccolo."
+    effetti: {rivela_indizi: [i_piume_pale]}
+    max_usi: 1
+  - id: nar_stallo2_ruota
+    chi: narratore
+    tipo: indizio
+    stallo: 2
+    quando: "nessuno agisce da un po' nel cortile, con l'acqua nella gora"
+    temi: [acqua]
+    scena: scena_ruota
+    richiede: {orologio: {id: o_mezzanotte, min: 6, max: 8}}
+    testo:
+      - "[narratore] L'acqua che corre nella gora è torbida e fredda."
+      - "[narratore] Porta foglie strette di salice e schiuma gialla, da monte, dalla chiusa."
+    effetti: {rivela_indizi: [i_acqua_salici]}
+    max_usi: 1
+
+  # ---------------------------------------------------------------- attese del narratore (una per scena)
+  - id: nar_attesa_aia
+    chi: narratore
+    tipo: momento
+    riempitivo: true
+    quando: "i PG restano in silenzio nell'aia"
+    temi: [secchio]
+    scena: scena_aia
+    testo: ["[narratore] Nel pozzo il secchio batte contro la pietra, piano, due volte."]
+    max_usi: 1
+  - id: nar_attesa_mulino
+    chi: narratore
+    tipo: momento
+    riempitivo: true
+    quando: "i PG restano in silenzio al mulino"
+    temi: [farina]
+    scena: scena_mulino
+    testo: ["[narratore] La farina si posa sulle macine, e fuori la ruota scricchiola."]
+    max_usi: 1
+  - id: nar_attesa_ruota
+    chi: narratore
+    tipo: momento
+    riempitivo: true
+    quando: "i PG restano in silenzio nel cortile del mulino"
+    temi: [nebbia]
+    scena: scena_ruota
+    testo: ["[narratore] Al muretto le lanterne friggono nella nebbia, una dopo l'altra."]
+    max_usi: 1
+
+  # ---------------------------------------------------------------- transizioni
+  - id: tr_verso_chiusa
+    chi: narratore
+    tipo: transizione
+    quando: "i PG risalgono la gora verso la chiusa di monte"
+    temi: [risalgo, risalire, risaliamo, monte]
+    testo:
+      - "[narratore] Si risale la gora per mezz'ora, tra i salici e il fango."
+      - "[narratore] Il mulino resta giù, piccolo, con una finestra accesa."
+    max_usi: 1
+  - id: tr_dalla_chiusa
+    chi: narratore
+    tipo: transizione
+    quando: "i PG tornano dalla chiusa giù verso il mulino"
+    temi: [ridiscendo, ridiscendiamo, ritorno]
+    testo: ["[narratore] Si torna giù lungo l'argine, e la finestra del mulino si fa più grande."]
+    max_usi: 1
+  - id: tr_cortile
+    chi: narratore
+    tipo: transizione
+    quando: "i PG escono dal mulino nel cortile"
+    temi: [cortile, esco, usciamo]
+    scena: [scena_mulino, scena_ruota]
+    testo: ["[narratore] Nel cortile l'aria è fredda, e sa di fango e di foglie."]
+    max_usi: 1

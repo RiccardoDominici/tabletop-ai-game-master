@@ -1,0 +1,91 @@
+# Battute di Viola (voce tabitha). Stile: frasi di quattro-dieci parole, lei ai forestieri, spesso una domanda.
+# Viola è solo nella scena del mulino: tutte le sue battute hanno scena_mulino.
+battute:
+  - {id: vio_saluto, chi: png_viola, tipo: saluto, solo_esempio: true, quando: "i PG salutano Viola", temi: [salve, buonasera, saluto], scena: scena_mulino, max_usi: 1,
+     testo: ["[narratore] Viola si affaccia alla porta, col grembiule infarinato.", "[png_viola] Buonasera. Venite dal paese?"]}
+  - {id: vio_domanda_gentile, chi: png_viola, tipo: reazione, solo_esempio: true, quando: "un PG chiede a Viola come sta", temi: [stai, salute], scena: scena_mulino, max_usi: 1,
+     testo: ["[png_viola] Bene, grazie. E in città, com'è?"]}
+  - {id: vio_accusa, chi: png_viola, tipo: reazione, solo_esempio: true, quando: "un PG accusa Viola della ruota", temi: [accuso, accusare], scena: scena_mulino, max_usi: 1,
+     testo: ["[png_viola] Io cucio e impasto. Lo chieda al nonno."]}
+  - {id: vio_minaccia, chi: png_viola, tipo: reazione, solo_esempio: true, quando: "un PG minaccia Viola", temi: [minaccio, minaccia], scena: scena_mulino, max_usi: 1,
+     testo: ["[png_viola] Non mi tocchi. Il nonno è qui accanto."]}
+  - {id: vio_offerta, chi: png_viola, tipo: reazione, solo_esempio: true, quando: "un PG offre denaro a Viola", temi: [soldi, monete, denaro], scena: scena_mulino, max_usi: 1,
+     testo: ["[png_viola] Soldi? Mi dica piuttosto com'è la strada per la città."]}
+  - {id: vio_aiuto, chi: png_viola, tipo: reazione, solo_esempio: true, quando: "un PG aiuta Viola in casa", temi: [aiuto, aiutare], scena: scena_mulino, max_usi: 1,
+     testo: ["[png_viola] Grazie. Lei è gentile, non come quelli del paese."]}
+  - {id: vio_rifiuto, chi: png_viola, tipo: rifiuto, solo_esempio: true, quando: "un PG chiede a Viola di cose che non sa", temi: [domando], scena: scena_mulino, max_usi: 1,
+     testo: ["[png_viola] Non lo so. Qui io so solo di farina."]}
+
+  - id: vio_attesa
+    chi: png_viola
+    tipo: richiesta
+    riempitivo: true
+    quando: "i PG indugiano davanti alla casa di Ermete"
+    temi: [pane]
+    scena: scena_mulino
+    testo: ["[png_viola] Volete un po' di pane? È di stamattina."]
+    max_usi: 1
+
+  - id: vio_ruota
+    chi: png_viola
+    tipo: reazione
+    quando: "un PG chiede a Viola che cosa pensa della ruota"
+    temi: [ruota, pensi, credi]
+    scena: scena_mulino
+    testo: ["[png_viola] In paese dicono che è la nonna Teodora. Lei ci crede?"]
+    max_usi: 1
+
+  # menzogna: dove sta di notte (in pubblico, e in privato)
+  - id: vio_notte_domanda
+    chi: png_viola
+    tipo: menzogna
+    quando: "un PG chiede a Viola dove sta di notte"
+    temi: [stanotte, dormi, dormire, notti]
+    scena: scena_mulino
+    testo:
+      - "[narratore] Viola si tira le maniche fin sopra le mani."
+      - "[png_viola] Di notte dormo. Il nonno chiude la casa a chiave."
+    effetti: {menzogna_detta: vio_notte}
+    max_usi: 1
+  - id: vio_notte_sottovoce
+    chi: png_viola
+    tipo: menzogna
+    quando: "in privato, un PG chiede a Viola dove sta di notte"
+    temi: [stanotte, dormi, dormire, notti]
+    scena: scena_mulino
+    richiede: {privata: true, battute_non_usate: [vio_notte_domanda]}
+    testo:
+      - "[narratore] Viola si tira le maniche fin sopra le mani."
+      - "[png_viola] Di notte dormo, davvero. Il nonno chiude la casa a chiave."
+    effetti: {menzogna_detta: vio_notte}
+    max_usi: 1
+
+  # confessioni
+  - id: vio_lettera_mostrata
+    chi: png_viola
+    tipo: confessione
+    quando: "in privato, un PG mostra a Viola la lettera della cassapanca"
+    temi: [lettera, sigillo, cassapanca]
+    scena: scena_mulino
+    richiede: {privata: true, indizi_rivelati: [i_lettera], battute_non_usate: [vio_citta_contessa]}
+    testo:
+      - "[narratore] Viola guarda il sigillo, e lascia ricadere le maniche."
+      - "[png_viola] Io tolgo il fermo, la sera, e lego le piume tra le pale."
+      - "[png_viola] Il fattore fa venire l'acqua da monte, e poi mi porta in città."
+      - "[png_viola] Il nonno non lo deve sapere."
+    effetti: {rivela_indizi: [i_viola_racconta], fatti_noti: [f_viola_fermo, f_viola_piume, f_viola_lettera, f_folco_apre_chiusa], atteggiamento: {png_viola: amichevole}}
+    max_usi: 1
+  - id: vio_citta_contessa
+    chi: png_viola
+    tipo: confessione
+    quando: "in privato, un PG spiega a Viola come si entra a servizio in città"
+    temi: [contessa, servizio, serve, città]
+    scena: scena_mulino
+    richiede: {privata: true, da_pg: [pg_benno], battute_non_usate: [vio_lettera_mostrata]}
+    testo:
+      - "[narratore] Viola si arrotola il nastro sul dito, finché il dito diventa bianco."
+      - "[png_viola] Allora la lettera del fattore non vale niente."
+      - "[png_viola] Ogni sera tolgo il fermo, e lego le piume tra le pale."
+      - "[png_viola] L'acqua la fa venire lui, da monte."
+    effetti: {rivela_indizi: [i_viola_racconta], fatti_noti: [f_viola_fermo, f_viola_piume, f_viola_lettera, f_folco_apre_chiusa], atteggiamento: {png_viola: amichevole}}
+    max_usi: 1

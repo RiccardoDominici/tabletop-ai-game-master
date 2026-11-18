@@ -1,0 +1,314 @@
+# Campagna «La ruota che gira da sola»: canone, orologi, rivelazioni, nodi, sessione, preparazione.
+# `preparazione` non arriva mai al narratore (E2): lì stanno il cattivo, i fronti, la cronologia e la logistica.
+id: mulino-notte
+lingua: it
+
+regole: {dadi: true, tiri_giocatori: manuale, tiri_master: nascosti}
+
+# Gregari: la gente del paese con le lanterne, se qualcuno alza le mani (docs/prove.md §2). Popolano SRD.
+gregari:
+  - tipo: paesano
+    nome: "paesano"
+    parole: [paesano, paesani, contadino, contadini, folla]
+    scheda:
+      gs: 0
+      caratteristiche: {forza: 10, destrezza: 10, costituzione: 10, intelligenza: 10, saggezza: 10, carisma: 10}
+      ca: 10
+      pf: 4
+      attacchi:
+        - {nome: "Bastone", caratteristica: forza, danno: "1d4", tipo_danno: contundente}
+
+canone:
+  # Fatti pubblici: il paese li sa, e i PG li sentono appena arrivano.
+  - {id: f_ruota_gira, noto_ai_pg: true, stato: confermato, entita: [n_mulino],
+     testo: "Da nove notti la ruota del mulino gira da sola verso mezzanotte, a mulino chiuso."}
+  - {id: f_galline_sparite, noto_ai_pg: true, stato: confermato, entita: [n_aia],
+     testo: "Da nove notti spariscono galline dai pollai di Ronchetto."}
+  - {id: f_adalgisa_galline, noto_ai_pg: true, stato: confermato, entita: [png_adalgisa, n_aia],
+     testo: "Ieri notte Adalgisa ha perso tutte e quattordici le sue galline."}
+  - {id: f_leggenda, noto_ai_pg: true, stato: confermato, entita: [n_mulino],
+     testo: "In paese si racconta che la mugnaia annegata torni a macinare di notte e si prenda le galline."}
+  - {id: f_moglie_annegata, noto_ai_pg: true, stato: confermato, entita: [png_ermete, n_mulino],
+     testo: "Dodici anni fa Teodora, la moglie di Ermete, è annegata nella gora del mulino."}
+  - {id: f_supplica, noto_ai_pg: true, stato: confermato, entita: [png_folco],
+     testo: "Il paese ha firmato una supplica al conte perché tolga il mulino a Ermete."}
+  - {id: f_fiera, noto_ai_pg: true, stato: confermato, entita: [],
+     testo: "Fra tre giorni a Ronchetto c'è la fiera di San Martino."}
+  - {id: f_affitto, noto_ai_pg: true, stato: confermato, entita: [n_mulino],
+     testo: "A San Martino il conte decide a chi dare il mulino per un altro anno."}
+  - {id: f_chiusa_conte, noto_ai_pg: true, stato: confermato, entita: [png_folco, n_chiusa],
+     testo: "La chiusa di monte è del conte: il fattore la apre all'alba e la chiude al tramonto."}
+  - {id: f_fermo, noto_ai_pg: true, stato: confermato, entita: [png_ermete, n_mulino],
+     testo: "Ogni sera Ermete infila un fermo di quercia tra i raggi della ruota, perché non giri."}
+  - {id: f_granaio_conte, noto_ai_pg: true, stato: confermato, entita: [png_folco, n_aia],
+     testo: "Il granaio del conte sta sull'argine, accanto all'aia di Adalgisa, e lo tiene il fattore."}
+  - {id: f_mulino_monte, noto_ai_pg: true, stato: confermato, entita: [n_mulino, n_chiusa],
+     testo: "Il mulino sta sulla Lenta a monte del paese, tra il paese e la chiusa del conte."}
+  # Fatti nascosti: ognuno ha la sua voce in repertorio/parole_segrete.yaml.
+  - {id: f_folco_apre_chiusa, noto_ai_pg: false, stato: confermato, entita: [png_folco, n_chiusa],
+     testo: "Da nove notti Folco riapre la chiusa di monte verso le undici, e l'acqua arriva alla ruota a mezzanotte."}
+  - {id: f_folco_chiave, noto_ai_pg: false, stato: confermato, entita: [png_folco],
+     testo: "Folco porta la chiave della chiusa alla cintura, sotto il cappotto, e non la riporta mai al castello."}
+  - {id: f_folco_galline, noto_ai_pg: false, stato: confermato, entita: [png_folco],
+     testo: "È Folco a prendere le galline, di notte, con il carro del conte."}
+  - {id: f_galline_granaio, noto_ai_pg: false, stato: confermato, entita: [n_aia],
+     testo: "Le galline sono vive, chiuse nel soppalco del granaio del conte, per la fiera."}
+  - {id: f_folco_cognato, noto_ai_pg: false, stato: confermato, entita: [png_folco],
+     testo: "Folco ha promesso il mulino di Ermete a suo cognato, il mugnaio di Valbassa."}
+  - {id: f_viola_fermo, noto_ai_pg: false, stato: confermato, entita: [png_viola],
+     testo: "Ogni sera, verso le dieci, Viola toglie il fermo dalla ruota mentre il nonno dorme."}
+  - {id: f_viola_piume, noto_ai_pg: false, stato: confermato, entita: [png_viola],
+     testo: "È Viola a legare le piume tra le pale della ruota, con il suo filo rosso."}
+  - {id: f_viola_lettera, noto_ai_pg: false, stato: confermato, entita: [png_viola, png_folco],
+     testo: "Folco ha dato a Viola una lettera col sigillo del conte, che le promette un posto di serva in città."}
+  - {id: f_lettera_falsa, noto_ai_pg: false, stato: confermato, entita: [],
+     testo: "In città le serve di un conte si prendono solo con una lettera della contessa, mai con quella di un fattore."}
+  - {id: f_adalgisa_carro, noto_ai_pg: false, stato: confermato, entita: [png_adalgisa],
+     testo: "Ieri notte, verso mezzanotte, Adalgisa ha sentito cigolare il carro del conte lungo l'argine."}
+  - {id: f_adalgisa_debito, noto_ai_pg: false, stato: confermato, entita: [png_adalgisa, png_folco],
+     testo: "Quest'autunno Folco ha condonato ad Adalgisa la decima delle uova."}
+  - {id: f_ermete_fermo_tolto, noto_ai_pg: false, stato: confermato, entita: [png_ermete, png_viola],
+     testo: "Quattro giorni fa Ermete ha trovato il fermo per terra e lo scialle di Viola sulla ruota, e ha taciuto."}
+  - {id: f_argilla_chiusa, noto_ai_pg: false, stato: confermato, entita: [n_chiusa],
+     testo: "L'argilla rossa, su questo tratto di Lenta, c'è solo sulla riva della chiusa di monte."}
+  - {id: f_acqua_ora, noto_ai_pg: false, stato: confermato, entita: [n_chiusa, n_mulino],
+     testo: "L'acqua aperta alla chiusa di monte arriva alla ruota del mulino dopo poco più di un'ora."}
+
+orologi:
+  - id: o_mezzanotte
+    nome: "Il paese si raduna contro il mulino"
+    pericolo: p_paese
+    segmenti: 8
+    pieni_all_inizio: 0
+    segno_almeno_ogni: serata
+    segni:
+      - "Dal campanile batte l'ave maria, e in paese si chiudono le imposte."
+      - "Lungo la strada del fiume un cane abbaia, poi tace di colpo."
+      - "Voci d'uomini passano sulla strada, e qualcuno nomina il mulino."
+      - "La campana batte tre colpi lenti: il paese si raduna in piazza."
+      - "Le lanterne del paese si mettono in fila verso il fiume."
+      - "Il fiume cambia voce: l'acqua sale e gorgoglia tra i sassi."
+      - "Si sente un rombo d'acqua, e il legno della ruota del mulino geme."
+      - "Il paese grida tutto insieme, e si sente odore di paglia accesa."
+    avanza_quando:
+      - "Avanza col ritmo della serata: il paese si raduna comunque, e la ruota gira a mezzanotte."
+      - {quando: lascia_scena, scena: scena_aia, volte: 1}
+    al_completo: "Il paese porta la paglia sotto la ruota e vuole bruciarla, poi mandare la supplica: con le prove la rabbia cade su Folco e poi su Viola; col silenzio cade su Ermete; col fermo e nessun nome si calma, e Folco resta impunito."
+
+rivelazioni:
+  - id: r_chiusa
+    chiave: true
+    conclusione: "La ruota gira perché qualcuno riapre di notte la chiusa di monte con la chiave del conte, e la chiave ce l'ha Folco."
+    indizi: [i_gora_asciutta, i_riga_palo, i_argilla, i_chiave, i_lucchetto, i_acqua_salici]
+  - id: r_galline
+    chiave: true
+    conclusione: "Le galline non le prende la mugnaia annegata: le ha prese Folco col carro del conte, e sono vive nel granaio."
+    indizi: [i_pollaio, i_piuma_carro, i_chiocciare, i_adalgisa_carro, i_galline_granaio]
+  - id: r_viola
+    chiave: true
+    conclusione: "È Viola a togliere il fermo e a legare le piume tra le pale, in cambio della lettera di Folco."
+    indizi: [i_piume_pale, i_grembiule, i_lettera, i_ermete_scialle, i_viola_racconta]
+
+colli_di_bottiglia:
+  - id: cb_acqua
+    ostacolo: "Capire da dove viene l'acqua che fa girare la ruota a mulino chiuso."
+    soluzioni:
+      - "Guardare la gora al tramonto: è asciutta, quindi l'acqua di mezzanotte viene da monte."
+      - "Leggere la riga bagnata sul palo della gora: stanotte la chiusa era aperta tutta (più facile per chi conosce i mulini)."
+      - "Salire alla chiusa di monte di notte e trovarla aperta, col lucchetto unto."
+      - "Aspettare la mezzanotte: l'acqua arriva con le foglie dei salici di monte."
+  - id: cb_granaio
+    ostacolo: "Entrare nel granaio del conte, chiuso a chiave dal fattore."
+    soluzioni:
+      - "Aprire il lucchetto con gli attrezzi, di nascosto."
+      - "Forzare la porta, facendo rumore davanti al paese."
+      - "Prendere a Folco le chiavi che porta alla cintura."
+      - "Salire dal tetto basso dalla parte del fiume."
+  - id: cb_paese
+    ostacolo: "Fermare il paese davanti alla ruota, il tempo di mostrare una prova."
+    soluzioni:
+      - "Mostrare la chiave della chiusa, o dire dove trovarla aperta."
+      - "Portare al mulino le galline vive del granaio."
+      - "Infilare il fermo tra i raggi e fermare la ruota davanti a tutti."
+      - "Una preghiera o un canto che tiene il paese in silenzio per il tempo di una risposta."
+colli_di_bottiglia_nota: "Nessun collo dipende da un PG solo: la riga sul palo la legge meglio chi conosce i mulini, ma la gora asciutta la vede chiunque; il lucchetto del granaio si apre con gli attrezzi, ma anche dal tetto o con la forza."
+
+nodi:
+  - {id: n_aia, tipo: luogo, nome: "L'aia di Adalgisa", scheda: scena.yaml, noto_ai_pg: true,
+     collegamenti: [n_mulino, n_paese, png_adalgisa, png_folco]}
+  - {id: n_mulino, tipo: luogo, nome: "Il mulino sulla Lenta", scheda: scene/scena_mulino.yaml, noto_ai_pg: true,
+     collegamenti: [n_aia, n_chiusa, n_mezzanotte, png_ermete, png_viola]}
+  - {id: n_mezzanotte, tipo: evento, nome: "La ruota a mezzanotte", scheda: scene/scena_ruota.yaml,
+     collegamenti: [n_mulino, n_chiusa, n_paese, png_ermete, png_folco, png_adalgisa]}
+  - id: n_chiusa
+    tipo: luogo
+    nome: "La chiusa di monte"
+    noto_ai_pg: true
+    abbozzo: "Una chiusa di tavole sulla Lenta, mezz'ora sopra il mulino, col lucchetto del conte e una riva di salici."
+    immagine: {prompt_luogo: "wooden sluice gate across a small river at night, heavy iron padlock on the lever, willow trees on the bank, a muddy bank, mist"}
+    audio: {ambiente: [fiume, vento]}
+    collegamenti: [n_mulino, n_mezzanotte]
+    indizi:
+      - {id: i_lucchetto, conclusione: r_chiusa, tipo: oggetto, nodo: n_chiusa, essenziale: false, tiro: "nessuno", modi: 3,
+         come_si_trova: "Chi sale alla chiusa prima delle undici trova il lucchetto del conte chiuso ma unto di fresco, e impronte di stivali chiodati nell'argilla rossa. Chi si apposta lì verso le undici vede un cappotto scuro aprire il lucchetto e alzare le tavole. Chi ci arriva dopo trova le tavole alzate e il lucchetto aperto.",
+         vincolo_pubblico: "Il lucchetto della chiusa è grosso, di ferro, e si apre solo con la sua chiave."}
+  - id: n_paese
+    tipo: luogo
+    nome: "La piazza di Ronchetto"
+    noto_ai_pg: true
+    abbozzo: "La piazza col campanile e la fontana, dove il paese si raduna e firma le carte del conte."
+    immagine: {prompt_luogo: "small village square at dusk, stone bell tower, a round fountain, shuttered houses with sprigs of rue hanging on the doors, lanterns being lit"}
+    collegamenti: [n_aia, n_mulino, n_mezzanotte]
+  - {id: png_ermete, tipo: png, scheda: png/png_ermete.yaml, collegamenti: [n_mulino, n_mezzanotte]}
+  - {id: png_viola, tipo: png, scheda: png/png_viola.yaml, collegamenti: [n_mulino]}
+  - {id: png_folco, tipo: png, scheda: png/png_folco.yaml, collegamenti: [n_aia, n_mezzanotte]}
+  - {id: png_adalgisa, tipo: png, scheda: png/png_adalgisa.yaml, collegamenti: [n_aia, n_mezzanotte]}
+
+sessione:
+  riassunto_iniziale: "Siete a Ronchetto, un paese di mugnai sulla Lenta, alla vigilia di San Martino. Da nove notti la ruota del mulino gira da sola, verso mezzanotte. E da nove notti spariscono le galline dai pollai."
+  cinque_stanze:
+    ingresso_o_guardiano: "L'aia vuota di Adalgisa, e il fattore che fa firmare la supplica."
+    enigma_o_sfida_sociale: "Il mugnaio e la nipote, che della notte non dicono tutto."
+    trucco_o_battuta_d_arresto: "La gora è asciutta al tramonto: senz'acqua la ruota non può girare."
+    climax: "A mezzanotte la ruota gira davanti al paese con le lanterne."
+    ricompensa_o_colpo_di_scena: "Chi toglie il fermo, e quanto costa dirlo davanti a tutti."
+  scene_potenziali: [scena_aia, scena_mulino, scena_ruota]
+  chiusura: "Davanti alla ruota che gira i PG scelgono: la verità a tutto il paese, un patto con il fattore, o il fermo senza nomi. Poi il paese torna a casa, e San Martino è fra tre giorni."
+
+preparazione:
+  fronti:
+    - id: fronte_conte
+      livello: campagna
+      nome: "La terra e l'acqua del conte"
+      pericoli:
+        - id: p_fattore
+          tipo: "organizzazione ambiziosa"
+          impulso: "prendere"
+          destino_incombente: "Folco dà il mulino al cognato, e il paese resta nelle sue mani."
+          presagi:
+            - {testo: "Il fattore porta la supplica in piazza.", segno_visibile: "Un foglio col sigillo rosso passa di mano in mano."}
+            - {testo: "Il fattore conta i sacchi del mulino come se fossero già suoi.", segno_visibile: "Sui sacchi del mulino ci sono segni di gesso nuovi."}
+          mosse: ["promette favori a chi firma", "accusa il mugnaio di stregoneria", "manda il paese a vedere la ruota"]
+          cast: [png_folco]
+          orologio: o_fattore
+        - id: p_affitto
+          tipo: "piaga"
+          impulso: "esigere"
+          destino_incombente: "A San Martino il conte dà il mulino a chi il paese vuole, senza ascoltare Ermete."
+          presagi:
+            - {testo: "Il bando della fiera è sulla porta della chiesa.", segno_visibile: "Sulla porta della chiesa c'è un foglio col sigillo del conte."}
+          mosse: ["chiede la decima", "rinnova gli affitti"]
+          cast: []
+          orologio: o_affitto
+      domande_di_posta: ["Ermete terrà il mulino a San Martino?"]
+      orologi_extra:
+        - {id: o_fattore, nome: "Il fattore si prende il mulino", segmenti: 4}
+        - {id: o_affitto, nome: "San Martino si avvicina", segmenti: 4}
+    - id: fronte_ruota
+      livello: avventura
+      nome: "La ruota matta"
+      pericoli:
+        - id: p_paese
+          tipo: "orda"
+          impulso: "cacciare"
+          destino_incombente: "Il paese brucia la ruota e caccia Ermete e la nipote prima di San Martino."
+          presagi:
+            - {testo: "Il paese scende al fiume con le lanterne.", segno_visibile: "Una fila di lanterne scende verso il fiume."}
+          mosse: ["si raduna in piazza", "grida contro il mulino", "minaccia di bruciare la ruota"]
+          cast: [png_adalgisa]
+          orologio: o_mezzanotte
+        - id: p_leggenda
+          tipo: "voce che corre"
+          impulso: "spaventare"
+          destino_incombente: "Nessuno porta più grano al mulino: la gora resta della mugnaia annegata."
+          presagi:
+            - {testo: "Le donne del paese appendono rami di ruta alle porte.", segno_visibile: "Sulle porte del paese pendono rami di ruta."}
+          mosse: ["si racconta a bassa voce", "fa chiudere le imposte"]
+          cast: []
+          orologio: o_leggenda
+      domande_di_posta: ["Viola resterà in paese con il suo buon nome?", "Adalgisa riavrà le sue galline?"]
+      orologi_extra:
+        - {id: o_leggenda, nome: "La leggenda si mangia il mulino", segmenti: 4}
+
+  cattivo:
+    nome: "Folco Rasi, il fattore del conte"
+    obiettivo: "Far cacciare Ermete dal paese e dare il mulino al cognato a San Martino."
+    cronologia_se_i_pg_non_intervengono:
+      - "Al tramonto Folco fa firmare la supplica a chi ha perso le galline."
+      - "Alle undici meno un quarto apre la chiusa di monte e torna in piazza per le undici e venti."
+      - "A mezzanotte guida il paese al mulino a vedere la ruota che gira da sola."
+      - "All'alba porta la supplica al castello, con le firme del paese."
+      - "A San Martino il conte dà il mulino al cognato, e Folco vende le galline alla fiera."
+    risorse:
+      - {cosa: "la chiave della chiusa di monte", a_cosa_serve: "far arrivare l'acqua alla ruota di notte"}
+      - {cosa: "il carro del conte", a_cosa_serve: "portare via le galline senza che nessuno chieda niente"}
+      - {cosa: "il granaio del conte", a_cosa_serve: "tenere le galline vive fino alla fiera"}
+      - {cosa: "Viola e la sua lettera", a_cosa_serve: "togliere il fermo della ruota dentro il mulino"}
+      - {cosa: "la supplica firmata", a_cosa_serve: "dare al conte la voce del paese"}
+    reazioni:
+      - {intrusione: "i PG vogliono entrare nel granaio", reazione: "si mette davanti alla porta e dice che il grano del conte non si tocca"}
+      - {intrusione: "i PG chiedono della chiave della chiusa", reazione: "dice che sta al castello e si abbottona il cappotto"}
+      - {intrusione: "i PG vegliano al mulino", reazione: "porta il paese al mulino in anticipo, perché i forestieri vedano la ruota con tutti"}
+      - {intrusione: "i PG salgono alla chiusa di monte", reazione: "dice al paese che i forestieri vanno d'accordo con la mugnaia"}
+    stato_di_quiete: "Ronchetto macinava al mulino di Ermete da quarant'anni, e la chiusa del conte si apriva all'alba e si chiudeva al tramonto."
+    chiamata_all_azione: "Ieri notte Adalgisa ha perso tutte le galline, e stasera il paese firma la supplica contro il mugnaio."
+
+  segreti_astratti:
+    - "Il cognato di Folco ha già venduto il suo mulino di Valbassa per pagare i debiti."
+    - "Teodora sapeva nuotare: la notte che annegò la gora era in piena."
+    - "Ermete non sa leggere, e firma con una croce."
+    - "Il conte non viene a Ronchetto da sei anni: decide sui fogli del fattore."
+    - "Viola tiene un fagotto pronto sotto il letto, con due vestiti e la lettera."
+    - "Una gallina di Adalgisa è scappata dal granaio e dorme sul tetto del mulino."
+    - "Il sacrestano ha visto un cappotto scuro sulla strada della chiusa, ma ha paura di parlare."
+    - "Al castello manca da un mese la seconda chiave della chiusa."
+    - "Il mugnaio di Valbassa ha già comprato una macina nuova per il mulino di Ermete."
+    - "I rami di ruta sulle porte li ha regalati Folco, uno per casa."
+  archi:
+    campagna_tre_atti: ["La ruota che gira da sola.", "La chiusa e la chiave del conte.", "San Martino e l'affitto del mulino."]
+    pg:
+      pg_cosma: {tu: "il chierico cresciuto da Adalgisa", bisogno: "che il paese smetta di avere paura", vai: "l'aia vuota della sua balia", cerca: "chi si prende le galline", trova: "che la paura è stata comprata", paga: "dire una verità che fa male a una ragazza", ritorna: "davanti al paese con le lanterne", cambia: "sa che una preghiera calma, ma non basta"}
+      pg_nerina: {tu: "la borseggiatrice delle fiere", bisogno: "farsi pagare quello che le spetta", vai: "il fattore che le deve la paga", cerca: "cosa porta alla cintura", trova: "la chiave che apre la notte", paga: "il rischio di farsi prendere", ritorna: "con la chiave in mano davanti a tutti", cambia: "ruba per qualcun altro, una volta"}
+      pg_tarcisio: {tu: "il carpentiere di mulini", bisogno: "un lavoro fatto bene", vai: "la ruota da riparare", cerca: "perché gira senz'acqua", trova: "l'acqua che viene da monte", paga: "la fiducia del vecchio Ermete", ritorna: "sulla passerella con il fermo", cambia: "si fida di una persona, oltre che del legno"}
+      pg_ilde: {tu: "la cacciatrice di volpi", bisogno: "la paga di una pelle", vai: "il pollaio senza sangue", cerca: "la volpe che non c'è", trova: "un cacciatore con gli stivali rossi", paga: "rinunciare alla paga della volpe", ritorna: "alla chiusa, a leggere la riva", cambia: "dà la caccia a un uomo invece che a una bestia"}
+      pg_benno: {tu: "il cantastorie di città", bisogno: "una storia vera da cantare", vai: "la ragazza che voleva le canzoni", cerca: "cosa sogna Viola", trova: "una lettera che non vale niente", paga: "spezzarle il sogno della città", ritorna: "a cantare davanti al paese", cambia: "canta la verità anche quando costa"}
+
+  cronologia:
+    eventi:
+      - {id: t_annegamento, quando: {anni_fa: 12}, cosa: "Teodora, la moglie di Ermete, annega nella gora durante una piena.", fatti: [f_moglie_annegata, f_leggenda]}
+      - {id: t_condono, quando: {giorni_fa: 20}, cosa: "Folco condona ad Adalgisa la decima delle uova.", fatti: [f_adalgisa_debito]}
+      - {id: t_patto_cognato, quando: {giorni_fa: 14}, cosa: "Folco promette il mulino di Ermete al cognato di Valbassa.", fatti: [f_folco_cognato]}
+      - {id: t_lettera, quando: {giorni_fa: 12}, cosa: "Folco dà a Viola una lettera col sigillo del conte.", fatti: [f_viola_lettera, f_lettera_falsa]}
+      - {id: t_prima_notte, quando: {giorni_fa: 9, ora: "24:00"}, cosa: "Per la prima volta la ruota gira da sola, e spariscono le prime galline.", fatti: [f_ruota_gira, f_folco_apre_chiusa, f_viola_fermo, f_viola_piume, f_galline_sparite]}
+      - {id: t_scialle, quando: {giorni_fa: 4}, cosa: "Ermete trova il fermo per terra e lo scialle di Viola sulla ruota.", fatti: [f_ermete_fermo_tolto]}
+      - {id: t_supplica, quando: {giorni_fa: 2}, cosa: "Folco scrive la supplica al conte e comincia a raccogliere le firme.", fatti: [f_supplica, f_affitto]}
+      - {id: t_galline_adalgisa, quando: {giorni_fa: 1, ora: "23:50"}, cosa: "Folco carica sul carro del conte le galline di Adalgisa, e lei sente il carro.", fatti: [f_adalgisa_galline, f_adalgisa_carro, f_folco_galline, f_galline_granaio]}
+      - {id: t_chiusa_tramonto, quando: {ora: "16:30"}, cosa: "Folco chiude la chiusa di monte, come ogni sera, davanti ai barcaioli.", fatti: [f_chiusa_conte, f_folco_chiave]}
+      - {id: t_inizio, quando: {ora: "17:00"}, cosa: "I PG arrivano all'aia di Adalgisa, al tramonto, mentre Folco raccoglie le firme.", fatti: [f_fiera, f_granaio_conte]}
+      - {id: t_fermo_sera, quando: {ora: "18:00"}, cosa: "Ermete infila il fermo tra i raggi della ruota e chiude il mulino.", fatti: [f_fermo, f_mulino_monte]}
+      - {id: t_viola_fermo, quando: {ora: "22:00"}, cosa: "Viola toglie il fermo dalla ruota mentre il nonno dorme."}
+      - {id: t_folco_apre, quando: {ora: "22:45"}, cosa: "Folco apre la chiusa di monte con la sua chiave; sugli stivali gli resta l'argilla rossa della riva.", fatti: [f_argilla_chiusa]}
+      - {id: t_folco_piazza, quando: {ora: "23:20"}, cosa: "Folco è in piazza col paese, e tutti lo vedono accendere le lanterne."}
+      - {id: t_mezzanotte, quando: {ora: "24:00"}, cosa: "L'acqua arriva alla ruota, e la ruota gira davanti al paese.", fatti: [f_acqua_ora], segno: {orologio: o_mezzanotte, n: 7}}
+    documenti:
+      - {id: doc_lettera, cosa: "La lettera di Folco a Viola, col sigillo del conte.", indizio: i_lettera, datato: {giorni_fa: 12}, prova: [t_lettera]}
+      - {id: doc_supplica, cosa: "La supplica al conte contro il mugnaio, con le croci e le firme del paese.", datato: {giorni_fa: 2}, prova: [t_prima_notte]}
+  logistica:
+    durate:
+      - {id: d_chiusa_paese, cosa: "Dalla chiusa di monte al paese, a piedi lungo l'argine.", minuti: 30, fatti: [f_mulino_monte]}
+      - {id: d_acqua, cosa: "L'acqua aperta alla chiusa di monte scende nella gora fino alla ruota.", minuti: 70, fatti: [f_acqua_ora]}
+      - {id: d_paese_mulino, cosa: "Dal paese al mulino, in fila con le lanterne.", minuti: 20}
+    capienze:
+      - {id: c_carro, cosa: "Il carro del conte con le sue gabbie.", posti: 16}
+      - {id: c_soppalco, cosa: "Il soppalco del granaio del conte, con le gabbie della fiera.", posti: 40}
+    gruppi:
+      - {id: g_galline_adalgisa, cosa: "Le galline di Adalgisa.", persone: 14}
+      - {id: g_galline_tutte, cosa: "Tutte le galline sparite in nove notti, quelle di Adalgisa comprese.", persone: 31}
+    verifiche:
+      - {tra: [t_folco_apre, t_folco_piazza], ci_sta: [d_chiusa_paese], perche: "Folco apre la chiusa e fa in tempo a tornare in piazza prima che il paese lo cerchi."}
+      - {tra: [t_folco_apre, t_mezzanotte], ci_sta: [d_acqua], perche: "L'acqua aperta alle undici meno un quarto arriva alla ruota per mezzanotte."}
+      - {tra: [t_folco_piazza, t_mezzanotte], non_ci_sta: [d_acqua], perche: "Chi apre la chiusa quando il paese è già in piazza non fa girare la ruota a mezzanotte: l'ha aperta qualcuno prima delle undici, quando Folco non era in piazza."}
+      - {tra: [t_folco_piazza, t_mezzanotte], ci_sta: [d_paese_mulino], perche: "Il paese radunato in piazza arriva al mulino prima che la ruota giri."}
+      - {capienza: c_carro, porta: [g_galline_adalgisa], perche: "In una notte sola il carro del conte porta via tutte le galline di Adalgisa."}
+      - {capienza: c_soppalco, porta: [g_galline_tutte], perche: "Il soppalco del granaio tiene vive tutte le galline sparite."}
+      - {capienza: c_carro, non_porta: [g_galline_tutte], perche: "Nessuno riporta di nascosto tutte le galline in una notte: il carro ne tiene sedici, e cigola a ogni viaggio."}

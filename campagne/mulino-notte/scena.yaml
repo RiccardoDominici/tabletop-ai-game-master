@@ -1,0 +1,75 @@
+# Scena 1: l'aia di Adalgisa al tramonto. È la prima scena della serata (scena.yaml).
+id: scena_aia
+nodo: n_aia
+nome: "L'aia di Adalgisa, al tramonto"
+descrizione: "Un'aia di terra battuta sull'argine, chiusa da un muretto basso verso il fiume. A sinistra il pollaio vuoto, con la porta di rete; a destra il granaio del conte, di pietra, col carro del conte davanti; in mezzo il pozzo. Chi parla al pozzo o al carro si sente da tutta l'aia. Chi parla dentro il pollaio, con la porta di rete accostata, non lo sente nessuno: il vento del fiume si porta via le voci."
+scopo: {tipo: rivelare_indizio, rif: i_pollaio}
+domanda_drammatica: "Adalgisa crederà ai forestieri più che alla leggenda?"
+posta:
+  si_guadagna: {cosa: "La fiducia di Adalgisa e una strada per il granaio del conte.", per_chi: [png_adalgisa]}
+  si_perde: {cosa: "Le firme del paese contro il mulino di Ermete.", per_chi: [png_ermete]}
+intensita: 2
+sensi:
+  - "Odore di paglia bagnata e di granaglie sparse per terra."
+  - "Dietro il muretto il fiume scorre basso, con un fruscio continuo."
+  - "Nel pollaio vuoto la porta di rete sbatte piano nel vento."
+elementi_interattivi:
+  - {cosa: "il pollaio vuoto", dove: "a sinistra dell'aia", azioni: "ci si entra chinandosi; il chiavistello della porta di rete si alza da fuori; dentro ci sono posatoi e paglia."}
+  - {cosa: "la porta del granaio del conte", dove: "a destra, sull'argine", azioni: "è di quercia, chiusa da un lucchetto del conte; c'è un tetto basso dalla parte del fiume."}
+  - {cosa: "il carro del conte", dove: "davanti al granaio", azioni: "ha le ruote cerchiate di ferro e due gabbie vuote sul pianale; cigola appena lo si muove."}
+  - {cosa: "il pozzo", dove: "in mezzo all'aia", azioni: "ha una carrucola e un secchio; dall'orlo si vede tutta l'aia."}
+  - {cosa: "la supplica al conte", dove: "nelle mani di Folco", azioni: "è un foglio col sigillo rosso del conte, pieno di croci e di firme; Folco la fa firmare a chi passa."}
+  - {id: ogg_chiavi, chi: png_folco, cosa: "il mazzo di chiavi del conte", dove: "alla cintura di Folco, sotto il cappotto", azioni: "NASCOSTA: c'è la chiave del granaio e una chiave grossa di ferro col marchio del conte, quella della chiusa; si sfila con mano leggera."}
+  - {cosa: "il soppalco del granaio", dove: "dentro il granaio, in alto", azioni: "NASCOSTA: sotto un telo ci sono gabbie con le galline rossicce, vive, con acqua e becchime."}
+png_presenti: [png_adalgisa, png_folco]
+orologi_attivi: [o_mezzanotte]
+indizi:
+  - {id: i_pollaio, conclusione: r_galline, tipo: luogo, nodo: n_aia, essenziale: true, tiro: "nessuno", modi: 2,
+     come_si_trova: "Chi entra nel pollaio non trova sangue né penne strappate, e la rete non ha graffi di volpe. Chi guarda il chiavistello vede che si alza solo da fuori, con la mano.",
+     vincolo_pubblico: "Nel pollaio di Adalgisa non c'è sangue, e la rete è intatta."}
+  - {id: i_piuma_carro, conclusione: r_galline, tipo: oggetto, nodo: n_aia, essenziale: false, tiro: "nessuno", modi: 1,
+     come_si_trova: "Chi guarda le ruote del carro del conte trova una piuma rossiccia incastrata tra i raggi, uguale a quelle rimaste nel pollaio.",
+     vincolo_pubblico: "Il carro del conte ha due gabbie vuote sul pianale."}
+  - {id: i_chiocciare, conclusione: r_galline, tipo: evento, nodo: n_aia, essenziale: false, tiro: "nessuno", modi: 1,
+     come_si_trova: "Quando il vento cala, dal granaio del conte arriva un chiocciare sommesso, subito zitto; chi accosta l'orecchio alla porta lo sente ancora.",
+     vincolo_pubblico: "Finché il vento soffia, dal granaio non si sente niente."}
+  - {id: i_galline_granaio, conclusione: r_galline, tipo: luogo, nodo: n_aia, essenziale: false, tiro: "nessuno", modi: 1,
+     come_si_trova: "Chi entra nel granaio e sale sul soppalco trova, sotto un telo, gabbie piene di galline rossicce vive, con l'acqua e il becchime.",
+     vincolo_pubblico: "La porta del granaio resta chiusa finché qualcuno non apre il lucchetto."}
+  - {id: i_adalgisa_carro, conclusione: r_galline, tipo: png, nodo: png_adalgisa, essenziale: false, tiro: "nessuno", modi: 2,
+     come_si_trova: "Quando Adalgisa cede: ieri notte, verso mezzanotte, ha sentito cigolare il carro del conte lungo l'argine, e l'ha taciuto per riconoscenza al fattore."}
+  - {id: i_argilla, conclusione: r_chiusa, tipo: oggetto, nodo: png_folco, essenziale: false, tiro: "nessuno", modi: 1,
+     come_si_trova: "Chi guarda gli stivali di Folco vede argilla rossa secca tra i chiodi delle suole, mentre il fango dell'aia è grigio.",
+     vincolo_pubblico: "Folco porta stivali chiodati da cavaliere."}
+  - {id: i_chiave, conclusione: r_chiusa, tipo: oggetto, nodo: png_folco, essenziale: false, tiro: "nessuno", modi: 2,
+     come_si_trova: "Chi guarda Folco quando si china a far firmare vede, sotto il cappotto, una chiave grossa di ferro col marchio del conte. Chi gli sfila di nascosto il mazzo ha in mano la chiave della chiusa.",
+     vincolo_pubblico: "Folco tiene il cappotto lungo abbottonato quasi fino al collo."}
+prove:
+  - {id: p_lucchetto_granaio, quando: "un PG apre il lucchetto del granaio con gli attrezzi", abilita: rapidita_di_mano, cd: 15,
+     indizio: i_galline_granaio, se_fallisce: "il lucchetto scatta rumoroso, e Folco si volta verso il granaio"}
+  - {id: p_tetto_granaio, quando: "un PG si arrampica sul tetto basso del granaio", abilita: atletica, cd: 10,
+     indizio: i_galline_granaio, se_fallisce: "una tegola scivola e si rompe nell'aia, davanti a tutti"}
+  - {id: p_porta_granaio, quando: "un PG forza la porta del granaio con la spalla", abilita: atletica, cd: 15,
+     indizio: i_galline_granaio, se_fallisce: "la porta tiene, e il colpo rimbomba per tutta l'aia"}
+  - {id: p_mazzo_folco, quando: "un PG sfila di nascosto il mazzo di chiavi dalla cintura di Folco", abilita: rapidita_di_mano, cd: 15,
+     indizio: i_chiave, se_fallisce: "Folco sente la mano e si stringe il cappotto addosso"}
+vincoli_pubblici:
+  - "La porta del granaio è di quercia, chiusa da un lucchetto del conte."
+  - "Il carro del conte resta davanti al granaio per tutta la scena."
+uscite:
+  - {verso: n_mulino, segnalata_da: [i_pollaio, i_argilla, i_adalgisa_carro]}
+  - {verso: n_paese, segnalata_da: [i_piuma_carro, i_chiocciare, i_galline_granaio]}
+mossa_morbida_pronta: "Folco alza la supplica e chiama un nome verso la strada. Un uomo col cappello in mano entra nell'aia, e firma con una croce."
+apertura: "All'aia di Adalgisa il pollaio è aperto e vuoto, e la rete sbatte nel vento. Adalgisa sparge granaglie per terra, per galline che non ci sono. Accanto al granaio il fattore del conte vi mostra un foglio col sigillo: chi di voi si avvicina?"
+musica: {tag: esplorazione_tesa, transizione: "verso lutto quando Adalgisa parla delle sue galline"}
+immagine:
+  invarianti: ["aia di terra battuta sull'argine", "pollaio vuoto con la porta di rete", "granaio di pietra con la porta di quercia", "carro con due gabbie vuote", "pozzo con la carrucola"]
+  prompt_luogo: "farmyard of packed earth on a river embankment at sunset, an empty henhouse with a wire-mesh door, a stone granary with a big padlocked oak door, a cart with two empty cages in front of it, a stone well with a pulley, a low wall, the river behind"
+taglio: "La scena si chiude quando i PG lasciano l'aia per il mulino o per la piazza, o quando la campana batte i tre colpi e il paese va a radunarsi. Se i PG esitano, Folco li manda al mulino a vedere coi loro occhi."
+# Esiti (passo 9): l'unico che decide il mondo è la campana; gli altri li sceglie la tavola.
+esiti:
+  - {id: e_aia_campana, descrizione: "La campana batte i tre colpi, e Folco e Adalgisa vanno in piazza.", finale: fin_aia_campana,
+     richiede: {orologio: {id: o_mezzanotte, min: 4}},
+     detto: "Al terzo colpo di campana il fattore e Adalgisa vanno verso la piazza, e l'aia resta vuota."}
+  - {id: e_aia_mulino, descrizione: "I PG salgono al mulino.", finale: fin_aia_mulino}
+  - {id: e_aia_piazza, descrizione: "I PG vanno in piazza.", finale: fin_aia_piazza}

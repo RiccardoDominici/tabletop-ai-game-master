@@ -1,0 +1,74 @@
+id: png_folco
+nome: "Folco Rasi"
+pronuncia: "Fòlco Ràsi"
+alias: [fattore, Rasi, Folco]
+livello: principale
+ruolo: "il fattore del conte; il cattivo della serata"
+fronte: fronte_conte
+scheda:
+  gs: 1/8
+  caratteristiche: {forza: 10, destrezza: 12, costituzione: 10, intelligenza: 13, saggezza: 12, carisma: 14}
+  competenze: [inganno, persuasione, intuizione]
+  armatura: {tipo: armatura di cuoio}
+  pf: 9
+  attacchi:
+    - {nome: "Pugnale", caratteristica: destrezza, danno: "1d4", tipo_danno: perforante}
+aspetto:
+  lettura: "Un uomo magro sulla quarantina, col cappotto lungo e scuro abbottonato quasi fino al collo. Porta guanti di pelle e stivali chiodati da cavaliere."
+  invarianti: ["quarantacinque anni", "magro", "cappotto lungo scuro", "guanti di pelle", "stivali chiodati da cavaliere"]
+  prompt_immagine: "thin man in his mid-forties, long dark coat buttoned almost to the collar, black leather gloves, hobnailed riding boots, holding a sealed sheet of paper, [STILE]"
+  situazioni:
+    - {id: cappotto_aperto, dopo: [nar_chiave_cintura, nar_mazzo_sfilato], prompt: "the same thin man with his long dark coat open at the waist, a ring of keys hanging from his belt, one of them a large black iron key"}
+personalita:
+  superficie: ["cortese e preciso", "parla come un notaio"]
+  sotto_pressione: ["diventa ancora più gentile, e cita il conte a ogni frase"]
+  contraddizione: "Si dice servo fedele del conte, e usa le chiavi del conte per sé."
+desiderio: "Far cacciare Ermete e dare il mulino al cognato a San Martino."
+paura: "Che il conte guardi da vicino i suoi fogli e le sue chiavi."
+segreto:
+  testo: "Apre la chiusa di monte di notte e ruba le galline, per far cacciare Ermete."
+  chi_altro_sa: [png_viola]
+  se_rivelato: "Il paese gli si rivolta contro, e lui nomina Viola per non cadere da solo."
+voce:
+  tts: {voce_id: lucian, eta_apparente: "45", altezza: bassa, velocita: 0.95, timbro: "scuro, misurato", direzione: "cortese e freddo, scandito come chi legge un contratto"}
+  registro: "Dà del lei a tutti, freddo e cortese, e chiama il paese «la gente»."
+  stile: "Frasi di sei-dodici parole, ordinate, da notaio."
+  tic: ["«Per conto del conte.»"]
+  gesto: "si liscia i guanti di pelle, dito per dito"
+  mai_dice: ["la chiave della chiusa, finché non l'hanno trovata", "il nome del cognato", "il soppalco del granaio"]
+  battuta_campione: "Per conto del conte, la gente ha diritto di dormire tranquilla. Firmi anche lei, se ha un cuore."
+sa: [f_folco_apre_chiusa, f_folco_chiave, f_folco_galline, f_galline_granaio, f_folco_cognato, f_viola_fermo, f_viola_piume, f_viola_lettera, f_lettera_falsa, f_chiusa_conte, f_supplica, f_affitto, f_fiera, f_adalgisa_debito, f_granaio_conte, f_acqua_ora, f_leggenda, f_ruota_gira]
+non_sa: [f_ermete_fermo_tolto, f_adalgisa_carro, f_argilla_chiusa]
+crede_a_torto:
+  - {testo: "Ermete dorme come un sasso e non si è mai accorto del fermo.", contraddice: f_ermete_fermo_tolto}
+mente_su:
+  - id: fol_chiave
+    argomento: "la chiave della chiusa di monte"
+    verita: f_folco_chiave
+    versione: "La chiave della chiusa la riporto al castello ogni sera. Sta nella cassa del conte."
+    perche: "Senza la chiave nessuno può pensare a lui."
+    segnale: "si abbottona il cappotto fino all'ultimo bottone"
+    cede_se: "Cede quando un PG gli mostra la chiave della chiusa presa dal suo mazzo. Oppure quando un PG gli dice che stanotte ha trovato la chiusa di monte aperta, col lucchetto unto."
+  - id: fol_granaio
+    argomento: "il granaio del conte"
+    verita: f_galline_granaio
+    versione: "Nel granaio c'è il grano del conte, contato e sigillato. Nient'altro."
+    perche: "Le galline vive sono la prova che non c'è nessuna mugnaia."
+    segnale: "fa un passo e si mette davanti alla porta del granaio"
+    cede_se: "Cede quando un PG gli mostra le galline vive trovate nel granaio. Oppure quando un PG gli mostra la piuma incastrata tra i raggi del carro del conte."
+atteggiamento_pg:
+  pg_cosma: {stato: amichevole, perche: "un prete fa comodo a chi raccoglie firme contro una stregoneria", vuole: "che benedica la supplica davanti al paese"}
+  pg_nerina: {stato: ostile, perche: "le deve una paga e lei lo sa", vuole: "che se ne vada da Ronchetto prima di sera"}
+  pg_tarcisio: {stato: indifferente, perche: "un carpentiere chiamato dal mugnaio", vuole: "che dica al paese che la ruota è stregata"}
+  pg_ilde: {stato: amichevole, perche: "una cacciatrice che cerca una volpe non cerca un uomo", vuole: "che continui a cercare la volpe"}
+  pg_benno: {stato: indifferente, perche: "un cantastorie porta le voci lontano", vuole: "che canti la mugnaia annegata alla fiera"}
+relazioni: {png_ermete: "il mugnaio da cacciare", png_viola: "la ragazza della lettera", png_adalgisa: "la pollaia a cui ha condonato la decima", cognato: "il mugnaio di Valbassa"}
+info_chiave: [i_argilla, i_chiave]
+iniziative:
+  - "Se un PG si avvicina al granaio, si mette davanti alla porta."
+  - "Al terzo colpo di campana va in piazza, e poi guida il paese al mulino con le lanterne."
+evoluzione:
+  - {se: "i PG gli mostrano la chiave o le galline davanti al paese", allora: "nomina Viola per trascinarla con sé"}
+  - {se: "i PG lo affrontano da soli con le prove", allora: "tratta: chiude la chiusa e rende le galline, se nessuno parla al paese"}
+statistiche: "nobile minore (SRD 5.2), pugnale"
+registro_attivita: []

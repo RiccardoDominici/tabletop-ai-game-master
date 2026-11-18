@@ -1,0 +1,54 @@
+# Brief della campagna (copiato da .claude/skills/preparatore/modelli/brief.yaml).
+# Ciò che la richiesta non dice l'ha deciso il Preparatore, e sta in `decisioni` con il motivo.
+
+id: mulino-notte
+titolo: "La ruota che gira da sola"
+richiesta: "Una sola serata (one-shot) per 3-4 giocatori, low fantasy: un mulino sul fiume dove di notte la ruota gira da sola, e in paese spariscono le galline; tono da fiaba inquieta, niente horror esplicito. lingua: it"
+lingua: it
+manuale: ""
+
+tono: "fiaba inquieta di paese: paura sottile e domestica, mai orrore esplicito"
+sessioni: 1
+ore_per_sessione: 2.5
+durata: "una serata, tre scene"
+giocatori: "3-4"
+dadi: true
+tiri_giocatori: manuale
+tiri_master: nascosti
+temi: [la paura che cerca un colpevole, il prezzo della verità, chi vuole partire e chi vuole restare]
+linee: ["violenza sui bambini", "animali torturati o uccisi in scena", "orrore esplicito: sangue, corpi, mutilazioni"]
+veli: ["l'annegamento della nonna di Viola, dodici anni fa", "la morte di un animale"]
+ambientazione: "Ronchetto, paese di mugnai e di pollaie sulla Lenta, a fine autunno, la vigilia della fiera di San Martino. Low fantasy: la magia del paese è solo leggenda."
+vincoli: ["niente horror esplicito", "niente magia vistosa: la leggenda resta leggenda"]
+
+decisioni:
+  scene: [scena_aia, scena_mulino, scena_ruota]
+  pg: [pg_cosma, pg_nerina, pg_tarcisio, pg_ilde, pg_benno]
+  png:
+    - "png_ermete → vincent"
+    - "png_viola → tabitha"
+    - "png_folco → lucian"
+    - "png_adalgisa → nadine"
+  situazione: |-
+    Folco Rasi, il fattore del conte, vuole il mulino di Ermete per suo cognato, e per averlo deve far cacciare il vecchio mugnaio dal paese.
+    Se i PG non fanno niente, a mezzanotte la ruota gira da sola davanti al paese, la supplica parte per il conte ed Ermete perde il mulino a San Martino.
+    La verità è che Folco apre di notte la chiusa di monte e ruba le galline, e Viola, la nipote di Ermete, gli toglie il fermo della ruota in cambio di una lettera per andare a servizio in città.
+    Smascherare Folco davanti a tutti salva il mulino ma fa cadere la vergogna su Viola; tacere salva Viola ma costa il mulino a Ermete.
+  strade:
+    - strada: "La verità al paese: a mezzanotte, davanti a tutti, i PG mostrano la chiusa aperta, la chiave o le galline del granaio, e Folco cade."
+      prezzo: "Messo alle strette, Folco dice a tutti che è Viola a togliere il fermo: da stanotte la chiamano la strega della gora, e nessuna casa la vorrà più come serva."
+      pesa_su: [png_viola]
+    - strada: "Il patto in privato: i PG mettono Folco davanti alle prove senza testimoni, lui chiude la chiusa e rende le galline, e nessuno nomina Viola."
+      prezzo: "La gente crede ancora alla mugnaia annegata: la supplica firmata arriva al conte, e il vecchio mugnaio deve andarsene da Ronchetto."
+      pesa_su: [png_ermete]
+    - strada: "La terza via, il fermo davanti a tutti: i PG fermano la ruota col fermo davanti al paese e dichiarano finita la stregoneria, senza fare nomi."
+      prezzo: "Folco resta fattore senza un'accusa, tiene la chiave e si vende le pollastre al mercato: Adalgisa perde tutto il suo pollaio, e nessuno la risarcisce."
+      pesa_su: [png_adalgisa]
+  altre:
+    - "Tre scene per due ore e mezza (C11): l'aia di Adalgisa al tramonto, il mulino all'imbrunire, la ruota a mezzanotte. La terza è lo stesso mulino in un altro momento, con un nodo evento (mestiere.md §9)."
+    - "Voci (regola 9): Ermete vincent, Folco lucian, Adalgisa nadine, Viola tabitha. Nadine e tabitha sono simili: Adalgisa e Viola non stanno mai nella stessa scena. All'aia Adalgisa e Folco; al mulino Ermete e Viola; a mezzanotte Ermete, Folco e Adalgisa, mentre Viola resta chiusa in casa, di là dal cortile."
+    - "Meccanismo del climax, una riga per stato. Chiusa di monte aperta: l'acqua scende nella gora e arriva alla ruota dopo poco più di un'ora. Chiusa di monte chiusa: la gora resta asciutta e la ruota sta ferma. Fermo infilato tra i raggi: la ruota non gira neanche con la gora piena. Fermo tolto e gora piena: la ruota gira da sola."
+    - "Nessun combattimento previsto: il pericolo è un paese spaventato, non un nemico armato. Folco ha la scheda per le prove sociali e per un eventuale scontro."
+    - "La magia dei PG resta piccola e discreta (un chierico di paese, un bardo cantastorie), perché il brief chiede low fantasy."
+    - "tiri_giocatori manuale e tiri_master nascosti: il brief non dice niente, valgono i predefiniti."
+    - "Cinque PG pregenerati per tre-quattro giocatori: la scena regge con qualunque sottoinsieme."
