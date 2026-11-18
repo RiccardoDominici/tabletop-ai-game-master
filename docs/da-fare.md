@@ -48,10 +48,11 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
     its first step (read from the code, not reproduced; the manual path starts inside `dopoAzioni` and runs it)~~
     **Done** (61fd744): reproduced, then fixed in the Engine (only a PC step at the head is consumed; the click's order is
     said in that first turn);
-    - open (A3 residue, for the engine package after packages 1 and 3): with automatic rolls and an NPC first in the
+    - ~~open (A3 residue, for the engine package after packages 1 and 3): with automatic rolls and an NPC first in the
       order after the panel's click, the PCs' actions written in that window still resolve before the NPC's first
       step, because no PC is on turn and the director keeps every action (`soloChiEraDiTurno`, scena/regia.ts). The
-      fix is the director's: defer those actions to the first PC step, or run the NPC steps before resolving them;
+      fix is the director's: defer those actions to the first PC step, or run the NPC steps before resolving them;~~
+      **Done** (A3 residue: deferred; the empty window's message now carries the NPCs' cards, with no stall prompt);
   - ~~«the goblin» meant for a named NPC (Zirrà) without her name still finds no target (no roll)~~ **Done** (b8f797a): it
     finds her by her alias since C5's re-targeting (the failure was Haiku's attack on an unknown target, skipped
     before C5); pinned by a test. A word that is no alias («la sentinella») still finds nobody;

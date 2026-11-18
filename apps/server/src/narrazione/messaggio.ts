@@ -163,13 +163,14 @@ export function compilaMessaggioTurno(d: DatiMessaggioTurno): string {
     );
     if (d.azioni.some((a) => a.numero !== undefined)) parti.push(testo('messaggio.ordine_invio'));
     if (d.collegamenti?.length) parti.push(`${testo('messaggio.titolo_collegamenti')}\n${d.collegamenti.map((c) => `- ${c}`).join('\n')}`);
-    // Esiti dei tiri: subito dopo le azioni, perché la risoluzione di ognuna parta da lì.
-    if (d.esitiTiri && (d.esitiTiri.righe.length || d.esitiTiri.privati?.righe.length)) {
-      parti.push(d.esitiTiri.titolo, d.esitiTiri.regola);
-      if (d.esitiTiri.righe.length) parti.push(d.esitiTiri.righe.map((r) => `- ${r}`).join('\n'));
-      // Gli esiti delle private a parte: il narratore non li legge fra i fatti del tavolo.
-      if (d.esitiTiri.privati?.righe.length) parti.push(d.esitiTiri.privati.titolo, d.esitiTiri.privati.righe.map((r) => `- ${r}`).join('\n'));
-    }
+  }
+  // Esiti dei tiri: subito dopo le azioni, perché la risoluzione di ognuna parta da lì. Also with no action: in a fight
+  // an empty window is the NPCs' turn, and their blows are this answer's facts (A3: they reached no message before).
+  if (d.esitiTiri && (d.esitiTiri.righe.length || d.esitiTiri.privati?.righe.length)) {
+    parti.push(d.esitiTiri.titolo, d.esitiTiri.regola);
+    if (d.esitiTiri.righe.length) parti.push(d.esitiTiri.righe.map((r) => `- ${r}`).join('\n'));
+    // Gli esiti delle private a parte: il narratore non li legge fra i fatti del tavolo.
+    if (d.esitiTiri.privati?.righe.length) parti.push(d.esitiTiri.privati.titolo, d.esitiTiri.privati.righe.map((r) => `- ${r}`).join('\n'));
   }
 
   if (d.veroAdesso?.righe.length) parti.push(d.veroAdesso.titolo, d.veroAdesso.righe.map((r) => `- ${r}`).join('\n'));

@@ -4,7 +4,8 @@
  * opens does: the dry run asks each PC's initiative die like any other roll of theirs (the voice says «Ida, tira
  * l'iniziativa.»), the Game Master can still give one to the Engine, and the NPCs' initiative stays the Engine's. An
  * interrupted turn leaves no half-open fight; automatic rolls start it at once, as before, and an NPC first in the order
- * strikes in the first turn after the click (A3). Invented fixture `prove`.
+ * strikes in the first turn after the click, before the actions written in that window, which wait for the next turn
+ * (A3). Invented fixture `prove`.
  */
 import { afterEach, describe, expect, it } from 'vitest';
 import type { AudioFrase, RichiestaTiro, StatoTavolo } from '@tabletop-ai-gm/shared';
@@ -147,5 +148,10 @@ describe('a fight opened from the panel, manual rolls', () => {
     expect(s2.pg.find((p) => p.id === 'pg_corrado')?.pf).toEqual({ attuali: 6, massimi: 12 });
     expect(s2.trascrizione.filter((v) => v.turno === 1).map((v) => v.testo)).toContain('Ordine del round: Ruggero, Corrado, Ida.');
     expect(s2.combattimento?.turno_di).toEqual(['pg_corrado']);
+    // The PCs' actions written in that window waited for Ruggero's step (the A3 residue): turn 1 resolved none of them,
+    // they are back in queue for the next turn, and the narrator heard the NPC's blow with no stall prompt.
+    expect(prova.narrazioni().find((r) => r['tipo'] === 'turno' && r['turno'] === 1)).toMatchObject({ azioni: [] });
+    expect(s2.trascrizione.filter((v) => v.turno === 1 && v.tipo === 'azione')).toEqual([]);
+    expect(messaggi.find((m) => m.includes('Turno di Ruggero lo sgherro'))).not.toMatch(/Stallo/);
   }, 20_000);
 });

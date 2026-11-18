@@ -57,7 +57,8 @@ combattimento:
 
 1. **Combat starts** when an attack roll touches a character with a sheet: a PC attacks an NPC, or an NPC reacts. Or with
    the Game Master's panel, «Inizia combattimento» (Start combat): at once with automatic rolls (the first turn after
-   the click says the order and runs any NPC step at the head of it); with manual rolls at the next closed window,
+   the click says the order and runs any NPC step at the head of it, before the actions written in that window, which
+   wait for the next turn); with manual rolls at the next closed window,
    after its actions, so the players roll their own initiative (docs/prove.md §8).
    - **Participants**: the PCs at the table with a sheet, the NPCs involved, and the NPCs on stage with a sheet and hostile
      to a PC.

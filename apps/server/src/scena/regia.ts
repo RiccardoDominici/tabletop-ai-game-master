@@ -3746,6 +3746,15 @@ export class Regia {
 
   /** Combattimento a turni: tiene le azioni di chi è di turno, rinvia le altre (tornano in coda). */
   private soloChiEraDiTurno(r: RiepilogoChiusura): RiepilogoChiusura {
+    // An NPC step at the head of the order (the Game Master opened the fight at the click, automatic rolls: A3 of
+    // docs/da-fare.md): no PC's step comes before it, so every action written in this window waits for the next one
+    // (back in queue) and this closure runs the NPC's step alone. Before, those actions resolved before its blow.
+    const p = this.prove;
+    if (p?.inCombattimento && p.combattimento.aTurni && p.turnoCombattimento() === null && r.azioni.length) {
+      this.tavolo.rinvia(r.azioni.map((a) => a.id));
+      this.o.log.info({ turno: r.turno, rinviate: r.azioni.map((a) => a.autore) }, 'combat: an NPC acts first, the window\'s actions wait for the next turn');
+      return { ...r, azioni: [] };
+    }
     const diTurno = this.prove?.turnoCombattimento();
     if (!diTurno?.length) return r;
     const fuori = r.azioni.filter((a) => !diTurno.includes(a.autore));
@@ -4577,7 +4586,8 @@ export class Regia {
     const s = this.statoRepertorio!;
     // «Stallo»: una finestra chiusa senza nessuna azione (scadenza concitata o Risolvi ora a mani vuote), or a second turn
     // of actions without a new decision (E12, docs/mondo.md §5): the fillers enter the catalogue.
-    const stallo = (r.azioni.length === 0 && !this.soloProveDelMaster) || this.mossaStallo !== null;
+    // In a fight an empty window is the NPCs' turn, not a stall (as for the stall counter, mondo/stallo.ts).
+    const stallo = (r.azioni.length === 0 && !this.soloProveDelMaster && !this.prove?.inCombattimento) || this.mossaStallo !== null;
     // Il segno dovuto è di un orologio preciso: in catalogo entrano solo i segni degli orologi dovuti.
     const dovuti = new Set(this.orologi.dovuti(r.turno).map((o) => o.id));
     // Le prove riuscite dell'azione aprono le battute col cancello `richiede.prova`.

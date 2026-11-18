@@ -606,7 +606,10 @@ never wait. The startup log line `PROVE E DADI` says the value and its origin (o
   tira l'iniziativa». Automatic rolls start the panel's fight at once, as before; the first turn after the click says
   the order at the table and runs an NPC step at the head of it (A3, 17 November: the window consumed that step as if
   a PC had played it, so an NPC first in the order lost its first step, and the click's order was never said). The
-  PCs' actions written in that window are not deferred: with an NPC first they still resolve before its step. Test:
+  PCs' actions written in that window wait: with an NPC first in the order, that closure runs the NPC's step alone and
+  the actions go back in queue for the next turn, where whoever is on turn resolves (`soloChiEraDiTurno`,
+  scena/regia.ts); in a fight an empty window is the NPCs' turn, so its message carries the cards and no stall prompt.
+  Test:
   test/combattimento.test.ts, test/combattimento-master-manuale.test.ts. Side rolls (surprise, initiative by
   sides) stay the Engine's, being no one player's own. Test: test/combattimento-master-manuale.test.ts.
 - A restart during the wait loses the open requests (the requests are not in the session snapshot): the turn behaves as
