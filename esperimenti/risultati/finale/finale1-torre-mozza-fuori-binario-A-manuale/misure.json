@@ -1,0 +1,227 @@
+{
+ "etichetta": "finale1-torre-mozza-fuori-binario-A-manuale",
+ "turni": {
+  "giocati": 13,
+  "copione": 13,
+  "fine_prima": null,
+  "finale": null,
+  "cambi_scena": [],
+  "orologi_max": {
+   "o_mezzanotte": "2/8"
+  }
+ },
+ "fughe": {
+  "improvvisate": 0,
+  "prescritte": 0,
+  "elenco": [],
+  "righe_segrete_fermate": 0,
+  "selettore_con_parola_segreta": [
+   [
+    "Tonio è salito da solo, d'accordo con i goblin"
+   ],
+   [
+    "Ugo ha visto il ragazzo salire"
+   ],
+   [
+    "Tonio è salito da solo, d'accordo con i goblin",
+    "Ugo ha visto il ragazzo salire"
+   ]
+  ]
+ },
+ "coerenza": {
+  "violazioni": 1,
+  "per_regola": {
+   "R-ripetuta": {
+    "tolta": 1
+   }
+  },
+  "esempi": [
+   {
+    "turno": 8,
+    "regola": "R-ripetuta",
+    "azione": "tolta",
+    "frase": "Ugo batte la pala per terra due volte."
+   }
+  ]
+ },
+ "private": {
+  "azioni_private": 3,
+  "righe_privato": 0,
+  "esiti_privati_log": 8,
+  "spostate_dalla_guardia": 0,
+  "righe_al_tavolo_sospette": 0,
+  "sospette": [],
+  "al_tavolo_candidate": 2,
+  "al_tavolo": [
+   {
+    "turno": 5,
+    "turno_privata": 5,
+    "pg": "Nespola Tondi",
+    "chi": "Narratore",
+    "riga": "Dal crinale arriva un colpo di corno, lontano. Le pecore alzano la testa, poi tornano a brucare.",
+    "comuni": [
+     "pecor"
+    ],
+    "regola": "turno privato+1"
+   },
+   {
+    "turno": 13,
+    "turno_privata": 13,
+    "pg": "Livia Sarti",
+    "chi": "Narratore",
+    "riga": "Ogni erre è rovesciata, con la pancia dalla parte sbagliata.",
+    "comuni": [
+     "parte"
+    ],
+    "regola": "turno privato+1"
+   }
+  ]
+ },
+ "prove": {
+  "azioni_risolte": 16,
+  "con_tiro": 1,
+  "tipi": {
+   "prova": 1,
+   "nessuna": 15
+  },
+  "dadi": {},
+  "regole_tipo": {
+   "Carisma: dNN contro CD N (normale)": 1
+  },
+  "set": "basic-fantasy-r142",
+  "arbitro": "regole (classificatore del Motore, senza modello)"
+ },
+ "combattimento": {
+  "eventi": {},
+  "fatti_morale_terra": 0,
+  "esempi": [],
+  "fatti_morale": [],
+  "fatti_a_terra": [],
+  "fuori_gioco_log": {}
+ },
+ "lettore": {
+  "scelte": 16,
+  "nessuna": 10,
+  "ms_classifica_med": 692,
+  "ms_classifica_peggiore": 2017
+ },
+ "sceneggiatore": {
+  "richieste": {
+   "subito:ok": 8,
+   "prossime:ok": 12
+  },
+  "consegnate": 5,
+  "dette_a_finestra_aperta": 5,
+  "accettate": 79,
+  "scartate": {
+   "dà per vero «guado», che la campagna non ha": 1,
+   "dà per vero «grotta», che la campagna non ha": 1,
+   "dà per vero «mulino», che la campagna non ha": 1
+  },
+  "ms_claude_med": 9470,
+  "ms_totale_med_subito": 11524,
+  "processo": {
+   "avvio": 1,
+   "ok": 20,
+   "arresto": 1
+  }
+ },
+ "tempi": {
+  "finestra_ms": {
+   "mediana": 20060,
+   "peggiore": 20156,
+   "n": 13
+  },
+  "llm_prima_frase": {
+   "mediana": 26,
+   "peggiore": 707,
+   "n": 11
+  },
+  "voce_primo_audio": {
+   "mediana": 690,
+   "peggiore": 2957,
+   "n": 13
+  },
+  "schermo_inizio_audio": {
+   "mediana": 834.5,
+   "peggiore": 1515,
+   "n": 10
+  },
+  "llm_fine": {
+   "mediana": 865,
+   "peggiore": 2004,
+   "n": 13
+  },
+  "audio_fine": {
+   "mediana": 12450,
+   "peggiore": 27550,
+   "n": 13
+  },
+  "s_tra_turni_med": 33,
+  "s_tra_turni_peggiore": 47.684
+ },
+ "voce": {
+  "motore": "mock",
+  "buchi": {
+   "totale": 11,
+   "in_frase": 0,
+   "tra_frasi": 11,
+   "silenzio_ms": 3367,
+   "per_turno": [
+    1,
+    2,
+    2,
+    2,
+    0,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "proiettore_secondi": 212,
+  "errori_voce": {}
+ },
+ "log": {
+  "errori": 3,
+  "avvisi": 17,
+  "per_messaggio": [
+   "40 ×7 llm: risposta strutturata non valida",
+   "40 ×4 repertorio: [usa] rifiutato",
+   "40 ×3 llm: si usa il ripiego deterministico",
+   "50 ×3 repertorio: parola segreta nel messaggio del selettore",
+   "40 ×1 https: the certificate does not cover this LAN address: run scripts/certificato.sh again",
+   "40 ×1 repertorio: rilascio fuori contesto, al suo posto la deviazione di chi è interpellato",
+   "40 ×1 narrator: sentence said word for word in the last turns, dropped"
+  ],
+  "provider": [
+   "lettore         → locale (minimo) mlx-community/Qwen3-0.6B-4bit — configurato (.",
+   "arbitro_azioni  → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "arbitro_prove   → regole (completo) — configurato (../../../../private/tmp/claud",
+   "riassunto       → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "regole          → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "voce            → finto — variabile d'ambiente TAGM_TTS",
+   "ascolto         → nessuno — configurato (../../../../private/tmp/claude-501/-Use",
+   "immagini        → nessuno — configurato (../../../../private/tmp/claude-501/-Use"
+  ]
+ },
+ "serata": {
+  "ore": null,
+  "consiglio_ai_turni": [],
+  "chiusura": {}
+ },
+ "costo_usd": 0,
+ "righe": {
+  "prescritte": 15,
+  "improvvisate": 14,
+  "usa_rifiutati": 4,
+  "azioni_pubbliche": 13,
+  "azioni_senza_risposta": 5,
+  "riparazioni": 0,
+  "conferme_motore": 0
+ }
+}
