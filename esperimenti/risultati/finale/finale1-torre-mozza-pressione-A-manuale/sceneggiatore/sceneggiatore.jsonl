@@ -1,0 +1,18 @@
+{"ts":"2026-11-18T01:41:46.694Z","esito":"avvio","modelli":{"subito":"sonnet","chiusura":"sonnet","prossime":"haiku"},"pid":93811}
+{"ts":"2026-11-18T01:42:58.238Z","id":"subito-t1-mwlgie4c-1","tipo":"subito","turno":1,"privata":false,"modello":"sonnet","esito":"ok","ms_claude":10475,"ms_in_coda":488,"caratteri":620}
+{"ts":"2026-11-18T01:43:21.869Z","id":"prossime-t1-mwlgie4f-2","tipo":"prossime","turno":1,"privata":false,"modello":"haiku","esito":"ok","ms_claude":23568,"ms_in_coda":11699,"caratteri":2045}
+{"ts":"2026-11-18T01:43:50.733Z","id":"subito-t2-mwlgjibk-3","tipo":"subito","turno":2,"privata":false,"modello":"sonnet","esito":"ok","ms_claude":11686,"ms_in_coda":333,"caratteri":571}
+{"ts":"2026-11-18T01:44:00.403Z","id":"prossime-t2-mwlgjibn-4","tipo":"prossime","turno":2,"privata":false,"modello":"haiku","esito":"ok","ms_claude":9627,"ms_in_coda":12092,"caratteri":2704}
+{"ts":"2026-11-18T01:44:21.166Z","id":"subito-t3-mwlgk7to-5","tipo":"subito","turno":3,"privata":false,"modello":"sonnet","esito":"ok","ms_claude":9122,"ms_in_coda":281,"caratteri":511}
+{"ts":"2026-11-18T01:44:31.721Z","id":"prossime-t3-mwlgk7tq-6","tipo":"prossime","turno":3,"privata":false,"modello":"haiku","esito":"ok","ms_claude":10496,"ms_in_coda":9479,"caratteri":2723}
+{"ts":"2026-11-18T01:44:52.248Z","id":"subito-t4-mwlgkud4-7","tipo":"subito","turno":4,"privata":true,"modello":"sonnet","esito":"ok","ms_claude":10890,"ms_in_coda":382,"caratteri":605}
+{"ts":"2026-11-18T01:45:01.843Z","id":"prossime-t4-mwlgkud7-8","tipo":"prossime","turno":4,"privata":false,"modello":"haiku","esito":"ok","ms_claude":9537,"ms_in_coda":11349,"caratteri":2778}
+{"ts":"2026-11-18T01:45:17.026Z","id":"subito-t5-mwlgle5f-9","tipo":"subito","turno":5,"privata":false,"modello":"sonnet","esito":"ok","ms_claude":10073,"ms_in_coda":336,"caratteri":536}
+{"ts":"2026-11-18T01:45:26.657Z","id":"prossime-t5-mwlgle5i-10","tipo":"prossime","turno":5,"privata":false,"modello":"haiku","esito":"ok","ms_claude":9576,"ms_in_coda":10481,"caratteri":2827}
+{"ts":"2026-11-18T01:45:56.553Z","id":"subito-t6-mwlgm8jz-11","tipo":"subito","turno":6,"privata":true,"modello":"sonnet","esito":"ok","ms_claude":10219,"ms_in_coda":316,"caratteri":567}
+{"ts":"2026-11-18T01:46:07.072Z","id":"subito-t6-mwlgm8k3-12","tipo":"subito","turno":6,"privata":false,"modello":"sonnet","esito":"ok","ms_claude":10466,"ms_in_coda":10614,"caratteri":549}
+{"ts":"2026-11-18T01:46:15.783Z","id":"prossime-t6-mwlgm8k5-13","tipo":"prossime","turno":6,"privata":false,"modello":"haiku","esito":"ok","ms_claude":8657,"ms_in_coda":21121,"caratteri":2398}
+{"ts":"2026-11-18T01:47:00.876Z","id":"subito-t8-mwlgnmui-14","tipo":"subito","turno":8,"privata":false,"modello":"sonnet","esito":"ok","ms_claude":9373,"ms_in_coda":328,"caratteri":592}
+{"ts":"2026-11-18T01:50:01.356Z","id":"subito-t8-mwlgnmuk-15","tipo":"subito","turno":8,"esito":"errore","errore":"claude -p è uscito con 143: ","ms_in_coda":9760}
+{"ts":"2026-11-18T01:53:02.712Z","id":"subito-t8-mwlgnmum-16","tipo":"subito","turno":8,"esito":"errore","errore":"claude -p è uscito con 143: ","ms_in_coda":190241}
+{"ts":"2026-11-18T01:53:29.484Z","esito":"arresto","pid":93811}

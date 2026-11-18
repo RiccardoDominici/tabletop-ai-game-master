@@ -1,0 +1,41 @@
+[torre-mozza-pressione-B] campagna torre-mozza, porta 4964, modalità repertorio: riavvio del server di prova…
+[torre-mozza-pressione-B] server: {"ok":true,"fase":"attesa","turno":0,"versione_scena":0,"voce":"mock","schermo":false,"narratore":"minimo","modello":"mlx-community/Qwen3-0.6B-4bit","campagna":"torre-mozza","immagini":17,"audio":26,"sessione":"","modo":"repertorio","ripresa":null,"pacchetto":null,"lingua":"it","lingua_contenuti":"it"}
+[torre-mozza-pressione-B] pg_livia rolls Carisma (1d20): 20
+[torre-mozza-pressione-B] turno 1/16 fatto (server 1)
+[torre-mozza-pressione-B] pg_eliandro rolls Intelligenza (1d20 +2): 17
+[torre-mozza-pressione-B] turno 2/16 fatto (server 2)
+[torre-mozza-pressione-B] turno 3/16 fatto (server 3)
+[torre-mozza-pressione-B] turno 4/16 fatto (server 4)
+[torre-mozza-pressione-B] turno 5/16 fatto (server 5)
+[torre-mozza-pressione-B] pg_livia rolls Carisma (1d20): 11
+[torre-mozza-pressione-B] turno 6/16 fatto (server 6)
+[torre-mozza-pressione-B] turno 7 (server 7): scena → scena_carbonaia
+[torre-mozza-pressione-B] pg_eliandro rolls Cercare porte segrete e trappole (1d6): 5
+[torre-mozza-pressione-B] turno 7/16 fatto (server 8)
+[torre-mozza-pressione-B] pg_nespola rolls Scalare pareti (1d100): 8
+[torre-mozza-pressione-B] turno 8/16 fatto (server 9)
+[torre-mozza-pressione-B] turno 9 (server 10): scena → scena_torre
+[torre-mozza-pressione-B] pg_livia rolls Arco corto (1d20 +2): 17
+[torre-mozza-pressione-B] pg_livia rolls Danni: Arco corto (1d6): 1
+[torre-mozza-pressione-B] pg_livia rolls Iniziativa (1d6 +1): 2
+[torre-mozza-pressione-B] pg_nespola rolls Iniziativa (1d6 +2): 2
+[torre-mozza-pressione-B] pg_eliandro rolls Iniziativa (1d6 +1): 1
+[torre-mozza-pressione-B] turno 9/16 fatto (server 11)
+[torre-mozza-pressione-B] server 12: combat, on turn pg_nespola; waiting for their turn: pg_livia
+[torre-mozza-pressione-B] pg_nespola rolls Spada corta (1d20 +3): 16
+[torre-mozza-pressione-B] pg_nespola rolls Danni: Spada corta (1d6): 3
+[torre-mozza-pressione-B] turno 10/16 fatto (server 12), 1 azioni in attesa del loro turno
+[torre-mozza-pressione-B] server 13: combat, on turn pg_livia
+[torre-mozza-pressione-B] pg_livia rolls Spada lunga (1d20 +3): 11
+[torre-mozza-pressione-B] pg_livia rolls Danni: Spada lunga (1d8 +2): 7
+[torre-mozza-pressione-B] turno 10/16 fatto (server 13)
+[torre-mozza-pressione-B] pg_livia rolls Forzare una porta bloccata (1d6): 1
+[torre-mozza-pressione-B] pg_nespola rolls Cercare porte segrete e trappole (1d6): 2
+[torre-mozza-pressione-B] turno 11/16 fatto (server 14)
+[torre-mozza-pressione-B] turno 12/16 fatto (server 15)
+[torre-mozza-pressione-B] turno 13/16 fatto (server 16)
+[torre-mozza-pressione-B] turno 14/16 fatto (server 17)
+[torre-mozza-pressione-B] turno 15/16 fatto (server 18)
+[torre-mozza-pressione-B] pg_nespola rolls Scassinare serrature (1d100): 2
+[torre-mozza-pressione-B] turno 16/16 fatto (server 19)
+[torre-mozza-pressione-B] fatto → esperimenti/risultati/finale/finale1-torre-mozza-pressione-A-manuale (costo $0.00000)

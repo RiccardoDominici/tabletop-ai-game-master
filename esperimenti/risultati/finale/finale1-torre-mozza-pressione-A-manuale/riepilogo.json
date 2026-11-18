@@ -1,0 +1,724 @@
+{
+  "copione": "torre-mozza/pressione",
+  "campagna": "torre-mozza",
+  "modo": "repertorio",
+  "porta": 4964,
+  "narratore_finto": false,
+  "sessione": "2026-11-18T01:41:46.465Z",
+  "nota_ambiente": null,
+  "codice": {
+    "commit": "b97d3ef5bf40b93f98b035776cb91ae387ca8ced",
+    "modificati": [],
+    "radice": "/Users/riccardo/Developer/cantastorie"
+  },
+  "turni": 17,
+  "turni_copione": 16,
+  "cambi_di_scena": [
+    {
+      "turno_copione": 7,
+      "turno_server": 7,
+      "a": "scena_carbonaia"
+    },
+    {
+      "turno_copione": 9,
+      "turno_server": 10,
+      "a": "scena_torre"
+    }
+  ],
+  "fine_prima_del_copione": null,
+  "tiri_al_tavolo": {
+    "modo": "manuale",
+    "tiri": [
+      {
+        "pg": "pg_livia",
+        "id": "r_a1",
+        "etichetta": "Carisma",
+        "dadi": "1d20",
+        "valori": [
+          20
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_eliandro",
+        "id": "r_a3",
+        "etichetta": "Intelligenza",
+        "dadi": "1d20",
+        "valori": [
+          17
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_a9",
+        "etichetta": "Carisma",
+        "dadi": "1d20",
+        "valori": [
+          11
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_eliandro",
+        "id": "r_a13",
+        "etichetta": "Cercare porte segrete e trappole",
+        "dadi": "1d6",
+        "valori": [
+          5
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_a15",
+        "etichetta": "Scalare pareti",
+        "dadi": "1d100",
+        "valori": [
+          8
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_a16",
+        "etichetta": "Arco corto",
+        "dadi": "1d20",
+        "valori": [
+          17
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_a16_danno",
+        "etichetta": "Danni: Arco corto",
+        "dadi": "1d6",
+        "valori": [
+          1
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_t11_iniziativa_pg_livia_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          2
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_t11_iniziativa_pg_nespola_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          2
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_eliandro",
+        "id": "r_t11_iniziativa_pg_eliandro_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          1
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_a19",
+        "etichetta": "Spada corta",
+        "dadi": "1d20",
+        "valori": [
+          16
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_a19_danno",
+        "etichetta": "Danni: Spada corta",
+        "dadi": "1d6",
+        "valori": [
+          3
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_a20",
+        "etichetta": "Spada lunga",
+        "dadi": "1d20",
+        "valori": [
+          11
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_a20_danno",
+        "etichetta": "Danni: Spada lunga",
+        "dadi": "1d8",
+        "valori": [
+          7
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_a21",
+        "etichetta": "Forzare una porta bloccata",
+        "dadi": "1d6",
+        "valori": [
+          1
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_a22",
+        "etichetta": "Cercare porte segrete e trappole",
+        "dadi": "1d6",
+        "valori": [
+          2
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_a31",
+        "etichetta": "Scassinare serrature",
+        "dadi": "1d100",
+        "valori": [
+          2
+        ],
+        "ok": true
+      }
+    ]
+  },
+  "combattimento_copione": {
+    "in_attesa_del_turno": 1,
+    "passate": 0
+  },
+  "finale": null,
+  "orologi": {
+    "per_turno": [
+      {
+        "turno": 1,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 2,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 3,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 4,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 5,
+        "stato": {
+          "o_mezzanotte": "0/8"
+        }
+      },
+      {
+        "turno": 6,
+        "stato": {
+          "o_mezzanotte": "1/8"
+        }
+      },
+      {
+        "turno": 8,
+        "stato": {
+          "o_mezzanotte": "2/8"
+        }
+      },
+      {
+        "turno": 9,
+        "stato": {
+          "o_mezzanotte": "2/8"
+        }
+      },
+      {
+        "turno": 11,
+        "stato": {}
+      },
+      {
+        "turno": 12,
+        "stato": {}
+      },
+      {
+        "turno": 13,
+        "stato": {}
+      },
+      {
+        "turno": 14,
+        "stato": {}
+      },
+      {
+        "turno": 15,
+        "stato": {}
+      },
+      {
+        "turno": 16,
+        "stato": {}
+      },
+      {
+        "turno": 17,
+        "stato": {}
+      },
+      {
+        "turno": 18,
+        "stato": {}
+      },
+      {
+        "turno": 19,
+        "stato": {}
+      }
+    ],
+    "massimo": {
+      "o_mezzanotte": "2/8"
+    },
+    "completo_al_turno": {}
+  },
+  "azioni_private_copione": 6,
+  "voce": "mock",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 20069,
+      "peggiore": 20166,
+      "n": 17
+    },
+    "voce_sveglia": {
+      "mediana": null,
+      "peggiore": null,
+      "n": 0
+    },
+    "llm_primo_token": {
+      "mediana": 12,
+      "peggiore": 582,
+      "n": 17
+    },
+    "llm_prima_frase": {
+      "mediana": 13,
+      "peggiore": 56,
+      "n": 16
+    },
+    "voce_richiesta": {
+      "mediana": 1312,
+      "peggiore": 3912,
+      "n": 16
+    },
+    "voce_primo_audio": {
+      "mediana": 671.5,
+      "peggiore": 4566,
+      "n": 16
+    },
+    "schermo_inizio_audio": {
+      "mediana": 814,
+      "peggiore": 824,
+      "n": 8
+    },
+    "llm_fine": {
+      "mediana": 1386,
+      "peggiore": 2680,
+      "n": 17
+    },
+    "audio_fine": {
+      "mediana": 14308.5,
+      "peggiore": 48186,
+      "n": 16
+    }
+  },
+  "buchi": {
+    "totale": 21,
+    "in_frase": 0,
+    "tra_frasi": 21,
+    "silenzio_ms": 6713,
+    "per_turno": [
+      1,
+      0,
+      1,
+      2,
+      0,
+      1,
+      0,
+      1,
+      5,
+      3,
+      4,
+      3,
+      0,
+      0,
+      0,
+      null,
+      0
+    ]
+  },
+  "righe_prescritte": 21,
+  "righe_improvvisate": 28,
+  "quota_prescritte": 0.42857142857142855,
+  "usa_rifiutati": 6,
+  "azioni_pubbliche": 26,
+  "azioni_senza_risposta": 15,
+  "riparazioni": 0,
+  "conferme_motore": 5,
+  "righe_segrete_fermate": 0,
+  "pg_dedotti": 0,
+  "battute_indicate": 12,
+  "battute_indicate_usate": 2,
+  "righe_png_assenti": 0,
+  "usa_rifiutati_per_motivo": {
+    "fuori contesto: nessuno dei temi di <id>": 2,
+    "fuori contesto: l'azione ha in comune con «i PG partono per il bosco senza la ch": 1,
+    "fuori contesto: l'azione ha in comune con «un PG guarda le impronte sul sentiero": 1,
+    "fuori contesto: l'azione ha in comune con «un PG guarda da vicino i segni a carb": 1,
+    "fuori contesto: l'azione ha in comune con «un PG guarda il muro accanto alla por": 1
+  },
+  "rivelazioni_fuori_contesto": {
+    "totale": 0,
+    "elenco": []
+  },
+  "serata": {
+    "ore": null,
+    "consiglio_ai_turni": [],
+    "chiusura": null
+  },
+  "fughe": {
+    "nota": "Fuga = riga del narratore o di un PNG con una parola segreta prima che sia uscito un id di pubblica_dopo (battuta o indizio rivelato da una battuta) e prima che un giocatore l’abbia scritta.",
+    "improvvisate": 0,
+    "prescritte": 0,
+    "elenco": []
+  },
+  "battute_usate": 20,
+  "battute_mai_usate": [
+    "nar_giaciglio",
+    "nar_cani",
+    "nar_pali",
+    "nar_recinto",
+    "nar_avviso",
+    "fin_ovile_mezzanotte",
+    "nar_chiave_presa",
+    "fin_ovile_chiave",
+    "fin_ovile_senza",
+    "nar_impronte",
+    "nar_rovi",
+    "nar_cervo",
+    "nar_frasche",
+    "fin_carbonaia_mezzanotte",
+    "fin_carbonaia_cunicolo",
+    "fin_carbonaia_sentiero",
+    "nar_corda",
+    "nar_mappa",
+    "nar_conto",
+    "nar_iscrizione",
+    "nar_cripta",
+    "nar_cripta_grimaldello",
+    "nar_tonio_zitto",
+    "nar_tonio_parla",
+    "nar_tonio_sottovoce",
+    "fin_alba_fontana",
+    "fin_alba_silenzio",
+    "fin_alba_riserva",
+    "fin_alba_discesa",
+    "nar_segno_3",
+    "nar_segno_4",
+    "nar_segno_5",
+    "nar_segno_6",
+    "nar_segno_7",
+    "nar_segno_8",
+    "tr_bosco",
+    "tr_crinale",
+    "nar_chiusura_ovile",
+    "nar_chiusura_ovile_chiave",
+    "nar_chiusura_carbonaia",
+    "nar_chiusura_torre",
+    "nar_stallo_ovile_corno",
+    "nar_stallo_carbonaia_luce",
+    "nar_stallo_rovi",
+    "nar_stallo_orme",
+    "nar_stallo_mappa",
+    "nar_stallo_cripta",
+    "nar_sconfitta_zirra",
+    "nar_sconfitta_grosso",
+    "ber_saluto",
+    "ber_domanda_gentile",
+    "ber_accusa",
+    "ber_minaccia",
+    "ber_offerta",
+    "ber_aiuto",
+    "ber_rifiuto",
+    "ber_attesa",
+    "ber_salgo_io",
+    "ber_pazienza",
+    "ber_cani",
+    "ber_cose_tonio",
+    "ber_nomi_pali",
+    "ber_rapitore",
+    "ber_soldata",
+    "ber_benedizione",
+    "ber_chiave",
+    "ber_debiti_domanda",
+    "ber_conti_foglio",
+    "ber_non_ci_crede",
+    "ber_stallo_paese",
+    "ber_stallo_giaciglio",
+    "ber_stallo_bosco",
+    "gro_saluto",
+    "gro_minaccia",
+    "gro_rifiuto",
+    "gro_cibo",
+    "ugo_saluto",
+    "ugo_domanda_gentile",
+    "ugo_accusa",
+    "ugo_minaccia",
+    "ugo_offerta",
+    "ugo_aiuto",
+    "ugo_rifiuto",
+    "ugo_tre_monete",
+    "ugo_salita",
+    "ugo_consiglio",
+    "ugo_stanotte",
+    "ugo_niente_visto",
+    "ugo_notte_cervo",
+    "ugo_notte_promessa",
+    "ugo_sentiero_privato",
+    "ugo_sentiero_impronte",
+    "zir_saluto",
+    "zir_domanda_gentile",
+    "zir_accusa",
+    "zir_minaccia",
+    "zir_offerta",
+    "zir_aiuto",
+    "zir_rifiuto",
+    "zir_chiave_prima",
+    "zir_patto",
+    "zir_resa",
+    "zir_cassa",
+    "zir_ragazzo_mio",
+    "zir_corda",
+    "zir_carbonaio",
+    "zir_stallo_chiave"
+  ],
+  "costo_totale_usd": 0,
+  "costo_mediana_turno_usd": 0,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 6,
+      "pezzi": 146,
+      "secondi": 28.599999999999934,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 151
+    },
+    {
+      "turno": 1,
+      "frasi": 4,
+      "pezzi": 47,
+      "secondi": 9.200000000000001,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 301
+    },
+    {
+      "turno": 2,
+      "frasi": 10,
+      "pezzi": 198,
+      "secondi": 39.20000000000002,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 3,
+      "frasi": 5,
+      "pezzi": 95,
+      "secondi": 18.866666666666635,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 332
+    },
+    {
+      "turno": 4,
+      "frasi": 5,
+      "pezzi": 88,
+      "secondi": 17.266666666666637,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 1107
+    },
+    {
+      "turno": 5,
+      "frasi": 1,
+      "pezzi": 24,
+      "secondi": 4.733333333333335,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 6,
+      "frasi": 7,
+      "pezzi": 139,
+      "secondi": 27.399999999999938,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 163
+    },
+    {
+      "turno": 7,
+      "frasi": 3,
+      "pezzi": 76,
+      "secondi": 15.066666666666645,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 8,
+      "frasi": 5,
+      "pezzi": 142,
+      "secondi": 27.93333333333327,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 9,
+      "frasi": 8,
+      "pezzi": 157,
+      "secondi": 31.06666666666659,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 175
+    },
+    {
+      "turno": 10,
+      "frasi": 3,
+      "pezzi": 83,
+      "secondi": 16.26666666666664,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 11,
+      "frasi": 15,
+      "pezzi": 239,
+      "secondi": 46.866666666666795,
+      "buchi": 5,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 5,
+      "silenzio_ms": 1732
+    },
+    {
+      "turno": 12,
+      "frasi": 6,
+      "pezzi": 91,
+      "secondi": 17.59999999999997,
+      "buchi": 3,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 3,
+      "silenzio_ms": 727
+    },
+    {
+      "turno": 13,
+      "frasi": 6,
+      "pezzi": 60,
+      "secondi": 11.46666666666666,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 1348
+    },
+    {
+      "turno": 14,
+      "frasi": 8,
+      "pezzi": 140,
+      "secondi": 27.399999999999938,
+      "buchi": 3,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 3,
+      "silenzio_ms": 828
+    },
+    {
+      "turno": 15,
+      "frasi": 3,
+      "pezzi": 74,
+      "secondi": 14.466666666666647,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 16,
+      "frasi": 1,
+      "pezzi": 21,
+      "secondi": 4.133333333333335,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 17,
+      "frasi": 1,
+      "pezzi": 27,
+      "secondi": 5.400000000000002,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 18,
+      "frasi": 0,
+      "pezzi": 0,
+      "secondi": 0,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 19,
+      "frasi": 4,
+      "pezzi": 65,
+      "secondi": 12.93333333333332,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    }
+  ]
+}
