@@ -60,3 +60,31 @@ describe('an out-of-context pick', () => {
     expect(detto.join(' ')).not.toMatch(/scuote la testa e non risponde/);
   }, 20_000);
 });
+
+describe('a release after a failed check (final round, attempt 2, PR T2)', () => {
+  let prova: Prova;
+  afterEach(async () => prova?.chiudi());
+
+  it('is refused and not indicated: the failure is the answer, never the information it sought', async () => {
+    prova = new Prova();
+    prova.nomeNarratore = 'minimo';
+    const cartella = prova.campagna('prove', {
+      battute: {
+        'narrazione.yaml': [{ id: 'nar_scritte', chi: 'narratore', tipo: 'verita', quando: 'un PG studia le scritte incise sul parapetto', temi: ['scritte', 'parapetto'], testo: ['[narratore] Le scritte sul parapetto sono tutte della stessa mano.'], max_usi: 1 }],
+      },
+    });
+    // An Intelligence check, not a social one (a failed social check already makes the NPC refuse): it fails.
+    const azione = 'Studio da vicino le scritte incise sul parapetto.';
+    const { url } = await prova.avvia(cartella, () => '[usa] nar_scritte > pg_ida\n[invito] tutti', {}, {
+      arbitroProve: arbitro(vuotaSrd, { [azione]: { tipo: 'prova', caratteristica: 'intelligenza', difficolta: 'difficile' } }),
+      dadi: new DadiACopione([2]),
+    });
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_ida');
+    const s = await inizia(schermo, tel);
+    const dopo = await turno(tel, 'pg_ida', s, azione);
+    expect(dopo.trascrizione.filter((v) => v.turno === 1).map((v) => v.testo).join(' ')).not.toContain('della stessa mano');
+    const t1 = prova.narrazioni().find((r) => r['tipo'] === 'turno' && r['turno'] === 1)!;
+    expect((t1['uscita'] as Array<{ tipo: string; id?: string; motivo?: string }>).find((u) => u.id === 'nar_scritte')).toMatchObject({ tipo: 'usa_rifiutato', motivo: expect.stringMatching(/prova dell'azione è fallita/) });
+  }, 20_000);
+});

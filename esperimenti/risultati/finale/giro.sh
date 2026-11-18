@@ -15,9 +15,15 @@ run() { # port script rolls label
   local disco=$(df -m / | tail -1 | awk '{print $4}')
   echo "== $(date +%T) start $E port $porta ($(git rev-parse --short HEAD)) memory free ${libera}% disk ${disco} MB" >> $L/driver.log
   if [[ ${libera:-0} -lt 25 ]]; then echo "== memory free ${libera}% < 25%: stop" >> $L/driver.log; exit 3; fi
-  if [[ ${disco:-0} -lt 1500 ]]; then echo "== disk ${disco} MB < 1500: stop" >> $L/driver.log; exit 4; fi
+  if [[ ${disco:-0} -lt 1000 ]]; then echo "== disk ${disco} MB < 1000: stop" >> $L/driver.log; exit 4; fi
+  # Swap used (sysctl vm.swapusage, MB): stop past 8 GB (the Mac filled its disk with swap once).
+  local swap=$(sysctl -n vm.swapusage | sed -E 's/.*used = ([0-9.,]+)M.*/\1/' | tr ',' '.' | cut -d. -f1)
+  echo "== swap used ${swap} MB" >> $L/driver.log
+  if [[ ${swap:-0} -gt 8192 ]]; then echo "== swap ${swap} MB > 8 GB: stop" >> $L/driver.log; exit 5; fi
+  # Never the default 8B reader: the 0.6B one, started explicitly (avvio.sh reuses it, MODELLO_LOCALE says the same).
+  MODELLO_LOCALE=mlx-community/Qwen3-0.6B-4bit scripts/lettore-avvio.sh mlx-community/Qwen3-0.6B-4bit >> $L/driver.log 2>&1
   rm -rf logs/porta-$porta
-  TAGM_CONFIG=$S/config-a06 TAGM_PORTA=$porta \
+  MODELLO_LOCALE=mlx-community/Qwen3-0.6B-4bit TAGM_CONFIG=$S/config-a06 TAGM_PORTA=$porta \
     npx tsx apps/server/src/esperimenti/esegui.ts torre-mozza/$copione B --campagna torre-mozza --uscita finale/$E --pausa-s 20 --tiri $tiri --sceneggiatore > $L/$E.out 2>&1
   echo "== $(date +%T) end $E exit $?" >> $L/driver.log
   local ris=esperimenti/risultati/finale/$E

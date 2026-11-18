@@ -365,7 +365,7 @@ export class Regia {
   /** B2: azioni del turno per autore (chi può ricevere una battuta, e se privata), stallo, segno dovuto. */
   /** Il turno B in corso: azioni per PG, stallo, orologi il cui segno è dovuto (uno per orologio). */
   private turnoB: {
-    azioni: Map<string, { id: string; privata: boolean; testo: string; prove: readonly string[] }>;
+    azioni: Map<string, { id: string; privata: boolean; testo: string; prove: readonly string[]; fallite: readonly string[] }>;
     stallo: boolean;
     dovuti: ReadonlySet<string>;
     /** Preselezione del Motore: id della battuta → PG della cui azione i temi la chiamano. */
@@ -2514,6 +2514,15 @@ export class Regia {
     // (finale a orologio pieno, segni) e le battute d'attesa non passano da qui.
     if (!motore && per && èRilascio(b) && !b.riempitivo) {
       const azione = t?.azioni.get(per);
+      // The action's check failed (and none passed): a release would give what the failure denies (final round,
+      // attempt 2, PR T2: the slate clue right after a failed Intelligence check whose price is «le lettere si
+      // confondono»). Refused; the addressee's deflection, which agrees with the failure, takes its place.
+      if (azione && azione.fallite.length > 0 && azione.prove.length === 0) {
+        const chiDevia = interlocutore(b, azione.testo ?? '', this.nomiPng, this.pngInScena());
+        this.o.log.warn({ turno, battuta: id, per, fallite: azione.fallite }, 'repertorio: rilascio dopo una prova fallita, rifiutato');
+        const sostituto = this.deviazioneDi(chiDevia ?? ID_NARRATORE);
+        return { ok: false, motivo: `la prova dell'azione è fallita (${azione.fallite.join(', ')}): un rilascio non le risponde`, ...(sostituto.length ? { sostituto } : {}), ...(azione.privata ? { privato: per } : {}) };
+      }
       const fuori = motivoFuoriContesto(b, azione?.testo ?? '', this.nomiPng);
       if (fuori) {
         this.rilasciFuoriContesto += 1;

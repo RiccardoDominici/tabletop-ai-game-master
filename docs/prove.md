@@ -344,7 +344,12 @@ test/gregari.test.ts. Example: ponte-lanterne, the consul's two guards at the Ca
      action's text; not for an essential clue. And a line tied with `richiede.prova` to a check that the action failed this
      turn does not answer it, even if another route via `oppure` would open it: the `[usa]` is refused («legata alla prova
      …, che … ha fallito» (tied to the check …, which … failed)), and the line leaves the catalogue for that action
-     (`EsitoAzioneProve.fallite`, `provaFallita`).
+     (`EsitoAzioneProve.fallite`, `provaFallita`). Nor does any release line (a clue, a confession, a truth, an
+     ending, a line that reveals) answer an action whose check failed and none passed, gated or not: the final round
+     heard the slate clue right after «Intelligenza, fallita», whose price was «le lettere si confondono». The `[usa]`
+     is refused («la prova dell'azione è fallita…: un rilascio non le risponde»), the addressee's deflection takes its
+     place (it agrees with the failure), and such a line is not among the Engine's indicated lines for that action.
+     The Engine's own lines (a stall move's clue) are not held to this: they answer no action.
    - After a FAILED social check toward an NPC, that NPC refuses for the rest of the turn (second pass, indagine-B T10:
      after «Carisma 3… fallita» Haiku had Ugo say «Il sentiero lo conosco io» and point the path). The Engine marks it
      (`EsitoTurnoProve.negati`: the decision's target, or the NPC the action speaks to); in the repertoire only its

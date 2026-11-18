@@ -9,6 +9,7 @@
 import type { Campagna, DatiYaml } from '../campagna/tipi';
 import { indiziCampagna, type IndizioCampagna } from '../campagna/indizi';
 import type { StatoOrologi } from '../scena/orologi';
+import { èRilascio } from './rilascio';
 import { pngNominati, temaPresente } from './pertinenza';
 import { segretiNelTesto, type ParolaSegreta } from './segreti';
 import type { Battuta, CondizioniStato, Repertorio, RigaBattuta, TipoBattuta } from './tipi';
@@ -360,8 +361,11 @@ export class StatoRepertorio {
     for (const a of azioni) {
       if (a.privata) continue;
       const nominati = pngNominati(a.testo, nomiPng);
+      // An action whose check failed and none passed: no release is indicated for it (its failure is the answer).
+      const fallita = (a.fallite?.length ?? 0) > 0 && (a.prove?.length ?? 0) === 0;
       const candidate = battute.filter(
         (b) =>
+          !(fallita && èRilascio(b)) &&
           !prese.has(b.id) &&
           !TIPI_NON_INDICATI.has(b.tipo) &&
           !b.riempitivo &&
