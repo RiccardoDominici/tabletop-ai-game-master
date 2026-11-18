@@ -179,6 +179,12 @@ lines instead of answering the actions. It therefore changes as follows:
   line counts as unanswered even if a sentence names it (the selector's announcement always does), so the repair call
   comes, with the reason in its message («la battuta che avevi scelto è stata rifiutata: …»); a refusal by a gate or a
   release out of context does not (its deviation answers). In profile A no second call goes to the small model.
+- **A release out of context** (a clue, confession, truth, ending or revealing line used for an action that touches
+  none of its themes, refused since 57c8ce7): the Engine's own indicated line for that action (the preselection below)
+  comes out in its place when one fits, logged as «al suo posto la battuta indicata dal Motore» (the line said is
+  recorded under its own id); otherwise the addressee's deflection, but never after a check that action passed, where
+  a refusal would tell the opposite of the card (final round, PR T1: a Carisma success asking Berta for the key was
+  answered «Questo non lo so…»): no line then, and the Engine's «X ci riesce.» follows.
 - **Only what matters comes out pre-written**: lies, confessions, clues, clock signs, moments, endings. Generic reactions
   have `solo_esempio: true`: they do not enter the catalog, but they go into the context as **examples of the voice** of
   the NPC for the improvisation.

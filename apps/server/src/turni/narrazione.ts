@@ -63,6 +63,8 @@ export type EsitoUsaTurno =
       versione: number;
       audio?: CueAudio;
       per?: string | null;
+      /** The line the Engine said in place of the reader's pick (its own indicated line for that action), if not it. */
+      id?: string;
       /** La battuta risponde a un'azione PRIVATA di questo PG: le sue righe vanno solo a lui. */
       privato?: string;
     }
@@ -549,22 +551,24 @@ export async function narraTurno(
           }
           continue;
         }
+        // The line actually said: the reader's pick, or the Engine's indicated line in its place (scena/regia.ts).
+        const idDetto = esito.id ?? e.id;
         // A prewritten line can contradict the state too (docs/coerenza.md §3): its narrator rows go through the fact rules.
         // R-ripetuta first (a sentence heard in this visit, a tic just heard: docs/coerenza.md), then the fact rules.
         const righe: RigaPronta[] = esito.privato
           ? esito.righe
-          : verifica.righeDellaBattuta(e.id, esito.righe).flatMap((r): RigaPronta[] => {
-              const v = verifica.verificaBattuta(e.id, r);
+          : verifica.righeDellaBattuta(idDetto, esito.righe).flatMap((r): RigaPronta[] => {
+              const v = verifica.verificaBattuta(idDetto, r);
               if (v === null && r.ridotta) return [{ ...r, testo_voce: p.pronuncia(r.testo), chiave_cache: '' }];
               if (v === null) return [r];
               if (v === '') return [];
               // The Engine's line: no prerecorded audio for it (an empty key is no cache).
               return [{ ...r, testo: v, testo_voce: p.pronuncia(v), chiave_cache: '' }];
             });
-        uscita.push({ tipo: 'usa', id: e.id, per: esito.per !== undefined ? esito.per : e.per, versione: esito.versione, righe: righe.map((r) => ({ etichetta: r.etichetta, testo: r.testo })) });
+        uscita.push({ tipo: 'usa', id: idDetto, per: esito.per !== undefined ? esito.per : e.per, versione: esito.versione, righe: righe.map((r) => ({ etichetta: r.etichetta, testo: r.testo })) });
         for (const [i, r] of righe.entries()) {
           const { voce_id, nome } = voceDi(campagna, r.etichetta);
-          const fr = { etichetta: r.etichetta, nome, testo: r.testo, segmento: segmentoBattuta++, indice, battuta: e.id };
+          const fr = { etichetta: r.etichetta, nome, testo: r.testo, segmento: segmentoBattuta++, indice, battuta: idDetto };
           if (esito.privato) p.onPrivato?.({ ...fr, id_pg: esito.privato });
           else p.onFrase(fr);
           // L'audio della battuta (e un segnale del narratore in attesa) va con la sua prima riga.
@@ -572,7 +576,7 @@ export async function narraTurno(
           accoda({ parlante: r.etichetta, nome, voce_id, testo: r.testo, testo_voce: r.testo_voce, chiave_cache: r.chiave_cache, ...(cue ? { cue } : {}), ...(esito.privato ? { solo_pg: esito.privato } : {}) });
           righePrescritte += 1;
         }
-        log.info({ turno: p.turno, battuta: e.id, versione: esito.versione, righe: righe.length }, 'repertorio: battuta uscita');
+        log.info({ turno: p.turno, battuta: idDetto, ...(idDetto !== e.id ? { scelta_dal_lettore: e.id } : {}), versione: esito.versione, righe: righe.length }, 'repertorio: battuta uscita');
       } else if (p.soloPg && e.tipo !== 'anomalia') {
         // The private reply does not move the table: its invitation, clocks, attitudes, pace and cues are ignored.
         log.info({ turno: p.turno, tipo: e.tipo, id_pg: p.soloPg }, 'narrator: protocol line of a private reply ignored');

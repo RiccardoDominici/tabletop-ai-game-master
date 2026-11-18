@@ -520,6 +520,8 @@ export class Regia {
   private turno = 0;
   /** The world that moves (docs/mondo.md): gates of avanza_quando, off-screen marks. */
   private mondo!: MondoInGioco;
+  /** An indicated line is being said in place of a refused pick: no second substitution inside it. */
+  private sostituendo = false;
   /** Mode A (A16): clues, lies and canon facts the narrator marked as revealed, checked by the Engine. */
   private marche!: MarcheRivelate;
   /** Who holds what (A22): the scenes' objects with an id. */
@@ -2515,6 +2517,28 @@ export class Regia {
       const fuori = motivoFuoriContesto(b, azione?.testo ?? '', this.nomiPng);
       if (fuori) {
         this.rilasciFuoriContesto += 1;
+        // The reader picked a line the action does not touch: the Engine's own indicated line for that action, if one
+        // fits, comes out in its place (the choice is the Engine's; the reader only relays). Final round, PR T1: Livia's
+        // Carisma success asking for the key, the reader's pick refused, and Berta's deflection told a refusal.
+        const altra = this.indicataAlPostoDi(id, per, azione?.testo ?? '');
+        if (altra && !this.sostituendo) {
+          this.sostituendo = true;
+          try {
+            const e = this.usaBattuta(altra, per, turno, segni);
+            if (e.ok) {
+              this.o.log.warn({ turno, battuta: id, per, motivo: fuori, al_suo_posto: altra }, 'repertorio: rilascio fuori contesto, al suo posto la battuta indicata dal Motore');
+              return { ...e, id: altra };
+            }
+          } finally {
+            this.sostituendo = false;
+          }
+        }
+        // A check this action passed: a deflection would tell the opposite of its card. No line then (the Engine's
+        // acknowledgement of the success follows).
+        if ((azione?.prove.length ?? 0) > 0) {
+          this.o.log.warn({ turno, battuta: id, per, motivo: fuori, prove: azione?.prove }, 'repertorio: rilascio fuori contesto su una prova riuscita: nessuna deviazione');
+          return { ok: false, motivo: `fuori contesto: ${fuori}`, ...(azione?.privata ? { privato: per } : {}) };
+        }
         // La deviazione la dice chi è interpellato dall'azione (presente in scena); se l'azione non parla a nessuno,
         // il narratore: la riga si toglie, e nessun PNG risponde a chi non gli ha parlato.
         const chiDevia = interlocutore(b, azione?.testo ?? '', this.nomiPng, this.pngInScena());
@@ -3743,6 +3767,21 @@ export class Regia {
   /** Per il pannello del master: schede coi PF e condizioni del set (null senza dadi). */
   get combattimentoMaster(): CombattimentoMaster | null {
     return this.prove?.attivo ? this.prove.combattimentoMaster() : null;
+  }
+
+  /**
+   * The Engine's indicated line for this PC's action in this turn's catalogue (StatoRepertorio.indicatePerAzioni: its
+   * themes are in the action, its voice the right one), other than `id`, that is in context for the action; or null.
+   */
+  private indicataAlPostoDi(id: string, per: string, testoAzione: string): string | null {
+    const s = this.statoRepertorio;
+    if (!s || !this.turnoB) return null;
+    for (const [bid, autore] of this.turnoB.indicate) {
+      if (autore !== per || bid === id || !this.elencoTurno.has(bid)) continue;
+      const b = s.repertorio.perId.get(bid);
+      if (b && !(èRilascio(b) && motivoFuoriContesto(b, testoAzione, this.nomiPng))) return bid;
+    }
+    return null;
   }
 
   /** Combattimento a turni: tiene le azioni di chi è di turno, rinvia le altre (tornano in coda). */
