@@ -1,0 +1,4 @@
+{"ts":"2026-11-18T10:58:52.700Z","esito":"avvio","modelli":{"subito":"sonnet","chiusura":"sonnet","prossime":"haiku"},"pid":53668}
+{"ts":"2026-11-18T11:02:57.841Z","id":"prossime-t1-mwm0ewjh-1","tipo":"prossime","turno":1,"esito":"errore","errore":"claude -p è uscito con 143: ","ms_in_coda":287}
+{"ts":"2026-11-18T11:05:59.253Z","id":"subito-t2-mwm0fw2n-2","tipo":"subito","turno":2,"esito":"errore","errore":"claude -p è uscito con 143: ","ms_in_coda":135718}
+{"ts":"2026-11-18T11:08:58.465Z","esito":"arresto","pid":53668}
