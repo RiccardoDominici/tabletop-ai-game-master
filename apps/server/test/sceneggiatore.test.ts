@@ -59,6 +59,12 @@ describe('controllo delle battute dello sceneggiatore', () => {
     expect(estraiYaml('Ecco:\n```yaml\nbattute: []\n```\nfine')).toBe('battute: []');
   });
 
+  it('a secret in the `quando` is refused too: the reader sees it in its catalogue (A31, final round)', () => {
+    const r = validaBattute(yaml([battuta({ id: 'sc_x_1', quando: 'un PG chiede se il vino è annacquato' }), battuta({ id: 'sc_x_2' })]), ctx);
+    expect(r.accettate.map((b) => b.id)).toEqual(['sc_x_2']);
+    expect(r.scartate.map((s) => s.motivo)).toEqual([expect.stringMatching(/parole segrete nel quando: il vino annacquato/)]);
+  });
+
   it('the facts a line assumes: attori, menzionati and richiede.stati pass; an untagged named NPC is taken as acting', () => {
     const entita = [
       { id: 'png_oste', tipo: 'png' as const, nome: 'Oste Bruno', nomi: ['Oste Bruno', 'Bruno'], stato: 'in_piedi' as const, presenza: 'in_scena' as const, uscito: null },

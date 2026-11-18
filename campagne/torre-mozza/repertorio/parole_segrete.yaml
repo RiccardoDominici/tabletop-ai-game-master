@@ -3,7 +3,7 @@
 # che le faccia Tonio. `pubblica_dopo`: le battute e gli indizi dopo i quali il fatto è dei PG.
 parole:
   - parola: "Tonio è salito da solo, d'accordo con i goblin"
-    regex: "\\bapposta\\b|\\bfatto rapire\\b|\\bd'accordo con (zirrà|i goblin|la goblin)\\b|\\bnon (è stato|l'hanno) rapito\\b|\\bnon è (un )?prigioniero\\b|\\bportato (lui )?i goblin\\b|\\bsalito\\b[^.]{0,30}\\bda solo\\b|\\bandato da solo\\b|\\bcomplice\\b|\\bfinto\\b|\\bvenut[oa] da sol[oa]\\b|\\bdi sua volontà\\b|\\bfinto il rapimento\\b|\\bha portato lui\\b|\\bd'accordo con i goblin\\b|\\bsaliva da solo\\b|\\bsalire da solo\\b|\\bcon le sue gambe\\b"
+    regex: "\\bapposta\\b|\\bfatto rapire\\b|\\bd'accordo con (zirrà|i goblin|la goblin)\\b|\\bnon (è stato|l'hanno) rapito\\b|\\bnon è (un )?prigioniero\\b|\\b(tonio|il ragazzo)\\b[^.]{0,40}\\bportato\\b[^.]{0,10}\\bgoblin\\b|\\bsalito\\b[^.]{0,30}\\bda solo\\b|\\bandato da solo\\b|\\bcomplice\\b|\\bfinto\\b|\\bvenut[oa] da sol[oa]\\b|\\bdi sua volontà\\b|\\bfinto il rapimento\\b|\\b(tonio|il ragazzo)\\b[^.]{0,30}\\bha portato lui\\b|\\bd'accordo con i goblin\\b|\\bsaliva da solo\\b|\\bsalire da solo\\b|\\bcon le sue gambe\\b"
     fatti: [f_tonio_complice]
     pubblica_dopo: [i_tonio_libero, nar_corda, nar_piccone, zir_chiave_prima, i_impronte, nar_impronte, i_ugo_racconta, ugo_sentiero_privato, ugo_sentiero_impronte, i_grosso, gro_cibo, zir_corda, zir_carbonaio, nar_tonio_parla]
     nota: "La verità della campagna. La dicono Zirrà, Grosso e Ugo quando cedono, e il narratore quando Tonio parla; la mostrano la corda senza nodo e le impronte."
@@ -18,7 +18,7 @@ parole:
     pubblica_dopo: [zir_corda, zir_carbonaio, gro_cibo]
     nota: "Il pane della settimana sparito dal giaciglio è pubblico; segreto è a chi lo porta."
   - parola: "Ugo ha visto il ragazzo salire"
-    regex: "\\bvisto salire\\b|\\bl'ha visto\\b|\\bcol pane sotto il braccio\\b|\\bl'ho visto\\b|\\bsaliva da solo\\b"
+    regex: "\\bvisto salire (il ragazzo|tonio)\\b|\\bvisto (il ragazzo|tonio) salire\\b|\\bl'ho visto salire\\b|\\bl'ha visto salire\\b|\\bl'ha visto\\b|\\bcol pane sotto il braccio\\b|\\bl'ho visto\\b|\\bsaliva da solo\\b"
     fatti: [f_ugo_visto]
     pubblica_dopo: [ugo_sentiero_privato, ugo_sentiero_impronte, i_ugo_racconta]
     nota: "Ciò che Ugo tace sul sentiero."

@@ -228,6 +228,9 @@ export function validaBattute(testo: string, ctx: ContestoValidazione): EsitoVal
     if (b.testo.length > MAX_RIGHE || b.testo.some((r) => r.testo.length > MAX_CARATTERI_RIGA)) return void scartate.push({ id: b.id, motivo: 'troppo lunga per la voce' }), false;
     const segreti = segretiNascosti(b.testo.map((r) => r.testo).join(' '), ctx.parole, ctx.pubblico, ctx.detto);
     if (segreti.length) return void scartate.push({ id: b.id, motivo: `parole segrete: ${segreti.join(', ')}` }), false;
+    // The `quando` goes to the reader's catalogue: no secret there either (A31: the selector's message held one).
+    const nelQuando = segretiNascosti(b.quando, ctx.parole, ctx.pubblico, ctx.detto);
+    if (nelQuando.length) return void scartate.push({ id: b.id, motivo: `parole segrete nel quando: ${nelQuando.join(', ')}` }), false;
     const agisce = b.testo.filter((r) => r.etichetta === ID_NARRATORE).map((r) => pgCheAgisce(r.testo, nomi)).find((x) => x !== null);
     if (agisce) return void scartate.push({ id: b.id, motivo: `decide per un PG: «${agisce}»` }), false;
     const tic = b.testo.map((r) => ({ r, t: (ctx.ticBloccati?.get(r.etichetta) ?? []).find((x) => normalizzaFrase(r.testo).includes(x)) })).find((x) => x.t);
