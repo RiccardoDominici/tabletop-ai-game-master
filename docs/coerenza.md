@@ -52,7 +52,13 @@ presence, `presenzeManuali`, `mondo/` attitudes, moved NPCs, consequences; `repe
   with its knowers: the wounded NPC is wounded for everybody (the body shows it), who did it and how stays known only
   to that PC, so later public narration stays consistent without revealing the content;
 - **this turn's outcomes**: per card, attacker → target, hit or miss, damage band; per check, success or failure and
-  what it denies (`negati`, `fallite`).
+  what it denies (`negati`, `fallite`);
+- **who holds what** (A22, `scena/oggetti.ts`): the scenes' objects with an id (`elementi_interattivi[].id: ogg_…`,
+  holder at the start `chi`), moved by a line's `effetti.oggetti` (mode B: `pg` = the PC the line answers, a character
+  id, or `scena` = back in its place) or by the narrator's `[oggetto] ogg_x <chi>` (mode A, checked: an object of this
+  scene or held by someone here, to a PC, an NPC in the scene or `scena`). «Cosa è vero adesso» says «Chi ha che cosa:
+  la chiave di ferro: ce l'ha Livia.»; a change is a journal event (`oggetto`); the snapshot keeps it and the session
+  log lists where the objects ended (`oggetti`).
 Every change is an event in a journal (`registro: evento`, turn, entity, from → to, cause) saved in the snapshot, so a
 resume and the panel show the same history. The model never writes the ledger. One exception, the one the e2e passes
 need: presence. The narrator may propose `[esce png_x]` / `[entra png_x]` (protocol tags, like `[orologio]`); the

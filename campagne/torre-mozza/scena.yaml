@@ -22,6 +22,8 @@ elementi_interattivi:
   - {cosa: "il cancello dello stazzo", dove: "a sinistra del cortile, tra i pali scolpiti", azioni: "si esamina il chiavistello, si contano le pecore"}
   - {cosa: "le pecore dello stazzo", dove: "dentro il recinto", azioni: "NASCOSTA: ci sono tutte, non manca nemmeno un agnello"}
   - {cosa: "i pali del cancello", dove: "ai lati del cancello", azioni: "si leggono i nomi delle pecore incisi col coltello"}
+  # Un oggetto che il Motore tiene (chi ce l'ha, docs/coerenza.md §1): ber_chiave e nar_chiave_presa lo passano al PG.
+  - {id: ogg_chiave, cosa: "la chiave di ferro del castellano", dove: "al collo di Berta, appesa a un laccio di cuoio", chi: png_berta, azioni: "Berta la affida a chi le promette il figlio; si può anche strappare"}
   - {cosa: "le lettere dei pali", dove: "sui pali del cancello", azioni: "NASCOSTA: le erre sono rovesciate, come sulla lavagna"}
   - {cosa: "la porta di casa", dove: "sotto il portico", azioni: "si entra; dietro il battente è appeso un mantello da pastore"}
   - {cosa: "sotto il mantello", dove: "dietro la porta di casa", azioni: "NASCOSTA: c'è l'avviso del balivo, con il sigillo rosso"}

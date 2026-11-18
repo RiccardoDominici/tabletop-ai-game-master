@@ -208,6 +208,7 @@ contesto:
     etichetta_orologio: "- [orologio] seguito dall’id di un orologio attivo, solo quando la risposta ne mostra il prossimo segno"
     etichetta_atteggiamento: "- [atteggiamento] seguito da id del PNG, id del PG (o tutti) e nuovo stato (ostile, indifferente, amichevole), solo quando un PNG in scena cambia idea su un PG"
     etichetta_marche: "- [indizio] seguito dall’id di un indizio della scena, [menzogna] seguito dall’id di una menzogna (mente_su) di un PNG in scena, [fatto] seguito dall’id di un fatto del canone: una riga per ognuno, solo quando la risposta lo rivela davvero ai PG (o il PNG dice quella menzogna)"
+    etichetta_oggetto: "- [oggetto] seguito dall’id di un oggetto della scena (ogg_…) e da chi lo tiene adesso (id di un PG o di un PNG in scena, oppure scena se torna al suo posto), solo quando passa di mano"
   # Contesto del selettore, solo la parte pubblica (apps/server/src/repertorio/contesto.ts).
   repertorio:
     intestazione: "# Campagna «{titolo}» (parte pubblica)"

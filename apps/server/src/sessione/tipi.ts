@@ -20,6 +20,7 @@
  */
 import type { EsitoPrivato, FaseScena, NotaRegia, RiassuntoSerata, VoceTrascrizione } from '@tabletop-ai-gm/shared';
 import type { MarcheSalvate } from '../scena/marche';
+import type { OggettiSalvati } from '../scena/oggetti';
 import type { UmoreScelto } from '../audio/scena';
 import type { Azione } from '../azioni/tipi';
 import type { StatoProveSalvato } from '../prove/stato';
@@ -77,6 +78,8 @@ export interface FotografiaSessione {
   mondo?: StatoMondoSalvato;
   /** Mode A (A16): clues, lies and canon facts the narrator marked as revealed (absent in older archives). */
   marche?: MarcheSalvate;
+  /** Who holds what (A22): object id, holder (null = in its place), turn of the last change (absent in older archives). */
+  oggetti?: OggettiSalvati;
   repertorio: StatoRepertorioSalvato | null;
   note: { elenco: NotaRegia[]; prossimoId: number };
   /** `automatica` c'era negli archivi di prima (pausa dopo gli stalli, tolta): si ignora. */

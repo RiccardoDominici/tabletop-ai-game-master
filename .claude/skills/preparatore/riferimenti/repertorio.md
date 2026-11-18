@@ -125,6 +125,9 @@ gate. For the gates on the action, the chosen alternative applies (`{privata: tr
   (a confession that seals a pact, a gift accepted, a threat that closes a door), `{png_x: amichevole}` changes that NPC
   towards the PC the line answers, `{png_x: {pg_y: ostile}}` or `{png_x: {tutti: …}}` explicitly. The Engine applies it
   when the line comes out, any state. Only where the text says the turn; never on a `solo_esempio`.
+- **Objects that change hands** (`effetti.oggetti`, docs/coerenza.md §1) [V]: the line that hands over, steals or
+  drops an object with an id (`elementi_interattivi[].id: ogg_…`) says so: `{ogg_x: pg}` to the PC the line answers,
+  `{ogg_x: png_y}` to an NPC, `{ogg_x: scena}` back in its place. The Engine then tells the narrator who holds it.
 - **Key moments**: the NPCs' initiatives and evolutions (one burns the sacks, another wraps the crumb for a daughter), the climax, the
   turning points.
 - **Audio signals** (`audio: {effetto, umore}`, schema.md "Audio"): few, and only where the text calls for them.

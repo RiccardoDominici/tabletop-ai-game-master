@@ -127,6 +127,7 @@ battute:
     testo:
       - "[narratore] Il laccio si spezza, e la chiave di ferro passa di mano."
       - "[narratore] Berta resta con il pugno vuoto, e vi guarda come si guarda un lupo."
+    effetti: {oggetti: {ogg_chiave: pg}}
     max_usi: 1
 
   - id: fin_ovile_chiave

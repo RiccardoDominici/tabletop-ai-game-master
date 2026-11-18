@@ -155,7 +155,8 @@ last event, status and reason for closing, turns), `giocatori` (players), `scene
 its turn and cause: narration or master, signs removed, departure), `indizi` (clues), `battute` (lines), `menzogne`
 (lies), `fatti_noti` (known facts) (with the line that brings them), `png_incontrati` (NPCs met) (who spoke, first and
 last turn), `png_improvvisati` (minor characters the narrator improvised in mode A with `[nuovo png]`: name, role,
-turn, scene; only when there are any, docs/coerenza.md), `pg` (PCs) (public and private actions kept separate, exact text and outcome), `momenti` (moments) (the turns
+turn, scene; only when there are any, docs/coerenza.md), `oggetti` (objects that changed hands: id, holder at the end
+or null back in its place, turn; only when there are any, A22), `pg` (PCs) (public and private actions kept separate, exact text and outcome), `momenti` (moments) (the turns
 in which the Engine recorded a change, with the lines said and the actions), `note_del_master` (the Game Master's notes),
 `avvisi` (warnings). `trascrizione.yaml` sits next to it: the public entries turn by turn, exact text. In mode A there
 are no lines (`battute: null`); clues, lies and known facts come from the narrator's `[indizio]`, `[menzogna]`,

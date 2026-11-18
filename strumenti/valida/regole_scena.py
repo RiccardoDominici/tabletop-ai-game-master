@@ -209,6 +209,16 @@ def _scena(c: Campagna, e: Esito, dove: str, s: dict) -> None:
         e.errore("SCENA.sensi", dove, f"{len(s.get('sensi') or [])} dettagli sensoriali (esattamente 3)")
     if len(s.get("elementi_interattivi") or []) < 3:
         e.errore("SCENA.elementi", dove, "almeno tre elementi interattivi")
+    # Objects the Engine tracks (A22, coerenza.md §1): an element with an id (ogg_…) and, if someone holds it, `chi`.
+    for el in s.get("elementi_interattivi") or []:
+        if not isinstance(el, dict) or el.get("id") is None and el.get("chi") is None:
+            continue
+        oid = el.get("id")
+        if not (isinstance(oid, str) and re.fullmatch(r"ogg_[a-z0-9_]+", oid)):
+            e.errore("SCENA.oggetti", dove, f"elemento {el.get('cosa')!r}: un oggetto tenuto dal Motore ha id ogg_… (chi senza id non vale)")
+        chi = el.get("chi")
+        if chi is not None and chi not in c.png and chi not in c.pg_ids:
+            e.errore("SCENA.oggetti", dove, f"oggetto {oid}: chi {chi!r} non è un PNG con scheda né un PG")
     presenti = list(s.get("png_presenti") or [])
     for p in presenti:
         if p not in c.png:

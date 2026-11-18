@@ -12,6 +12,7 @@
  *   [nuovo png] <nome>, <ruolo>         ← optional, mode A, not read aloud: a minor improvised character enters
  *   [indizio] i_x / [menzogna] id / [fatto] f_x ← optional, mode A, not read aloud: the answer revealed a clue, told
  *                                         an NPC's lie, made a canon fact known (the Engine checks it, like [orologio])
+ *   [oggetto] ogg_x <pg_y | png_y | scena> ← optional, mode A, not read aloud: an object changed hands (A22)
  *   [invito] pg_a,pg_b      ← ultima riga, obbligatoria, non letta a voce
  *
  * Riceve i delta del testo in streaming e produce eventi appena possibile:
@@ -72,6 +73,8 @@ export type EventoNarratore =
    * known facts reach the session log as in mode B; the Engine checks each id like [orologio].
    */
   | { tipo: 'marca'; cosa: 'indizio' | 'menzogna' | 'fatto'; id: string; grezzo: string }
+  /** [oggetto] ogg_x <chi> (mode A, A22): the object is now held by that character, or back in its place (`scena`). */
+  | { tipo: 'oggetto'; id: string; chi: string; grezzo: string }
   /** Riga [ritmo] concitato|calmo: la narrazione chiede (o toglie) il conto alla rovescia. */
   | { tipo: 'ritmo'; ritmo: 'concitato' | 'calmo'; grezzo: string }
   /**
@@ -118,7 +121,7 @@ type Marca = (typeof MARCHE)[number];
 /** Oltre questa lunghezza un «[» a inizio riga senza «]» non è un'etichetta. */
 const MAX_ETICHETTA = 48;
 
-type Modo = 'inizio_riga' | 'testo' | 'invito' | 'orologio' | 'ritmo' | 'usa' | 'umore' | 'effetto' | 'atteggiamento' | 'esce' | 'entra' | 'nuovo_png' | Marca;
+type Modo = 'inizio_riga' | 'testo' | 'invito' | 'orologio' | 'ritmo' | 'usa' | 'umore' | 'effetto' | 'atteggiamento' | 'esce' | 'entra' | 'nuovo_png' | Marca | 'oggetto';
 
 export class ParserNarratore {
   private readonly png: Set<string>;
@@ -204,6 +207,7 @@ export class ParserNarratore {
       case 'indizio':
       case 'menzogna':
       case 'fatto':
+      case 'oggetto':
         this.bufferInvito += c;
         return;
       case 'testo':
@@ -285,7 +289,7 @@ export class ParserNarratore {
       this.bufferInvito = resto;
       return;
     }
-    if (risolta.tipo === 'orologio' || risolta.tipo === 'ritmo' || risolta.tipo === 'usa' || risolta.tipo === 'umore' || risolta.tipo === 'effetto' || risolta.tipo === 'atteggiamento' || risolta.tipo === 'esce' || risolta.tipo === 'entra' || risolta.tipo === 'nuovo_png' || risolta.tipo === 'indizio' || risolta.tipo === 'menzogna' || risolta.tipo === 'fatto') {
+    if (risolta.tipo === 'orologio' || risolta.tipo === 'ritmo' || risolta.tipo === 'usa' || risolta.tipo === 'umore' || risolta.tipo === 'effetto' || risolta.tipo === 'atteggiamento' || risolta.tipo === 'esce' || risolta.tipo === 'entra' || risolta.tipo === 'nuovo_png' || risolta.tipo === 'indizio' || risolta.tipo === 'menzogna' || risolta.tipo === 'fatto' || risolta.tipo === 'oggetto') {
       this.modo = risolta.tipo;
       this.bufferInvito = resto;
       return;
@@ -330,6 +334,7 @@ export class ParserNarratore {
     | { tipo: 'indizio' }
     | { tipo: 'menzogna' }
     | { tipo: 'fatto' }
+    | { tipo: 'oggetto' }
     | { tipo: 'parlante'; id: string; alias: boolean }
     | { tipo: 'privato'; pg: string | null }
     | { tipo: 'sconosciuta' } {
@@ -351,6 +356,7 @@ export class ParserNarratore {
     if (t === ENTRA) return { tipo: 'entra' };
     if (t.replace(/[\s_]+/g, ' ') === NUOVO_PNG) return { tipo: 'nuovo_png' };
     if ((MARCHE as readonly string[]).includes(t)) return { tipo: t as Marca };
+    if (t === 'oggetto') return { tipo: 'oggetto' };
     if (t === NARRATORE) return { tipo: 'parlante', id: NARRATORE, alias: false };
     if (this.png.has(t)) return { tipo: 'parlante', id: t, alias: false };
     const daAlias = this.alias.get(t) ?? this.alias.get(t.replace(/^png_/, ''));
@@ -420,6 +426,9 @@ export class ParserNarratore {
       case 'menzogna':
       case 'fatto':
         this.chiudiMarca(this.modo);
+        break;
+      case 'oggetto':
+        this.chiudiOggetto();
         break;
       case 'inizio_riga': {
         const p = this.prefisso.trim();
@@ -512,6 +521,19 @@ export class ParserNarratore {
       return;
     }
     this.eventi.push({ tipo, tag, grezzo });
+  }
+
+  /** [oggetto] ogg_x <chi>: two words, lowercase (the Engine checks them); a PC or NPC alias is resolved to its id. */
+  private chiudiOggetto(): void {
+    const grezzo = this.bufferInvito.trim();
+    this.bufferInvito = '';
+    const [id, chiGrezzo] = grezzo.replace(/[`"'«»]/g, '').split(/[\s,;]+/).map((x) => x.toLowerCase().replace(/[.!?:]+$/, ''));
+    if (!id || !chiGrezzo) {
+      this.anomalia('marca_vuota', `riga [oggetto] senza id o senza chi: «${grezzo}»`);
+      return;
+    }
+    const chi = this.pg.has(chiGrezzo) || this.png.has(chiGrezzo) || chiGrezzo === 'scena' ? chiGrezzo : (this.alias.get(chiGrezzo) ?? chiGrezzo);
+    this.eventi.push({ tipo: 'oggetto', id, chi, grezzo });
   }
 
   /** [indizio] / [menzogna] / [fatto] <id>: the first word, lowercase (the Engine checks it). */

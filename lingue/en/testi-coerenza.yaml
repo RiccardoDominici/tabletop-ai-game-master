@@ -15,6 +15,8 @@ coerenza:
   prova_fallita: "{chi}: {etichetta} failed"
   negati: "Refused this turn: {elenco}."
   negato: "{png} to {pg}"
+  oggetti: "Who holds what: {elenco}."
+  oggetto: "{oggetto}: {chi} has it"
   stato:
     in_piedi: "{nome} standing"
     ferito: "{nome} wounded"

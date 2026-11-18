@@ -244,6 +244,23 @@ def test_scena_esiti_con_cancelli(camp):
         assert "SCENA.esiti" in errori(camp), cattiva
 
 
+def test_oggetti_tenuti_dal_motore(camp):
+    # A22: an element with an id (ogg_…) is an object the Engine tracks; `chi` holds it; a line can move it.
+    png = sorted(p.stem for p in (camp / "png").glob("*.yaml"))[0]
+    rep = sorted((camp / "repertorio").glob("*.yaml"))[0].name
+    originale_scena, originale_rep = leggi(camp, "scena.yaml"), leggi(camp, f"repertorio/{rep}")
+    modifica(camp, "scena.yaml", lambda d: d["elementi_interattivi"].append({"id": "ogg_chiave", "cosa": "la chiave", "chi": png, "azioni": "si prende"}))
+    modifica(camp, f"repertorio/{rep}", lambda d: d["battute"][0].setdefault("effetti", {}).__setitem__("oggetti", {"ogg_chiave": "pg"}))
+    assert "SCENA.oggetti" not in errori(camp) and "REPERTORIO.effetti" not in errori(camp)
+    for cattivo in ({"id": "chiave", "cosa": "x"}, {"cosa": "x", "chi": png}, {"id": "ogg_x", "cosa": "x", "chi": "png_nessuno"}):
+        scrivi(camp, "scena.yaml", originale_scena)
+        modifica(camp, "scena.yaml", lambda d: d["elementi_interattivi"].append(cattivo))
+        assert "SCENA.oggetti" in errori(camp), cattivo
+    scrivi(camp, "scena.yaml", originale_scena)
+    assert "REPERTORIO.effetti" in errori(camp)   # ogg_chiave no longer exists
+    scrivi(camp, f"repertorio/{rep}", originale_rep)
+
+
 def test_scena_rientro_con_battuta_inesistente(camp):
     modifica(camp, "scena.yaml", lambda d: d.update(rientro="nar_cera"))
     assert "SCENA.rientro" not in errori(camp)

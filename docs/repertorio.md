@@ -54,6 +54,8 @@ battute:
       avanza_orologio: null           # id of the clock if it is a sign
       atteggiamento: {}               # {png_x: amichevole}: towards the PC the line answers (every PC if none);
                                       # {png_x: {pg_y: ostile, tutti: indifferente}}: explicit (docs/mondo.md §4)
+      oggetti: {}                     # {ogg_x: pg}: the object goes to the PC the line answers; {ogg_x: png_y | pg_y}
+                                      # to that character; {ogg_x: scena} back in its place (docs/coerenza.md §1)
     max_usi: 1                        # variants count as uses of the same line
     attori: [png_ottavia]             # NPCs who act in (or are there in) the narrator rows, even unnamed
     menzionati: []                    # NPCs only talked about: no presence asked

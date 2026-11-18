@@ -125,6 +125,7 @@ export function sezioniContestoCampagna(c: Campagna): SezioneContesto[] {
         testo('contesto.campagna.etichetta_orologio'),
         testo('contesto.campagna.etichetta_atteggiamento'),
         testo('contesto.campagna.etichetta_marche'),
+        testo('contesto.campagna.etichetta_oggetto'),
         testo('contesto.etichetta_invito', { pg: c.pg.map((p) => p.id).join(', ') }),
       ].join('\n'),
     ].join('\n\n'),

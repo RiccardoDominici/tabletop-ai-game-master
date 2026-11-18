@@ -89,6 +89,7 @@ import { sommaCosti } from '../llm/costi';
 import type { Battuta, Repertorio } from '../repertorio/tipi';
 import { STATI_ATTEGGIAMENTO, TUTTI_I_PG, type StatoAtteggiamento } from '../campagna/mondo';
 import { MarcheRivelate } from './marche';
+import { AL_SUO_POSTO, StatoOggetti } from './oggetti';
 import { esitiDellaScena, esitoRaggiunto } from './esiti-scena';
 import { classeDi } from '../repertorio/fatti-battuta';
 import { haCancelloAzione, StatoRepertorio } from '../repertorio/stato';
@@ -521,6 +522,8 @@ export class Regia {
   private mondo!: MondoInGioco;
   /** Mode A (A16): clues, lies and canon facts the narrator marked as revealed, checked by the Engine. */
   private marche!: MarcheRivelate;
+  /** Who holds what (A22): the scenes' objects with an id. */
+  private oggetti!: StatoOggetti;
   /** The stall move of the turn being narrated (docs/mondo.md §5), or null. */
   private mossaStallo: MossaStallo | null = null;
   /** Clocks due in the message of the turn being narrated (owed marks are said by the Engine if not shown). */
@@ -769,6 +772,7 @@ export class Regia {
     this.orologi = new StatoOrologi(opzioni.campagna);
     this.mondo = this.nuovoMondo();
     this.marche = new MarcheRivelate(this.campagna);
+    this.oggetti = new StatoOggetti(this.campagna);
     this.nomiPng = nomiDeiPng(opzioni.campagna);
     this.luogo = opzioni.campagna.scena.id;
     this.ritmo = ritmoDellaScena(this.campagna);
@@ -921,6 +925,7 @@ export class Regia {
       orologi: this.orologi.esporta(),
       mondo: this.mondo.esporta(),
       marche: this.marche.esporta(),
+      oggetti: this.oggetti.esporta(),
       repertorio: this.statoRepertorio?.esporta() ?? null,
       note: this.note.esporta(),
       pausa: { richiesta: this.pausaRichiesta, invitoSospeso: this.invitoSospeso },
@@ -1019,6 +1024,7 @@ export class Regia {
     this.orologi.importa(f.orologi);
     this.mondo.importa(f.mondo);
     this.marche.importa(f.marche);
+    this.oggetti.importa(f.oggetti);
     if (this.prove?.attivo && f.prove) this.prove.importa(f.prove);
     if (this.statoRepertorio && f.repertorio) this.statoRepertorio.importa(f.repertorio);
     this.diarioRegistro.importa(f.registro);
@@ -1423,6 +1429,7 @@ export class Regia {
       fatti,
       carte: prove?.carteDelTurno(this.turno) ?? [],
       negati: this.negatiDettaglio,
+      oggetti: this.oggetti.tenuti(),
     };
   }
 
@@ -1605,6 +1612,23 @@ export class Regia {
       for (const c of cambi) this.o.log.info({ turno, battuta: b.id, png: c.png, pg: c.pg, da: c.da, a: c.a }, 'world: attitude changed by a line');
     }
     if (b.effetti.atteggiamento.length) this.notifica();
+  }
+
+  /**
+   * A line's `effetti.oggetti` (A22): the objects change hands when it comes out; `pg` is the PC the line answers (a line
+   * that answers none gives nothing to «pg»), `scena` puts it back in its place.
+   */
+  private oggettiDellaBattuta(b: Battuta, per: string | null, turno: number): void {
+    for (const o of b.effetti.oggetti) {
+      const chi = o.chi === 'pg' ? per : o.chi;
+      if (!chi) {
+        this.o.log.warn({ turno, battuta: b.id, oggetto: o.id }, 'world: a line gives an object to «pg» but answers no PC');
+        continue;
+      }
+      const e = this.oggetti.sposta(o.id, chi === AL_SUO_POSTO ? AL_SUO_POSTO : chi, turno);
+      if (e.ok) this.o.log.info({ turno, battuta: b.id, oggetto: o.id, da: e.da, a: chi }, 'world: an object changed hands by a line');
+      else this.o.log.warn({ turno, battuta: b.id, oggetto: o.id, motivo: e.motivo }, 'world: a line\'s object change refused');
+    }
   }
 
   /** The narrator's or the selector's [atteggiamento] lines (both modes), checked by the Engine. Returns the outcomes, for the log. */
@@ -2514,6 +2538,7 @@ export class Regia {
     this.rivelateNelTurno.push(esito.battuta.id, ...esito.battuta.effetti.rivela_indizi);
     if (esito.orologiPartiti.length) this.o.log.info({ turno, battuta: id, orologi: esito.orologiPartiti }, 'orologio: partito (parte_dopo)');
     this.atteggiamentiDellaBattuta(esito.battuta, per, turno);
+    this.oggettiDellaBattuta(esito.battuta, per, turno);
     const audio = this.cueBattuta(esito.battuta);
     return {
       ok: true,
@@ -2748,6 +2773,7 @@ export class Regia {
     this.orologi = new StatoOrologi(this.o.campagna);
     this.mondo = this.nuovoMondo();
     this.marche = new MarcheRivelate(this.campagna);
+    this.oggetti = new StatoOggetti(this.campagna);
     this.sceneVisitate.clear();
     this.sceneConFinale.clear();
     this.rivelati.clear();
@@ -4345,6 +4371,24 @@ export class Regia {
       else log.warn({ cosa: m.cosa, id: m.id, motivo: e.motivo }, 'narrator: revealed mark refused');
       return e.ok ? { ...m, ok: true } : { ...m, ok: false, motivo: e.motivo };
     });
+    // Mode A: objects that changed hands ([oggetto], A22): to a PC, to an NPC in the scene, or back in place (`scena`),
+    // for an object of this scene or one someone here holds.
+    const esitiOggetti = (this.statoRepertorio ? [] : esito.oggetti).map((x) => {
+      const def = this.oggetti.definiti.get(x.id);
+      const qui = this.pngInScena();
+      const tenuto = this.oggetti.chi(x.id);
+      const motivo = !def
+        ? `unknown object ${x.id}`
+        : def.scena !== this.campagna.scena.id && !(tenuto && (this.campagna.pg.some((p) => p.id === tenuto) || qui.has(tenuto)))
+          ? `${x.id} is not here`
+          : x.chi !== AL_SUO_POSTO && !this.campagna.pg.some((p) => p.id === x.chi) && !qui.has(x.chi)
+            ? `${x.chi} is not a PC nor an NPC in the scene`
+            : null;
+      const e = motivo ? ({ ok: false, motivo } as const) : this.oggetti.sposta(x.id, x.chi, turno);
+      if (e.ok) log.info({ oggetto: x.id, da: e.da, a: x.chi }, 'narrator: object change accepted');
+      else log.warn({ oggetto: x.id, a: x.chi, motivo: e.motivo }, 'narrator: object change refused');
+      return e.ok ? { ...x, ok: true } : { ...x, ok: false, motivo: e.motivo };
+    });
     // Attitude changes the narrator proposed (mode A): the Engine checks them (docs/mondo.md §4).
     const atteggiamenti = this.atteggiamentiDalNarratore(turno, esito.atteggiamenti, log);
     // Minor characters the narrator brought in ([nuovo png], mode A): registered before the presence changes.
@@ -4465,6 +4509,7 @@ export class Regia {
       invito: esito.invito,
       orologi: esitiOrologi,
       ...(esitiMarche.length ? { marche: esitiMarche } : {}),
+      ...(esitiOggetti.length ? { oggetti: esitiOggetti } : {}),
       ...(atteggiamenti.length ? { atteggiamenti } : {}),
       stato_orologi: this.orologi.riepilogo(),
       anomalie: esito.anomalie,

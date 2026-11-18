@@ -84,6 +84,7 @@ export function caricaRepertorio(c: Campagna, log?: Logger, cartella = c.cartell
   const indizi = idIndizi(c);
   const fatti = idFatti(c);
   const orologi = idOrologi(c);
+  const oggetti = new Set(c.scene.flatMap((s) => ((s.dati['elementi_interattivi'] as DatiYaml[] | undefined) ?? []).flatMap((x) => (typeof x?.['id'] === 'string' ? [x['id']] : []))));
   for (const b of battute) {
     // Base e alternative: stessi riferimenti da controllare.
     for (const r of [b.richiede, ...b.richiede.oppure]) {
@@ -95,6 +96,10 @@ export function caricaRepertorio(c: Campagna, log?: Logger, cartella = c.cartell
     for (const id of b.effetti.rivela_indizi) if (!indizi.has(id)) errori.push(`${b.id}: indizio inesistente «${id}»`);
     for (const id of b.effetti.fatti_noti) if (!fatti.has(id)) errori.push(`${b.id}: fatto del canone inesistente «${id}»`);
     if (b.effetti.avanza_orologio && !orologi.has(b.effetti.avanza_orologio)) errori.push(`${b.id}: orologio inesistente «${b.effetti.avanza_orologio}»`);
+    for (const o of b.effetti.oggetti) {
+      if (!oggetti.has(o.id)) errori.push(`${b.id}: effetti.oggetti cita un oggetto inesistente «${o.id}» (elementi_interattivi con id)`);
+      if (o.chi !== 'pg' && o.chi !== 'scena' && !c.png.some((p) => p.id === o.chi) && !c.pg.some((p) => p.id === o.chi)) errori.push(`${b.id}: effetti.oggetti.${o.id}: «${o.chi}» non è un personaggio, «pg» o «scena»`);
+    }
     for (const a of b.effetti.atteggiamento) {
       if (!c.png.some((p) => p.id === a.png)) errori.push(`${b.id}: effetti.atteggiamento cita un PNG inesistente «${a.png}»`);
       if (a.pg !== null && a.pg !== TUTTI_I_PG && !c.pg.some((p) => p.id === a.pg)) errori.push(`${b.id}: effetti.atteggiamento cita un PG inesistente «${a.pg}»`);
@@ -313,6 +318,11 @@ function leggiBattuta(
     fatti_noti: lista(e['fatti_noti']),
     avanza_orologio: typeof e['avanza_orologio'] === 'string' ? e['avanza_orologio'] : null,
     atteggiamento: leggiAtteggiamenti(e['atteggiamento'], qui, errori),
+    oggetti: Object.entries((e['oggetti'] as DatiYaml | undefined) ?? {}).flatMap(([id, chi]) => {
+      if (typeof chi === 'string') return [{ id, chi }];
+      errori.push(`${qui}: effetti.oggetti.${id} è un id di personaggio, «pg» o «scena»`);
+      return [];
+    }),
   };
   if (d['sconfitta'] !== undefined && (d['sconfitta'] !== true || tipo !== 'finale')) errori.push(`${qui}: sconfitta: true solo su una battuta di tipo finale`);
   const audio = leggiAudioBattuta(d['audio'], `${qui} audio`, errori);

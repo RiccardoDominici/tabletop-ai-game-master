@@ -102,6 +102,8 @@ export interface EsitoTurnoNarrato {
   orologi: string[];
   /** Mode A (A16): [indizio] / [menzogna] / [fatto] ids the answer marked as revealed (the director checks them). */
   marche: Array<{ cosa: 'indizio' | 'menzogna' | 'fatto'; id: string }>;
+  /** Mode A (A22): [oggetto] changes of holder the answer proposed (the director checks them). */
+  oggetti: Array<{ id: string; chi: string }>;
   /** Attitude changes proposed with [atteggiamento] (the director checks them: docs/mondo.md §4). */
   atteggiamenti: Array<{ png: string; pg: string; stato: string }>;
   /** Presence changes the narrator proposed ([esce]/[entra], docs/coerenza.md §1): the director checks them. */
@@ -362,6 +364,7 @@ export async function narraTurno(
   let invito: string[] | 'tutti' | null = null;
   const orologi: string[] = [];
   const marche: Array<{ cosa: 'indizio' | 'menzogna' | 'fatto'; id: string }> = [];
+  const oggetti: Array<{ id: string; chi: string }> = [];
   const atteggiamenti: Array<{ png: string; pg: string; stato: string }> = [];
   const presenze: Array<{ png: string; presente: boolean; verso: string | null }> = [];
   const nuoviPng: Array<{ nome: string; ruolo: string | null }> = [];
@@ -592,6 +595,9 @@ export async function narraTurno(
       } else if (e.tipo === 'invito') {
         invito = e.invitati;
         log.info({ turno: p.turno, invito: e.invitati, grezzo: e.grezzo }, 'narratore: invito');
+      } else if (e.tipo === 'oggetto') {
+        oggetti.push({ id: e.id, chi: e.chi });
+        log.info({ turno: p.turno, oggetto: e.id, chi: e.chi, grezzo: e.grezzo }, 'narrator: object change proposed');
       } else if (e.tipo === 'marca') {
         // Mode A (A16): what the answer revealed; the director checks each id, like [orologio].
         marche.push({ cosa: e.cosa, id: e.id });
@@ -622,6 +628,7 @@ export async function narraTurno(
     invito,
     orologi,
     marche,
+    oggetti,
     atteggiamenti,
     presenze,
     nuoviPng,

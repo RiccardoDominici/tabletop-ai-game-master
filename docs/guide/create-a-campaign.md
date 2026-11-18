@@ -216,6 +216,9 @@ It prints the level (one-shot, arc, campaign, saga), what that involves, and how
   carry the facts that answer the scene's dramatic question (`richiede`: a clue revealed, a line said, a clock's
   marks, who is down or fled, like `richiede: {indizi_rivelati: [i_tonio_libero], stati: {png_zirra: [a_terra,
   morto, fuggito]}}`): when they all hold, the Engine says that ending at once, even before the clock is full.
+- An object that changes hands and matters later (a key, a letter) gets an id in the scene's `elementi_interattivi`
+  (`id: ogg_chiave`, and `chi: png_berta` if someone holds it at the start): the Engine keeps who holds it and tells
+  the narrator, so the key Berta gave a PC is not «still at her neck» two turns later.
 
 ### The world that moves
 

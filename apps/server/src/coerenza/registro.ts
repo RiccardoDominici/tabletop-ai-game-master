@@ -65,6 +65,8 @@ export interface Registro {
   esiti: EsitoRegistro[];
   /** NPCs who refused this turn after a failed social check, toward whom (the refusal guard's input). */
   negati: Array<{ png: string; autore: string; privata: boolean }>;
+  /** Who holds what (A22): objects with an id someone holds or that moved; `chi` null = in its place. */
+  oggetti?: Array<{ id: string; nome: string; chi: string | null }>;
 }
 
 /** What the director hands over: plain data and lookups on the Engine's sources (no copies of the state). */
@@ -88,6 +90,8 @@ export interface FontiRegistro {
   fatti: readonly FattoRegistro[];
   carte: readonly TiroMostrato[];
   negati: ReadonlyArray<{ png: string; autore: string; privata: boolean }>;
+  /** Objects with an id someone holds or that moved (scena/oggetti.ts, A22); absent = none tracked. */
+  oggetti?: ReadonlyArray<{ id: string; nome: string; chi: string | null }>;
 }
 
 /** The band of the hit points: full or a scratch, wounded (half or less), badly wounded (a quarter or less). */
@@ -133,13 +137,21 @@ export function costruisciRegistro(f: FontiRegistro): Registro {
   for (const g of f.gregari) png('gregario', g);
   for (const i of f.improvvisati ?? []) png('improvvisato', i);
   const esiti = esitiDelleCarte(f.carte);
-  return { turno: f.turno, scena: f.scena, entita, fatti: f.fatti.map((x) => ({ ...x, conosciutoDa: [...x.conosciutoDa] })), esiti, negati: f.negati.map((n) => ({ ...n })) };
+  return {
+    turno: f.turno,
+    scena: f.scena,
+    entita,
+    fatti: f.fatti.map((x) => ({ ...x, conosciutoDa: [...x.conosciutoDa] })),
+    esiti,
+    negati: f.negati.map((n) => ({ ...n })),
+    ...(f.oggetti?.length ? { oggetti: f.oggetti.map((o) => ({ ...o })) } : {}),
+  };
 }
 
 /** A change between two ledgers, for the journal (docs/coerenza.md §1). */
 export interface EventoRegistro {
   turno: number;
-  tipo: 'stato' | 'presenza' | 'fatto' | 'scena';
+  tipo: 'stato' | 'presenza' | 'fatto' | 'scena' | 'oggetto';
   id: string;
   da: string | null;
   a: string;
@@ -167,6 +179,12 @@ export function differenze(prima: Registro | null, dopo: Registro, causa: string
     const chi = x.pubblico ? 'pubblico' : x.conosciutoDa.join(',');
     if (!v) ev('fatto', x.chiave, null, chi);
     else if (v.pubblico !== x.pubblico) ev('fatto', x.chiave, v.pubblico ? 'pubblico' : v.conosciutoDa.join(','), chi);
+  }
+  // Who holds what (A22): a change of holder is an event; `posto` = back in its place.
+  const tenuti = new Map((prima.oggetti ?? []).map((o) => [o.id, o.chi]));
+  for (const o of dopo.oggetti ?? []) {
+    const da = tenuti.has(o.id) ? tenuti.get(o.id)! : undefined;
+    if (da !== undefined ? da !== o.chi : o.chi !== null) ev('oggetto', o.id, da ?? null, o.chi ?? 'posto');
   }
   return out;
 }

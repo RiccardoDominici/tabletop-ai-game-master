@@ -56,12 +56,6 @@ const codice = sorgenti(SERVER);
     `impostaScena cambia solo gli orologi attivi: segni prima ${JSON.stringify(prima)}, dopo ${JSON.stringify(dopo)}`);
 }
 
-// 5. Oggetti: il Motore non tiene chi ha che cosa; resta solo nella trascrizione.
-{
-  const tipi = ['sessione/tipi.ts', 'repertorio/stato.ts', 'repertorio/tipi.ts'].map((f) => codice.find(([g]) => g === f)?.[1] ?? '');
-  verifica('oggetti', tipi.every((t) => !/oggett/i.test(t)), 'nessuno stato degli oggetti in sessione/tipi.ts, repertorio/stato.ts, repertorio/tipi.ts');
-}
-
 // 6. Una battuta esce solo legata a un'azione («> pg»), salvo il segno dovuto del suo orologio, i riempitivi
 //    allo stallo e i finali (dal playtest di nozze-neve il finale a orologio pieno lo dice il Motore): ogni
 //    altra battuta «per stato» senza un'azione pubblica nel turno non esce.

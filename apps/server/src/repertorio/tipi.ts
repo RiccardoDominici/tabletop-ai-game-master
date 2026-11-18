@@ -112,6 +112,11 @@ export interface Effetti {
    * the PC the line answers. Prepared by the big model, so no step limit (like a consequence).
    */
   atteggiamento: Array<{ png: string; pg: string | null; stato: 'ostile' | 'indifferente' | 'amichevole' }>;
+  /**
+   * Objects that change hands when the line comes out (A22, scena/oggetti.ts): `{ogg_x: pg}` to the PC the line answers,
+   * `{ogg_x: png_y | pg_y}` to that character, `{ogg_x: scena}` back in its place.
+   */
+  oggetti: Array<{ id: string; chi: string }>;
 }
 
 export interface Battuta {

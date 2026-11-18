@@ -106,6 +106,26 @@ def controlla(c: Campagna, e: Esito) -> None:
     _prosa(c, e)
 
 
+def _oggetti_della_campagna(c: Campagna) -> set[str]:
+    return {el["id"] for _, s in c.scene if isinstance(s, dict) for el in (s.get("elementi_interattivi") or [])
+            if isinstance(el, dict) and isinstance(el.get("id"), str)}
+
+
+def _controlla_oggetti(c: Campagna, e: Esito, dove: str, ogg) -> None:
+    """`effetti.oggetti` (A22): {ogg_x: pg | png_y | pg_y | scena}; the objects are elementi_interattivi with an id."""
+    if ogg is None:
+        return
+    if not isinstance(ogg, dict) or not ogg:
+        e.errore("REPERTORIO.effetti", dove, "effetti.oggetti è {ogg_x: pg | <id di personaggio> | scena}")
+        return
+    noti = _oggetti_della_campagna(c)
+    for oid, chi in ogg.items():
+        if oid not in noti:
+            e.errore("REPERTORIO.effetti", dove, f"effetti.oggetti: oggetto inesistente {oid} (elementi_interattivi con id)")
+        if chi not in ("pg", "scena") and chi not in c.png and chi not in c.pg_ids:
+            e.errore("REPERTORIO.effetti", dove, f"effetti.oggetti.{oid}: {chi!r} non è pg, scena, un PNG o un PG")
+
+
 def _controlla_atteggiamento(c: Campagna, e: Esito, dove: str, att) -> None:
     """`effetti.atteggiamento` (A23, docs/mondo.md §4): {png_x: stato} towards the PC the line answers, or
     {png_x: {pg_y | tutti: stato}}; the NPCs and PCs exist, the states are the three of the scale."""
@@ -209,6 +229,7 @@ def _schema(c: Campagna, e: Esito) -> None:
             if k not in K.CAMPI_EFFETTI:
                 e.errore("REPERTORIO.effetti", dove, f"effetti.{k} non previsto")
         _controlla_atteggiamento(c, e, dove, eff.get("atteggiamento"))
+        _controlla_oggetti(c, e, dove, eff.get("oggetti"))
         if chi != "narratore" and not any(r.startswith(f"[{chi}]") for r in b.get("testo") or []):
             e.errore("REPERTORIO.righe", dove, f"battuta di {chi} senza nessuna sua riga")
         for versione in _righe(b):

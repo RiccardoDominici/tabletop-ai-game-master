@@ -42,6 +42,12 @@ export function righeVeroAdesso(r: Registro): string[] {
     return testo(x.riuscita ? 'coerenza.prova_riuscita' : 'coerenza.prova_fallita', { chi, etichetta: x.etichetta });
   });
   if (esiti.length) righe.push(testo('coerenza.esiti', { elenco: esiti.join('; ') }));
+  // Who holds what (A22): an object in someone's hands is a fact the answer must not contradict.
+  const tenuti = (r.oggetti ?? []).filter((o) => o.chi !== null);
+  if (tenuti.length) {
+    const nome = (id: string): string => r.entita.find((e) => e.id === id)?.nome ?? id;
+    righe.push(testo('coerenza.oggetti', { elenco: tenuti.map((o) => testo('coerenza.oggetto', { oggetto: o.nome, chi: nomeBreve(nome(o.chi!)) })).join('; ') }));
+  }
   const negati = r.negati.filter((n) => !n.privata);
   if (negati.length) {
     const nome = (id: string): string => r.entita.find((e) => e.id === id)?.nome ?? id;

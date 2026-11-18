@@ -39,10 +39,3 @@ crowd, a moment at a full clock) comes out only tied to a public action of the t
 - **What to do**: put the endings in the order in which they must win (the most specific first, with the outcome gates:
   `battute_usate`, `indizi_rivelati`), without `privata` or `da_pg`, and close with an ending without outcome gates as a
   safety net. A crowd reaction at a full clock must be tied to an action (its `temi`).
-
-<!-- limite: oggetti -->
-## Objects have no state
-The Engine does not keep track of who has what: an object taken, lost or broken exists only in the transcript.
-- **What to do**: if an object changes hands and matters later, the change goes through a line that reveals a clue
-  (`effetti.rivela_indizi`), and the lines that presuppose it ask for it (`richiede.indizi_rivelati`). Between one session
-  and the next, the state keeps it (`effetti.oggetti`, tra-le-sessioni.md).

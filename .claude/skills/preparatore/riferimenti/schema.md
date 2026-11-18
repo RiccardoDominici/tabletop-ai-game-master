@@ -184,6 +184,9 @@ posta: {si_guadagna: {cosa, per_chi: [...]}, si_perde: {cosa, per_chi: [...]}}  
 intensita: 1-5                 # [V]
 sensi: [3 details]             # exactly 3, at least 2 not visual [V on the number]
 elementi_interattivi: [{cosa, dove, azioni}]        # at least 3 [V]; a hidden thing says so in azioni: "NASCOSTA: …" (it) or "HIDDEN: …" (en)
+                               # an object that will change hands and matter later gets `id: ogg_…` and, if someone holds
+                               # it at the start, `chi: png_…|pg_…`: the Engine tracks who holds it (lines move it with
+                               # effetti.oggetti, repertorio.md) [V SCENA.oggetti]
 png_presenti: [png_…]          # exist [V]; voices different and not similar [V]; different initials [V]
 orologi_attivi: [o_…]          # exist [V]
 orologi_in_scena:              # optional: the Engine's rules for this scene

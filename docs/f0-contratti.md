@@ -116,6 +116,10 @@ into sentences and sends each sentence to the right voice.
   not known from the start; each id once. Accepted marks go to the turn log (`marche`), the snapshot and the
   end-of-session log, so a campaign over several sessions keeps its clues in mode A too (A16); in mode B the lines
   carry these effects and the tags are not taken.
+- `[oggetto] <ogg_id> <pg_x | png_x | scena>`: optional, mode A only, before `[invito]`, not read: an object of the
+  scene (an `elementi_interattivi` entry with an id) changed hands, or went back in its place. The Engine accepts it for
+  an object of this scene or one a PC or an NPC here holds, given to a PC, to an NPC in the scene or to `scena`, and
+  tells the narrator who holds it from then on (A22, docs/coerenza.md §1); in mode B the lines carry `effetti.oggetti`.
 - `[atteggiamento] <png> <pg|tutti> <stato>`: optional and rare (both modes), before `[invito]`, not read: the narrator or the selector
   proposes that an NPC in the scene changes its attitude towards a PC (`ostile`, `indifferente`, `amichevole`). The Engine
   accepts one step at a time, one change per NPC per turn, at most two a turn, and not the same pair again within three
