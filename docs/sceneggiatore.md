@@ -75,6 +75,9 @@ The same rules as the prepared repertoire, plus those for whoever writes on the 
   `sceneggiatore.attacco_armi`) in a sentence with a hit or miss word, a launch verb (`attacco_lancio`), or a «no» right
   before it (`attacco_nessun`). Without `richiede.esito` (or with `nessuno`) such a line is refused. With the tag, the
   Engine checks it against the cards of the line's own turn (`fino_al_turno`), also when it is said in a later window.
+  The cards of an earlier turn come from the recent cards the Engine keeps (`MotoreProve.carteDelTurno`, the last 24).
+  Before attempt 6 only the last turn's were kept: CA T10 refused a true miss written for T7 («no card of this turn
+  says so»).
   Replayed on the lines accepted in attempts 3–5, the rule refuses 4 of 1025: the PR T15 line, two «nessuna lancia
   vola…» and a falling stone;
 - **wounds and falls**: a line whose text or `quando` tells blood, a wound or a fall (the pack's

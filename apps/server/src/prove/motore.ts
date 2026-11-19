@@ -209,7 +209,10 @@ export class MotoreProve {
 
   /** Every card of turn `turno` (private ones too: the ledger keeps who may know them), or none. */
   carteDelTurno(turno: number): TiroMostrato[] {
-    return this.ultimoTurno?.turno === turno ? [...this.ultimoTurno.tiri] : [];
+    if (this.ultimoTurno?.turno === turno) return [...this.ultimoTurno.tiri];
+    // An earlier turn: from the recent cards (final round, attempt 6, CA T10: a `subito` line written for T7, said at
+    // T10, was checked against no cards at all, «no card of this turn says so», and its true miss was refused).
+    return this.stato.recenti.filter((t) => t.turno === turno);
   }
 
   /** The minions of the current scene still standing (C5): the enemies there that have no NPC card. */
