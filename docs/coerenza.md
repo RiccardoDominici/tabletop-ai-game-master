@@ -991,6 +991,7 @@ played again. From attempt 3 on, the lead also had the unsure items that lean H 
 | 3 (`ab2fc7d`) | 0 (2 unsure) | 0 (2 unsure) | 0 | 0 | 0 | **0** | 0 in all five |
 | 3, second judge | 0 (1 unsure) | 0 (1 unsure) | 0 (1 unsure) | 0 | 0 (1 unsure) | **0** | — |
 | 4 (`e44cea5`) | 0 (3 unsure) | 0 (1 unsure) | 0 | 0 | 0 (3 unsure) | **0** | 0 in all five |
+| 5 (`6206bd1`, CM and PR only) | 0 (3 unsure) | — | — | — | 1 (2 unsure) | 1 | 0 in both |
 
 The H and their fixes:
 - **Attempt 1, PR T1.** Livia's Carisma check succeeded (20 against 17), yet the table heard Berta's refusal, «Questo
@@ -1048,7 +1049,23 @@ Checked in the attempt-4 logs: 0 ERROR lines, and the new announcements as inten
 the ending that ties everybody: nobody at the table was dead. There was no successful social check and no Engine
 repeat, so those two fixes are covered only by their tests.
 
-Attempt 5 replays CM and PR, where those cases happened, on `6206bd1`.
+Attempt 5 replayed CM and PR, where those cases happened, on `6206bd1`. CM had 0 H; PR had 1:
+- **PR T15:** a scriptwriter line written for T14, «Nessun dardo parte: … il mantello grigio resta fermo.», was heard
+  after the card of Eliandro's dart that hit («Eliandro colpisce Zirrà.»). Eliandro had cast, then died later in T14,
+  and the scriptwriter took his action for a dead PC's attempt. The line carried `esito: nessuno` and named no
+  fighter, so neither the tag rule nor the outcome-word refusal saw it. `60de6b0`: in a fight any line that tells an
+  attack's outcome (a weapon or a spell with a hit or miss word, a launch verb, or «nessun …») carries a real
+  `richiede.esito`, which the Engine checks against the cards of the line's own turn (docs/sceneggiatore.md).
+- **CM T9 (unsure):** Grosso's surprise ended in that turn's facts («Grosso: Sorpreso finisce.»), and his filler was
+  heard before the new round's order. `fd022ca`: a lose-turn condition that ends in a turn holds for that turn's
+  narration; the block writes it in lowercase.
+
+The other unsure items: an announcement's false relative clause (CM T17), a soft miss line that matches its card (CM
+T23), Zirrà answering an invented hold (PR T20), and `nar_piccone` given for an action it does not answer (PR T11).
+In attempt 5 the logs also show the new rules at work: the surprised NPCs marked in the block for their round, one
+wound line refused per game, and the defeat ending for a dead PC («chi respira ancora», PR).
+
+Attempt 6 replays all five games on `60de6b0`.
 
 Live checks (Playwright), both passed:
 - A9: on the projector a dead NPC shows greyed with «MORTO». Seen live during attempt 1's CM game, on Zirrà

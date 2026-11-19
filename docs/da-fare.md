@@ -126,11 +126,14 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   - a rebuff after a passed social check (86a972e);
   - an Engine line said twice (7135e01);
   - a fall heard before the faller's act (f767a61);
+  - a late outcome line with no tag (60de6b0);
+  - a surprise that ended in the turn (fd022ca);
   - a surprised NPC acting (b8ffb24);
   - a wound no card dealt (4824d8e);
   - a dead PC in the round order (6206bd1).
 
-  Attempt 5 (CM and PR on 6206bd1) checks the last fixes. Details: docs/coerenza.md, «Final round». After attempt 3 torre-mozza's boy got an NPC sheet, and
+  Attempt 5 (CM and PR on 6206bd1) had 1 H (PR T15, a late miss line for a dart that hit), fixed in 60de6b0, with
+  fd022ca for CM T9; attempt 6 replays all five on 60de6b0. Details: docs/coerenza.md, «Final round». After attempt 3 torre-mozza's boy got an NPC sheet, and
   the validator a warning for a character who acts with no sheet (95eafa4). Open from the round, none of it H:
   - announcements keep a false relative or label clause inside the PC's own act («al goblin che scappa»,
     «Ultimo goblin:»);
