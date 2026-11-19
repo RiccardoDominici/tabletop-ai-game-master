@@ -233,6 +233,7 @@ battute:
     stallo: 1
     quando: "il tavolo resta fermo a casa Bonfanti"
     temi: [primavera, onore]
+    richiede: {indizi_non_rivelati: [i_campanaccio]}
     testo:
       - "[narratore] Gaspare guarda il cielo dalla finestra, e si gratta il mento con la matita."
       - "[png_gaspare] Facciamo due conti: senza anello, meglio rimandare a primavera. Con rispetto parlando, l'onore della casa viene prima."

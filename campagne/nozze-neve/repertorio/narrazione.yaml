@@ -924,6 +924,7 @@ battute:
     quando: "il tavolo resta fermo alla casera"
     temi: [cugino, bastone]
     attori: [png_ettore]
+    richiede: {orologio: {id: o_lite, min: 0, max: 5}}
     testo:
       - "[narratore] Dal lato dei Morlacchi un cugino si alza, rosso in faccia."
       - "[narratore] Punta il dito verso i Bonfanti."
