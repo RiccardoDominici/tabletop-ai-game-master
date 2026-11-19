@@ -1178,7 +1178,9 @@ def test_copertura_confessione_mancante(camp):
 
 
 def test_copertura_indizio_senza_rivelazione(camp):
-    modifica(camp, "repertorio/narrazione.yaml", lambda d: d["battute"].remove(battuta(d, "nar_botte")))
+    # The barrel's clue comes out from its line and from the scene's level-2 stall line: without both, nothing reveals it.
+    modifica(camp, "repertorio/narrazione.yaml",
+             lambda d: [d["battute"].remove(battuta(d, bid)) for bid in ("nar_botte", "nar_stallo2_volpe")])
     assert "COPERTURA.indizio" in errori(camp)
 
 
@@ -1995,9 +1997,11 @@ def test_repertorio_stato_fuori_elenco(camp):
 
 def test_repertorio_png_nominato_senza_segno(camp):
     # The Engine would only ask Bruno to be in play, not here: the Preparer says whether he acts or is only named.
+    # A warning in normal mode, an error in strict mode: without the tag the Engine offers the line while Bruno is away.
     modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte")["testo"].append("[narratore] Bruno si volta verso la botte."))
     assert _voci_di(camp, "REPERTORIO.png_non_segnato", "nar_botte")
-    assert "REPERTORIO.png_non_segnato" not in errori(camp, rigoroso=True)
+    assert "REPERTORIO.png_non_segnato" not in errori(camp)
+    assert "REPERTORIO.png_non_segnato" in errori(camp, rigoroso=True)
 
 
 # --- a character who acts in the lines needs a sheet (strumenti/valida/regole_senza_scheda.py) ---------------------
@@ -2073,7 +2077,10 @@ def test_repertorio_stallo_preparato(camp):
         _stallo(d, "nar_stallo_1", 1)
         _stallo(d, "nar_stallo_2", 2, tipo="indizio", effetti={"rivela_indizi": ["i_botte"]})
         _stallo(d, "nar_stallo_3", 3, richiede={"indizi_rivelati": ["i_botte"]})
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: d.update(battute=[b for b in d["battute"] if "stallo" not in b]))
+    # A scene without them: a warning in normal mode, an error in strict mode (the Engine would only have fillers).
     assert "REPERTORIO.stallo_scarso" in avvisi(camp)
+    assert "REPERTORIO.stallo_scarso" in errori(camp, rigoroso=True)
     modifica(camp, "repertorio/narrazione.yaml", prepara)
     assert "REPERTORIO.stallo" not in errori(camp)
     assert "REPERTORIO.stallo_scarso" not in avvisi(camp)
@@ -2094,6 +2101,7 @@ def test_repertorio_sconfitta(camp):
         d.setdefault("atteggiamento_pg", {})["pg_lia"] = {"stato": "ostile", "perche": "x", "vuole": "y"}
     modifica(camp, "png/png_bruno.yaml", ostile)
     assert "REPERTORIO.sconfitta_mancante" in avvisi(camp)
+    assert "REPERTORIO.sconfitta_mancante" in errori(camp, rigoroso=True)
     modifica(camp, "repertorio/narrazione.yaml", lambda d: d["battute"].append({
         "id": "nar_sconfitta", "chi": "narratore", "tipo": "finale", "sconfitta": True, "quando": "i PG cadono tutti",
         "temi": ["sconfitta"], "attori": ["png_bruno"], "richiede": {"stati": {"png_bruno": "in_gioco"}},
@@ -2113,6 +2121,7 @@ def test_repertorio_sconfitta_stati_dei_pg(camp):
         "testo": ["[narratore] Bruno vi chiude in cantina e se ne va."], "max_usi": 1}
     modifica(camp, "repertorio/narrazione.yaml", lambda d: d["battute"].append(finale))
     assert _voci_di(camp, "REPERTORIO.sconfitta_stati", "nar_sconfitta")
+    assert "REPERTORIO.sconfitta_stati" in errori(camp, rigoroso=True)
     modifica(camp, "repertorio/narrazione.yaml",
              lambda d: battuta(d, "nar_sconfitta")["richiede"]["stati"].update(tutti=["in_gioco", "a_terra"]))
     assert not _voci_di(camp, "REPERTORIO.sconfitta_stati", "nar_sconfitta")
@@ -2123,3 +2132,50 @@ def test_repertorio_stato_di_un_pg(camp):
     # A line may take a PC's state as true too (round 6, CA T15): the Engine checks it against the ledger.
     modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte").setdefault("richiede", {}).update(stati={"pg_lia": "a_terra"}))
     assert "REPERTORIO.fatti" not in errori(camp)
+
+
+# --- a line that tells an attack's outcome says which (regole_fatti_battuta.py, `esito_di_attacco`) ---------------
+
+def _riga_di_colpo(camp: Path, testo: str, **altro) -> None:
+    """A selectable narrator line of the mini's scene, where Bruno (an attack on his sheet) makes a fight possible."""
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: d["battute"].append({
+        "id": "nar_colpo", "chi": "narratore", "tipo": "momento", "quando": "un PG lancia qualcosa", "temi": ["lancio"],
+        "testo": [f"[narratore] {testo}"], "max_usi": 1, **altro}))
+
+
+def test_esito_di_attacco_senza_tag(camp):
+    # «Il pugnale colpisce la trave» tells a hit: in a fight the Engine would offer it after a miss card too.
+    _riga_di_colpo(camp, "Il pugnale colpisce la trave, e resta piantato nel legno.")
+    assert _voci_di(camp, "REPERTORIO.esito_mancante", "nar_colpo")
+    assert "REPERTORIO.esito_mancante" not in errori(camp)
+    assert "REPERTORIO.esito_mancante" in errori(camp, rigoroso=True)
+
+
+def test_esito_di_attacco_con_tag(camp):
+    _riga_di_colpo(camp, "Il pugnale colpisce la trave, e resta piantato nel legno.", richiede={"esito": {"tipo": "colpito"}})
+    assert not _voci_di(camp, "REPERTORIO.esito_mancante", "nar_colpo")
+
+
+def test_esito_di_attacco_negato(camp):
+    # «Nessun dardo parte» (final round, attempt 5, PR T15): a «no» before the weapon is an outcome too.
+    _riga_di_colpo(camp, "Nessun dardo parte dalla finestra.")
+    assert "REPERTORIO.esito_mancante" in errori(camp, rigoroso=True)
+
+
+def test_esito_di_attacco_solo_verbo_di_lancio(camp):
+    # A launch verb alone is also ordinary prose («dalla parte dei Morlacchi… il bastone»): a warning, never an error.
+    _riga_di_colpo(camp, "Dalla parte del fuoco, il bastone di Bruno resta appoggiato al muro.", attori=["png_bruno"])
+    assert _voci_di(camp, "REPERTORIO.esito_mancante", "nar_colpo")
+    assert "REPERTORIO.esito_mancante" not in errori(camp, rigoroso=True)
+
+
+def test_esito_di_attacco_fuori_dallo_scontro(camp):
+    # A filler never comes out in a fight; a scene where nobody has an attack has no fight.
+    _riga_di_colpo(camp, "Il pugnale colpisce la trave, e resta piantato nel legno.", riempitivo=True)
+    assert not _voci_di(camp, "REPERTORIO.esito_mancante", "nar_colpo")
+    c = camp.parent / "senza_armi"
+    shutil.copytree(camp, c)
+    modifica(c, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_colpo").pop("riempitivo"))
+    modifica(c, "png/png_bruno.yaml", lambda d: d["scheda"].update(attacchi=[]))
+    assert not _voci_di(c, "REPERTORIO.esito_mancante", "nar_colpo")
+

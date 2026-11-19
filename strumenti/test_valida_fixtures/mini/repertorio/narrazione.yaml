@@ -75,6 +75,7 @@ battute:
     tipo: finale
     quando: "la lanterna torna in cappella prima dell'alba"
     temi: [ritrovata, riportata]
+    attori: [png_irma]
     testo:
       - "[narratore] La lanterna torna sull'altare, e la processione parte con la sua luce."
       - "[narratore] Irma la guarda passare dalla soglia della locanda, senza dire niente."
@@ -103,6 +104,7 @@ battute:
     tipo: transizione
     quando: "i PG tornano nella sala"
     temi: [torno, risalgo, sala]
+    attori: [png_bruno]
     testo: ["[narratore] Nella sala il camino scoppietta, e Bruno alza gli occhi dalla pipa."]
     max_usi: 1
 
@@ -115,4 +117,35 @@ battute:
     testo:
       - "[narratore] Il fuoco del camino si abbassa, e la sala resta in penombra."
       - "[narratore] La porta della cantina è ancora lì, in fondo al bancone: domani qualcuno dovrà scendere."
+    max_usi: 1
+
+  # Stall lines (docs/mondo.md §5): one per level in the scene, said by the Engine when the table stays still.
+  - id: nar_stallo1_volpe
+    chi: narratore
+    tipo: momento
+    stallo: 1
+    quando: "nessuno agisce da un po' nella sala"
+    temi: [torcia]
+    scena: scena_volpe
+    testo: ["[narratore] Fuori passa qualcuno con una torcia, verso la cappella, e si ferma alla finestra."]
+    max_usi: 1
+  - id: nar_stallo2_volpe
+    chi: narratore
+    tipo: indizio
+    stallo: 2
+    quando: "nessuno agisce da un po', e la sala tace"
+    temi: [tintinnio]
+    scena: scena_volpe
+    testo: ["[narratore] Da sotto il pavimento, dalla cantina, arriva un tintinnio di metallo, poi più niente."]
+    effetti: {rivela_indizi: [i_botte]}
+    max_usi: 1
+  - id: nar_stallo3_volpe
+    chi: narratore
+    tipo: momento
+    stallo: 3
+    quando: "nessuno agisce da un po', dopo i gradini della cantina"
+    temi: [gradini]
+    scena: scena_volpe
+    richiede: {indizi_rivelati: [i_cera]}
+    testo: ["[narratore] Restano le gocce di cera sui gradini, e la porta della cantina dietro il bancone."]
     max_usi: 1

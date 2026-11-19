@@ -31,14 +31,14 @@ request [V].
 **Defeat ending** (`tipo: finale`, `sconfitta: true`, docs/combattimento.md «The defeat path»): in a scene with a
 hostile NPC write the consequence of the whole party falling (captured, left for dead, rescued…), one line per likely
 victor, with that victor in `attori` and `richiede.stati: {png_x: in_gioco}`, and no PC's name (the Engine cannot know
-who died) [V `REPERTORIO.sconfitta_mancante`, a warning; `REPERTORIO.sconfitta`]. Say the PCs' states it takes as true
+who died) [V `REPERTORIO.sconfitta_mancante`, an error in strict mode; `REPERTORIO.sconfitta`]. Say the PCs' states it takes as true
 with `tutti` in `richiede.stati`: an ending that wakes, ties or carries everybody gets `tutti: [in_gioco, a_terra]`
 (nobody dead), and write a second one for the same victor that fits a dead PC too (`tutti: [in_gioco, a_terra, morto]`:
-«il freddo sveglia chi respira ancora»), after it in the file [V `REPERTORIO.sconfitta_stati`, a warning]. The Engine
+«il freddo sveglia chi respira ancora»), after it in the file [V `REPERTORIO.sconfitta_stati`, an error in strict mode]. The Engine
 says the first available, then the table pauses for the Game Master; with every PC dead, its own sentence.
 
 **Stall lines** (`stallo: 1 | 2 | 3`, docs/mondo.md §5): for every scene write at least one line per level [V
-`REPERTORIO.stallo_scarso`, a warning], with `scena:` set. The Engine says them when the table stays still, with no
+`REPERTORIO.stallo_scarso`, an error in strict mode], with `scena:` set. The Engine says them when the table stays still, with no
 action to answer, so no gate on the action (`da_pg`, `privata`, `prova`) [V `REPERTORIO.stallo`]; the reader never
 gets them.
 - `stallo: 1`, a soft move of the scene's danger, by the narrator or the danger's cast: something seen or heard that
@@ -175,7 +175,7 @@ assumes is true in the ledger (who is in the scene, who is down, dead or fled), 
 - `richiede.stati: {png_x: [a_terra, morto]}`: the state the line takes as true, of `in_gioco`, `a_terra`, `morto`,
   `fuggito`, `ferito` (in play and hurt: a line about someone's blood or wound); a line about a body («il corpo di Zirrà
   giace…») needs it, or the Engine keeps it back while Zirrà is out of play. Only in the base of `richiede`, not in an `oppure` alternative.
-Every NPC a narrator row names goes in one of the three; an untagged one is a warning [V `REPERTORIO.png_non_segnato`]
+Every NPC a narrator row names goes in one of the three; an untagged one is a warning, an error in strict mode [V `REPERTORIO.png_non_segnato`]
 (the Engine then only asks it to be in play, not in the scene). A character who acts in a narrator row needs a sheet
 before it can be tagged: one declared in the sheets (`relazioni`, `chi_altro_sa`) but never given a sheet, named by
 its name or by the noun the sheets describe it with («il ragazzo»), is a warning [V `PNG.senza_scheda`] (SKILL.md,
@@ -186,7 +186,11 @@ step 7).
   that tells an outcome (a blow that lands, a miss, someone hurt, a fall, a flight) says which [V `REPERTORIO.fatti`];
   a line a combatant may say during a fight that tells none says `nessuno`. `chi` is the NPC who
   strikes or flees; with no `chi` the blow is the answered PC's. The Engine offers the line only when one of this
-  turn's cards says exactly that (a miss line never for a hit). Better no outcome line than one without the tag.
+  turn's cards says exactly that (a miss line never for a hit). Better no outcome line than one without the tag. The
+  validator finds such a line with the words the Engine uses for the scriptwriter (a weapon or a spell with a hit or miss
+  word, or «no» before the weapon: `lingue/<code>/motore.yaml`, `sceneggiatore.attacco_*` and `guardia_esiti`) in a scene
+  where someone has an attack or there are minions [V `REPERTORIO.esito_mancante`, an error in strict mode; a launch verb
+  alone, «parte», «vola», is only a warning, since it is also ordinary prose].
 
 ## 7. Secret words (repertorio/parole_segrete.yaml)
 ```yaml
@@ -229,6 +233,13 @@ parole:
 - [ ] for each probable question of the scripts: a selectable answer, or a voice example that guides the improvisation
 - [ ] no line cites what only another optional line introduced
 - [ ] at least one filler and two transitions
+- [ ] for each scene: a waiting line of the narrator, and for each NPC present a waiting line and a deviation (`tipo: rifiuto`)
+  [V `COPERTURA.attesa_*`, `COPERTURA.deviazione_png`]
+- [ ] for each scene: a stall line of level 1, 2 (where the scene has clues) and 3 (§2) [V `REPERTORIO.stallo_scarso`]
+- [ ] for each scene with an NPC hostile to some PC: a defeat ending per likely victor, with `tutti: [in_gioco, a_terra]`,
+  and a second one that fits a dead PC (§2) [V `REPERTORIO.sconfitta_mancante`, `REPERTORIO.sconfitta_stati`]
+- [ ] for each line: every NPC a narrator row names is in `attori`, `menzionati` or `richiede.stati`; a line that tells an
+  attack's outcome has `richiede.esito` (§6b) [V `REPERTORIO.png_non_segnato`, `REPERTORIO.esito_mancante`]
 - [ ] for each line: no PC names, no secrets in id and quando, distinctive themes
 
 ## 9. Prose of the lines [V]

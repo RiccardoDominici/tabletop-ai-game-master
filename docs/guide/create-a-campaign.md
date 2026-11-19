@@ -258,7 +258,7 @@ It checks with the full rules for new campaigns, and it also shows the warnings.
 
 | Option | What it does |
 |---|---|
-| `--rigoroso` | full rules for new campaigns: some warnings become errors (confessions without a gate, lies without an id, clues without `modi`, NPCs without `alias`, generic themes, hidden traits in the image prompts) |
+| `--rigoroso` | full rules for new campaigns: some warnings become errors (confessions without a gate, lies without an id, clues without `modi`, NPCs without `alias`, generic themes, hidden traits in the image prompts, a scene without stall lines of every level, a scene with a hostile NPC and no defeat ending, a defeat ending without the PCs' states, an NPC named in a narrator row without `attori` or `menzionati`, a line that tells an attack's outcome without `richiede.esito`) |
 | `--avvisi` | also shows the warnings (without it, it only prints how many there are) |
 | `--solo CLASSI` | shows and counts only some classes or codes, separated by commas, for example `--solo STILE,CANONE` or `--solo SCENA.voci` |
 | `--classi` | lists the error classes and exits |

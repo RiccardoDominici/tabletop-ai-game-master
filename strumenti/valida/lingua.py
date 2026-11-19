@@ -99,6 +99,29 @@ def genitivo(codice: str) -> tuple[frozenset[str], str]:
     return frozenset(str(v).lower() for v in sez.get("genitivo") or []), str(sez.get("possessivo") or "")
 
 
+def parole_frase(t: str) -> list[str]:
+    """The words of a text as the server splits them (narrazione/guardia-esiti.ts, `paroleDi`): lowercase, no accents,
+    punctuation dropped, split on spaces and apostrophes."""
+    return [w for w in re.split(r"[\s']+", re.sub(r"[^\w' ]", " ", normalizza_parola(t))) if w]
+
+
+@lru_cache(maxsize=None)
+def parole_attacco(codice: str) -> dict:
+    """The words that tell an attack's outcome, from the same pack entries as the server's `esitoDiAttacco`
+    (sceneggiatore/valida.ts): weapons and spells (`sceneggiatore.attacco_armi`), hit and miss words
+    (`guardia_esiti.colpito`, `mancato`), launch verbs (`attacco_lancio`), the «no» before a weapon (`attacco_nessun`).
+    Each entry is a list of word stems (an entry of several words is a sequence)."""
+    sce = sezione_motore(codice, "sceneggiatore")
+    gua = sezione_motore(codice, "guardia_esiti")
+    voci = lambda xs: [v for v in (parole_frase(str(x)) for x in xs or []) if v]  # noqa: E731
+    return {
+        "armi": voci(sce.get("attacco_armi")),
+        "colpo": voci(gua.get("colpito")) + voci(gua.get("mancato")),
+        "lancio": voci(sce.get("attacco_lancio")),
+        "nessun": frozenset(w for x in sce.get("attacco_nessun") or [] for w in parole_frase(str(x))),
+    }
+
+
 def normalizza_parola(t: str) -> str:
     """Minuscole e senza accenti (come normalizza del server)."""
     import unicodedata

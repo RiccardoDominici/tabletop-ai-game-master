@@ -162,8 +162,8 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
     - prova-f0: Tecla.
 
     Then the warning can become an error in strict mode;
-  - mulino-notte's two defeat endings have no `richiede.stati.tutti` (REPERTORIO.sconfitta_stati, left to its
-    author);
+  - ~~mulino-notte's two defeat endings have no `richiede.stati.tutti` (REPERTORIO.sconfitta_stati, left to its
+    author)~~ **Done** (01203b4);
   - Tonio's portrait and the audio of his two lines (`scripts/prepara.sh campagne/torre-mozza --voce`).
 - **Duration in sessions and game layers** (Riccardo's request, 3 November 2026): the brief states the estimated duration in *number of sessions*, and that determines how many layers the framework generates. A one-shot has few things (situation, a few scenes and NPCs: this is what the skill does today); a campaign of years has more phases or arcs and a complete world, and the material for the next session is prepared between sessions, starting from what actually happened.
   Done, by step: research (c0ebcc1), design (96b59e7, 6e2df77), `strumenti/strati.py` (09b3ef4), validator of sessions and STATO/CONTINUITÀ (e02e26c, 8fcfe18), skill (a10a172), session packages and the server side (2d3f2d4, 5bc833b, 7201894).

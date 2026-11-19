@@ -199,8 +199,8 @@ three turns is skipped, and the next material is used (R-ripetuta on the Engine'
 scriptwriter's S3 line was the clock sign heard two turns before). A line with effects (a clue, a fact, a clock mark,
 an attitude, an object), a sign, an ending or a closing is said whole, as before (test/mondo-stallo.test.ts). The
 validator checks the form (`REPERTORIO.stallo`: level, no gate on the action, S2 reveals, S3 reveals nothing and is
-gated) and warns for a scene with no stall line of some level (`REPERTORIO.stallo_scarso`; S2 only where the scene has
-clues). With the scriptwriter on (docs/sceneggiatore.md), when the table is stalling (answers with nothing new, or stall
+gated) and warns for a scene with no stall line of some level, an error in strict mode (`REPERTORIO.stallo_scarso`; S2
+only where the scene has clues). With the scriptwriter on (docs/sceneggiatore.md), when the table is stalling (answers with nothing new, or stall
 moves in a row) and the scene has no stall line of the next level left, the `prossime` request also asks two stall
 lines: level 1 (for the next S1 or S2, since an S2 without a clue line falls to S1) with the danger's moves and signs,
 or level 3 with the known leads, bound to the next three turns (`fino_al_turno`). Level 2 reveals a clue, so it stays

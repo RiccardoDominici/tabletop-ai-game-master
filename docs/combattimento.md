@@ -152,11 +152,11 @@ combattimento:
    that wakes or ties everybody, so it is out as soon as one PC died. The Engine then takes the next available ending,
    one that also fits a dead PC (`tutti: [in_gioco, a_terra, morto]`, «il freddo sveglia chi respira ancora»), else
    its own sentence. The final round heard «Vi sveglia il freddo» with one PC dead three times (CM T32, CA T22,
-   PR T32); the validator warns about a defeat ending without `tutti` (`REPERTORIO.sconfitta_stati`). It then withdraws the narrator's invitation, says «La scena è finita: il master sceglie
+   PR T32); the validator warns about a defeat ending without `tutti`, an error in strict mode (`REPERTORIO.sconfitta_stati`). It then withdraws the narrator's invitation, says «La scena è finita: il master sceglie
    come andare avanti.» and pauses the table: the Game Master chooses (another scene, healing, the end of the evening).
    Round 5 of the coherence layer (combat manual, T21–T25) had five turns of «Livia Sarti non agisce.» and nothing
    moving after the party fell. A defeat ending never enters the catalogue nor the clock's finale; the validator wants
-   one in a scene with a hostile NPC (`REPERTORIO.sconfitta_mancante`, a warning).
+   one in a scene with a hostile NPC (`REPERTORIO.sconfitta_mancante`, a warning, an error in strict mode).
 6. **Narrator**: every NPC attack arrives as an explicit sentence before the details («Ruggero lo sgherro colpisce Corrado
    Lanzi: 6 danni» (Ruggero the thug hits Corrado Lanzi: 6 damage), «… manca …» (… misses …)), and the prompt asks to
    narrate it in its own sentence, never by hints. The section «Esiti dei tiri» (Roll outcomes) carries «Combattimento,

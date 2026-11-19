@@ -89,7 +89,9 @@ break coherence; the deterministic rules on the lines that come out (R-esito, R-
 A line the sceneggiatore wrote `subito` for one action carries the turn of that action (`fino_al_turno`, Engine-only)
 and is not offered after it: it is said while the window is open, or not at all (round 4 heard T6's «Mancata!» at T9).
 The loader rejects a wrong id or state; the validator checks the same (`REPERTORIO.fatti`) and warns about an NPC a
-narrator row names without a tag (`REPERTORIO.png_non_segnato`). The sceneggiatore writes the tags too
+narrator row names without a tag (`REPERTORIO.png_non_segnato`), and about a line that tells an attack's outcome without
+`richiede.esito` in a scene where a fight can happen (`REPERTORIO.esito_mancante`, with the scriptwriter's words from the
+language pack); both are errors in strict mode. The sceneggiatore writes the tags too
 (docs/sceneggiatore.md). A tag can only name a sheet, so a character who acts in the prose without one escapes all of
 this: the Engine never knows whether they are there. The validator warns about a character the sheets declare (a
 `relazioni` key or a `chi_altro_sa` entry that is no sheet's id, name or alias) when a narrator line has them act:

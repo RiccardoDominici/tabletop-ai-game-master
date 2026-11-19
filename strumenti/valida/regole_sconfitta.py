@@ -3,7 +3,7 @@
 When a fight ends with every PC at the table down, dead or fled, the Engine says the scene's defeat ending (the
 consequence: captured, left for dead, rescued…) and the table pauses for the Game Master; with none, its own sentence.
 Round 5 of the coherence layer had five silent turns after the whole party fell. Error: `sconfitta` on a line that is
-not a `finale`, or not `true`. Warning: a scene with a hostile NPC (one whose attitude toward some PC is «ostile») and
+not a `finale`, or not `true`. Warning (an error in strict mode, like the next one): a scene with a hostile NPC (one whose attitude toward some PC is «ostile») and
 no defeat ending; the line should take the victors as in play (`richiede.stati`) and name no PC (it cannot know who
 died). Warning too: a defeat ending that does not say the PCs' states it takes as true (`richiede.stati.tutti`): «Vi
 sveglia il freddo» woke a dead PC three times in the final round (docs/coerenza.md); `tutti: [in_gioco, a_terra]` for
@@ -36,7 +36,8 @@ def controlla(c: Campagna, e: Esito) -> None:
         if not (isinstance(stati, dict) and "tutti" in stati):
             e.avviso("REPERTORIO.sconfitta_stati", f"{b.get('_file', '?')} {b.get('id', '?')}",
                      "il finale di sconfitta non dice quali stati dei PG dà per veri: richiede.stati.tutti: [in_gioco, a_terra] "
-                     "se sveglia o lega tutti (nessun morto), e un secondo finale per quando qualcuno è morto")
+                     "se sveglia o lega tutti (nessun morto), e un secondo finale per quando qualcuno è morto",
+                     rigoroso=True)
     for _, s in c.scene:
         sid = s.get("id")
         if not isinstance(sid, str):
@@ -49,4 +50,5 @@ def controlla(c: Campagna, e: Esito) -> None:
             e.avviso("REPERTORIO.sconfitta_mancante", f"scena {sid}",
                      f"{', '.join(ostili)} ostili e nessun finale di sconfitta (tipo: finale, sconfitta: true): se il gruppo "
                      "cade tutto il Motore dice solo la sua frase. Scrivi la conseguenza (catturati, lasciati per morti, "
-                     "soccorsi…), con i vincitori in richiede.stati e senza nomi di PG")
+                     "soccorsi…), con i vincitori in richiede.stati e senza nomi di PG",
+                     rigoroso=True)

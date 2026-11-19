@@ -7,7 +7,8 @@ stall game as a waiting line by T6, and its one S1 at T14 found none).
 
 Errors: a level other than 1-3; a gate on the action (the Engine says it with no action, so it would never come out);
 level 2 without a clue to reveal; level 3 that reveals one, or with no gate on what the PCs found (a summary said before
-the PCs know it would tell them). Warning: a scene with no stall line of some level (level 2 only if the scene has clues).
+the PCs know it would tell them). Warning, an error in strict mode: a scene with no stall line of some level (level 2
+only if the scene has clues), since the Engine would then have only the fillers the reader also uses for waiting.
 """
 
 from __future__ import annotations
@@ -71,4 +72,5 @@ def controlla(c: Campagna, e: Esito) -> None:
         if mancano:
             e.avviso("REPERTORIO.stallo_scarso", f"scena {sid}",
                      f"nessuna battuta di stallo di livello {', '.join(mancano)}: quando il tavolo resta fermo il Motore ha solo "
-                     "i riempitivi (che il lettore usa anche come attesa) e la sua frase delle piste (docs/mondo.md §5)")
+                     "i riempitivi (che il lettore usa anche come attesa) e la sua frase delle piste (docs/mondo.md §5)",
+                     rigoroso=True)

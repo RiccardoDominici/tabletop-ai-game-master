@@ -397,6 +397,20 @@ endings, add each scene's `esiti`. An outcome the world decides (midnight comes,
 none (`riferimenti/schema.md`, «esiti»). A line that hands over or steals an object with an id gets `effetti.oggetti`,
 one that turns an NPC `effetti.atteggiamento` (`riferimenti/repertorio.md`, §6).
 
+**Stall lines, defeat endings and tags (always)**, form in `riferimenti/repertorio.md` §2 and §6b; each is an error in strict
+mode, because the Engine relies on it at the table:
+- for every scene, one stall line per level (`stallo: 1 | 2 | 3`, with `scena`): a soft move, a clue that arrives by
+  itself (level 2 only where the scene has clues), a summary of the leads gated on what the PCs found; the Engine says them
+  when the table stays still [V `REPERTORIO.stallo_scarso`];
+- for every scene with an NPC hostile to some PC, a defeat ending (`tipo: finale`, `sconfitta: true`) per likely victor,
+  with `richiede.stati: {png_x: in_gioco, tutti: [in_gioco, a_terra]}`, and after it a second one that fits a dead PC
+  (`tutti: [in_gioco, a_terra, morto]`) [V `REPERTORIO.sconfitta_mancante`, `REPERTORIO.sconfitta_stati`];
+- on every line, the facts it carries: each NPC a narrator row names in `attori` (acts or is there), `menzionati` (only
+  talked about) or `richiede.stati` (its state taken as true; PCs too, and `tutti` for every PC); a line that tells an
+  attack's outcome says which with `richiede.esito` [V `REPERTORIO.png_non_segnato`, `REPERTORIO.esito_mancante`]. The
+  Engine offers a line only while what the tags say is true in the ledger: that is how the local reader, which only
+  relays, never says something false.
+
 **Waiting lines and deviations (always)**: for every scene one waiting line of the narrator (`chi: narratore`,
 `riempitivo: true`, without `scena` or with that scene); for every NPC present in a scene, one of their waiting lines
 (`chi: <png>`, `riempitivo: true`) and one deviation (`tipo: rifiuto`, also `solo_esempio: true`). They are needed
@@ -404,8 +418,8 @@ because, when the local reader finds no answer, it uses exactly those: the table
 silence. The scriptwriter writes the true answer while the table waits. Codes `COPERTURA.attesa_scena`,
 `COPERTURA.attesa_png`, `COPERTURA.deviazione_png` (warnings in normal mode, errors in strict mode).
 
-**Check**: `--solo REPERTORIO,COPERTURA,PROSA,SCENA` with zero errors (the `SEGRETI` errors are closed at step 10),
-and:
+**Check**: `--solo REPERTORIO,COPERTURA,PROSA,SCENA,VOCE --rigoroso` with zero errors (the `SEGRETI` errors are closed at
+step 10), and:
 - the coverage table of `riferimenti/repertorio.md` §8 is all ticked, and every entry of `riferimenti/motore.md` has its
   answer in the campaign (private actions, clocks, endings, objects);
 - no `id` and no `quando` contains a secret;
