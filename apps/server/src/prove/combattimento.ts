@@ -442,7 +442,10 @@ export class GestoreCombattimento {
   private chiudi(turno: number, fatti: string[], tiri: TiroMostrato[]): EsitoCombattimento {
     void turno;
     const { morte, fuggiti } = this;
-    const tirato = this.ordineTirato;
+    // The order is said at the end of the turn: who died or fled in it since the roll is not in it (final round,
+    // attempt 4, CM T24: «Livia muore.», then «Ordine del round: Livia, Nespola, Grosso.»).
+    const fuori = new Set((this.s?.partecipanti ?? []).filter((p) => p.esito === 'morto' || p.esito === 'fuggito').map((p) => p.nome));
+    const tirato = this.ordineTirato?.filter((n) => !fuori.has(n)) ?? null;
     this.ordineTirato = null;
     const sconfitta = this.sconfittaPg;
     this.sconfittaPg = false;

@@ -91,6 +91,23 @@ describe('combattimento SRD 5.2', () => {
    * window's `dopoAzioni` consumed the step at the head as if a PC had just played it: an NPC first in the order lost
    * its first step. The click's order was never said at the table either (`ordine` came only from `dopoAzioni`).
    */
+  it('the order said at the end of the turn leaves out who died since the roll (final round, attempt 4, CM T24)', () => {
+    // Individual initiative rolled every round (Basic Fantasy). x first; a down at the first blow, then its death saves
+    // fail (1s): it dies in the same turn the new round's order is rolled, and that order is said after its death.
+    const ogni = combattimentoSrd();
+    const regole: Combattimento = { ...ogni, iniziativa: { ...ogni.iniziativa, ogniRound: true } };
+    const { g } = scontro(regole, { pg_a: 1, pg_b: 30, png_x: 10 }, [5, 3, 18, 1, 1, 1, 1, 1, 1, 1, 1, 1], () => 3);
+    const cand = [{ id: 'pg_a', lato: 'pg' as const, mod: 0 }, { id: 'pg_b', lato: 'pg' as const, mod: 0 }, { id: 'png_x', lato: 'png' as const, mod: 0 }];
+    g.inizia(cand, [], null);
+    const ordini: Array<{ morto: boolean; ordine: string[] | undefined }> = [];
+    for (let t = 2; t <= 6; t++) {
+      const r = g.dopoAzioni({ turno: t, attacchi: [], autori: g.turnoDi() ?? [], candidati: () => cand });
+      if (r.ordine) ordini.push({ morto: r.morte.some((m) => m.id === 'pg_a' && m.esito === 'morto'), ordine: r.ordine });
+    }
+    // The turn a dies in: the new round's order is said without it.
+    expect(ordini[1]).toEqual({ morto: true, ordine: ['b', 'x'] });
+  });
+
   it('a fight opened at the click: an NPC first in the order strikes in the next window, and the order is said then', () => {
     // Initiative: a 5, x 18 → x, a. x hits a for 3.
     const { g, attacchi } = scontro(combattimentoSrd(), { pg_a: 10, png_x: 10 }, [5, 18], () => 3);
