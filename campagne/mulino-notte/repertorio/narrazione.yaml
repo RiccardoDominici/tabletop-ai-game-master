@@ -486,9 +486,22 @@ battute:
     temi: [sconfitta]
     scena: scena_aia
     attori: [png_folco]
-    richiede: {stati: {png_folco: in_gioco}}
+    richiede: {stati: {png_folco: in_gioco, tutti: [in_gioco, a_terra]}}
     testo:
       - "[narratore] Quando riaprite gli occhi, l'aia è buia e il carro del conte non c'è più."
+      - "[narratore] Sulla porta del granaio pende un lucchetto nuovo."
+    max_usi: 1
+  - id: fin_sconfitta_aia_freddo
+    chi: narratore
+    tipo: finale
+    sconfitta: true
+    quando: "tutto il gruppo è a terra nell'aia, e qualcuno non si rialza"
+    temi: [sconfitta]
+    scena: scena_aia
+    attori: [png_folco]
+    richiede: {stati: {png_folco: in_gioco, tutti: [in_gioco, a_terra, morto]}}
+    testo:
+      - "[narratore] Chi respira ancora riapre gli occhi nell'aia buia, e il carro del conte non c'è più."
       - "[narratore] Sulla porta del granaio pende un lucchetto nuovo."
     max_usi: 1
   - id: fin_sconfitta_ruota
@@ -499,9 +512,22 @@ battute:
     temi: [sconfitta]
     scena: scena_ruota
     attori: [png_folco]
-    richiede: {stati: {png_folco: in_gioco}}
+    richiede: {stati: {png_folco: in_gioco, tutti: [in_gioco, a_terra]}}
     testo:
       - "[narratore] Quando riaprite gli occhi, il cortile è pieno di fumo, e la ruota brucia."
+      - "[narratore] Il paese se ne va in silenzio, e la supplica partirà all'alba."
+    max_usi: 1
+  - id: fin_sconfitta_ruota_fumo
+    chi: narratore
+    tipo: finale
+    sconfitta: true
+    quando: "tutto il gruppo è a terra nel cortile, e qualcuno non si rialza"
+    temi: [sconfitta]
+    scena: scena_ruota
+    attori: [png_folco]
+    richiede: {stati: {png_folco: in_gioco, tutti: [in_gioco, a_terra, morto]}}
+    testo:
+      - "[narratore] Chi respira ancora riapre gli occhi nel fumo, e la ruota brucia."
       - "[narratore] Il paese se ne va in silenzio, e la supplica partirà all'alba."
     max_usi: 1
 
