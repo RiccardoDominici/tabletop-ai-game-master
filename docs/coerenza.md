@@ -993,6 +993,7 @@ played again. From attempt 3 on, the lead also had the unsure items that lean H 
 | 4 (`e44cea5`) | 0 (3 unsure) | 0 (1 unsure) | 0 | 0 | 0 (3 unsure) | **0** | 0 in all five |
 | 5 (`6206bd1`, CM and PR only) | 0 (3 unsure) | — | — | — | 1 (2 unsure) | 1 | 0 in both |
 | 6 (`60de6b0`) | 0 (2 unsure) | 0 (3 unsure) | 0 (2 unsure) | 0 (2 unsure) | 0 (3 unsure) | **0** | 0 in all five |
+| 7 (`b9528b8`) | 0 (2 unsure) | 0 (1 unsure) | 0 (1 unsure) | 0 | 0 | **0** | 0 in all five |
 
 The H and their fixes:
 - **Attempt 1, PR T1.** Livia's Carisma check succeeded (20 against 17), yet the table heard Berta's refusal, «Questo
@@ -1086,6 +1087,15 @@ A short confirmation run of CM on `e551935` checked T17 (below).
 at T17 the table hears only the player's words, «Livia Sarti: «Non lo colpisco ancora, aspetto la risposta».», then
 Tonio's line; no roll and no hit. The server log has 0 ERROR lines. No judge was run on it: it checks the two fixes, it
 is not a new round.
+
+**Attempt 7** replayed all five games on `b9528b8`, after the Preparer-skill and validator fixes of the blind test
+(stall lines, defeat endings and tags now required in strict mode; b4a5303, a scene outcome already true on return no
+longer closes the scene at the first answer). The opus judge (`finale7-evidenza-opus.md`, brief
+`finale7-brief-giudice.md`) counted 0 certain H in every game again, with 4 unsure items all leaning no. Still open, none
+an H class: the attack declared in the turn that opens combat resolves before the round order and that PC acts again in
+round 1 (bug 6); some declared attacks are never rolled; false claims inside the players' attributed words go
+uncorrected; a present NPC answering words put to an invented one before the Engine's neutral line (FB T9); the
+«pagava»/«pagare» stem match.
 
 The other unsure items of attempt 6 are not H classes:
 - the scriptwriter contradicts prepared clue facts: chalk against charcoal on the slate (ST T4 vs T8); two sets of
