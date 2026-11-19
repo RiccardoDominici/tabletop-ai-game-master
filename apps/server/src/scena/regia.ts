@@ -90,7 +90,7 @@ import type { Battuta, Repertorio } from '../repertorio/tipi';
 import { STATI_ATTEGGIAMENTO, TUTTI_I_PG, type StatoAtteggiamento } from '../campagna/mondo';
 import { MarcheRivelate } from './marche';
 import { AL_SUO_POSTO, StatoOggetti } from './oggetti';
-import { esitiDellaScena, esitoRaggiunto } from './esiti-scena';
+import { esitiDellaScena, esitoRaggiunto, motivoEsito } from './esiti-scena';
 import { classeDi } from '../repertorio/fatti-battuta';
 import { haCancelloAzione, StatoRepertorio } from '../repertorio/stato';
 import { provaFallita } from '../repertorio/condizioni';
@@ -344,6 +344,13 @@ export class Regia {
    * un altro (log del 3 novembre: sei finali di fila a o_colpevole 6/6).
    */
   private readonly sceneConFinale = new Set<string>();
+  /**
+   * The outcomes of the current scene whose gates already held when the table came back to it (a return, not a first
+   * visit): they answered nothing in this visit, so they do not close it (blind test A12, mulino-notte W18: the yard's
+   * bell outcome, `o_mezzanotte` min 4, would have closed the yard at the first answer of a later return, with Folco and
+   * Adalgisa long gone). Emptied at every scene change; saved with the snapshot.
+   */
+  private esitiGiaVeri = new Set<string>();
   /**
    * Battute dette SOLO a un'azione privata, e indizi rivelati solo da loro: il PG le ha sentite, il tavolo
    * no. La guardia dei segreti non le conta come «pubblica_dopo» (narrazione/guardia-segreti.ts).
@@ -941,6 +948,7 @@ export class Regia {
       prossimoIdTrascrizione: this.prossimoIdTrascrizione,
       sceneVisitate: [...this.sceneVisitate],
       sceneConFinale: [...this.sceneConFinale],
+      esitiGiaVeri: [...this.esitiGiaVeri],
       serata: this.serata.esporta(),
       segretiPrivati: { battute: [...this.battutePrivate], indizi: [...this.indiziPrivati] },
       // Decisioni del master su presenze e rivelazioni: nel registro, così una ripresa le ritrova (assenti = nessuna).
@@ -1043,6 +1051,7 @@ export class Regia {
     // Archivi di prima: almeno la scena in corso è già stata visitata.
     for (const id of f.sceneVisitate ?? [f.scena]) this.sceneVisitate.add(id);
     for (const id of f.sceneConFinale ?? []) this.sceneConFinale.add(id);
+    this.esitiGiaVeri = new Set(f.esitiGiaVeri ?? []);
     for (const id of f.segretiPrivati?.battute ?? []) this.battutePrivate.add(id);
     for (const id of f.segretiPrivati?.indizi ?? []) this.indiziPrivati.add(id);
     this.serata.preparaPerRipresa(f.serata, r.trascrizione, r.ultimoEvento, this.o.orologio.adesso(), this.titoliScene(f.sceneVisitate ?? [f.scena]), this.segniMostrati());
@@ -2972,6 +2981,10 @@ export class Regia {
     // Una scena già visitata non riapre con l'apertura (e la prima scena col riassunto di sessione):
     // si legge il suo rientro (playtest di nozze-neve: la casera si rileggeva da capo a ogni ritorno).
     const rientro = this.sceneVisitate.has(nuova.id) ? this.rientroIn(nuova, turno) : null;
+    // A return: an outcome already true on entering answered nothing in this visit (W18). A first visit keeps them all
+    // (torre-mozza: entering the sheepfold at midnight ends it, by design).
+    this.esitiGiaVeri = rientro ? this.esitiVeriOra(this.o.log) : new Set();
+    if (this.esitiGiaVeri.size) this.o.log.info({ scena: nuova.id, turno, esiti: [...this.esitiGiaVeri] }, 'scene: back in a visited scene, its outcomes already true do not close it in this visit');
     this.sceneVisitate.add(nuova.id);
     // The world: what the PCs find arriving (consequences of a jump of this scene, traces of off-screen events).
     // The Game Master's roll shown when the PCs left (a gate on `lascia_scena`) opens the new scene's reading (§9).
@@ -4761,12 +4774,11 @@ export class Regia {
    * withdrawn and the scene has had its ending (as at a full clock). Gates read the clues revealed (mode A: the
    * narrator's checked [indizio] marks), the lines used, the clocks and the coherence ledger's states.
    */
-  private diciEsitoDellaScena(turno: number, esito: { uscita: VoceUscita[] }, segni: SegniInRisposta, log: Logger): { id: string; finale: string } | null {
-    const esiti = esitiDellaScena(this.campagna.scena, (m) => log.warn({ avviso: m }, 'scene: an outcome gate cannot be read'));
-    if (!esiti.some((e) => e.richiede)) return null;
+  /** The state the outcomes' gates read: clues revealed, lines used, clocks, the coherence ledger's states. */
+  private statoPerEsiti(): Parameters<typeof esitoRaggiunto>[1] {
     const s = this.statoRepertorio;
     const registro = this.registroOra('esiti della scena');
-    const raggiunto = esitoRaggiunto(esiti, {
+    return {
       indizi: s ? s.indiziRivelati : new Set(this.marche.indizi.keys()),
       battute: new Set(s ? [...s.usi].filter(([, n]) => n > 0).map(([id]) => id) : []),
       pieni: (id) => this.orologi.trova(id)?.pieni ?? null,
@@ -4774,7 +4786,23 @@ export class Regia {
         const x = registro.entita.find((e) => e.id === id);
         return x ? classeDi(x.stato) : null;
       },
-    });
+    };
+  }
+
+  /** The ids of the current scene's outcomes whose gates all hold now. */
+  private esitiVeriOra(log: Logger): Set<string> {
+    const esiti = esitiDellaScena(this.campagna.scena, (m) => log.warn({ avviso: m }, 'scene: an outcome gate cannot be read'));
+    if (!esiti.some((e) => e.richiede)) return new Set();
+    const st = this.statoPerEsiti();
+    return new Set(esiti.filter((e) => motivoEsito(e, st) === null).map((e) => e.id));
+  }
+
+  private diciEsitoDellaScena(turno: number, esito: { uscita: VoceUscita[] }, segni: SegniInRisposta, log: Logger): { id: string; finale: string } | null {
+    // An outcome already true when the table came back to this scene does not close it in this visit (W18).
+    const esiti = esitiDellaScena(this.campagna.scena, (m) => log.warn({ avviso: m }, 'scene: an outcome gate cannot be read')).filter((e) => !this.esitiGiaVeri.has(e.id));
+    if (!esiti.some((e) => e.richiede)) return null;
+    const s = this.statoRepertorio;
+    const raggiunto = esitoRaggiunto(esiti, this.statoPerEsiti());
     if (!raggiunto) return null;
     const b = raggiunto.finale && s ? s.repertorio.perId.get(raggiunto.finale) : undefined;
     // The line only if it can be said now (its own conditions); else the outcome's sentence; else nothing is withdrawn.

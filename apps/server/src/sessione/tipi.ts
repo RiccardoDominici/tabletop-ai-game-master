@@ -91,6 +91,8 @@ export interface FotografiaSessione {
   sceneVisitate?: string[];
   /** Scene che hanno già avuto il loro finale (un finale per scena; assente negli archivi di prima). */
   sceneConFinale?: string[];
+  /** Outcomes of the current scene already true when the table came back to it: they do not close it in this visit. */
+  esitiGiaVeri?: string[];
   /** La serata: riassunti delle serate chiuse, chiusura, durata (assente negli archivi di prima). */
   serata?: SerataSalvata;
   /** Battute e indizi usciti solo per azioni private: la guardia dei segreti non li conta come pubblici. */

@@ -5,7 +5,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import type { ScenaCaricata } from '../src/campagna/tipi';
 import { esitiDellaScena, esitoRaggiunto, motivoEsito } from '../src/scena/esiti-scena';
-import { inizia, Prova, turno } from './aiuti/partita';
+import { attendi, inizia, Prova, turno } from './aiuti/partita';
 
 const scena = (esiti: unknown[]): ScenaCaricata => ({ id: 'scena_x', dati: { esiti } }) as unknown as ScenaCaricata;
 
@@ -65,4 +65,38 @@ describe('with the server', () => {
     expect(s.trascrizione.filter((v) => v.turno === 1).map((v) => v.testo)).toContain('La verità sul vino è venuta fuori: la serata finisce qui.');
     expect(prova.narrazioni().find((r) => r['tipo'] === 'turno' && r['turno'] === 1)).toMatchObject({ esito_scena: 'es_brocca' });
   }, 20_000);
+});
+
+describe('an outcome already true when the table comes back (blind test A12, mulino-notte W18)', () => {
+  let prova: Prova;
+  afterEach(async () => prova?.chiudi());
+
+  it('does not close the scene at the first answer of the return: it answered nothing in this visit', async () => {
+    // The mill's outcome waits for the river's second mark. Turn 1 brings the first (a «ruota» action); leaving the mill
+    // owes the second, paid off-screen in the wood. Back at the mill the gate holds from the entry: before, the first
+    // answer closed the scene with a stale ending («the water takes the yard») for something that happened elsewhere.
+    prova = new Prova();
+    const cartella = prova.campagna('mondo', {
+      ritocchi: { 'scena.yaml': (d) => void (d['esiti'] = [{ id: 'es_piena', descrizione: "L'acqua prende il cortile.", detto: "L'acqua prende il cortile: la scena finisce.", richiede: { orologio: { id: 'o_piena', min: 2 } } }]) },
+    });
+    const copione = (): string => '[narratore] Anna, il vento scuote i rami.\n[invito] tutti';
+    const a = await prova.avvia(cartella, copione, { TAGM_MODO: 'improvvisa' });
+    const schermo = await prova.proiettore(a.url);
+    const tel = await prova.telefono(a.url, 'pg_anna');
+    const master = await prova.master(a.url);
+    let s = await inizia(schermo, tel);
+    s = await turno(tel, 'pg_anna', s, 'Anna guarda la ruota del mulino.'); // o_piena 1: the gate wants 2
+    const nelBosco = attendi(tel, (x) => x.fase === 'finestra' && x.turno === 3);
+    expect(await master.comanda({ tipo: 'scena', scena: 'scena_bosco' })).toEqual({ ok: true }); // o_piena 2, off-screen
+    s = await nelBosco;
+    s = await turno(tel, 'pg_anna', s, 'Anna cammina tra gli alberi.');
+    expect((await master.stato()).mondo?.cronaca.map((v) => v.id)).toContain('o_piena@2'); // the second mark, off-screen
+    const alMulino = attendi(tel, (x) => x.fase === 'finestra' && x.turno === 5);
+    expect(await master.comanda({ tipo: 'scena', scena: 'scena_mulino' })).toEqual({ ok: true });
+    s = await alMulino;
+    s = await turno(tel, 'pg_anna', s, 'Anna ascolta il vento.');
+    const dopo = prova.narrazioni().filter((r) => r['tipo'] === 'turno' && Number(r['turno']) >= 5);
+    expect(dopo.some((r) => r['esito_scena'])).toBe(false);
+    expect(s.trascrizione.map((v) => v.testo)).not.toContain("L'acqua prende il cortile: la scena finisce.");
+  }, 30_000);
 });
