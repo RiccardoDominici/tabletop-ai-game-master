@@ -1,0 +1,58 @@
+id: png_mirella
+nome: "Mirella"
+pronuncia: "Mirèlla"
+alias: [locandiera, ostessa]
+livello: principale
+ruolo: "la locandiera; ha tagliato la corda"
+fronte: fronte_guado
+scheda:
+  gs: 0
+  caratteristiche: {forza: 10, destrezza: 12, costituzione: 10, intelligenza: 12, saggezza: 11, carisma: 13}
+  competenze: [inganno, intuizione]
+  ca: 11
+  pf: 4
+  attacchi:
+    - {nome: "Coltello", caratteristica: destrezza, danno: "1d4", tipo_danno: perforante}
+aspetto:
+  lettura: "Una donna asciutta sulla quarantina, col grembiule bianco e un coltello dal manico di corno alla cintura."
+  invarianti: ["quarant'anni", "asciutta", "grembiule bianco", "coltello col manico di corno"]
+  prompt_immagine: "lean innkeeper woman in her forties, white apron, horn-handled knife at her belt, at an inn door, [STILE]"
+personalita:
+  superficie: ["svelta e cordiale", "parla molto"]
+  sotto_pressione: ["diventa gentile in modo esagerato"]
+  contraddizione: "Accoglie tutti, e li tiene prigionieri della piena."
+desiderio: "Tenere i viandanti alla locanda finché il fiume è in piena."
+paura: "Un inverno senza clienti."
+segreto:
+  testo: "Ha tagliato a metà la corda del traghetto."
+  chi_altro_sa: [png_sandro]
+  se_rivelato: "Il guado la caccia, e la locanda chiude."
+voce:
+  tts: {voce_id: nadine, eta_apparente: "40", altezza: media, velocita: 1.05, timbro: "chiaro"}
+  registro: "Dà del lei ai forestieri, del tu a Sandro."
+  stile: "Frasi di quattro-nove parole, svelte."
+  tic: ["«Qui si sta caldi.»"]
+  gesto: "si asciuga le mani sul grembiule"
+  mai_dice: ["la parola «corda»"]
+  battuta_campione: "Qui si sta caldi. Il fiume aspetta."
+sa: [f_piena, f_traghetto, f_locanda, f_sandro_debito, f_corda_tagliata, f_mirella_coltello]
+non_sa: [f_mirella_vista, f_guardia_monete, f_pietra_padre]
+crede_a_torto:
+  - {testo: "Sandro non ha visto niente: dormiva sul traghetto.", contraddice: f_mirella_vista}
+mente_su:
+  - id: mir_coltello
+    argomento: "il coltello"
+    verita: f_mirella_coltello
+    versione: "Il coltello? Ci taglio il pane, io."
+    perche: "Paura di perdere la locanda."
+    segnale: "ride troppo forte e copre il manico con la mano"
+    cede_se: "Cede quando un PG le mostra le fibre di canapa sul coltello."
+atteggiamento_pg:
+  pg_aldo: {stato: indifferente, perche: "una guardia", vuole: "che resti a dormire"}
+  pg_dalia: {stato: ostile, perche: "una ladra le ha svuotato la cassa l'anno scorso", vuole: "che se ne vada"}
+info_chiave: []
+iniziative: ["Offre da bere a chi guarda la corda."]
+evoluzione:
+  - {se: "cede", allora: "chiede di non dirlo ai viandanti"}
+statistiche: "popolana"
+registro_attivita: []

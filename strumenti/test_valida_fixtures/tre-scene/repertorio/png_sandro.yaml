@@ -1,0 +1,54 @@
+battute:
+  - {id: san_saluto, chi: png_sandro, tipo: saluto, solo_esempio: true, quando: "i PG salutano Sandro", temi: [saluto], max_usi: 1,
+     testo: ["[narratore] Sandro batte il palmo sulla corda.", "[png_sandro] Sera. Si parte presto."]}
+  - {id: san_rifiuto, chi: png_sandro, tipo: rifiuto, solo_esempio: true, quando: "un PG chiede a Sandro di cose che non sa", temi: [domando], max_usi: 1,
+     testo: ["[png_sandro] Non lo so. Il fiume decide."]}
+  - {id: san_domanda_gentile, chi: png_sandro, tipo: reazione, solo_esempio: true, quando: "un PG chiede a Sandro come sta", temi: [stai], max_usi: 1,
+     testo: ["[png_sandro] Stanco. Come la corda."]}
+  - {id: san_accusa, chi: png_sandro, tipo: reazione, solo_esempio: true, quando: "un PG accusa Sandro", temi: [accuso], max_usi: 1,
+     testo: ["[png_sandro] Io porto la gente. Basta."]}
+  - {id: san_minaccia, chi: png_sandro, tipo: reazione, solo_esempio: true, quando: "un PG minaccia Sandro", temi: [minaccio], max_usi: 1,
+     testo: ["[png_sandro] Giù dal mio traghetto. Subito."]}
+  - {id: san_offerta, chi: png_sandro, tipo: reazione, solo_esempio: true, quando: "un PG offre denaro a Sandro", temi: [soldi], max_usi: 1,
+     testo: ["[png_sandro] Il pedaggio è una moneta. Basta quella."]}
+  - {id: san_aiuto, chi: png_sandro, tipo: reazione, solo_esempio: true, quando: "un PG aiuta Sandro col traghetto", temi: [aiuto], max_usi: 1,
+     testo: ["[png_sandro] Grazie. Tieni forte qui."]}
+  - {id: san_attesa, chi: png_sandro, tipo: richiesta, riempitivo: true, quando: "i PG indugiano vicino al traghetto", temi: [nodo], max_usi: 1,
+     testo: ["[png_sandro] Allora, si sale? L'acqua non aspetta."]}
+
+  - id: san_ieri_domanda
+    chi: png_sandro
+    tipo: menzogna
+    quando: "un PG chiede a Sandro dov'era ieri sera"
+    temi: [ieri, stanotte, pontile]
+    testo:
+      - "[narratore] Sandro si tira giù il cappello sugli occhi."
+      - "[png_sandro] Ieri sera ero a letto presto."
+    effetti: {menzogna_detta: san_ieri}
+    max_usi: 1
+
+  # A confession with its structural gate (privata, and the clue it needs), and the line that moves an extra clock.
+  - id: san_ponte_corda
+    chi: png_sandro
+    tipo: confessione
+    quando: "in privato, un PG mostra a Sandro la corda del traghetto"
+    temi: [corda, taglio, canapa]
+    richiede: {privata: true, indizi_rivelati: [i_corda]}
+    menzionati: [png_mirella]
+    testo:
+      - "[narratore] Sandro guarda il taglio, e si toglie il cappello."
+      - "[png_sandro] Ieri sera ho visto Mirella sul pontile. Aveva un coltello."
+    effetti: {rivela_indizi: [i_sandro_racconta], fatti_noti: [f_mirella_vista], atteggiamento: {png_sandro: amichevole}}
+    max_usi: 1
+
+  # Level 3 stall line: a summary of what the PCs found, gated on it, for every scene where Sandro is.
+  - id: san_stallo3
+    chi: png_sandro
+    tipo: momento
+    stallo: 3
+    quando: "nessuno agisce da un po', e Sandro guarda la corda"
+    temi: [nodi]
+    scena: [scena_riva, scena_traghetto, scena_riva_notte]
+    richiede: {indizi_rivelati: [i_corda]}
+    testo: ["[png_sandro] Un taglio netto. A mezzanotte la corda cede."]
+    max_usi: 1

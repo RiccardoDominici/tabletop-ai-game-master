@@ -237,7 +237,7 @@ must have a revealing line for each [V]. If missing, it counts as 1 [R warns].
 ```yaml
 id: png_<nome>                 # = file name, lowercase ASCII [V]; becomes the label [png_<nome>]
 nome: "…"                      # initial different from the other NPCs of the scene [V]
-pronuncia: "…"                 # optional, with the accent: the TTS uses it (better: an entry in pronunce.yaml)
+pronuncia: "…"                 # with the accent [V required]; the voice reads the entry of pronunce.yaml (step 11b)
 nascosto: true|false           # optional [V boolean]: present for the Engine, but not shown to the projector and phone until it speaks or the GM reveals it
 alias: [nicknames]             # how the players will call them: a dwarf, the innkeeper, the stranger [R]; never generic
                                #   (old man, girl) [R], never the same as another NPC [V]

@@ -1,0 +1,43 @@
+situazione_comune: "Siete al guado del Salice per passare il fiume, e stanotte c'è l'ultima corsa del traghetto."
+personaggi:
+  - id: pg_aldo
+    nome: "Aldo"
+    pronomi: "lui"
+    specie: "umano"
+    classe: "guerriero"
+    livello: 1
+    aspetto: "Un uomo alto con la giubba della guardia della valle."
+    concetto: "Guardia della valle in viaggio. Crede alle prove più che alle persone."
+    aggancio: "Sandro ti ha portato sull'altra riva tante volte."
+    cosa_sai_fare: ["fai la guardia", "sollevi pesi"]
+    conoscenze_private:
+      - {testo: "Una corda di canapa non si spezza da sola in una notte.", fatti: [f_traghetto]}
+    scheda:
+      caratteristiche: {forza: 16, destrezza: 12, costituzione: 14, intelligenza: 10, saggezza: 12, carisma: 8}
+      competenze: [atletica, percezione]
+      tiri_salvezza: [forza, costituzione]
+      armatura: {tipo: giaco di maglia, scudo: true}
+      pf: 12
+      attacchi:
+        - {nome: "Spada lunga", caratteristica: forza, danno: "1d8", tipo_danno: tagliente}
+  - id: pg_dalia
+    nome: "Dalia"
+    pronomi: "lei"
+    specie: "halfling"
+    classe: "ladra"
+    livello: 1
+    aspetto: "Una halfling svelta, col mantello verde e le dita sempre in movimento."
+    concetto: "Ladra di fiere. Ruba ai prepotenti."
+    aggancio: "Alla locanda del guado ti devono ancora una notte pagata."
+    cosa_sai_fare: ["guardi le mani della gente", "apri le serrature"]
+    conoscenze_private:
+      - {testo: "Le fibre di canapa restano sulla lama che ha tagliato una corda.", fatti: [f_locanda]}
+    scheda:
+      caratteristiche: {forza: 8, destrezza: 16, costituzione: 12, intelligenza: 12, saggezza: 12, carisma: 14}
+      competenze: [rapidita_di_mano, furtivita, percezione, inganno]
+      maestrie: [rapidita_di_mano]
+      tiri_salvezza: [destrezza, intelligenza]
+      armatura: {tipo: armatura di cuoio, scudo: false}
+      pf: 9
+      attacchi:
+        - {nome: "Pugnale", caratteristica: destrezza, danno: "1d4", tipo_danno: perforante}

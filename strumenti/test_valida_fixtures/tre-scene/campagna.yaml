@@ -1,0 +1,174 @@
+id: tre-scene
+lingua: it
+regole: {dadi: true}
+
+# A nameless foe by type (docs/prove.md §2): the toll guard on the ferry.
+gregari:
+  - tipo: guardia
+    nome: "guardia del pedaggio"
+    parole: [guardia, pedaggio]
+    scheda:
+      gs: 1/8
+      caratteristiche: {forza: 13, destrezza: 12, costituzione: 12, intelligenza: 10, saggezza: 11, carisma: 10}
+      ca: 12
+      pf: 9
+      attacchi:
+        - {nome: "Bastone", caratteristica: forza, danno: "1d6", tipo_danno: contundente}
+
+canone:
+  - {id: f_piena, noto_ai_pg: true, stato: confermato, testo: "Il fiume è in piena, e stanotte il guado si chiude."}
+  - {id: f_traghetto, noto_ai_pg: true, stato: confermato, testo: "Sandro porta il traghetto del guado da vent'anni."}
+  - {id: f_campana, noto_ai_pg: true, stato: confermato, testo: "La campana del guado suona quando l'acqua copre la pietra segnata."}
+  - {id: f_locanda, noto_ai_pg: true, stato: confermato, testo: "Mirella tiene l'unica locanda della riva."}
+  - {id: f_pietra_padre, noto_ai_pg: true, stato: confermato, testo: "La tacca sulla pietra segnata l'ha incisa il padre di Sandro."}
+  - {id: f_guardia_monete, noto_ai_pg: false, stato: confermato, testo: "La guardia del pedaggio prende due monete invece di una."}
+  - {id: f_corda_tagliata, noto_ai_pg: false, stato: confermato, testo: "La corda del traghetto è tagliata a metà, e a mezzanotte si spezza."}
+  - {id: f_mirella_coltello, noto_ai_pg: false, stato: confermato, testo: "Mirella ha tagliato la corda col coltello della cucina."}
+  - {id: f_sandro_debito, noto_ai_pg: false, stato: confermato, testo: "Sandro deve a Mirella il prezzo del traghetto nuovo."}
+  - {id: f_mirella_vista, noto_ai_pg: false, stato: confermato, testo: "Ieri sera Sandro ha visto Mirella sul pontile, con un coltello."}
+
+orologi:
+  - id: o_piena
+    nome: "Il fiume chiude il guado"
+    pericolo: p_piena
+    segmenti: 6
+    pieni_all_inizio: 0
+    segno_almeno_ogni: serata          # a session clock: the Engine paces it on the evening (docs/mondo.md §1)
+    segni:
+      - "Il fiume cresce, e copre il primo gradino del pontile."
+      - "La campana del guado batte un colpo solo, lontano."
+      - "Una tavola del pontile si stacca e va via con la corrente."
+      - "La campana batte due colpi: l'acqua è alla pietra segnata."
+      - "La corrente tira il traghetto, e la corda geme."
+      - "La campana suona a distesa: il guado è chiuso."
+    avanza_quando:
+      - "Avanza col ritmo della serata."
+      - {quando: lascia_scena, scena: scena_riva, volte: 1}
+    al_completo: "Il fiume chiude il guado: con la verità detta, la colpa cade su Mirella; col silenzio, Sandro resta in debito."
+
+rivelazioni:
+  - id: r_corda
+    chiave: true
+    conclusione: "La corda del traghetto l'ha tagliata Mirella."
+    indizi: [i_corda, i_coltello, i_sandro_racconta]
+
+colli_di_bottiglia:
+  - id: cb_corda
+    ostacolo: "Fermare il traghetto prima che la corda si spezzi."
+    soluzioni: ["Mostrare la corda a Sandro.", "Legare una corda nuova dal pontile.", "Tenere il traghetto alla riva con la forza."]
+colli_di_bottiglia_nota: "Nessuna soluzione dipende da un PG solo."
+
+nodi:
+  - {id: n_riva, tipo: luogo, nome: "La riva del guado", scheda: scena.yaml, noto_ai_pg: true, collegamenti: [n_traghetto, n_notte, png_sandro, png_mirella]}
+  - {id: n_traghetto, tipo: luogo, nome: "Il traghetto", scheda: scene/scena_traghetto.yaml, noto_ai_pg: true, collegamenti: [n_riva, n_notte]}
+  # The same bank at another moment is an event node with its own sheet (riferimenti/mestiere.md §9).
+  - {id: n_notte, tipo: evento, nome: "La riva a mezzanotte", scheda: scene/scena_riva_notte.yaml, collegamenti: [n_riva, n_traghetto]}
+  - {id: png_sandro, tipo: png, scheda: png/png_sandro.yaml, collegamenti: [n_riva, n_traghetto]}
+  - {id: png_mirella, tipo: png, scheda: png/png_mirella.yaml, collegamenti: [n_riva, n_notte]}
+
+sessione:
+  riassunto_iniziale: "Siete al guado del Salice, sulla riva di un fiume che cresce da tre giorni. Stanotte il traghetto di Sandro fa l'ultima corsa prima che il guado si chiuda."
+  cinque_stanze:
+    ingresso_o_guardiano: "Sandro al pontile, col traghetto legato."
+    enigma_o_sfida_sociale: "Chi era sul pontile ieri sera?"
+    trucco_o_battuta_d_arresto: "La guardia del pedaggio sul traghetto."
+    climax: "La riva a mezzanotte, con la corda che geme."
+    ricompensa_o_colpo_di_scena: "Il debito di Sandro."
+  scene_potenziali: [scena_riva, scena_traghetto, scena_riva_notte]
+  chiusura: "Dire chi ha tagliato la corda, o ripararla e tacere."
+
+preparazione:
+  fronti:
+    - id: fronte_guado
+      livello: campagna
+      nome: "Il guado del Salice"
+      pericoli:
+        - id: p_debito
+          tipo: "organizzazione ambiziosa"
+          impulso: "possedere"
+          destino_incombente: "Mirella si prende il traghetto per il debito."
+          presagi:
+            - {testo: "Mirella conta i debiti del traghetto.", segno_visibile: "Un quaderno aperto sul bancone."}
+            - {testo: "Sandro non guarda Mirella.", segno_visibile: "Sandro volta le spalle alla locanda."}
+          mosse: ["chiede il conto"]
+          cast: [png_mirella]
+          orologio: o_debito
+        - id: p_strada
+          tipo: "piaga"
+          impulso: "isolare"
+          destino_incombente: "La riva resta tagliata fuori per l'inverno."
+          presagi:
+            - {testo: "I carri tornano indietro.", segno_visibile: "Tracce di ruote che fanno marcia indietro."}
+          mosse: ["chiude la strada"]
+          cast: []
+          orologio: o_strada
+      domande_di_posta: ["Sandro terrà il traghetto?"]
+      orologi_extra:
+        # A clock active in no scene moves only by gates, and its consequences happen off-screen: they need `tracce`.
+        - id: o_debito
+          nome: "Mirella si prende il traghetto"
+          segmenti: 4
+          avanza_quando:
+            - {quando: battuta, ids: [san_ponte_corda]}
+          conseguenze:
+            - al_segno: 1
+              cosa: "Mirella chiude la locanda ai forestieri."
+              tracce: "La porta della locanda è sbarrata, e dentro la lampada è spenta."
+        - {id: o_strada, nome: "La strada si chiude", segmenti: 4}
+    - id: fronte_piena
+      livello: avventura
+      nome: "La piena"
+      pericoli:
+        - id: p_piena
+          tipo: "luogo maledetto"
+          impulso: "travolgere"
+          destino_incombente: "La corda si spezza e il traghetto va alla deriva."
+          presagi:
+            - {testo: "L'acqua sale.", segno_visibile: "La pietra segnata scompare."}
+          mosse: ["strappa le tavole"]
+          cast: []
+          orologio: o_piena
+        - id: p_paura
+          tipo: "voce che corre"
+          impulso: "spaventare"
+          destino_incombente: "Nessun viandante osa più il guado."
+          presagi:
+            - {testo: "I viandanti dormono vestiti.", segno_visibile: "Bisacce pronte vicino alla porta."}
+          mosse: ["sussurra"]
+          cast: []
+          orologio: o_paura
+      domande_di_posta: ["Il traghetto passerà stanotte?"]
+      orologi_extra:
+        - {id: o_paura, nome: "La paura del guado", segmenti: 4}
+  cattivo:
+    png: png_mirella
+    nome: "Mirella"
+    obiettivo: "Tenere i viandanti alla locanda finché il fiume è in piena."
+    cronologia_se_i_pg_non_intervengono: ["A mezzanotte la corda si spezza.", "I viandanti restano tre giorni alla locanda."]
+    risorse: [{cosa: "il coltello della cucina", a_cosa_serve: "tagliare la corda"}, {cosa: "il debito di Sandro", a_cosa_serve: "farlo tacere"}]
+    reazioni: [{intrusione: "i PG guardano la corda", reazione: "offre da bere a tutti, subito"}]
+    stato_di_quiete: "Il traghetto passava ogni sera, e la locanda viveva dei viandanti."
+    chiamata_all_azione: "Il fiume è in piena, e stanotte è l'ultima corsa."
+  segreti_astratti:
+    - "Il traghetto nuovo l'ha pagato Mirella."
+    - "Sandro dorme sul traghetto quando beve."
+    - "La pietra segnata l'ha incisa il padre di Sandro."
+    - "La guardia del pedaggio prende due monete invece di una."
+    - "Mirella teme l'inverno senza clienti."
+    - "Il ponte a valle è crollato da un mese."
+  archi:
+    campagna_tre_atti: ["La corda.", "Il debito.", "L'inverno."]
+    pg:
+      pg_aldo: {tu: "guardia", bisogno: "giustizia", vai: "il traghetto", cerca: "la corda", trova: "il taglio", paga: "la locanda", ritorna: "la riva", cambia: "capisce"}
+      pg_dalia: {tu: "ladra", bisogno: "fidarsi", vai: "la locanda", cerca: "il coltello", trova: "la canapa", paga: "il silenzio", ritorna: "il pontile", cambia: "parla"}
+  cronologia:
+    eventi:
+      - {id: t_debito, quando: {giorni_fa: 90}, cosa: "Sandro compra il traghetto nuovo coi soldi di Mirella.", fatti: [f_sandro_debito, f_traghetto]}
+      - {id: t_taglio, quando: {giorni_fa: 1, ora: "22:00"}, cosa: "Mirella taglia la corda; Sandro la vede.", fatti: [f_mirella_coltello, f_mirella_vista, f_corda_tagliata]}
+      - {id: t_inizio, quando: {ora: "18:00"}, cosa: "I PG arrivano alla riva.", fatti: [f_piena, f_locanda]}
+      - {id: t_mezzanotte, quando: {ora: "24:00"}, cosa: "La corda si spezza se nessuno la ripara.", fatti: [f_campana], segno: {orologio: o_piena, n: 6}}
+  logistica:
+    durate:
+      - {id: d_corda, cosa: "Legare una corda nuova dal pontile al traghetto.", minuti: 40}
+    verifiche:
+      - {tra: [t_inizio, t_mezzanotte], ci_sta: [d_corda], perche: "C'è tempo di riparare la corda prima di mezzanotte."}

@@ -1,0 +1,42 @@
+battute:
+  - {id: mir_saluto, chi: png_mirella, tipo: saluto, solo_esempio: true, quando: "i PG salutano Mirella", temi: [saluto], max_usi: 1,
+     testo: ["[narratore] Mirella si asciuga le mani sul grembiule.", "[png_mirella] Entrate. Qui si sta caldi."]}
+  - {id: mir_rifiuto, chi: png_mirella, tipo: rifiuto, solo_esempio: true, quando: "un PG chiede a Mirella di cose che non sa", temi: [domando], max_usi: 1,
+     testo: ["[png_mirella] Non lo so. Io so di zuppa e di letti."]}
+  - {id: mir_domanda_gentile, chi: png_mirella, tipo: reazione, solo_esempio: true, quando: "un PG chiede a Mirella come sta", temi: [stai], max_usi: 1,
+     testo: ["[png_mirella] Bene, con la locanda piena. Sieda."]}
+  - {id: mir_accusa, chi: png_mirella, tipo: reazione, solo_esempio: true, quando: "un PG accusa Mirella", temi: [accuso], max_usi: 1,
+     testo: ["[png_mirella] Io? Cucino e basta."]}
+  - {id: mir_minaccia, chi: png_mirella, tipo: reazione, solo_esempio: true, quando: "un PG minaccia Mirella", temi: [minaccio], max_usi: 1,
+     testo: ["[png_mirella] Fuori dalla mia locanda. Adesso."]}
+  - {id: mir_offerta, chi: png_mirella, tipo: reazione, solo_esempio: true, quando: "un PG offre denaro a Mirella", temi: [soldi], max_usi: 1,
+     testo: ["[png_mirella] Una moneta per la zuppa. Due per il letto."]}
+  - {id: mir_aiuto, chi: png_mirella, tipo: reazione, solo_esempio: true, quando: "un PG aiuta Mirella in cucina", temi: [aiuto], max_usi: 1,
+     testo: ["[png_mirella] Grazie. Lei è gentile."]}
+  - {id: mir_attesa, chi: png_mirella, tipo: richiesta, riempitivo: true, quando: "i PG indugiano alla porta della locanda", temi: [zuppa], max_usi: 1,
+     scena: [scena_riva, scena_riva_notte],
+     testo: ["[png_mirella] Volete la zuppa? È calda."]}
+
+  - id: mir_coltello_domanda
+    chi: png_mirella
+    tipo: menzogna
+    quando: "un PG chiede a Mirella del suo coltello"
+    temi: [coltello, lama]
+    testo:
+      - "[narratore] Mirella ride troppo forte e copre il manico con la mano."
+      - "[png_mirella] Il coltello? Ci taglio il pane, io."
+    effetti: {menzogna_detta: mir_coltello}
+    max_usi: 1
+
+  # The confession puts the knife back on the counter: an object moved by a line (effetti.oggetti).
+  - id: mir_coltello_mostrato
+    chi: png_mirella
+    tipo: confessione
+    quando: "un PG mostra a Mirella le fibre sul suo coltello"
+    temi: [fibre, canapa, coltello]
+    richiede: {indizi_rivelati: [i_coltello]}
+    testo:
+      - "[narratore] Mirella smette di ridere, e posa il coltello sul bancone."
+      - "[png_mirella] L'ho tagliata io, la corda. Per tenervi qui finché c'è la piena."
+    effetti: {fatti_noti: [f_mirella_coltello, f_corda_tagliata], oggetti: {ogg_coltello: scena}}
+    max_usi: 1

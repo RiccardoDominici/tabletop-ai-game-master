@@ -37,16 +37,27 @@ Read in full, in this order:
    `riferimenti/motore.md`: what the Motore does not do (yet), and therefore what the campaign must do.
 5. `riferimenti/immagini.md`: the image prompts (strumenti/immagini/).
 6. `docs/f0-contratti.md`, section «File della campagna» (File of the campaign): what the server loads today.
-7. `docs/regole.md`, only if the brief has `manuale:` (the rule set, step 1b).
+7. `docs/mondo.md` §1–§5: the world that moves (clock pace `serata`, the gates of `avanza_quando`, consequences and
+   `tracce`, attitudes, the stall S1–S3 and its prepared lines), which steps 3 and 9 write.
+8. `docs/prove.md` §2 (sheets, minions, scene checks) and §9 (the Game Master's rolls and the scenes' world
+   questions), and `docs/combattimento.md`, «The defeat path»: what steps 5–7 and 9 write for dice and fights.
+9. `docs/regole.md`, only if the brief has `manuale:` (the rule set, step 1b).
 
-Then look at the examples, **without copying their content**:
-- `strumenti/test_valida_fixtures/mini/`: the smallest campaign that passes in strict mode, with a minimal
-  example of backstory and logistics;
-- `campagne/prova-f0/`: a single scene of half an hour; written before the strict rules and then brought to
-  zero errors in strict mode (confessions with their gate, the scar moved into a situation);
-- `campagne/ponte-lanterne/`: four scenes for two and a half hours, written blind with this skill: session
-  clock, the same place at two moments, two similar voices kept apart. Its `NOTE_SULLA_SKILL.md` says where
-  the skill of that time was not enough.
+The examples of style of your language are in two files: `lingue/<lingua>/preparatore/skill.md` (by step of this
+skill: the forms the validator reads) and `lingue/<lingua>/preparatore/riferimenti.md` (the examples of the
+`riferimenti/` pages, by page and section).
+
+Then look at the two examples, invented for this skill, **without copying their content**:
+- `strumenti/test_valida_fixtures/mini/`: the smallest campaign that passes in strict mode: one scene, a minimal
+  backstory and logistics, a confession with its gate, a stall line of each level;
+- `strumenti/test_valida_fixtures/tre-scene/`: three scenes for an evening, every form the one-scene example
+  lacks: a session clock with `serata` heard from every scene, the same place at two moments (an event node),
+  a world question, a minion with its stats and a line with `richiede.esito`, the tags of a line
+  (`attori`, `menzionati`, `richiede.stati`), defeat endings with `tutti`, an outcome with gates, a clock
+  active in no scene with a consequence and its `tracce`, an object that changes hands, the villain's sheet named
+  in `preparazione.cattivo.png`, and the climax mechanism (step 3). Its `brief.yaml` shows the roads of the choice.
+
+The campaigns in `campagne/` are games, not examples: they were written while the rules grew, and some predate them.
 
 Checkpoint of step 0: you must be able to answer, without reopening the files, these questions. What is
 `cede_se` and how does it become a gate. Why a `quando` cannot contain a secret. Which fields the selector

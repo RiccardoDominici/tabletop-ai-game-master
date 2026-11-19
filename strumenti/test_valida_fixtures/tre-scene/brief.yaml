@@ -1,0 +1,23 @@
+# Fixture «tre-scene»: a one-shot of three scenes, invented for the Preparatore skill (step 0) and the validator's tests.
+# It shows, in the smallest form that passes `--rigoroso`, what the one-scene `mini` cannot: a session clock with
+# `serata`, the same place at two moments, a world question, a minion, stall lines of three levels per scene, the tags
+# of a line, defeat endings with `tutti`, an outcome with gates, a consequence with `tracce`, an object that changes hands.
+id: tre-scene
+titolo: "La corda del guado"
+richiesta: "Fixture del validatore: una sera al guado, tre scene."
+lingua: it
+sessioni: 1
+ore_per_sessione: 2.5
+giocatori: 1
+decisioni:
+  scene: [scena_riva, scena_traghetto, scena_riva_notte]
+  situazione: |-
+    Mirella vuole tenere i viandanti alla sua locanda finché il fiume è in piena.
+    Se i PG non fanno niente, a mezzanotte la corda del traghetto si spezza e il guado resta chiuso tre giorni.
+    La verità è che Mirella ha tagliato a metà la corda, e Sandro l'ha vista ma tace per il suo debito.
+    Dire la verità al guado salva il traghetto ma rovina la locanda di Mirella.
+  strade:
+    - {strada: "La verità sul pontile, davanti ai viandanti.", prezzo: "Mirella perde la locanda e i clienti dell'inverno.", pesa_su: [png_mirella]}
+    - {strada: "Riparare la corda di notte e tacere.", prezzo: "Sandro resta debitore di Mirella, che gli chiede il doppio.", pesa_su: [png_sandro]}
+  altre:
+    - "Meccanismo del climax, una riga per stato. Corda intera: il traghetto passa. Corda tagliata a metà: regge fino a mezzanotte. Corda spezzata: il guado è chiuso."

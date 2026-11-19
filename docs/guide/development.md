@@ -95,9 +95,13 @@ without MLX). The configuration is in `services/voce/pytest.ini`.
 
 ```
 python3 -I strumenti/valida_campagna.py strumenti/test_valida_fixtures/mini --rigoroso
+python3 -I strumenti/valida_campagna.py strumenti/test_valida_fixtures/tre-scene --rigoroso
 ```
 
-Validates the smallest campaign that passes in strict mode: it must give 0 errors.
+Validates the two invented example campaigns the Preparer's skill points to (step 0): `mini`, the smallest that passes
+in strict mode (one scene), and `tre-scene`, an evening of three scenes with the forms a single scene cannot show (a
+session clock, the same place at two moments, a world question, a minion, defeat endings, an outcome with gates). Both
+must give 0 errors.
 
 ### End-to-end tests (Playwright)
 

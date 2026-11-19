@@ -1,0 +1,40 @@
+# Scene 3: the same bank at midnight, on an event node. It starts with the clock further along; an outcome with gates.
+id: scena_riva_notte
+nodo: n_notte
+nome: "La riva a mezzanotte"
+descrizione: "La riva al buio, con le lanterne della locanda e il traghetto legato. Al pontile si sente tutto; in cucina, a porta chiusa, non sente nessuno."
+scopo: {tipo: far_avanzare_fronte, rif: fronte_piena}
+domanda_drammatica: "Il traghetto passerà stanotte?"
+posta:
+  si_guadagna: {cosa: "Il traghetto e la verità.", per_chi: [png_sandro]}
+  si_perde: {cosa: "La locanda di Mirella.", per_chi: [png_mirella]}
+intensita: 4
+sensi:
+  - "Il fiume rimbomba nel buio."
+  - "Odore di olio delle lanterne."
+  - "La corda geme sopra l'acqua."
+elementi_interattivi:
+  - {cosa: "la corda", dove: "tesa dal pontile", azioni: "si può legare una corda nuova."}
+  - {cosa: "le lanterne", dove: "alla porta della locanda", azioni: "si staccano dal gancio."}
+  - {cosa: "il pontile", dove: "sulla riva", azioni: "ci si cammina al buio."}
+png_presenti: [png_sandro, png_mirella]
+orologi_attivi: [o_piena]
+orologi_in_scena:
+  o_piena: {pieni_almeno: 4}
+indizi: []
+uscite:
+  - {verso: n_riva, segnalata_da: [i_corda]}
+climax: true
+mossa_morbida_pronta: "Una lanterna si spegne nel vento. La corda geme, più forte."
+apertura: "A mezzanotte la riva è buia, e il fiume rimbomba. Mirella è sulla porta con una lanterna. Chi va al pontile?"
+musica: {tag: esplorazione_tesa, transizione: "verso esplorazione_tesa quando la campana suona"}
+immagine:
+  invarianti: ["riva di notte", "lanterne della locanda", "traghetto legato"]
+  prompt_luogo: "river bank at midnight, inn lanterns, a ferry tied to a groaning rope, black water"
+taglio: "La scena si chiude quando la corda è riparata, quando Mirella cede, o quando la campana suona a distesa. Se i PG esitano, la corda geme più forte."
+# Outcomes the world decides have gates: the first whose gates hold closes the scene (schema.md, «esiti»).
+esiti:
+  - {id: e_mirella_cede, descrizione: "Mirella cede davanti al coltello.", finale: fin_coltello,
+     richiede: {battute_usate: [mir_coltello_mostrato]}, detto: "Mirella posa il coltello sul bancone, e la riva tace."}
+  - {id: e_guado_chiuso, descrizione: "La campana suona a distesa.", finale: fin_guado_chiuso,
+     richiede: {orologio: {id: o_piena, min: 6, max: 6}}, detto: "La campana suona a distesa, e il guado è chiuso."}

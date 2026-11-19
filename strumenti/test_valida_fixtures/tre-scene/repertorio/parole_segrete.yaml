@@ -1,0 +1,9 @@
+parole:
+  - {parola: "la corda tagliata", regex: "\\btagliata a metà\\b|\\bcorda[^.]{0,20}\\btagliata\\b|\\bl'ho tagliata io\\b", fatti: [f_corda_tagliata],
+     pubblica_dopo: [i_corda, nar_corda, nar_stallo2_traghetto, mir_coltello_mostrato], nota: "lo stato della corda"}
+  - {parola: "Mirella ha tagliato la corda", regex: "\\bmirella\\b[^.]{0,40}\\btagli\\w*|\\bl'ho tagliata io\\b", fatti: [f_mirella_coltello],
+     pubblica_dopo: [mir_coltello_mostrato], nota: "chi ha tagliato"}
+  - {parola: "il debito di Sandro", regex: "\\bdebit\\w*|\\bdeve a mirella\\b", fatti: [f_sandro_debito], pubblica_dopo: [], nota: "perché Sandro tace"}
+  - {parola: "Sandro ha visto Mirella", regex: "\\bho visto mirella\\b|\\bvisto\\b[^.]{0,30}\\bmirella\\b", fatti: [f_mirella_vista],
+     pubblica_dopo: [san_ponte_corda, i_sandro_racconta], nota: "ciò che Sandro tace"}
+  - {parola: "due monete", regex: "\\bdue monete\\b", fatti: [f_guardia_monete], pubblica_dopo: [], nota: "il furto della guardia"}

@@ -208,7 +208,7 @@ on nobody: no roll, and the fact tells the narrator not to invent the creature (
 Next to an enemy, an attack with no target named stays a doubt: no roll. Validator: `SCHEDA.gregari` (types, sheets as
 the set's NPC sheets, the scenes' entries) and the warning `SCHEDA.nemici_senza_statistiche` when a scene names a
 minion's word with no minion of that type nor an NPC by that name (strumenti/valida/regole_gregari.py). Tests:
-test/gregari.test.ts. Example: ponte-lanterne, the consul's two guards at the Casa del Sale (the SRD 5.2 Guard).
+test/gregari.test.ts. Example: `strumenti/test_valida_fixtures/tre-scene` (the toll guard on the ferry); in a played campaign, ponte-lanterne, the consul's two guards at the Casa del Sale (the SRD 5.2 Guard).
 
 ## 3. Flow
 
@@ -712,7 +712,7 @@ nobody at the table rolls for it, the Engine rolls; the model never picks the re
   canon: asked once per session, saved in the world's snapshot (`domande`), and given to the narrator as a line of the
   turn's world section («Deciso dai dadi del master, ora è un fatto…», `mondo.risposta`), in both modes. The scenes'
   `domande` stay out of the narrator's cached context (campagna/contesto.ts). Validator: class `DOMANDE`
-  (strumenti/valida/regole_domande.py). Example: `campagne/torre-mozza/scene/scena_torre.yaml`, `d_zirra_porta`. Tests:
+  (strumenti/valida/regole_domande.py). Example: `strumenti/test_valida_fixtures/tre-scene/scena.yaml`, `d_cane` (and, in a played campaign, `campagne/torre-mozza/scene/scena_torre.yaml`, `d_zirra_porta`). Tests:
   test/mondo-domande.test.ts (reading, once per session, saved, the NPC check through the SRD and a manual's set,
   the cached context, the whole server with and without sheets).
 

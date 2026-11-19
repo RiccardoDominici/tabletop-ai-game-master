@@ -1,0 +1,58 @@
+id: png_sandro
+nome: "Sandro"
+pronuncia: "Sàndro"
+alias: [traghettatore, barcaiolo]
+livello: principale
+ruolo: "il traghettatore; testimone che tace"
+fronte: fronte_guado
+scheda:
+  gs: 0
+  caratteristiche: {forza: 13, destrezza: 10, costituzione: 12, intelligenza: 10, saggezza: 12, carisma: 9}
+  competenze: [atletica, percezione]
+  ca: 10
+  pf: 5
+  attacchi:
+    - {nome: "Remo", caratteristica: forza, danno: "1d4", tipo_danno: contundente}
+aspetto:
+  lettura: "Un uomo grosso sulla sessantina, con le mani spaccate dalla corda e un cappello di paglia sfilacciato."
+  invarianti: ["sessant'anni", "grosso", "mani spaccate", "cappello di paglia"]
+  prompt_immagine: "big ferryman in his sixties, rope-cracked hands, frayed straw hat, by a river pier, [STILE]"
+personalita:
+  superficie: ["lento e di poche parole", "fiero del traghetto"]
+  sotto_pressione: ["si mette a contare i nodi della corda"]
+  contraddizione: "Ama il fiume, ma teme Mirella più della piena."
+desiderio: "Tenere il traghetto e passare l'ultima corsa prima della piena."
+paura: "Perdere il traghetto per il debito."
+segreto:
+  testo: "Ha visto Mirella col coltello sul pontile, e tace per il debito."
+  chi_altro_sa: []
+  se_rivelato: "Mirella gli chiede il doppio del debito."
+voce:
+  tts: {voce_id: vincent, eta_apparente: "60", altezza: bassa, velocita: 0.9, timbro: "roco"}
+  registro: "Dà del tu a tutti."
+  stile: "Frasi di tre-sette parole, lente."
+  tic: ["«Il fiume decide.»"]
+  gesto: "batte il palmo sulla corda"
+  mai_dice: ["il nome di Mirella, finché non ha ceduto"]
+  battuta_campione: "Il fiume decide. Io porto."
+sa: [f_piena, f_traghetto, f_campana, f_locanda, f_sandro_debito, f_mirella_vista, f_pietra_padre]
+non_sa: [f_corda_tagliata, f_mirella_coltello, f_guardia_monete]
+crede_a_torto:
+  - {testo: "Mirella era sul pontile a pescare.", contraddice: f_mirella_coltello}
+mente_su:
+  - id: san_ieri
+    argomento: "ieri sera"
+    verita: f_mirella_vista
+    versione: "Ieri sera ero a letto presto."
+    perche: "Il debito con Mirella."
+    segnale: "si tira giù il cappello sugli occhi"
+    cede_se: "Dice la verità quando un PG, in privato, gli mostra la corda tagliata."
+atteggiamento_pg:
+  pg_aldo: {stato: amichevole, perche: "una guardia onesta", vuole: "aiuto alla corda"}
+  pg_dalia: {stato: indifferente, perche: "una forestiera svelta", vuole: "che paghi il pedaggio"}
+info_chiave: [i_sandro_racconta]
+iniziative: ["Se un PG tocca la corda, gli dice di lasciarla stare."]
+evoluzione:
+  - {se: "confessa", allora: "aiuta a legare la corda nuova"}
+statistiche: "popolano"
+registro_attivita: []

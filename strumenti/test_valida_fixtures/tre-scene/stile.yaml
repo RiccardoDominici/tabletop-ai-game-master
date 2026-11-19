@@ -1,0 +1,15 @@
+id: tre-scene
+titolo: "La corda del guado"
+premessa: "Al guado del Salice il fiume cresce, e a mezzanotte la corda del traghetto può spezzarsi."
+tono: "Racconto di fiume, teso e semplice."
+tema: "Chi trattiene gli altri per bisogno."
+registro_narratore: "Voce calma, da sera sul fiume."
+regole_prosa:
+  - "Il narratore descrive ciò che si vede e si sente, e non dice mai la causa."
+  - "Lessico di fiume: pontile, corrente, canapa, pietra segnata."
+stile_immagini: "ink and watercolor illustration, river at dusk, muted green and grey palette"
+tavolozza_musicale:
+  tag: [esplorazione_tesa, taverna_calda]
+  strumenti: "flauto, chitarra"
+linee: ["violenza sui bambini"]
+veli: ["annegamento"]

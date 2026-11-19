@@ -1,0 +1,46 @@
+# Scene 1: the bank at dusk. A world question asked on arrival (docs/prove.md §9), an object with an id (Mirella's knife).
+id: scena_riva
+nodo: n_riva
+nome: "La riva del guado, al tramonto"
+descrizione: "Una riva di ghiaia con il pontile, la locanda di Mirella a pochi passi e la pietra segnata nell'acqua. Al pontile si sente tutto; dentro la cucina della locanda, a porta chiusa, non sente nessuno."
+scopo: {tipo: rivelare_indizio, rif: i_coltello}
+domanda_drammatica: "Sandro dirà chi era sul pontile ieri sera?"
+posta:
+  si_guadagna: {cosa: "La corsa del traghetto.", per_chi: [png_sandro]}
+  si_perde: {cosa: "La locanda di Mirella.", per_chi: [png_mirella]}
+intensita: 2
+sensi:
+  - "Odore di fango e di legna bagnata."
+  - "La corrente batte contro i pali del pontile."
+  - "Dalla locanda arriva un rumore di piatti."
+elementi_interattivi:
+  - {cosa: "il pontile", dove: "sulla riva", azioni: "ci si cammina; una tavola balla."}
+  - {cosa: "la pietra segnata", dove: "nell'acqua, vicino al pontile", azioni: "ha una tacca incisa; l'acqua la sfiora."}
+  - {id: ogg_coltello, chi: png_mirella, cosa: "il coltello della cucina", dove: "al grembiule di Mirella", azioni: "ha il manico di corno e la lama lunga."}
+png_presenti: [png_sandro, png_mirella]
+orologi_attivi: [o_piena]
+indizi:
+  - {id: i_coltello, conclusione: r_corda, tipo: oggetto, nodo: png_mirella, essenziale: false, tiro: "nessuno", modi: 1,
+     come_si_trova: "Chi guarda da vicino il coltello di Mirella trova fibre di canapa tra la lama e il manico.",
+     vincolo_pubblico: "Mirella porta il coltello al grembiule."}
+  - {id: i_sandro_racconta, conclusione: r_corda, tipo: png, nodo: png_sandro, essenziale: false, tiro: "nessuno", modi: 1,
+     come_si_trova: "Quando Sandro cede: ieri sera ha visto Mirella sul pontile, con un coltello."}
+domande:
+  - id: d_cane
+    domanda: "Il cane della locanda abbaia ai forestieri?"
+    quando: cambio_scena
+    tiro: {dado: 6, almeno: 4}
+    se_si: "Il cane della locanda abbaia ai forestieri, e Mirella esce a guardare."
+    se_no: "Il cane della locanda alza la testa e torna a dormire."
+uscite:
+  - {verso: n_traghetto, segnalata_da: [i_coltello, i_sandro_racconta]}
+  - {verso: n_notte, segnalata_da: [i_coltello, i_sandro_racconta, i_corda]}
+mossa_morbida_pronta: "Una tavola del pontile si stacca. La corrente la porta via in un attimo."
+apertura: "Sulla riva il fiume batte contro il pontile. Sandro lega il traghetto, e Mirella vi guarda dalla porta della locanda. Chi di voi scende per primo al pontile?"
+musica: {tag: esplorazione_tesa, transizione: "verso taverna_calda quando si entra nella locanda"}
+immagine:
+  invarianti: ["riva di ghiaia", "pontile di legno", "locanda vicina", "pietra con una tacca"]
+  prompt_luogo: "gravel river bank at dusk, a wooden pier, a small inn a few steps away, a marked stone in the water"
+taglio: "La scena si chiude quando i PG salgono sul traghetto o vanno alla locanda. Se esitano, Sandro dice che parte senza di loro."
+esiti:
+  - {id: e_riva_traghetto, descrizione: "I PG salgono sul traghetto.", finale: fin_riva_traghetto}

@@ -1,0 +1,38 @@
+# Scene 2: the ferry. A minion with stats (gregari) and the essential clue.
+id: scena_traghetto
+nodo: n_traghetto
+nome: "Il traghetto, a metà fiume"
+descrizione: "Un traghetto piatto legato a una corda tesa da riva a riva. A poppa la guardia del pedaggio. Sul traghetto si sente tutto."
+scopo: {tipo: rivelare_indizio, rif: i_corda}
+domanda_drammatica: "I PG vedranno la corda prima di mezzanotte?"
+posta:
+  si_guadagna: {cosa: "Il traghetto salvo.", per_chi: [png_sandro]}
+  si_perde: {cosa: "Il guado per l'inverno.", per_chi: [png_sandro]}
+intensita: 3
+sensi:
+  - "La corda geme a ogni spinta della corrente."
+  - "Spruzzi freddi sul viso."
+  - "Il legno del traghetto scricchiola sotto i piedi."
+elementi_interattivi:
+  - {cosa: "la corda", dove: "tesa sopra il traghetto", azioni: "ci si arrampica con le mani; si vede da vicino dalla prua."}
+  - {cosa: "la cassetta del pedaggio", dove: "a poppa", azioni: "la tiene la guardia; tintinna di monete."}
+  - {cosa: "la prua", dove: "davanti", azioni: "ci si sporge sull'acqua."}
+png_presenti: [png_sandro]
+orologi_attivi: [o_piena]
+gregari: [{tipo: guardia, quanti: 1}]
+indizi:
+  - {id: i_corda, conclusione: r_corda, tipo: oggetto, nodo: n_traghetto, essenziale: true, tiro: "nessuno", modi: 1,
+     come_si_trova: "Chi guarda la corda dalla prua vede che è tagliata a metà, con un taglio netto e pulito.",
+     vincolo_pubblico: "La corda tiene ancora."}
+uscite:
+  - {verso: n_riva, segnalata_da: [i_corda]}
+  - {verso: n_notte, segnalata_da: [i_corda, i_coltello, i_sandro_racconta]}
+mossa_morbida_pronta: "La corrente spinge il traghetto. La corda geme, lunga."
+apertura: "Il traghetto si stacca dalla riva, tirato dalla corda. A poppa la guardia conta le monete del pedaggio. Chi guarda avanti?"
+musica: {tag: esplorazione_tesa, transizione: "verso esplorazione_tesa quando la corda geme"}
+immagine:
+  invarianti: ["traghetto piatto", "corda tesa", "fiume in piena"]
+  prompt_luogo: "flat river ferry pulled along a taut rope over a flooding river at dusk"
+taglio: "La scena si chiude quando il traghetto tocca l'altra riva o torna indietro. Se i PG esitano, la corrente lo riporta alla riva."
+esiti:
+  - {id: e_traghetto_riva, descrizione: "Il traghetto torna alla riva.", finale: fin_traghetto_riva}

@@ -211,7 +211,7 @@ gregari:
 gregari: [{tipo: goblin, quanti: 2}]
 ```
 
-An attack that names one («tiro con la balestra alla sentinella») rolls against the first one still standing, its hit points go down on the cards, and the minions of the scene join a fight there; a restart keeps them. If a player attacks a creature the scene has nobody with stats for, there is no roll and the narrator is told not to invent it. The validator checks the stat lines like NPC sheets and warns when a scene names a minion's word without having any (`strumenti/valida/regole_gregari.py`). Example: the consul's two guards of `campagne/ponte-lanterne` (one stat line in `campagna.yaml`, two guards in `scene/scena_casa_del_sale.yaml`).
+An attack that names one («tiro con la balestra alla sentinella») rolls against the first one still standing, its hit points go down on the cards, and the minions of the scene join a fight there; a restart keeps them. If a player attacks a creature the scene has nobody with stats for, there is no roll and the narrator is told not to invent it. The validator checks the stat lines like NPC sheets and warns when a scene names a minion's word without having any (`strumenti/valida/regole_gregari.py`). Example: the toll guard of `strumenti/test_valida_fixtures/tre-scene` (one stat line in `campagna.yaml`, one guard in `scene/scena_traghetto.yaml`); in a played campaign, the consul's two guards of `campagne/ponte-lanterne`.
 
 ### What not to write
 

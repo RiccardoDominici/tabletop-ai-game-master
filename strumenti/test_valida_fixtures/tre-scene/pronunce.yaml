@@ -1,0 +1,7 @@
+# `verificata` is written by the ear test (strumenti/pronuncia/prova.ts), never by hand: it is missing here on purpose.
+lessico:
+  - {nome: Sandro, tipo: png, it: {grafia: Sàndro}}
+  - {nome: Mirella, tipo: png, it: {grafia: Mirèlla}}
+  - {nome: Aldo, tipo: pg, it: {grafia: Àldo}}
+  - {nome: Dalia, tipo: pg, it: {grafia: Dàlia}}
+  - {nome: Salice, tipo: luogo, solo_maiuscolo: true, it: {grafia: Sàlice}}

@@ -89,6 +89,39 @@ def test_mini_valida_col_contesto_vero_del_modo_b(camp):
     assert "SEGRETI.contesto_b_non_controllato" not in avvisi(camp, contesto_b=True)
 
 
+TRE_SCENE = QUI / "test_valida_fixtures" / "tre-scene"
+
+
+@serve_node
+def test_tre_scene_valida_in_modo_rigoroso():
+    # The multi-scene example the skill's step 0 points to: it must stay valid with the full rules and the real mode B
+    # context, or a new author would copy a broken example (blind test A12, N1).
+    assert errori(TRE_SCENE, rigoroso=True, contesto_b=True) == set()
+
+
+def test_tre_scene_mostra_cio_che_il_mini_non_ha():
+    """The fixture is an example: each feature the skill sends the author to it for is really there."""
+    def yaml_di(rel: str):
+        return yaml.safe_load((TRE_SCENE / rel).read_text(encoding="utf-8"))
+    camp = yaml_di("campagna.yaml")
+    scene = [yaml_di("scena.yaml"), yaml_di("scene/scena_traghetto.yaml"), yaml_di("scene/scena_riva_notte.yaml")]
+    battute = [b for f in sorted((TRE_SCENE / "repertorio").glob("*.yaml")) if f.name != "parole_segrete.yaml"
+               for b in yaml_di(f"repertorio/{f.name}")["battute"]]
+    assert any(o.get("segno_almeno_ogni") == "serata" for o in camp["orologi"])                       # session clock
+    assert any(n.get("tipo") == "evento" and n.get("scheda") for n in camp["nodi"])                    # same place, later
+    assert any(s.get("domande") for s in scene) and any(s.get("gregari") for s in scene)               # question, minion
+    assert any(s.get("orologi_in_scena") for s in scene) and any(any(e.get("richiede") for e in s.get("esiti") or []) for s in scene)
+    assert any(c.get("tracce") for f in camp["preparazione"]["fronti"] for o in f.get("orologi_extra") or [] for c in o.get("conseguenze") or [])
+    assert {b.get("stallo") for b in battute} >= {1, 2, 3}
+    assert any(b.get("attori") for b in battute) and any(b.get("menzionati") for b in battute)
+    assert any("tutti" in ((b.get("richiede") or {}).get("stati") or {}) for b in battute if b.get("sconfitta"))
+    assert any((b.get("richiede") or {}).get("esito") for b in battute)
+    assert any((b.get("effetti") or {}).get("oggetti") for b in battute)
+    assert any((b.get("richiede") or {}).get("privata") for b in battute)
+    assert camp["preparazione"]["cattivo"].get("png")
+    assert all("verificata" not in v for v in yaml_di("pronunce.yaml")["lessico"])                     # never by hand
+
+
 def test_prova_f0_valida():
     prova = RADICE / "campagne" / "prova-f0"
     if not prova.exists():

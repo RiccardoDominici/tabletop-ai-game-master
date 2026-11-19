@@ -1,0 +1,91 @@
+battute:
+  # Clock signs: o_piena is active in all three scenes, so no `scena`, and each is heard from all of them.
+  - {id: nar_segno_1, chi: narratore, tipo: segno_orologio, quando: "è il momento del primo segno", temi: [orologio], max_usi: 1,
+     richiede: {orologio: {id: o_piena, min: 0, max: 0}}, effetti: {avanza_orologio: o_piena},
+     testo: ["[narratore] Il fiume cresce, e copre il primo gradino del pontile."]}
+  - {id: nar_segno_2, chi: narratore, tipo: segno_orologio, quando: "è il momento del secondo segno", temi: [orologio], max_usi: 1,
+     richiede: {orologio: {id: o_piena, min: 1, max: 1}}, effetti: {avanza_orologio: o_piena},
+     testo: ["[narratore] La campana del guado batte un colpo solo, lontano."]}
+  - {id: nar_segno_3, chi: narratore, tipo: segno_orologio, quando: "è il momento del terzo segno", temi: [orologio], max_usi: 1,
+     richiede: {orologio: {id: o_piena, min: 2, max: 2}}, effetti: {avanza_orologio: o_piena},
+     testo: ["[narratore] Una tavola del pontile si stacca e va via con la corrente."]}
+  - {id: nar_segno_4, chi: narratore, tipo: segno_orologio, quando: "è il momento del quarto segno", temi: [orologio], max_usi: 1,
+     richiede: {orologio: {id: o_piena, min: 3, max: 3}}, effetti: {avanza_orologio: o_piena},
+     testo: ["[narratore] La campana batte due colpi: l'acqua è alla pietra segnata."]}
+  - {id: nar_segno_5, chi: narratore, tipo: segno_orologio, quando: "è il momento del quinto segno", temi: [orologio], max_usi: 1,
+     richiede: {orologio: {id: o_piena, min: 4, max: 4}}, effetti: {avanza_orologio: o_piena},
+     testo: ["[narratore] La corrente tira il traghetto, e la corda geme."]}
+  - {id: nar_segno_6, chi: narratore, tipo: segno_orologio, quando: "è il momento dell'ultimo segno", temi: [orologio], max_usi: 1,
+     richiede: {orologio: {id: o_piena, min: 5, max: 5}}, effetti: {avanza_orologio: o_piena},
+     testo: ["[narratore] La campana suona a distesa: il guado è chiuso."]}
+
+  # Clues. A narrator row that shows an NPC tags it (attori); a line bound to the places where its NPC is has `scena`.
+  - {id: nar_corda, chi: narratore, tipo: indizio, quando: "un PG guarda la corda dalla prua", temi: [corda, canapa, prua], max_usi: 1,
+     scena: scena_traghetto, effetti: {rivela_indizi: [i_corda], fatti_noti: [f_corda_tagliata]},
+     testo: ["[narratore] Da vicino la corda è tagliata a metà, con un taglio netto e pulito."]}
+  - {id: nar_coltello, chi: narratore, tipo: indizio, quando: "un PG guarda da vicino il coltello di Mirella", temi: [coltello, lama, manico], max_usi: 1,
+     scena: [scena_riva, scena_riva_notte], attori: [png_mirella], effetti: {rivela_indizi: [i_coltello]},
+     testo: ["[narratore] Tra la lama e il manico di corno restano fibre di canapa, chiare."]}
+
+  # A line that tells an attack's outcome says which (richiede.esito): the PC's blow on the toll guard misses.
+  - {id: nar_colpo_a_vuoto, chi: narratore, tipo: momento, quando: "un PG attacca la guardia del pedaggio", temi: [attacco, colpisco, guardia], max_usi: 1,
+     scena: scena_traghetto, richiede: {esito: {tipo: mancato}},
+     testo: ["[narratore] Il colpo passa a vuoto, e sbatte sul parapetto bagnato."]}
+
+  # Endings, the most specific first, then the safety net at a full clock.
+  - {id: fin_riva_traghetto, chi: narratore, tipo: finale, quando: "i PG salgono sul traghetto", temi: [traghetto, salgo, saliamo], max_usi: 1,
+     scena: scena_riva, attori: [png_sandro],
+     testo: ["[narratore] Sandro scioglie il nodo, e il traghetto si stacca dalla riva."]}
+  - {id: fin_traghetto_riva, chi: narratore, tipo: finale, quando: "il traghetto torna alla riva", temi: [torniamo, riva], max_usi: 1,
+     scena: scena_traghetto,
+     testo: ["[narratore] La corrente riporta il traghetto al pontile, e la locanda ha le finestre accese."]}
+  - {id: fin_coltello, chi: narratore, tipo: finale, quando: "Mirella ha posato il coltello davanti a tutti", temi: [coltello], max_usi: 1,
+     scena: scena_riva_notte, attori: [png_mirella], richiede: {battute_usate: [mir_coltello_mostrato]},
+     testo: ["[narratore] Mirella resta sulla porta, senza lanterna.", "[narratore] Al pontile la corda geme ancora, ma adesso sapete perché."]}
+  - {id: fin_guado_chiuso, chi: narratore, tipo: finale, quando: "la campana suona a distesa", temi: [campana], max_usi: 1,
+     scena: scena_riva_notte, richiede: {orologio: {id: o_piena, min: 6, max: 6}},
+     testo: ["[narratore] La corda si spezza con uno schiocco, e il traghetto va alla deriva nel buio.", "[narratore] Il guado è chiuso fino alla fine della piena."]}
+
+  # Defeat endings (Mirella is hostile to a PC): the PCs' states they take as true, and a second one for a death.
+  - {id: fin_sconfitta, chi: narratore, tipo: finale, sconfitta: true, quando: "tutto il gruppo è a terra sulla riva", temi: [sconfitta], max_usi: 1,
+     scena: [scena_riva, scena_riva_notte], attori: [png_mirella], richiede: {stati: {png_mirella: in_gioco, tutti: [in_gioco, a_terra]}},
+     testo: ["[narratore] Vi svegliate nella stalla della locanda, chiusi dentro, e fuori il fiume rimbomba."]}
+  - {id: fin_sconfitta_buio, chi: narratore, tipo: finale, sconfitta: true, quando: "tutto il gruppo è a terra, e qualcuno non si rialza", temi: [sconfitta], max_usi: 1,
+     scena: [scena_riva, scena_riva_notte], attori: [png_mirella], richiede: {stati: {png_mirella: in_gioco, tutti: [in_gioco, a_terra, morto]}},
+     testo: ["[narratore] Chi respira ancora si sveglia nella stalla della locanda, e fuori il fiume rimbomba."]}
+
+  # Closings of the evening, one per scene.
+  - {id: nar_chiusura_riva, chi: narratore, tipo: chiusura, quando: "il master chiude la serata sulla riva", temi: [riva], max_usi: 1, scena: scena_riva,
+     testo: ["[narratore] Il fiume batte contro il pontile, e la locanda accende le lampade.", "[narratore] Stanotte c'è l'ultima corsa del traghetto."]}
+  - {id: nar_chiusura_traghetto, chi: narratore, tipo: chiusura, quando: "il master chiude la serata sul traghetto", temi: [traghetto], max_usi: 1, scena: scena_traghetto,
+     testo: ["[narratore] Il traghetto ondeggia legato alla corda, a metà fiume.", "[narratore] La corda geme, e la mezzanotte è vicina."]}
+  - {id: nar_chiusura_notte, chi: narratore, tipo: chiusura, quando: "il master chiude la serata a mezzanotte", temi: [lanterne], max_usi: 1, scena: scena_riva_notte,
+     testo: ["[narratore] Le lanterne della locanda tremano nel vento.", "[narratore] La piena durerà tre giorni."]}
+
+  # Stall lines: one per level and scene (level 2 only where the scene has clues), never a gate on the action.
+  - {id: nar_stallo1_riva, chi: narratore, tipo: momento, stallo: 1, quando: "nessuno agisce da un po' sulla riva", temi: [corrente], max_usi: 1, scena: scena_riva,
+     testo: ["[narratore] La corrente porta via un ramo, e lo sbatte contro i pali."]}
+  - {id: nar_stallo2_riva, chi: narratore, tipo: indizio, stallo: 2, quando: "nessuno agisce da un po', e Mirella esce", temi: [coltello], max_usi: 1, scena: scena_riva,
+     attori: [png_mirella], effetti: {rivela_indizi: [i_coltello]},
+     testo: ["[narratore] Mirella si asciuga le mani sul grembiule.", "[narratore] Tra la lama del coltello e il manico restano fibre di canapa, chiare."]}
+  - {id: nar_stallo1_traghetto, chi: narratore, tipo: momento, stallo: 1, quando: "nessuno agisce da un po' sul traghetto", temi: [spruzzi], max_usi: 1, scena: scena_traghetto,
+     testo: ["[narratore] Uno spruzzo freddo passa sopra la prua."]}
+  - {id: nar_stallo2_traghetto, chi: narratore, tipo: indizio, stallo: 2, quando: "nessuno agisce da un po', e la corda tira", temi: [corda], max_usi: 1, scena: scena_traghetto,
+     effetti: {rivela_indizi: [i_corda]},
+     testo: ["[narratore] La corrente tira, e sopra la prua la corda mostra un taglio netto, a metà."]}
+  - {id: nar_stallo1_notte, chi: narratore, tipo: momento, stallo: 1, quando: "nessuno agisce da un po' sulla riva al buio", temi: [buio], max_usi: 1, scena: scena_riva_notte,
+     testo: ["[narratore] Una lanterna si spegne nel vento, e il fiume rimbomba più forte."]}
+
+  # Waiting lines of the narrator, one per scene.
+  - {id: nar_attesa_riva, chi: narratore, tipo: momento, riempitivo: true, quando: "i PG restano fermi sulla riva", temi: [ghiaia], max_usi: 1, scena: scena_riva,
+     testo: ["[narratore] La ghiaia scricchiola sotto i piedi, e l'acqua sale piano."]}
+  - {id: nar_attesa_traghetto, chi: narratore, tipo: momento, riempitivo: true, quando: "i PG restano fermi sul traghetto", temi: [legno], max_usi: 1, scena: scena_traghetto,
+     testo: ["[narratore] Il legno del traghetto scricchiola, e l'acqua passa sotto."]}
+  - {id: nar_attesa_notte, chi: narratore, tipo: momento, riempitivo: true, quando: "i PG restano fermi al buio", temi: [vento], max_usi: 1, scena: scena_riva_notte,
+     testo: ["[narratore] Il vento porta odore di fango e di olio delle lanterne."]}
+
+  # Transitions.
+  - {id: tr_al_traghetto, chi: narratore, tipo: transizione, quando: "i PG scendono al pontile", temi: [pontile, scendo], max_usi: 1,
+     testo: ["[narratore] Il pontile ondeggia sotto i passi, bagnato."]}
+  - {id: tr_alla_locanda, chi: narratore, tipo: transizione, quando: "i PG entrano nella locanda", temi: [locanda, entro], max_usi: 1,
+     testo: ["[narratore] Nella locanda fa caldo, e la stufa brontola."]}
