@@ -105,7 +105,7 @@ describe('out-of-play guard (English)', () => {
 });
 
 describe('a character losing the round (surprise…) is out for the sentences of that round (final round, attempt 4, PR T11/T13)', () => {
-  const g = () => guardiaFuori({ nomi: NOMI, nome: (id) => NOME[id] ?? id, fuoriDaPrima: () => null, fermo: (id) => (id === 'png_ruggero' ? 'sorpreso' : null) })!;
+  const g = () => guardiaFuori({ nomi: NOMI, nome: (id) => NOME[id] ?? id, fuoriDaPrima: () => null, fermo: (id) => (id === 'png_ruggero' ? 'Sorpreso' : null) })!;
   it('a sentence where it acts becomes the Engine\'s line, once; someone else acting on it stays', () => {
     const guardia = g();
     expect(guardia('Ruggero schiocca le dita e ride.')).toMatchObject({ testo: 'Ruggero perde questo round (sorpreso): non agisce.', id: 'png_ruggero' });

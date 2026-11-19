@@ -152,8 +152,14 @@ export class GestoreCombattimento {
    * snapped her fingers and kicked the fire).
    */
   perdeIlTurno(id: string): string | null {
-    return this.attivo ? this.haEffetto(id, 'perde_turno') : null;
+    if (!this.attivo) return null;
+    // A condition that ended in this very turn still holds for its narration (final round, attempt 5, CM T9: «Grosso:
+    // Sorpreso finisce.» came before the narration, and Grosso's filler line was heard before the new round's order).
+    return this.haEffetto(id, 'perde_turno') ?? this.persiNelTurno.get(id) ?? null;
   }
+
+  /** Lose-turn conditions that ended in the turn being resolved (`dopoAzioni`), by character: they hold for its narration. */
+  private persiNelTurno = new Map<string, string>();
 
   private haEffetto(id: string, e: Effetto): string | null {
     return this.condizioniDi(id).find((c) => c.effetti.includes(e))?.nome ?? null;
@@ -349,6 +355,8 @@ export class GestoreCombattimento {
     s.indice = 0;
     for (const p of s.partecipanti) {
       const scadute = p.condizioni.filter((c) => c.fino !== null && c.fino <= s.round);
+      const persa = scadute.map((c) => this.cond(c.id)).find((c) => c?.effetti.includes('perde_turno'));
+      if (persa) this.persiNelTurno.set(p.id, persa.nome);
       if (scadute.length) fatti.push(testo('prove.combattimento.finisce', { nome: p.nome, condizioni: scadute.map((c) => this.cond(c.id)?.nome ?? c.id).join(', ') }));
       p.condizioni = p.condizioni.filter((c) => !scadute.includes(c));
     }
@@ -383,6 +391,7 @@ export class GestoreCombattimento {
     const fatti: string[] = [];
     const tiri: TiroMostrato[] = [];
     this.morte = [];
+    this.persiNelTurno = new Map();
     this.fuggiti = [];
     // An order rolled at the Game Master's click (`inizia` from the panel, automatic rolls) is still to be said: it is
     // kept for this call's result, so the table hears it in the fight's first turn (A3 of docs/da-fare.md).
@@ -485,6 +494,8 @@ export class GestoreCombattimento {
       fatti.push(testo('prove.combattimento.png_non_agisce', { nome: p.nome, condizione: perde.toLowerCase() }));
       return;
     }
+    // Its own step in the new round: the condition that ended in this turn no longer holds for the narration.
+    this.persiNelTurno.delete(id);
     if (!fase.png) return;
     const bersaglio = this.bersaglioDi(p);
     if (!bersaglio) return;

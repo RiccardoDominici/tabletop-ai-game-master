@@ -152,7 +152,8 @@ export function costruisciRegistro(f: FontiRegistro): Registro {
     const uscito = f.usciti?.get(p.id) ?? null;
     const presenza: PresenzaEntita = uscito ? 'uscito' : f.presenti.has(p.id) ? 'in_scena' : 'altrove';
     const stato = statoDi(f, p.id, p.nascosto === true && presenza === 'in_scena');
-    const fermo = IN_GIOCO_REGISTRO.has(stato) ? (f.fermo?.(p.id) ?? null) : null;
+    // Lowercase: the set names conditions with a capital («Sorpreso»), the block and the guards say it mid-sentence.
+    const fermo = IN_GIOCO_REGISTRO.has(stato) ? (f.fermo?.(p.id)?.toLocaleLowerCase() ?? null) : null;
     entita.push({ id: p.id, tipo, nome: p.nome, nomi: [...p.nomi], stato, presenza, uscito: uscito ? { ...uscito } : null, ...(fermo ? { fermo } : {}), ...ferite(p.id, stato) });
   };
   for (const p of f.png) png('png', p);

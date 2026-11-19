@@ -181,7 +181,7 @@ export function guardiaFuori(d: DatiGuardiaFuori): ((frase: string) => Correzion
     detti.add(colpevole);
     const come = d.fuoriDaPrima(colpevole);
     const nome = nomeBreve(d.nome(colpevole));
-    const riga = come ? testo(`prove.guardia.fuori_${come}`, { nome }) : testo('prove.guardia.fermo', { nome, condizione: d.fermo?.(colpevole) ?? '' });
+    const riga = come ? testo(`prove.guardia.fuori_${come}`, { nome }) : testo('prove.guardia.fermo', { nome, condizione: (d.fermo?.(colpevole) ?? '').toLocaleLowerCase() });
     return { testo: riga, motivo: 'fuori_gioco_agisce', id: colpevole };
   };
 }

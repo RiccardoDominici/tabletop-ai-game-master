@@ -47,7 +47,8 @@ describe('the block «Cosa è vero adesso»', () => {
   });
 
   it('a character losing the round in progress (surprise…) says so in its row; only in play, never for the fallen', () => {
-    const righe = righeVeroAdesso(costruisciRegistro(fonti({ fermo: (id) => (id === 'png_ruggero' ? 'sorpreso' : null) })));
+    // The set names it with a capital («Sorpreso»): mid-sentence it is lowercase (final round, attempt 5).
+    const righe = righeVeroAdesso(costruisciRegistro(fonti({ fermo: (id) => (id === 'png_ruggero' ? 'Sorpreso' : null) })));
     expect(righe[0]).toBe('In scena: Ruggero lo sgherro ferito gravemente (sorpreso: in questo round non agisce né parla).');
     // Hurt (any lost hit point) is the ledger's `ferite`, the `ferito` class of richiede.stati; no sheet, no flag.
     const r = costruisciRegistro(fonti());

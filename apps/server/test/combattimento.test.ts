@@ -266,6 +266,23 @@ describe('combattimento alla B/X e alla PbtA', () => {
     expect(tardi.g.condizioniDi('png_x')).toEqual([]);
   });
 
+  it('a lose-turn condition that ends in a turn still holds for that turn\'s narration (final round, attempt 5, CM T9)', () => {
+    // «x: Paralizzato finisce.» comes in the turn's facts before the narration: x's lines must not act in that narration.
+    const conSorpresa: Combattimento = { ...bx, sorpresa: { dado: 6, finoA: 2, condizione: 'paralizzato' } };
+    const cand = [{ id: 'pg_a', lato: 'pg' as const, mod: 0 }, { id: 'png_x', lato: 'png' as const, mod: 0 }];
+    const { g } = scontro(conSorpresa, { pg_a: 80, png_x: 60 }, [5, 2, 1, 5, 2, 5, 2, 5, 2, 5, 2], () => 1);
+    g.dopoAzioni({ turno: 1, attacchi: [{ chi: 'pg_a', bersaglio: 'png_x' }], autori: ['pg_a'], candidati: () => cand });
+    let fine: { turno: number; p: string | null } | null = null;
+    for (let t = 2; t <= 6 && !fine; t++) {
+      const r = g.dopoAzioni({ turno: t, attacchi: [], autori: g.turnoDi() ?? [], candidati: () => cand });
+      if (r.fatti.some((f) => /Paralizzato finisce/.test(f))) fine = { turno: t, p: g.perdeIlTurno('png_x') };
+    }
+    expect(fine?.p).toBe('Paralizzato');
+    // The next turn it holds no more.
+    g.dopoAzioni({ turno: fine!.turno + 1, attacchi: [], autori: g.turnoDi() ?? [], candidati: () => cand });
+    expect(g.perdeIlTurno('png_x')).toBeNull();
+  });
+
   it('surprise from the panel: both sides roll; surprised PCs skip round 1, the NPCs act, round 2 opens for the PCs', () => {
     const conSorpresa: Combattimento = { ...bx, sorpresa: { dado: 6, finoA: 2, condizione: 'paralizzato' } };
     const cand = [{ id: 'pg_a', lato: 'pg' as const, mod: 0 }, { id: 'png_x', lato: 'png' as const, mod: 0 }];
