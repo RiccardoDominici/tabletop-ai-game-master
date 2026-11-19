@@ -38,7 +38,7 @@ battute:
       indizi_non_rivelati: []
       battute_usate: []               # ids of lines already used
       battute_non_usate: []
-      orologio: {id: o_colpevole, min: 0, max: 3}   # signs already shown, bounds included
+      orologio: {id: o_colpevole, min: 0, max: 3}   # signs already shown, bounds included; one is enough (min 0, max the last)
       privata: true                   # responds only to an action marked private from the phone
       da_pg: [pg_assenzio]            # responds only to actions by these PCs
       oppure: []                      # alternatives: base AND at least one (see «Dalla prova cieca di ponte-lanterne», i.e. "From the blind check of ponte-lanterne")

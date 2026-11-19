@@ -2235,3 +2235,45 @@ def test_esito_di_attacco_fuori_dallo_scontro(camp):
     modifica(c, "png/png_bruno.yaml", lambda d: d["scheda"].update(attacchi=[]))
     assert not _voci_di(c, "REPERTORIO.esito_mancante", "nar_colpo")
 
+
+# --- clock gates: one bound is enough, and a sign may have exclusive variants (blind test A12, W7 and W8) ------------
+
+def test_orologio_un_estremo_basta(camp):
+    # The server reads a missing min as 0 and a missing max as the last mark: the validator agrees, in lines and outcomes.
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "fin_persa").setdefault("richiede", {}).update(
+        orologio={"id": "o_processione", "min": 3}))
+    modifica(camp, "scena.yaml", lambda d: d.update(esiti=[{"id": "e_alba", "descrizione": "L'alba.", "finale": "fin_persa",
+                                                            "richiede": {"orologio": {"id": "o_processione", "min": 4}}}]))
+    assert not {c for c in errori(camp, rigoroso=True) if c in ("REPERTORIO.richiede", "SCENA.esiti")}
+
+
+def test_orologio_estremi_sbagliati_detti_chiari(camp):
+    for o, parola in (({"id": "o_processione"}, "almeno un estremo"), ({"id": "o_processione", "min": 9}, "fuori dall'orologio"),
+                      ({"id": "o_processione", "min": 3, "max": 1}, "non è mai vera"), ({"id": "o_processione", "max": "due"}, "intero")):
+        c = camp.parent / f"o{len(list(camp.parent.iterdir()))}"
+        shutil.copytree(camp, c)
+        modifica(c, "repertorio/narrazione.yaml", lambda d: battuta(d, "fin_persa").setdefault("richiede", {}).update(orologio=o))
+        esito, _ = valida(c, voci=VOCI if VOCI.exists() else None)
+        voci = [v for v in esito.errori if v.codice == "REPERTORIO.richiede" and v.dove.endswith("fin_persa")]
+        assert voci and parola in voci[0].messaggio, (o, [v.messaggio for v in voci])
+
+
+def _variante_del_segno(d, **richiede):
+    b = dict(battuta(d, "nar_segno_2"))
+    b = {**b, "id": "nar_segno_2_variante", "richiede": {**b["richiede"], **richiede}}
+    d["battute"].append(b)
+
+
+def test_segno_con_varianti_che_si_escludono(camp):
+    # One sign, two texts: the second only after nar_cera, the first only before it. The Engine says the available one.
+    def varianti(d):
+        _variante_del_segno(d, battute_usate=["nar_cera"])
+        battuta(d, "nar_segno_2")["richiede"]["battute_non_usate"] = ["nar_cera"]
+    modifica(camp, "repertorio/narrazione.yaml", varianti)
+    assert "COPERTURA.segno" not in errori(camp, rigoroso=True)
+
+
+def test_segno_con_due_battute_che_valgono_insieme(camp):
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: _variante_del_segno(d))
+    assert "COPERTURA.segno" in errori(camp)
+

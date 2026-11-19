@@ -551,7 +551,9 @@ Each one comes from a real error, found in a trial, by a blind judge or by a rev
 3. **The lines answer the actions.** Only lies, confessions, clues, signs, key moments and endings are selectable. Generic
    reactions are `solo_esempio: true`; moves that answer nothing are `riempitivo: true`.
 4. **The `temi` are few and distinctive**, in the forms the players really write (repertorio.md §3).
-5. **The clock signs** are lines, one per segment, with `richiede.orologio` min = max = the sign before.
+5. **The clock signs** are lines, one per segment, with `richiede.orologio` min = max = the sign before (or variants of
+   one segment whose gates exclude each other: `riferimenti/repertorio.md` §6). Any other clock gate may give one bound
+   only («from mark 5 on»: `min: 5`).
 6. **No PC name in the lines, and no line repeats the action.** Before a line the narrator improvises the announcement of the
    action, with the PC's name in the third person (manuale N15; see «the examples in lingue/<lingua>/preparatore/skill.md»); the line starts from the outcome.
 7. **An NPC says only what is in their `sa`.** The `fatti_noti` of one of their lines must be in their `sa`.

@@ -93,7 +93,7 @@ can check:
 | "when Assenzio asks her…" | `da_pg: [pg_assenzio]` |
 | "when a PC shows her the black grain" | `indizi_rivelati: [i_speroni_neri]` |
 | "after having told her version" | `battute_usate: [<id of the lie>]` |
-| "at the third stroke" | `orologio: {id, min, max}` |
+| "at the third stroke" | `orologio: {id, min, max}` (one bound is enough: a missing `min` is 0, a missing `max` the last mark) |
 
 A confession without any of these gates is a warning, and an error in strict mode.
 
@@ -122,7 +122,10 @@ gate. For the gates on the action, the chosen alternative applies (`{privata: tr
   - `effetti.rivela_indizi`, plus `fatti_noti` only if the fact is said in full.
 - **Clock ticks**: only gestures and sounds that are seen and heard; an NPC who speaks, speaks in its own lines (a `[png_…]` line
   inside a tick is a warning, and a narrator that summarises an NPC goes against D1). One line per segment, with
-  `richiede.orologio: {id, min: k-1, max: k-1}` and `effetti.avanza_orologio` [V]. The text follows the tick of campagna.yaml. A
+  `richiede.orologio: {id, min: k-1, max: k-1}` and `effetti.avanza_orologio` [V]. A sign whose text depends on what happened
+  (the wheel turns, or strains against the brake put back) may have variants for the same segment, if their gates exclude
+  each other (one has in `battute_usate` or `indizi_rivelati` what the other has in `battute_non_usate` or
+  `indizi_non_rivelati`): the Engine says the first available [V `COPERTURA.segno`]. The text follows the tick of campagna.yaml. A
   detail may be added, up to four sentences.
 - **Attitudes a line changes** (`effetti.atteggiamento`, docs/mondo.md §4) [V]: where the line itself turns an NPC
   (a confession that seals a pact, a gift accepted, a threat that closes a door), `{png_x: amichevole}` changes that NPC

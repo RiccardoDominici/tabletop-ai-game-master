@@ -52,6 +52,11 @@ def _controlla_cancelli_esito(c: Campagna, e: Esito, dove: str, es: dict) -> Non
     o = r.get("orologio")
     if o is not None and not (isinstance(o, dict) and o.get("id") in c.orologi):
         e.errore("SCENA.esiti", dove, "richiede.orologio: {id: <orologio esistente>, min, max}")
+    elif o is not None:
+        # The same bounds as a line's (regole_repertorio.problemi_estremi): one is enough, both are checked.
+        from .regole_repertorio import problemi_estremi
+        for msg in problemi_estremi(o, c.orologi[o["id"]].get("segmenti", 0)):
+            e.errore("SCENA.esiti", dove, f"richiede.orologio {o['id']}: {msg}")
     stati = r.get("stati")
     if stati is not None:
         if not isinstance(stati, dict):

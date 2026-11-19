@@ -287,8 +287,47 @@ def _riferimenti_richiede(c: Campagna, e: Esito, b: dict, dove: str, r: dict) ->
         oid = o.get("id") if isinstance(o, dict) else None
         if oid not in c.orologi:
             e.errore("REPERTORIO.riferimento", dove, f"richiede.orologio: orologio inesistente {oid}")
-        elif not (0 <= o.get("min", -1) <= o.get("max", -1) <= c.orologi[oid].get("segmenti", 0)):
-            e.errore("REPERTORIO.richiede", dove, f"estremi dell'orologio fuori misura: {o}")
+        else:
+            for msg in problemi_estremi(o, c.orologi[oid].get("segmenti", 0)):
+                e.errore("REPERTORIO.richiede", dove, f"richiede.orologio {oid}: {msg}")
+
+
+def estremi(o: dict, segmenti: int) -> tuple[int, int]:
+    """The bounds of a clock gate as the server reads them (repertorio/caricatore.ts, scena/esiti-scena.ts): a missing
+    `min` is 0, a missing `max` is the clock's last mark, so one bound is enough («from mark 5 on»)."""
+    return (o.get("min", 0), o.get("max", segmenti))
+
+
+def problemi_estremi(o: dict, segmenti: int) -> list[str]:
+    """What is wrong with a clock gate's bounds, said plainly (blind test A12, W7: «fuori misura» did not say which)."""
+    if "min" not in o and "max" not in o:
+        return ["manca min e manca max: scrivi almeno un estremo (min da solo vale fino alla fine, max da solo dall'inizio)"]
+    out = []
+    for k in ("min", "max"):
+        v = o.get(k)
+        if k in o and (not isinstance(v, int) or isinstance(v, bool)):
+            out.append(f"{k} è un numero intero di segni, non «{v}»")
+    if out:
+        return out
+    lo, hi = estremi(o, segmenti)
+    for k, v in (("min", lo), ("max", hi)):
+        if not 0 <= v <= segmenti:
+            out.append(f"{k} {v} fuori dall'orologio (da 0 a {segmenti} segni)")
+    if not out and lo > hi:
+        out.append(f"min {lo} è più di max {hi}: la condizione non è mai vera")
+    return out
+
+
+def _esclusive(a: dict, b: dict) -> bool:
+    """Two lines whose gates can never hold together: one requires a line or a clue the other forbids (base of
+    `richiede` only: an `oppure` is not read here)."""
+    def blocca(x: dict, y: dict) -> bool:
+        rx, ry = x.get("richiede") or {}, y.get("richiede") or {}
+        if rx.get("oppure") or ry.get("oppure"):
+            return False
+        return bool(set(rx.get("battute_usate") or []) & set(ry.get("battute_non_usate") or [])
+                    or set(rx.get("indizi_rivelati") or []) & set(ry.get("indizi_non_rivelati") or []))
+    return blocca(a, b) or blocca(b, a)
 
 
 def _selezionabile(b: dict) -> bool:
@@ -311,22 +350,37 @@ def _copertura(c: Campagna, e: Esito) -> None:
         o = c.orologi.get(oid)
         if not o:
             continue
-        for k in range(1, (o.get("segmenti") or 0) + 1):
+        segmenti = o.get("segmenti") or 0
+        for k in range(1, segmenti + 1):
             chi = [b for b in c.battute if b.get("tipo") == "segno_orologio"
                    and (b.get("effetti") or {}).get("avanza_orologio") == oid
-                   and ((b.get("richiede") or {}).get("orologio") or {}).get("min") == k - 1
-                   and ((b.get("richiede") or {}).get("orologio") or {}).get("max") == k - 1]
-            if len(chi) != 1:
-                e.errore("COPERTURA.segno", f"{oid} segno {k}",
-                         f"{len(chi)} battute (serve 1, con richiede.orologio min = max = {k - 1})")
-            elif chi[0].get("scena") and scene_di[oid] - _scene_battuta(chi[0]):
-                # Un orologio di sessione avanza in ogni scena dove è attivo: il segno deve poter uscire ovunque.
-                e.errore("COPERTURA.segno", chi[0]["id"],
-                         f"vale solo in {sorted(_scene_battuta(chi[0]))}, ma {oid} è attivo anche in "
-                         f"{sorted(scene_di[oid] - _scene_battuta(chi[0]))}: togli `scena` (o elenca tutte) e scrivi un "
-                         "segno che si sente da tutte")
-            elif k - 1 < len(o.get("segni") or []) and radici(o["segni"][k - 1], prosa=c.prosa) - radici(" ".join(_split(r)[1] for r in chi[0]["testo"]), prosa=c.prosa):
-                e.avviso("COPERTURA.segno", chi[0]["id"], "il testo si allontana dal segno scritto in campagna.yaml")
+                   and isinstance((b.get("richiede") or {}).get("orologio"), dict)
+                   and estremi((b.get("richiede") or {})["orologio"], segmenti) == (k - 1, k - 1)]
+            if not chi:
+                e.errore("COPERTURA.segno", f"{oid} segno {k}", f"nessuna battuta (serve 1, con richiede.orologio min = max = {k - 1})")
+                continue
+            if len(chi) > 1:
+                # Variants of one sign (the wheel turns; the wheel strains against the brake put back) are fine when
+                # their gates exclude each other: the Engine says the first available (blind test A12, W8).
+                doppie = [(a["id"], b["id"]) for i, a in enumerate(chi) for b in chi[i + 1:] if not _esclusive(a, b)]
+                if doppie:
+                    e.errore("COPERTURA.segno", f"{oid} segno {k}",
+                             f"{len(chi)} battute che possono valere insieme ({', '.join(f'{x}/{y}' for x, y in doppie)}): "
+                             "serve 1, o varianti che si escludono (una richiede in battute_usate o indizi_rivelati ciò "
+                             "che l'altra vieta in battute_non_usate o indizi_non_rivelati)")
+                    continue
+                if len(chi) > 2:
+                    e.avviso("COPERTURA.segno", f"{oid} segno {k}", f"{len(chi)} varianti che si escludono: controlla che "
+                             "in ogni stato ne resti una disponibile, o il segno dovuto non ha battuta")
+            for b in chi:
+                if b.get("scena") and scene_di[oid] - _scene_battuta(b):
+                    # Un orologio di sessione avanza in ogni scena dove è attivo: il segno deve poter uscire ovunque.
+                    e.errore("COPERTURA.segno", b["id"],
+                             f"vale solo in {sorted(_scene_battuta(b))}, ma {oid} è attivo anche in "
+                             f"{sorted(scene_di[oid] - _scene_battuta(b))}: togli `scena` (o elenca tutte) e scrivi un "
+                             "segno che si sente da tutte")
+                elif k - 1 < len(o.get("segni") or []) and radici(o["segni"][k - 1], prosa=c.prosa) - radici(" ".join(_split(r)[1] for r in b["testo"]), prosa=c.prosa):
+                    e.avviso("COPERTURA.segno", b["id"], "il testo si allontana dal segno scritto in campagna.yaml")
     # Finali.
     finali = [b for b in c.battute if b.get("tipo") == "finale"]
     if not finali:
