@@ -83,6 +83,8 @@ quelle elencate qui sotto: sono vincolate al validatore (`strumenti/valida/`), n
 ## Battute e annunci (regola 6)
 
 - Annuncio dell'azione con il nome in terza persona, prima della battuta: «Brann solleva il coperchio.».
+- Una domanda di una parola conta come frase nel tetto di due frasi di un PNG: «Io? Io la fermo, la ruota. Tutte le
+  sere.» sono tre frasi.
 
 ## Tipografia
 

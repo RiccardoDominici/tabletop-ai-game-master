@@ -1,4 +1,6 @@
 # Lessico di pronuncia della fixture (docs/pronuncia.md): ogni nome proprio dei testi, con la grafia per la voce.
+# `verificata` qui è scritta a mano solo perché la fixture prova il validatore: in una campagna la scrive la prova
+# d'orecchio (strumenti/pronuncia/prova.ts), mai l'autore. La fixture tre-scene la lascia senza, come si deve.
 lessico:
   - {nome: Bruno, tipo: png, it: {grafia: Brùno}, verificata: {voce: prova, punteggio: 1.0}}
   - {nome: Irma, tipo: png, it: {grafia: Ìrma}, verificata: {voce: prova, punteggio: 1.0}}

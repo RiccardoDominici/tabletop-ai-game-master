@@ -211,7 +211,9 @@ def _scena(c: Campagna, e: Esito, dove: str, s: dict) -> None:
     for lato in ("si_guadagna", "si_perde"):
         chi |= set((posta.get(lato) or {}).get("per_chi") or [])
     if posta and not chi & (set(c.png) | set(c.pg_ids)):
-        e.errore("SCENA.posta", dove, "la posta riguarda almeno un PG o un PNG")
+        senza = sorted(x for x in chi if isinstance(x, str) and x.startswith(("png_", "pg_")))
+        e.errore("SCENA.posta", dove, "la posta riguarda almeno un PG o un PNG"
+                 + (f": {', '.join(senza)} non ha ancora una scheda (passi 6 e 7)" if senza else ""))
     if not isinstance(s.get("intensita"), int) or not 1 <= s["intensita"] <= 5:
         e.errore("SCENA.intensita", dove, "intensita da 1 a 5")
     if len(s.get("sensi") or []) != 3:

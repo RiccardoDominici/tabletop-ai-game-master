@@ -168,8 +168,12 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
 - **Duration in sessions and game layers** (Riccardo's request, 3 November 2026): the brief states the estimated duration in *number of sessions*, and that determines how many layers the framework generates. A one-shot has few things (situation, a few scenes and NPCs: this is what the skill does today); a campaign of years has more phases or arcs and a complete world, and the material for the next session is prepared between sessions, starting from what actually happened.
   Done, by step: research (c0ebcc1), design (96b59e7, 6e2df77), `strumenti/strati.py` (09b3ef4), validator of sessions and STATO/CONTINUITÀ (e02e26c, 8fcfe18), skill (a10a172), session packages and the server side (2d3f2d4, 5bc833b, 7201894).
   Still open: no campaign above one-shot has been played across several sessions yet (no commit records it), so this is not yet verified on a real run (needs Riccardo: a multi-session campaign played).
-- **Blind test of the Preparer skill**: a new agent writes `campagne/ponte-lanterne` following only the skill.
-  The blind judgement of the first campaign written from the skill (nozze-neve, 65f572a) is done. No commit records ponte-lanterne being written blind from the skill alone.
+- ~~**Blind test of the Preparer skill**: a new agent writes a campaign following only the skill.~~
+  **Done**: `campagne/mulino-notte`, written blind from the skill alone (ad580d8, a315d1f), with its 29 findings in
+  `campagne/mulino-notte/NOTE_SULLA_SKILL.md` (2befef4, b97d3ef). The skill and the validator were then fixed from
+  them: strict stall lines, defeat endings and tags (b02324d), SCELTA.premio (a5b4f4e), the tre-scene example and
+  step 0 (bc59cc2), clock gates (d5be168), outcomes on a return (b4a5303), the misleading references (6d6f16e), and
+  the cheap low findings (next commit). The blind judgement of nozze-neve (65f572a) was done before.
 - **Images**:
   - ~~**location nodes without an image**~~ **Done**: the validator now says it (`strumenti/valida/regole_immagini.py:163-176`, from d252dd1), and `n_sasso` was fixed in d252dd1. The validator rule is in place; the text of skill v2 was not checked here;
   - **the style sheet must not impose the weather on everything**: the style sheets no longer name rain (`campagne/*/stile.yaml`), ~~but the flagged images below still show it inside. Better the weather in the prompt of the outdoor locations than in the style. Open until those images pass;~~ **Done** (1a9fa04 "stop the rain falling inside rooms, regenerate five images"; 924646d; ponte-lanterne manifest entries all «ok»).

@@ -198,7 +198,8 @@ indizi:                        # [V shape; see below]
   - {id: i_…, conclusione: r_…, tipo: png|oggetto|luogo|evento|documento|visione, nodo: n_…|png_…,
      essenziale: true|false, tiro: "nessuno", modi: 1, come_si_trova: "…",
      vincolo_pubblico: "what anyone perceives, without the why"}   # physical clues [R], no secrets [V]
-vincoli_pubblici: ["…"]        # optional: other perceivable facts that improvisation tends to contradict; also the only
+vincoli_pubblici: ["…"]        # optional: other perceivable facts that improvisation tends to contradict (VINCOLI compares
+                               #   words: a text that shares a constraint's words next to a «non» may be flagged; reword); also the only
                                # reason the Engine accepts for an arbiter's «impossibile» (docs/prove.md §3): write here
                                # what the fiction makes impossible («the iron door stays shut until someone turns the key»)
 uscite: [{verso: n_…, segnalata_da: [i_…, …]}]      # at least 2 (except climax: true) [V]; 3 clues per node (warning)
@@ -337,6 +338,13 @@ code in `strumenti/valida/regole_schede.py`, tables in `srd.py`).
 - Repertoire → `richiede.prova`: a skill, a characteristic, a scene's `p_…` id, the name of an attack, or `prova`, `salvezza`, `attacco`,
   `contrapposta`.
 
+The SRD ids the validator accepts (`strumenti/valida/srd.py`): skills `acrobazia, addestrare_animali, arcano, atletica,
+furtivita, indagare, inganno, intimidire, intrattenere, intuizione, medicina, natura, percezione, persuasione,
+rapidita_di_mano, religione, sopravvivenza, storia`; characteristics `forza, destrezza, costituzione, intelligenza,
+saggezza, carisma`; armour (`armatura.tipo`, spaces or underscores) `armatura imbottita, armatura di cuoio, armatura di
+cuoio borchiato, armatura di pelle, giaco di maglia, corazza a scaglie, corazza di piastre, mezza armatura, corazza ad
+anelli, cotta di maglia, corazza a strisce, armatura a piastre`.
+
 The validator checks: missing sheets (only with dice); scores and fields; modifiers written by hand; AC that does not come from the armour;
 hit points above the class hit die; NPCs outside the CR band; DC 5–30; an existing clue that is not essential; `richiede.prova` naming an
 existing check.
@@ -405,6 +413,10 @@ tema: {carattere: [burbero], strumento: fagotto, modo: dorico, registro: basso}
 # repertoire line: automatic signal when it comes out (docs/audio.md, "Automatic signals")
 audio: {effetto: campana, umore: lutto}   # one or both; nothing else (loading error) [V]
 ```
+- **The six music tags** say what the table feels, not the furniture: `esplorazione_tesa` (tense, searching: the default
+  of an investigation), `taverna_calda` (warm, at ease), `rito_sacro` (solemn and calm: a rite, a vigil; never for
+  tension), `inseguimento` (fast, driving: a chase, a race against the clock), `combattimento_epico` (a fight),
+  `lutto` (grief, loss). Check the track the dry run picks (step 11): its tags («Bright, Calming») must fit the scene.
 - **Signals of the lines**: `umore` is one of the six music tags, or `auto` (back to the music of the place); `effetto` is a tag of EFFECTS:
   campana (bell), porta (door), catena (chain), tuono (thunder), monete (coins), chiave (key) (`sfx_campana` is the same). The signal starts
   with the **first sentence** of the line, which must name that sound [V warning]; the effect plays only if the campaign's catalogue has it

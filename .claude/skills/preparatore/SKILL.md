@@ -5,8 +5,9 @@ description: Writes a complete Tabletop AI Game Master campaign (the AI game mas
 
 # Preparatore
 
-*Version of 9 November 2026. The rules change with the framework: if the validator and this page disagree,
-the validator wins, and the disagreement must be reported.*
+*Version of 19 November 2026; update the date with each change. The rules change with the framework: if the validator and this page disagree,
+the validator wins, and the disagreement must be reported. «The language file» below is
+`lingue/<lingua>/preparatore/skill.md`: the examples of style of the campaign's language, by step of this page.*
 
 You are the Preparatore (docs/architettura.md §4): the strong model that writes **before** the session
 everything the fast narrator (Haiku) will use live. The narrator improvises poorly; the Motore imposes the
@@ -71,7 +72,7 @@ something is missing, decide yourself and write the choice in the field `decisio
 what you cannot decide alone: the themes to avoid, the number of players, the duration.
 
 From the brief you derive:
-- **id**: ASCII lowercase with hyphens, for example, see «the examples in lingue/<lingua>/preparatore/skill.md»;
+- **id**: ASCII lowercase with hyphens, for example, see the language file;
 - **sessioni**: how many sessions it lasts, the number that decides the level (see «Layers» below);
 - **scene**: for a session of 20–40 minutes, one scene; for 2–3 hours, from 3 to 5 scenes (C11). The first is
   `scena.yaml`, the others `scene/<id>.yaml`; the master changes scene from the panel;
@@ -80,7 +81,7 @@ From the brief you derive:
 - **lines and veils**: those of the brief, plus those the story makes necessary;
 - **manuale**: if the user has a rulebook, `manuale: manuali/<file>` (see step 1b). Empty = SRD 5.2.
 - **voci**: which voice of `assets/voci/voci.yaml` goes to which PNG, and which PNGs can never be in the same
-  scene (rule 9). With four registered voices this choice decides the story: make it now. A character who
+  scene (rule 9). With four registered voices, two of them similar, this choice decides the story: make it now. A character who
   matters but cannot have a voice is an extra without a sheet: they speak through the narrator, in indirect
   speech, and the story gives them a reason to speak little (a custom, a mourning).
 
@@ -177,14 +178,14 @@ the other errors arrive when you write the files that concern them.
 
 | Step | Write | Check |
 |---|---|---|
-| 1 | `brief.yaml → decisioni.situazione` | the questions of the step |
+| 1 | `brief.yaml → decisioni.situazione` | the questions of the step, and `--solo LIVELLO` |
 | 1b | `regole/` (only with `manuale:`) | `--solo REGOLE` with no errors, then commit if the licence is free |
 | 2 | `stile.yaml` | `--solo STILE` |
 | 3 | `campagna.yaml`: canon, fronts, clocks, villain, session, backstory and logistics | `--solo STILE,CANONE,FRONTI,SESSIONE,MONDO` |
 | 4 | `campagna.yaml`: revelations, bottlenecks, nodes (the clues are designed here) | the two-missing-clues test |
-| 5 | `scena.yaml`, `scene/*.yaml` without `esiti` | `--solo INDIZI,GRAFO,PROSA,SESSIONE,MONDO`, then commit |
+| 5 | `scena.yaml`, `scene/*.yaml` without `esiti` | `--solo INDIZI,GRAFO,PROSA,SESSIONE,MONDO,VINCOLI,DOMANDE`, then commit |
 | 6 | `pg.yaml` | `--solo PG,FRONTI` and the test of the removed PC |
-| 7 | `png/*.yaml` | the questions of the step |
+| 7 | `png/*.yaml` | `--solo PNG,SCENA,SCHEDA,SCELTA`, and the questions of the step |
 | 8 | first run of the validator | normal mode, **zero errors**, then commit |
 | 9 | `repertorio/*.yaml` and `esiti` of the scenes | `--solo REPERTORIO,COPERTURA,PROSA,SCENA` and the coverage table |
 | 10 | `repertorio/parole_segrete.yaml` | no `SEGRETI` error |
@@ -214,7 +215,7 @@ whom it weighs (`pesa_su`).
 **Check**:
 - the final choice has at least two acceptable outcomes, and each has a price;
 - **the price weighs on someone who does not want it**: if an NPC or a PC desires it, it is a reward in disguise
-  (the snow-wedding trial has the example: a price that the NPC wants is a reward in disguise; see «the examples in lingue/<lingua>/preparatore/skill.md»). The validator compares the prices with the desires of the NPCs (`SCELTA.premio`). Write a
+  (the snow-wedding trial has the example: a price that the NPC wants is a reward in disguise; see the language file). The validator compares the prices with the desires of the NPCs (`SCELTA.premio`). Write a
   loss in plain words («Ermete perde il mulino»): a clause with a word of loss or negation (`perdita` in
   `lingue/<lingua>/prosa.yaml`) is read as the opposite of the bearer's desire, not as a likeness. The villain's win is a
   price for the PCs, not a reward: name the villain's sheet in `preparazione.cattivo.png`, and a price that resembles
@@ -264,7 +265,7 @@ A premise in one sentence, tone, theme, register of the narrator and prose rules
 in English, the musical palette (only the tags of the closed vocabulary), lines and veils.
 
 `stile.yaml` goes **in full** to the selector of mode B, which does not know the secrets (rule 1). So the prose
-rules do not contain the solution, not even as a prohibition (see «the examples in lingue/<lingua>/preparatore/skill.md»). The precise prohibition, with its example, goes into the `come_si_trova` of the main clue, which only the narrator of mode A sees. The vocabulary of
+rules do not contain the solution, not even as a prohibition (see the language file). The precise prohibition, with its example, goes into the `come_si_trova` of the main clue, which only the narrator of mode A sees. The vocabulary of
 the rules is also public: no secret words in a list of words.
 
 **Check**: `--solo STILE`; the premise fits in one sentence.
@@ -292,7 +293,7 @@ the rules is also public: no secret words in a list of words.
 - **Backstory and logistics** (under `preparazione`, form in schema.md): the past that founds every secret, the
   night of the session with its hours, the documents with their date (the `indizio` link you add at step 5, when
   the clue exists). Every claim of the story about times, distances, places or dates becomes a verification that
-  the validator redoes: a claim that a trip fits in the time is a `ci_sta` plus a `non_ci_sta` (example in «the examples in lingue/<lingua>/preparatore/skill.md»).
+  the validator redoes: a claim that a trip fits in the time is a `ci_sta` plus a `non_ci_sta` (example in the language file).
 - **The mechanism of the climax**, in `preparazione.meccanismo`: one line per state, «state: effect» (example in «the
   examples in lingue/<lingua>/preparatore/skill.md»; form [V `MONDO.meccanismo`]). Every text that names it is reread
   against those lines (step 13). Leave `rivelazioni`, `colli_di_bottiglia` and `nodi` for step 4.
@@ -331,8 +332,10 @@ if someone holds it at the start: the Engine keeps who holds it (`riferimenti/sc
   not contradict it (mestiere.md §4). The scene does not say the opposite.
 - More scenes: the same place at two moments, the shared clocks and those that start from a choice are in
   mestiere.md §9.
+- World questions (`domande`, 0–2 per scene, «Sheets and checks» above): an uncertain fact no PC rolls for, written
+  with the scene [V `DOMANDE`].
 
-**Check**: `--solo INDIZI,GRAFO,PROSA,SESSIONE,MONDO` with zero errors. The `SCENA` errors that cite NPCs and PCs are
+**Check**: `--solo INDIZI,GRAFO,PROSA,SESSIONE,MONDO,VINCOLI,DOMANDE` with zero errors. The `SCENA` errors that cite NPCs and PCs are
 closed at steps 6 and 7.
 
 ### 6. PCs → `pg.yaml`
@@ -343,22 +346,22 @@ Every PC has:
 
 The sheet of a PC, except the private knowledges, is public: it goes to the player's phone and to the selector.
 No secrets in the names, in the hooks, in the appearance (a guild name that reveals a carved detail is the kind of
-mistake to avoid; see «the examples in lingue/<lingua>/preparatore/skill.md»). The `situazione_comune` names no PC: it must hold with any group.
+mistake to avoid; see the language file). The `situazione_comune` names no PC: it must hold with any group.
 
 **Check**: `--solo PG,FRONTI` with zero errors. Remove any PC: does the scene still hold? Does every bottleneck still
 have a solution that does not depend on that PC?
 
 ### 7. NPC sheets → `png/png_<nome>.yaml`
 All the fields of the manual §3, plus `alias` (the nicknames the players will use, never generic words such as
-those listed in «the examples in lingue/<lingua>/preparatore/skill.md») and an `id` for every lie. Read `riferimenti/mestiere.md`
+those listed in the language file) and an `id` for every lie. Read `riferimenti/mestiere.md`
 §2–§3.
 - **aspetto**: the reading aloud, the invariants and `prompt_immagine` in English with `[STILE]`
   (`riferimenti/immagini.md`); the hidden traits go in at step 11.
 - **voce_id**: taken from `assets/voci/voci.yaml`, suited to sex and age, respecting rule 9.
-- **voce.stile** begins with the measure of the sentences (the form is in «the examples in lingue/<lingua>/preparatore/skill.md»): the validator derives
+- **voce.stile** begins with the measure of the sentences (the form is in the language file): the validator derives
   from it the ceiling for the NPC's lines.
 - **cede_se**: every condition is a fact observable in a transcript, and the conditions are joined by the connector
-  for "or" (see «the examples in lingue/<lingua>/preparatore/skill.md»). Privacy is an explicit condition, written as the scene defines it (see «the examples in lingue/<lingua>/preparatore/skill.md»).
+  for "or" (see the language file). Privacy is an explicit condition, written as the scene defines it (see the language file).
 - **Who moves**: search every text that takes an NPC out of their scenes (desire, initiatives, evolution, solutions
   of the bottlenecks, `taglio` and endings, lines with `scena`). Each must respect rule 9 in the scene where it takes
   them.
@@ -369,7 +372,7 @@ those listed in «the examples in lingue/<lingua>/preparatore/skill.md») and an
   a character declared in the sheets (`relazioni`, `chi_altro_sa`) who acts in narrator rows with no sheet
   [V `PNG.senza_scheda`]: for a new campaign, treat it as an error.
 
-**Check**:
+**Check**: `--solo PNG,SCENA,SCHEDA,SCELTA` with zero errors (the prices of step 1 are compared with the desires now), and:
 - read the three sample lines one after the other, without names: you must recognise who speaks;
 - every NPC wants something that sets them against another NPC or against a front;
 - no NPC gives away the solution in the first turn.
@@ -387,7 +390,7 @@ Read `riferimenti/repertorio.md` in full. First the list, then the text:
 2. for each, id, `quando`, `temi`, `richiede`, `effetti` and, if needed, `scena`;
 3. only at the end the text.
 
-Voice in the lines: the direction goes after the label, in square brackets and brief, for example the format in «the examples in lingue/<lingua>/preparatore/skill.md»; a whisper is closed in the same line: `<whisper>…</whisper>`. Syntax in `docs/f0-contratti.md`,
+Voice in the lines: the direction goes after the label, in square brackets and brief, for example the format in the language file; a whisper is closed in the same line: `<whisper>…</whisper>`. Syntax in `docs/f0-contratti.md`,
 «Voce espressiva» (expressive voice); the validator (class `VOCE`) checks that the tags are closed.
 
 **When to write a direction (the rule for every line).** A direction is the exception. Write one only where the
@@ -453,7 +456,7 @@ receive, scene by scene, as it would read it:
 npx tsx strumenti/contesto_modo_b.ts campagne/<id> --catalogo
 ```
 The validator searches it for every regex; you search for what a regex does not catch. Read every line of the catalogue
-as a sentence, id included: a line id can say who was responsible (see «the examples in lingue/<lingua>/preparatore/skill.md»). The lines marked `[chiusa: …]` (closed: …) the
+as a sentence, id included: a line id can say who was responsible (see the language file). The lines marked `[chiusa: …]` (closed: …) the
 selector sees only after those gates; the others from the first turn.
 
 **Check**: no `SEGRETI.*` error and no `SEGRETI.fatto_scoperto` warning.
@@ -500,13 +503,13 @@ Zero errors. Read the warnings too: each is either corrected or justified in `au
 ### 13. Reading aloud
 Read at half voice, in order: summary and opening; the appearance readings; the sample lines; the clock signs; all the
 lines of the repertoire. The validator counts the words, but does not hear the rhythm. Look for:
-- pronouns that are ambiguous to the ear (see «the examples in lingue/<lingua>/preparatore/skill.md»);
-- a name followed by a comma at the start of a sentence, which sounds like the narrator calling someone (see «the examples in lingue/<lingua>/preparatore/skill.md»);
+- pronouns that are ambiguous to the ear (see the language file);
+- a name followed by a comma at the start of a sentence, which sounds like the narrator calling someone (see the language file);
 - a singular "you" that sounds plural;
-- calques from another language, the same image repeated, gender agreement towards an unknown PC (see «the examples in lingue/<lingua>/preparatore/skill.md»);
-- a line that cites what only another optional line introduced (see «the examples in lingue/<lingua>/preparatore/skill.md»);
+- calques from another language, the same image repeated, gender agreement towards an unknown PC (see the language file);
+- a line that cites what only another optional line introduced (see the language file);
 - letters, diaries and songs read by the narrator: in indirect speech, never in first or second person (a second-person
-  address sounds addressed to a PC (see «the examples in lingue/<lingua>/preparatore/skill.md»); the validator warns, `PROSA.citazione`);
+  address sounds addressed to a PC (see the language file); the validator warns, `PROSA.citazione`);
 - the mechanism of the climax read backwards: every text says the same thing as the lines of `preparazione.meccanismo`.
 
 ### 14. Independent review
@@ -515,6 +518,8 @@ your conclusions: it must read the manual and the campaign, and attack them. Fix
 again, and write in `autovalutazione.md` what you corrected and what you did not, with the reason.
 
 ### 15. README and self-assessment
+Both are campaign files: write them in the campaign's language, like the others. Only notes written for the project
+about the skill itself (a blind test's `NOTE_SULLA_SKILL.md`) go in English, like the project's documents.
 - `README.md`: the scene in a few lines, the PNGs (voice, desire, lie, signal), how clues, clock and choice work, who sees
   which file.
 - `autovalutazione.md`: the grades R1–R12 of the manual §9 as designed, with one line of evidence each; the outcome of the
@@ -547,8 +552,8 @@ Each one comes from a real error, found in a trial, by a blind judge or by a rev
    senses, elements not HIDDEN and `taglio`; of the NPCs appearance, character and voice (without `mai_dice`); the PC sheets
    without private knowledge; the voice examples; and for each turn the lines `id · chi · tipo · quando` of the catalogue.
    None of these fields contains a secret: the validator checks it on the real context (`SEGRETI.contesto_b`). The `quando`
-   describes an observable fact (see «the examples in lingue/<lingua>/preparatore/skill.md»), never a truth, and does not use words that
-   say who lies, hides, confesses or what is true. The list of forbidden words is in «the examples in lingue/<lingua>/preparatore/skill.md» and in
+   describes an observable fact (see the language file), never a truth, and does not use words that
+   say who lies, hides, confesses or what is true. The list of forbidden words is in the language file and in
    `strumenti/valida/costanti.py`.
 2. **Every confession has a structural gate** in `richiede`: `privata: true` if the condition is in private; `da_pg: [...]` if it
    concerns a specific PC; `indizi_rivelati: [...]` if a proof is needed. The `quando` alone is not enough: in the second
@@ -560,13 +565,14 @@ Each one comes from a real error, found in a trial, by a blind judge or by a rev
    one segment whose gates exclude each other: `riferimenti/repertorio.md` §6). Any other clock gate may give one bound
    only («from mark 5 on»: `min: 5`).
 6. **No PC name in the lines, and no line repeats the action.** Before a line the narrator improvises the announcement of the
-   action, with the PC's name in the third person (manuale N15; see «the examples in lingue/<lingua>/preparatore/skill.md»); the line starts from the outcome.
+   action, with the PC's name in the third person (manuale N15; see the language file); the line starts from the outcome.
 7. **An NPC says only what is in their `sa`.** The `fatti_noti` of one of their lines must be in their `sa`.
 8. **Write for the ear**: the measures are in repertorio.md §9 and mestiere.md §7; no figures, brackets, ellipses or the
    clichés of §5.
 9. **Two identical or similar voices are never in the same scene.** Similar are the voices with `simile_a` in
    `assets/voci/voci.yaml` (today nadine and tabitha). It holds for the `png_presenti` and for every text that brings a PNG into
-   a scene. At most four PNGs with voice per scene: that is how many voices are registered.
+   a scene. Four NPC voices are registered, and two of them (nadine and tabitha, both female) are similar: a scene holds
+   at most three voiced NPCs, and at most one of the two female voices.
 10. **The images are public from the first turn.** No hidden traits in the portrait or in the invariants.
 11. **One canon, and the numbers add up.** Every sheet cites the facts by id; a contradiction between two texts is an error to
     correct at once. Hours, distances, places and dates are in the backstory and the logistics, and the validator redoes them.
