@@ -164,6 +164,8 @@ def controlla_fronti(c: Campagna, e: Esito) -> None:
     for campo in ("obiettivo", "cronologia_se_i_pg_non_intervengono", "risorse", "reazioni", "stato_di_quiete", "chiamata_all_azione"):
         if not catt.get(campo):
             e.errore("FRONTI.cattivo", "preparazione.cattivo", f"manca {campo} (C3)")
+    if "png" in catt and catt.get("png") not in c.png:
+        e.errore("FRONTI.cattivo", "preparazione.cattivo", f"png: {catt.get('png')} non è un PNG con scheda (il cattivo, per SCELTA.premio)")
     segreti = prep.get("segreti_astratti") or []
     if not 6 <= len(segreti) <= 14:
         e.avviso("FRONTI.segreti_astratti", "preparazione", f"{len(segreti)} segreti astratti (circa 10 per sessione, C6)")

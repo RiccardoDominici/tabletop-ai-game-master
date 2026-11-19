@@ -136,7 +136,8 @@ says so ("Only if the one who knows it proposes it").
     them too, never active in a scene: they move only by gates of `avanza_quando` and their `conseguenze` are off-screen
     (write `tracce`). A package's `pieni_all_inizio` can say where they start;
   - a timeline event with `segno: {orologio, n}` (`cronologia.eventi`) enters the world's log at that mark.
-- `cattivo` (C3): `obiettivo`, `cronologia_se_i_pg_non_intervengono`, `risorse: [{cosa, a_cosa_serve}]`, `reazioni: [{intrusione, reazione}]`,
+- `cattivo` (C3): optional `png: png_…` (the villain's sheet [V exists]: a price that is the villain's win is not a reward,
+  `SCELTA.premio`), `obiettivo`, `cronologia_se_i_pg_non_intervengono`, `risorse: [{cosa, a_cosa_serve}]`, `reazioni: [{intrusione, reazione}]`,
   `stato_di_quiete`, `chiamata_all_azione` [V].
 - `segreti_astratti` (C6): about ten, of one or two sentences each [V], without a fixed place.
 - `archi` (C8): `campagna_tre_atti: [3]` and `pg: {pg_<nome>: {tu, bisogno, vai, cerca, trova, paga, ritorna, cambia}}` for each PC [V].

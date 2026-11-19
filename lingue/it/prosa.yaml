@@ -221,3 +221,10 @@ mostri_di_gioco:
   - basilisk
   - manticora
   - medusa
+
+# La scelta che costa (SCELTA.premio, strumenti/valida/regole_scelta.py): parole che in una frase del prezzo dicono una
+# perdita o una negazione. Il prezzo «Ermete perde il mulino» ha le stesse radici del desiderio «Tenere il mulino», ma
+# è il suo contrario: una radice comune detta in una frase con una di queste parole non fa somiglianza (prova cieca
+# A12, mulino-notte, W5). Parole intere o inizi di parola, in minuscolo.
+perdita: [non, perde, perdono, perso, persa, persi, perdere, nessuno, nessuna, niente, mai, senza, toglie, tolgono, tolto,
+  tolta, rinuncia, rinunciare, lascia, lasciare, andarsene, cacciat, sfuma, svanisce, finisce, vale niente, più]

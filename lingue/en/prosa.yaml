@@ -215,3 +215,10 @@ mostri_di_gioco:
   - basilisk
   - manticore
   - medusa
+
+# The choice that costs (SCELTA.premio, strumenti/valida/regole_scelta.py): words that in a clause of the price say a
+# loss or a negation. «Ermete loses the mill» shares its roots with the desire «Keep the mill», but says its opposite: a
+# shared root said in a clause with one of these words is no likeness (blind test A12, mulino-notte, W5). Whole words
+# or word beginnings, lowercase.
+perdita: [not, "no", never, nobody, nothing, without, lose, loses, lost, losing, give up, gives up, forfeit, taken from,
+  leave, leaves, leaving, driven out, worthless, ends, vanishes, "no longer"]

@@ -203,7 +203,11 @@ whom it weighs (`pesa_su`).
 **Check**:
 - the final choice has at least two acceptable outcomes, and each has a price;
 - **the price weighs on someone who does not want it**: if an NPC or a PC desires it, it is a reward in disguise
-  (the snow-wedding trial has the example: a price that the NPC wants is a reward in disguise; see «the examples in lingue/<lingua>/preparatore/skill.md»). The validator compares the prices with the desires of the NPCs (`SCELTA.premio`);
+  (the snow-wedding trial has the example: a price that the NPC wants is a reward in disguise; see «the examples in lingue/<lingua>/preparatore/skill.md»). The validator compares the prices with the desires of the NPCs (`SCELTA.premio`). Write a
+  loss in plain words («Ermete perde il mulino»): a clause with a word of loss or negation (`perdita` in
+  `lingue/<lingua>/prosa.yaml`) is read as the opposite of the bearer's desire, not as a likeness. The villain's win is a
+  price for the PCs, not a reward: name the villain's sheet in `preparazione.cattivo.png`, and a price that resembles
+  his desire is no longer reported;
 - **when the PCs have discovered everything, the choice is still hard**: no check, promise or NPC cancels the
   price of one of the roads;
 - no NPC can resolve it in place of the PCs (D8);

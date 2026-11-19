@@ -185,8 +185,10 @@ Some rules worth knowing:
 - **More PCs than players.** The pregenerated PCs are one more than the maximum number of players: for "3-4 players",
   five. This way the story works with any group. If there are too few, the validator reports it (`PG.numero`).
 - **The price falls on whoever does not want it.** Each path of the final choice has a price. If the price looks like
-  something an NPC wants, it is a reward in disguise, and the validator reports it (`SCELTA.premio`). At least
-  two paths are required (`SCELTA.forma`).
+  something an NPC wants, it is a reward in disguise, and the validator reports it (`SCELTA.premio`). A price that
+  takes away what its bearer wants («perde il mulino») is read as a loss, not a likeness, and a price that is the
+  villain's win (his sheet in `preparazione.cattivo.png`) is not reported: it costs the PCs. At least two paths are
+  required (`SCELTA.forma`).
 - **Dice.** The `dadi` field of the brief is for the Preparer. The real switch is in `campagna.yaml`:
   `regole: {dadi: false}` removes the requirement for sheets. Details in [dice and sheets](dice-and-sheets.md).
 - **Who rolls.** Same for `tiri_giocatori`: the Preparer copies it into `campagna.yaml` →

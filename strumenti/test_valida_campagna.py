@@ -1029,6 +1029,29 @@ def test_scelta_premio_travestito_da_prezzo(camp):
     assert "SCELTA.premio" in errori(camp, rigoroso=True)
 
 
+def test_scelta_perdita_di_chi_paga_non_e_un_premio(camp):
+    # Blind test A12 (W5): «Ermete perde il mulino» resembled «Tenere il mulino». The bearer's loss is the opposite of
+    # a reward: a root shared in a clause with a word of loss or negation makes no likeness.
+    perdita = [STRADE[0], {"strada": "Il pegno al mercante", "prezzo": "Irma non riesce più a pagare il tetto, e perde la locanda",
+                           "pesa_su": ["png_irma"]}]
+    modifica(camp, "brief.yaml", lambda d: d.setdefault("decisioni", {}).update(strade=perdita))
+    assert "SCELTA.premio" not in errori(camp, rigoroso=True)
+    assert "SCELTA.premio" not in avvisi(camp)
+
+
+def test_scelta_vittoria_del_cattivo_e_un_prezzo(camp):
+    # A price that is the villain's win is the PCs' loss: no warning for the villain (W5). Bruno's desire is «Proteggere
+    # Irma senza mentire al paese»: as a bystander, a price like it is a warning; as the villain, it is his win.
+    strade = [STRADE[0], {"strada": "Tacere", "prezzo": "Bruno protegge Irma, e al paese nessuno sa mentire", "pesa_su": ["png_irma"]}]
+    modifica(camp, "brief.yaml", lambda d: d.setdefault("decisioni", {}).update(strade=strade))
+    assert "SCELTA.premio" in avvisi(camp)
+    modifica(camp, "campagna.yaml", lambda d: d["preparazione"]["cattivo"].update(png="png_bruno"))
+    assert "SCELTA.premio" not in avvisi(camp)
+    assert "FRONTI.cattivo" not in errori(camp)
+    modifica(camp, "campagna.yaml", lambda d: d["preparazione"]["cattivo"].update(png="png_nessuno"))
+    assert "FRONTI.cattivo" in errori(camp)
+
+
 def test_scelta_stop_word_articolate_non_fanno_radice():
     """Le preposizioni articolate («dalla», «degli», «nel»…) non sono parole del prezzo: non creano somiglianze
     tra desiderio e prezzo (L6: «dalla/dal» passavano come radici)."""

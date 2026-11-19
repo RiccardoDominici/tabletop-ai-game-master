@@ -18,7 +18,7 @@ prompts/<codice>/*.md            model prompts (narrator, selector, action arbit
 lingue/<codice>/testi*.yaml      fixed Engine phrases, keyed, with {placeholders} (testi-modelli.yaml: what goes to the models)
 lingue/<codice>/motore.yaml      Engine language rules (announcement, links between actions, phrases, guards, names)
 lingue/<codice>/prove.yaml       dice-arbiter keywords (SRD 5.2) and names of abilities and skills
-lingue/<codice>/prosa.yaml       validator prose rules (sentences, clichés, numbers spelled out, voice and tone), and the word lists of the checks on aliases, ids, the "quando" (when) field of lines, and privacy
+lingue/<codice>/prosa.yaml       validator prose rules (sentences, clichés, numbers spelled out, voice and tone), and the word lists of the checks on aliases, ids, the "quando" (when) field of lines, privacy, and the words of loss in a choice's price (`perdita`)
 lingue/<codice>/preparatore/     the Preparer's examples in that language (skill.md, riferimenti.md)
 apps/web/src/lingua/<codice>/    interface dictionaries (TypeScript: the compiler checks the keys)
 assets/voci/voci.yaml            voices per language (Fish and Qwen)

@@ -45,6 +45,7 @@ class Prosa:
     quando_vietate: tuple[re.Pattern, ...] # il `quando` non dice chi mente, nasconde o confessa
     cede_privato: re.Pattern                # cede_se chiede la privatezza: serve il cancello privata
     mostri_di_gioco: frozenset[str]         # nomi di mostri e razze che il generatore di immagini non conosce
+    perdita: tuple[str, ...] = ()           # perdita o negazione in una frase del prezzo (SCELTA.premio)
 
 
 @lru_cache(maxsize=None)
@@ -173,6 +174,7 @@ def carica_prosa(codice: str) -> Prosa:
         quando_vietate=tuple(re.compile(str(x)) for x in dati["quando_vietate"]),
         cede_privato=re.compile(str(dati["cede_privato"])),
         mostri_di_gioco=frozenset(str(x).lower() for x in dati["mostri_di_gioco"]),
+        perdita=tuple(str(x).lower() for x in dati.get("perdita") or []),
     )
 
 
