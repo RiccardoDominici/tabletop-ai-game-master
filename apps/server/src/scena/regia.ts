@@ -1721,7 +1721,7 @@ export class Regia {
     const s = this.statoRepertorio;
     if (!s) return null;
     const scena = this.campagna.scena.id;
-    const c = s.disponibili(turno).filter((b) => b.stallo === livello && !haCancelloAzione(b) && !b.richiede.privata && (!b.scene.length || b.scene.includes(scena)));
+    const c = s.disponibili(turno).filter((b) => b.stallo === livello && !haCancelloAzione(b) && !b.richiede.privata && (!b.scene.length || b.scene.includes(scena)) && !this.sentitaDiRecente(b, turno));
     return c.find((x) => cast.has(x.chi)) ?? c.find((x) => x.chi === ID_NARRATORE) ?? c[0] ?? null;
   }
 
@@ -1757,7 +1757,7 @@ export class Regia {
       const preparata = this.lineaDiStallo(turno, 1, cast);
       if (preparata && this.aggiungiBattutaMotore(turno, esito, segni, log, preparata, false)) return preparata.id;
       const candidati = s.disponibili(turno).filter(
-        (b) => b.riempitivo && !haCancelloAzione(b) && !b.richiede.privata && (b.chi === ID_NARRATORE || presenti.has(b.chi)) && (!b.scene.length || b.scene.includes(scena)),
+        (b) => b.riempitivo && !haCancelloAzione(b) && !b.richiede.privata && (b.chi === ID_NARRATORE || presenti.has(b.chi)) && (!b.scene.length || b.scene.includes(scena)) && !this.sentitaDiRecente(b, turno),
       );
       const b = candidati.find((x) => cast.has(x.chi)) ?? candidati.find((x) => x.chi === ID_NARRATORE) ?? candidati[0];
       if (b && this.aggiungiBattutaMotore(turno, esito, segni, log, b, false)) return b.id;
@@ -4833,11 +4833,31 @@ export class Regia {
   }
 
   /**
+   * R-ripetuta on the lines the Engine picks itself (final round, ST T7/T9: a scriptwriter's S3 line was the clock sign
+   * heard two turns before, and the Engine said it again word for word; a line's rows are never emptied by R-ripetuta,
+   * so the whole line came out). A line whose every version the table heard in the last turns is not picked again,
+   * unless it carries effects (a clue, a fact, a lie, a clock mark, an attitude, an object) or is a sign, an ending or a
+   * closing: those are said whole, as before.
+   */
+  private sentitaDiRecente(b: Battuta, turno: number): boolean {
+    const e = b.effetti;
+    if (e.rivela_indizi.length || e.fatti_noti.length || e.avanza_orologio || e.menzogna_detta || e.atteggiamento.length || e.oggetti.length) return false;
+    if (b.tipo === 'finale' || b.tipo === 'chiusura' || b.tipo === 'segno_orologio') return false;
+    const recenti = this.frasiRecenti(turno);
+    return [b.testo, ...b.varianti].every((v) => giàSentita(v.map((r) => r.testo).join(' '), recenti));
+  }
+
+  /**
    * Fa dire una battuta scelta dal Motore (segno dovuto, finale, chiusura). `inFondo`: dopo tutto il
    * resto del turno; altrimenti PRIMA dell'invito finale del narratore, se l'ultima riga improvvisata
    * è una domanda e la sua voce non è ancora partita.
    */
   private aggiungiBattutaMotore(turno: number, esito: { uscita: VoceUscita[] }, segno: SegniInRisposta, log: Logger, b: Battuta, inFondo: boolean): { id: string; righe: number } | null {
+    if (this.sentitaDiRecente(b, turno)) {
+      log.info({ turno, battuta: b.id }, 'coherence: the Engine\'s line was heard word for word in the last turns, not again (R-ripetuta)');
+      this.violazione({ turno, regola: 'R-ripetuta', etichetta: b.chi, frase: b.testo.map((r) => r.testo).join(' '), azione: 'tolta', battuta: b.id, dettaglio: { motore: true } });
+      return null;
+    }
     const uso = this.usaBattuta(b.id, null, turno, segno, true);
     if (!uso.ok) {
       log.error({ turno, battuta: b.id, motivo: uso.motivo }, 'repertorio: battuta del Motore non applicabile');

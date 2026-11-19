@@ -250,6 +250,27 @@ describe('server, mode B: prepared stall lines (stallo: 1 | 2 | 3) are kept for 
   });
 });
 
+describe('server, mode B: the Engine does not pick a line the table just heard word for word (final round, ST T7/T9)', () => {
+  let prova: Prova;
+  afterEach(async () => prova?.chiudi());
+
+  it('an S3 line whose only sentence was heard in the last turns is skipped: the Engine says the leads instead', async () => {
+    prova = new Prova();
+    // The scriptwriter's S3 line was the clock sign heard two turns before; here the narrator's own sentence of every turn.
+    const eco = { id: 'nar_stallo_eco', chi: 'narratore', tipo: 'momento', quando: 'il tavolo resta fermo', temi: ['eco'], stallo: 3, testo: ['[narratore] La ruota del mulino cigola piano.'], max_usi: 1 };
+    const cartella = prova.campagna('mondo', { battute: { 'narrazione.yaml': [eco] } });
+    // Heard at T4 (the S2 turn), then the S3 of T5 would say it again.
+    const { url } = await prova.avvia(cartella, (t) => (t === 4 ? '[narratore] La ruota del mulino cigola piano.\n[invito] tutti' : '[narratore] Anna, il vento gira.\n[invito] tutti'));
+    const schermo = await prova.proiettore(url);
+    const tel = await prova.telefono(url, 'pg_anna');
+    let s = await inizia(schermo, tel);
+    for (const testo of ['Mi siedo sul muretto del mulino.', 'Ci penso su, intanto.', 'Cosa facciamo adesso?', 'Non lo so, boh.', 'Mi siedo di nuovo.']) s = await turno(tel, 'pg_anna', s, testo);
+    const s3 = prova.turni().filter((r) => r['stallo']).map((r) => r['stallo'] as { livello: number; detto: string | null }).find((x) => x.livello === 3);
+    expect(s3?.detto).toBe('piste');
+    expect(prova.turni().flatMap((r) => (r['uscita'] as Array<{ tipo: string; id?: string }>) ?? []).some((u) => u.id === 'nar_stallo_eco')).toBe(false);
+  });
+});
+
 describe('server, mode B: the S3 sentence is never said twice word for word in a visit (round 7, ST T9 and T12)', () => {
   let prova: Prova;
   afterEach(async () => prova?.chiudi());

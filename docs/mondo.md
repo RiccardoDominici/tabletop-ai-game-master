@@ -193,7 +193,11 @@ leads the PCs know (gated on what they found: `richiede.indizi_rivelati` or `bat
 reader's catalogue nor its waiting lines: in round 4's stall game the local reader used every filler of the scene as a
 waiting line by T6, and the one S1, at T14, found none. At each level the Engine says an available stall line of that
 level first (S1: the danger's cast present first, then the narrator's; S2: one that reveals the chosen clue; S3: before
-its own sentence, and a prepared summary makes S3 possible even with fewer than two leads), then the old material. The
+its own sentence, and a prepared summary makes S3 possible even with fewer than two leads), then the old material. A
+line the Engine picks itself (a stall line, a filler) whose every version the table heard word for word in the last
+three turns is skipped, and the next material is used (R-ripetuta on the Engine's picks; final round, ST T7/T9: a
+scriptwriter's S3 line was the clock sign heard two turns before). A line with effects (a clue, a fact, a clock mark,
+an attitude, an object), a sign, an ending or a closing is said whole, as before (test/mondo-stallo.test.ts). The
 validator checks the form (`REPERTORIO.stallo`: level, no gate on the action, S2 reveals, S3 reveals nothing and is
 gated) and warns for a scene with no stall line of some level (`REPERTORIO.stallo_scarso`; S2 only where the scene has
 clues). With the scriptwriter on (docs/sceneggiatore.md), when the table is stalling (answers with nothing new, or stall
