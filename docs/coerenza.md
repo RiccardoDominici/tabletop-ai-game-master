@@ -992,6 +992,7 @@ played again. From attempt 3 on, the lead also had the unsure items that lean H 
 | 3, second judge | 0 (1 unsure) | 0 (1 unsure) | 0 (1 unsure) | 0 | 0 (1 unsure) | **0** | — |
 | 4 (`e44cea5`) | 0 (3 unsure) | 0 (1 unsure) | 0 | 0 | 0 (3 unsure) | **0** | 0 in all five |
 | 5 (`6206bd1`, CM and PR only) | 0 (3 unsure) | — | — | — | 1 (2 unsure) | 1 | 0 in both |
+| 6 (`60de6b0`) | 0 (2 unsure) | 0 (3 unsure) | 0 (2 unsure) | 0 (2 unsure) | 0 (3 unsure) | **0** | 0 in all five |
 
 The H and their fixes:
 - **Attempt 1, PR T1.** Livia's Carisma check succeeded (20 against 17), yet the table heard Berta's refusal, «Questo
@@ -1065,7 +1066,34 @@ T23), Zirrà answering an invented hold (PR T20), and `nar_piccone` given for an
 In attempt 5 the logs also show the new rules at work: the surprised NPCs marked in the block for their round, one
 wound line refused per game, and the defeat ending for a dead PC («chi respira ancora», PR).
 
-Attempt 6 replays all five games on `60de6b0`.
+**Attempt 6** replayed all five games on `60de6b0` (the opus judge in `finale6-evidenza-opus.md`, brief
+`finale6-brief-giudice.md`). It had 0 certain H in every game, a full blind round with 0 H, after all the fixes; that is
+Riccardo's goal. The logs show the new rules at work:
+- the passed-social-check rule live for the first time («Hanno ceduto…»: FB once, PR twice);
+- the attack-outcome guard refusing one line (PR), and the wound guard refusing four (CM 2, CA 1, PR 1);
+- the defeat ending that wakes everybody said only with nobody dead (CM).
+
+The judge found two regressions of the round's own rules, fixed after it:
+- **CM T17, CA T14:** «Non lo colpisco ancora, aspetto la risposta» rolled an attack at the last target. `e551935`: a
+  negated attack verb is no attack (docs/prove.md);
+- **CA T10:** a late line's true miss, written for T7, was refused at T10 («no card of this turn says so»). The Engine
+  kept only the last turn's cards. `fa5ba86`: the cards of an earlier turn come from the recent ones
+  (docs/sceneggiatore.md).
+
+A short confirmation run of CM on `e551935` checked T17 (below).
+
+**Confirmation run** (CM only, `e551935`, profile A, `esperimenti/risultati/finale/conferma-torre-mozza-combattimento-A-manuale/`):
+at T17 the table hears only the player's words, «Livia Sarti: «Non lo colpisco ancora, aspetto la risposta».», then
+Tonio's line; no roll and no hit. The server log has 0 ERROR lines. No judge was run on it: it checks the two fixes, it
+is not a new round.
+
+The other unsure items of attempt 6 are not H classes:
+- the scriptwriter contradicts prepared clue facts: chalk against charcoal on the slate (ST T4 vs T8); two sets of
+  sheep names on the posts (ST T7 vs T11); the boy's hands «legate» again after he dropped the rope (PR T19 vs T11);
+- a scriptwriter's key handover the ledger never registered (FB T2, then Berta «aspetto qui con la chiave» at T6);
+- a soft line after a failed check (PR T4) and Berta's urging after a passed one (PR T6);
+- Zirrà assuming Grosso asleep (CM T16), a late threat (CA T14), an idle line in the turn she strikes (CA T7), Berta
+  heard after a question to the invented «Madre Carla» (FB T11).
 
 Live checks (Playwright), both passed:
 - A9: on the projector a dead NPC shows greyed with «MORTO». Seen live during attempt 1's CM game, on Zirrà
@@ -1089,7 +1117,7 @@ The sheet makes the Engine count him as present («Oltre a voi, in piedi qui si 
 attempt 4). It does not tie a confession to the character the question was put to: the line's actors are checked for
 presence and state, not against the action's addressee. Attempt 3 was measured without the sheet, attempt 4 with it.
 
-Still open, none of it H (judges of attempts 3 and 4):
+Still open, none of it H (judges of attempts 3 to 6):
 - **Announcements** keep a false relative or label clause inside the PC's own act («al goblin che scappa», «Ultimo
   goblin:»). All of them are attributed.
 - **The combat flow:**
@@ -1102,6 +1130,10 @@ Still open, none of it H (judges of attempts 3 and 4):
 - **The 0.6B reader** often returns invalid JSON, so the Engine's deterministic fallback picks the line.
 - **The theme matcher** misses inflections that are not a prefix («pagava» for the theme «pagare», attempt 4, FB T5).
   A safe stem match needs the language's verb endings in the pack.
+- **The scriptwriter contradicts prepared clue facts** (attempt 6: chalk or charcoal, the sheep names, the rope): its
+  request needs the clue facts already told in this visit.
+- **An object handover told by a scriptwriter line** is not tracked in the ledger (FB, the key).
+- **R-ripetuta does not reach a catchphrase across distant turns** (Berta's «Le pecore non aspettano» at T2 and T12).
 ## Characters the players invent (Riccardo's decision, 16 November)
 
 The blind off-the-rails script addressed «Oreste» and «Madre Carla», people the campaign never had; Berta and Ugo

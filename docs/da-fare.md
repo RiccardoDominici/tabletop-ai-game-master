@@ -128,12 +128,16 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   - a fall heard before the faller's act (f767a61);
   - a late outcome line with no tag (60de6b0);
   - a surprise that ended in the turn (fd022ca);
+  - a negated attack that rolled (e551935);
+  - a late line checked without its turn's cards (fa5ba86);
   - a surprised NPC acting (b8ffb24);
   - a wound no card dealt (4824d8e);
   - a dead PC in the round order (6206bd1).
 
   Attempt 5 (CM and PR on 6206bd1) had 1 H (PR T15, a late miss line for a dart that hit), fixed in 60de6b0, with
-  fd022ca for CM T9; attempt 6 replays all five on 60de6b0. Details: docs/coerenza.md, «Final round». After attempt 3 torre-mozza's boy got an NPC sheet, and
+  fd022ca for CM T9. **Attempt 6 (60de6b0, all five games): 0 H**, Riccardo's goal; its two regressions of our own
+  rules were fixed after it (e551935, a negated attack; fa5ba86, a late line's own cards). Details: docs/coerenza.md,
+  «Final round». After attempt 3 torre-mozza's boy got an NPC sheet, and
   the validator a warning for a character who acts with no sheet (95eafa4). Open from the round, none of it H:
   - announcements keep a false relative or label clause inside the PC's own act («al goblin che scappa»,
     «Ultimo goblin:»);
@@ -147,7 +151,11 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
     case);
   - the theme matcher misses non-prefix inflections («pagava» for «pagare»), which needs verb endings in the
     language pack;
-  - live, not yet exercised: the passed-social-check rule and the Engine-repeat rule (tests only);
+  - the scriptwriter contradicts prepared clue facts (ST: chalk or charcoal on the slate, two sets of sheep names on
+    the posts; PR: the boy's rope): its request needs the visit's told clue facts;
+  - an object handover told by a scriptwriter line is not tracked in the ledger (FB: the key);
+  - R-ripetuta does not reach Berta's catchphrase across turns 2 and 12;
+  - live, not yet exercised: the Engine-repeat rule and the lose-turn guard's replacement line (tests only);
   - sheets for the characters `PNG.senza_scheda` flags:
     - nozze-neve: Agnese, Bastiano, Marta, Tilde, Tonio;
     - ponte-lanterne: Contessa the goose, Ottone the scribe, Ugolino the consul;
