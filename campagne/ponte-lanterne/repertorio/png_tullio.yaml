@@ -195,6 +195,7 @@ battute:
     quando: "dopo il terzo tocco, i PG chiedono a Tullio di non chiudere la catena"
     temi: [aspetta, aspettare, aperto, aperta, apri, tienila]
     richiede: {orologio: {id: o_piena, min: 8, max: 8}, indizi_rivelati: [i_onda_pilone], battute_non_usate: [tul_catena_tesa]}
+    attori: [png_vischi]
     testo:
       - "[narratore] Tullio guarda il pilone di mezzo, poi la manovella, e non la gira."
       - "[png_tullio] Fino all'onda, non di più. E la rampa la tenete voi."

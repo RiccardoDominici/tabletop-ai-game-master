@@ -219,3 +219,17 @@ battute:
     varianti:
       - ["[narratore] Vischi intreccia le dita guantate, e sorride al console.", "[png_vischi] Chi ha pazienza, qui, ottiene condizioni migliori."]
     max_usi: 2
+
+  # Battuta di stallo (docs/mondo.md §5): la mossa piccola del pericolo della Casa del Sale, detta dal suo
+  # PNG quando il tavolo resta fermo. Il lettore non la riceve mai.
+  - id: vis_stallo1_sale
+    chi: png_vischi
+    tipo: momento
+    scena: scena_casa_del_sale
+    stallo: 1
+    quando: "il tavolo resta fermo alla Casa del Sale"
+    temi: [vino, bicchieri]
+    testo:
+      - "[narratore] Vischi riempie i vostri bicchieri di vino caldo, senza chiedere."
+      - "[png_vischi] Una notte così costa cara a tutti, con tutto il rispetto. Se vi serve una garanzia, sapete dove trovarmi."
+    max_usi: 1

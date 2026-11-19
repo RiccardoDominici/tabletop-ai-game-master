@@ -152,6 +152,7 @@ battute:
     quando: "è il momento del terzo segno delle firme"
     temi: [orologio]
     richiede: {orologio: {id: o_firme, min: 2, max: 2}}
+    attori: [png_vischi]
     testo: ["[narratore] Il console alza il bicchiere verso Vischi, e i consiglieri lo imitano."]
     effetti: {avanza_orologio: o_firme}
     max_usi: 1
@@ -182,6 +183,7 @@ battute:
     quando: "è il momento dell'ultimo segno delle firme"
     temi: [orologio]
     richiede: {orologio: {id: o_firme, min: 5, max: 5}}
+    attori: [png_vischi]
     testo: ["[narratore] Vischi chiude la lista con il suo sigillo, e manda lo scrivano al Passo Vecchio."]
     effetti: {avanza_orologio: o_firme}
     max_usi: 1
@@ -272,6 +274,7 @@ battute:
     scena: scena_ponte_imbrunire
     quando: "un PG chiede allo scrivano che cosa sta misurando"
     temi: [scrivano, misuri, misura, misurare, misurando, nodi]
+    menzionati: [png_vischi]
     testo:
       - "[narratore] Lo scrivano si stringe al petto la corda bagnata, come una coperta."
       - "[narratore] Dice che il signor Vischi vuole sapere quanto manca al leone, con precisione."
@@ -284,6 +287,7 @@ battute:
     scena: scena_ponte_imbrunire
     quando: "un PG chiede alla gente in fila dei vecchi del Ricovero"
     temi: [fila, ernesto, vecchi, messa]
+    menzionati: [png_rosa]
     testo:
       - "[narratore] Una ragazza con una gabbia di galline si ferma sotto la pioggia."
       - "[narratore] Dice che domenica, a messa, il vecchio Ernesto tossiva già forte."
@@ -296,6 +300,7 @@ battute:
     scena: scena_ponte_imbrunire
     quando: "un PG minaccia lo scrivano o lo afferra"
     temi: [afferro, strattono, spingo, minaccio, scrivano]
+    menzionati: [png_vischi]
     testo:
       - "[narratore] Lo scrivano lascia cadere la corda e balbetta: ordini del signor Vischi."
       - "[narratore] Poi scappa verso la Casa del Sale, senza ombrello e senza voltarsi."
@@ -364,6 +369,7 @@ battute:
     scena: scena_casa_del_sale
     quando: "un PG apre la cassa di ferro sotto lo scrittoio"
     temi: [cassa, lucchetto, forzo, forzare, scasso, registri]
+    menzionati: [png_vischi]
     testo:
       - "[narratore] Il lucchetto vecchio cede, e la cassa sa di carta umida."
       - "[narratore] In cima c'è un registro con il nome di Corrado Vischi, sbiadito."
@@ -389,6 +395,7 @@ battute:
     scena: scena_casa_del_sale
     quando: "un PG guarda i fogli sul tavolo dello scrivano"
     temi: [fogli, contratti, contratto, carte, firme]
+    menzionati: [png_rosa]
     testo:
       - "[narratore] Sono contratti di prestito, già scritti in bella copia."
       - "[narratore] Ognuno ha il nome di una famiglia delle Case Lunghe, con la casa in pegno."
@@ -401,6 +408,7 @@ battute:
     scena: scena_casa_del_sale
     quando: "un PG apre la cartella di pelle sullo scrittoio"
     temi: [cartella, scrittoio, frugo, frugare]
+    menzionati: [png_rosa]
     testo:
       - "[narratore] La cartella di pelle è piena di contratti di prestito, legati con lo spago."
       - "[narratore] I nomi sono quelli delle Case Lunghe, e l'ultimo è quello di Rosa Galli."
@@ -450,6 +458,7 @@ battute:
     quando: "un PG fa vedere al console, davanti al paese, che cosa c'è sopra il leone"
     temi: [console, ugolino, guardate, mostro, prova]
     richiede: {indizi_rivelati: [i_onda_pilone], battute_non_usate: [nar_console_registro]}
+    attori: [png_vischi]
     testo:
       - "[narratore] Il console si sporge, guarda, e si toglie il cappello bagnato."
       - "[narratore] Lo rigira tra le mani, poi dice troppo forte che il consiglio può aspettare."
@@ -462,6 +471,7 @@ battute:
     quando: "un PG legge al console, davanti al paese, il registro trovato nella cassa"
     temi: [console, ugolino, registro, leggo, prova]
     richiede: {indizi_rivelati: [i_registro_padre], battute_non_usate: [nar_console_onda]}
+    attori: [png_vischi]
     testo:
       - "[narratore] Il console prende il registro con due dita, come un pesce che scivola."
       - "[narratore] Legge, guarda Vischi, e dice troppo forte che il consiglio può aspettare."
@@ -627,6 +637,7 @@ battute:
     quando: "i PG indugiano sul ponte"
     temi: [attesa]
     richiede: {battute_non_usate: [nar_scrivano_corda]}
+    menzionati: [png_vischi]
     testo:
       - "[narratore] Dalla tettoia scende lo scrivano di Vischi, con una corda a nodi al braccio."
       - "[narratore] Si sporge sul leone, cala la corda e conta i nodi a mezza voce."
@@ -683,9 +694,155 @@ battute:
     scena: scena_terzo_tocco
     quando: "i PG indugiano alla catena"
     temi: [attesa]
+    menzionati: [png_tullio]
     testo:
       - "[narratore] All'imbocco della Riva Alta il paese batte i piedi sulle pietre, a tempo."
       - "[narratore] Qualcuno grida al custode di chiudere la catena."
+    max_usi: 1
+
+  # --- battute di stallo (docs/mondo.md §5): le dice il Motore quando il tavolo resta fermo ------
+  # Il lettore non le riceve mai. 1: una mossa piccola del pericolo (alla Casa del Sale è di Vischi,
+  # in png_vischi.yaml); 2: un indizio che arriva da solo; 3: un riassunto di ciò che i PG hanno trovato.
+  - id: nar_stallo1_ponte
+    chi: narratore
+    tipo: momento
+    scena: scena_ponte_imbrunire
+    stallo: 1
+    quando: "il tavolo resta fermo sul ponte, all'imbrunire"
+    temi: [barca, corrente]
+    testo:
+      - "[narratore] Il fiume si porta via una barca vuota, strappata a un palo del Borgo."
+      - "[narratore] Gira due volte sotto l'arcata, poi sparisce verso valle."
+      - "[narratore] Nella fila qualcuno si fa il segno della croce."
+    max_usi: 1
+  - id: nar_stallo2_ponte
+    chi: narratore
+    tipo: indizio
+    scena: scena_ponte_imbrunire
+    stallo: 2
+    quando: "il tavolo resta fermo sul ponte, all'imbrunire"
+    temi: [lanterna, pilone]
+    attori: [png_bice]
+    testo:
+      - "[narratore] Bice cala una lanterna dal parapetto con una corda, per guardare l'acqua."
+      - "[narratore] La luce scivola sul pilone di mezzo, e sale oltre il leone."
+      - "[narratore] Due spanne più su, dove manca il muschio, c'è un'onda scolpita nella pietra, asciutta."
+    effetti: {rivela_indizi: [i_onda_pilone]}
+    max_usi: 1
+  - id: nar_stallo3_ponte
+    chi: narratore
+    tipo: momento
+    scena: scena_ponte_imbrunire
+    stallo: 3
+    quando: "il tavolo resta fermo sul ponte, dopo le lanterne del Borgo"
+    temi: [lanterne, viaggio]
+    richiede: {indizi_rivelati: [i_lanterna_ricovero]}
+    testo:
+      - "[narratore] Vi tornano in mente le lanterne del Borgo: quella del Ricovero dondola a scatti."
+      - "[narratore] Quella delle Case Lunghe resta sempre ferma."
+      - "[narratore] E sotto il casello la Bigia aspetta: prima del terzo tocco fa un viaggio solo."
+    max_usi: 1
+  - id: nar_stallo1_borgo
+    chi: narratore
+    tipo: momento
+    scena: scena_borgo_basso
+    stallo: 1
+    quando: "il tavolo resta fermo nel Borgo Basso"
+    temi: [muretto, cavoli]
+    testo:
+      - "[narratore] Un muretto d'orto si sbriciola, e l'acqua ci entra con un gorgoglio."
+      - "[narratore] Galleggiano via tre cavoli e un secchio di latta, in fila."
+    max_usi: 1
+  - id: nar_stallo2_borgo
+    chi: narratore
+    tipo: indizio
+    scena: scena_borgo_basso
+    stallo: 2
+    quando: "il tavolo resta fermo nel Borgo Basso"
+    temi: [lume, porte]
+    testo:
+      - "[narratore] Sopra il vicolo qualcuno accende un lume alla finestra, e la luce scende sulle porte."
+      - "[narratore] A pelo d'acqua, su ogni porta, c'è una croce di gesso fresca."
+      - "[narratore] La pioggia non l'ha ancora lavata."
+    effetti: {rivela_indizi: [i_croci_gesso]}
+    max_usi: 1
+  - id: nar_stallo3_borgo
+    chi: narratore
+    tipo: momento
+    scena: scena_borgo_basso
+    stallo: 3
+    quando: "il tavolo resta fermo nel Borgo Basso, dopo la tosse al Ricovero"
+    temi: [tosse, ballatoi]
+    richiede: {indizi_rivelati: [i_tosse_ernesto]}
+    testo:
+      - "[narratore] Vi torna in mente la tosse lunga e roca, dal piano di sopra del Ricovero."
+      - "[narratore] A valle, sui ballatoi delle Case Lunghe, le famiglie aspettano la barca."
+      - "[narratore] La Bigia porta un gruppo solo, prima del terzo tocco."
+    max_usi: 1
+  - id: nar_stallo2_sale
+    chi: narratore
+    tipo: indizio
+    scena: scena_casa_del_sale
+    stallo: 2
+    quando: "il tavolo resta fermo alla Casa del Sale"
+    temi: [fogli, folata]
+    menzionati: [png_rosa]
+    testo:
+      - "[narratore] Una folata dalla porta solleva i fogli dal tavolo lungo, e li sparpaglia sul pavimento."
+      - "[narratore] Sono contratti di prestito già scritti, con la casa in pegno."
+      - "[narratore] I nomi sono delle famiglie delle Case Lunghe, e l'ultimo è di Rosa Galli."
+      - "[narratore] Manca solo la firma."
+    effetti: {rivela_indizi: [i_carte_pronte], fatti_noti: [f_carte_pronte]}
+    max_usi: 1
+  - id: nar_stallo3_sale
+    chi: narratore
+    tipo: momento
+    scena: scena_casa_del_sale
+    stallo: 3
+    quando: "il tavolo resta fermo alla Casa del Sale, dopo i fogli del tavolo"
+    temi: [fogli, catena]
+    richiede: {indizi_rivelati: [i_carte_pronte]}
+    testo:
+      - "[narratore] Vi tornano in mente i contratti sul tavolo, con le case del Borgo in pegno."
+      - "[narratore] E al ponte, al terzo tocco, la catena si chiude."
+    max_usi: 1
+  - id: nar_stallo1_tocco
+    chi: narratore
+    tipo: momento
+    scena: scena_terzo_tocco
+    stallo: 1
+    quando: "il tavolo resta fermo sul ponte, a mezzanotte"
+    temi: [staccionata, arcate]
+    testo:
+      - "[narratore] Il fiume porta giù una staccionata intera, che gira su se stessa davanti alle arcate."
+      - "[narratore] Si infila sotto il ponte, e sparisce dall'altra parte."
+    max_usi: 1
+  - id: nar_stallo2_tocco
+    chi: narratore
+    tipo: indizio
+    scena: scena_terzo_tocco
+    stallo: 2
+    quando: "il tavolo resta fermo sul ponte, con l'acqua alla criniera"
+    temi: [criniera, pilone]
+    richiede: {orologio: {id: o_piena, min: 8, max: 8}}
+    testo:
+      - "[narratore] L'acqua arriva alla criniera del leone, e il fiume urla tra le arcate."
+      - "[narratore] Eppure sotto i piedi il ponte resta fermo: niente tremito, niente scricchiolio."
+      - "[narratore] Sopra il leone, le pietre del pilone sono ancora asciutte."
+    effetti: {rivela_indizi: [i_ponte_fermo]}
+    max_usi: 1
+  - id: nar_stallo3_tocco
+    chi: narratore
+    tipo: momento
+    scena: scena_terzo_tocco
+    stallo: 3
+    quando: "il tavolo resta fermo sul ponte a mezzanotte, dopo il pilone"
+    temi: [pilone, manovella]
+    attori: [png_tullio]
+    richiede: {indizi_rivelati: [i_onda_pilone]}
+    testo:
+      - "[narratore] Vi torna in mente l'onda scolpita sul pilone di mezzo, due spanne sopra il leone."
+      - "[narratore] Tullio ha la mano sulla manovella, e il paese vuole la catena chiusa al leone."
     max_usi: 1
 
   # --- finali del terzo tocco (esiti della scena) ---------------------------------------------
@@ -697,6 +854,7 @@ battute:
     quando: "catena chiusa senza patti, e le famiglie delle Case Lunghe ancora di là"
     temi: [orologio]
     richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_non_usate: [tul_ponte_aperto]}
+    menzionati: [png_vischi]
     testo:
       - "[narratore] La catena si alza e si tende tra i paletti, con uno schiocco di ferro."
       - "[narratore] Sul tetto delle Case Lunghe la lanterna resta ferma fino all'alba."
@@ -711,6 +869,7 @@ battute:
     quando: "la catena è chiusa senza patti, e i vecchi del Ricovero sono ancora di là"
     temi: [orologio]
     richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_non_usate: [tul_ponte_aperto]}
+    menzionati: [png_rosa, png_vischi]
     testo:
       - "[narratore] La catena si alza e si tende tra i paletti, con uno schiocco di ferro."
       - "[narratore] Al Ricovero la lanterna dondola piano, sempre più piano, fino all'alba."
@@ -724,6 +883,7 @@ battute:
     quando: "dopo la proposta di Vischi, la catena si chiude al terzo tocco"
     temi: [orologio]
     richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_usate: [vis_patto_ponte, tul_catena_tesa], battute_non_usate: [vis_smascherato, vis_smascherato_registro]}
+    menzionati: [png_vischi]
     testo:
       - "[narratore] La catena si tende al terzo tocco, e il paese torna a casa sotto la pioggia."
       - "[narratore] Di là, chi è rimasto passa la notte sui tetti, sotto le coperte bagnate."
@@ -737,6 +897,7 @@ battute:
     quando: "a ponte aperto, l'ultima persona del secondo viaggio sale dalla rampa"
     temi: [orologio]
     richiede: {orologio: {id: o_rampa, min: 0, max: 3}, battute_usate: [tul_ponte_aperto]}
+    attori: [png_tullio, png_vischi]
     testo:
       - "[narratore] L'ultima persona sale dalla rampa con l'acqua alla vita, aggrappata a un paletto."
       - "[narratore] Dietro l'ultima lanterna il fiume sale ancora, e il custode tende la catena."
@@ -751,6 +912,7 @@ battute:
     quando: "a ponte aperto, il pilone geme e la barca non è ancora alla rampa"
     temi: [orologio]
     richiede: {orologio: {id: o_rampa, min: 4, max: 4}, battute_usate: [tul_ponte_aperto]}
+    attori: [png_tullio, png_vischi]
     testo:
       - "[narratore] Il custode tende la catena, e chi è sulla rampa risale di corsa con le lanterne."
       - "[narratore] Laggiù la barca vira, e torna nel Borgo con il suo carico."
@@ -764,6 +926,7 @@ battute:
     quando: "la catena è chiusa, e la barca non è mai partita"
     temi: [orologio]
     richiede: {orologio: {id: o_piena, min: 8, max: 8}, battute_non_usate: [tr_borgo]}
+    menzionati: [png_vischi]
     testo:
       - "[narratore] La catena si tende, e la Bigia resta legata al pontile, piena di pioggia."
       - "[narratore] Nel Borgo due lanterne restano accese fino all'alba: una dondola, una no."
@@ -776,10 +939,67 @@ battute:
     quando: "dopo il finale della notte, si chiede ai giocatori che cosa faranno all'alba"
     temi: [orologio]
     richiede: {orologio: {id: o_piena, min: 8, max: 8}}
+    menzionati: [png_vischi]
     testo:
       - "[narratore] Piove ancora, ma più piano, e il fiume ha cambiato voce."
       - "[narratore] All'alba ci saranno le barche del Passo Vecchio, e i conti da fare con Vischi."
       - "[narratore] Che cosa pensate di fare, quando sarà giorno?"
+    max_usi: 1
+
+  # --- finali di sconfitta (docs/combattimento.md, «The defeat path») -------------------------
+  # Li dice il Motore quando il gruppo cade tutto, poi il tavolo si ferma e decide il master. Nessun
+  # nome di PG. Per ogni luogo, il primo vale se nessuno è morto; il secondo anche con un PG morto.
+  - id: nar_sconfitta_vischi_ponte
+    chi: narratore
+    tipo: finale
+    sconfitta: true
+    scena: [scena_ponte_imbrunire, scena_terzo_tocco]
+    quando: "i PG cadono tutti sul ponte e Vischi è ancora in piedi"
+    temi: [sconfitta, tettoia, coperta]
+    attori: [png_vischi]
+    richiede: {stati: {png_vischi: in_gioco, tutti: [in_gioco, a_terra]}}
+    testo:
+      - "[narratore] Vischi si rinfila il guanto e vi fa portare al riparo, sotto la tettoia."
+      - "[narratore] Vi svegliate sotto una coperta, e accanto a voi c'è già un foglio da firmare."
+    max_usi: 1
+  - id: nar_sconfitta_vischi_ponte_caduti
+    chi: narratore
+    tipo: finale
+    sconfitta: true
+    scena: [scena_ponte_imbrunire, scena_terzo_tocco]
+    quando: "i PG cadono tutti sul ponte, qualcuno è morto, e Vischi è ancora in piedi"
+    temi: [sconfitta, tettoia, coperta]
+    attori: [png_vischi]
+    richiede: {stati: {png_vischi: in_gioco, tutti: [in_gioco, a_terra, morto]}}
+    testo:
+      - "[narratore] Vischi si rinfila il guanto e fa portare sotto la tettoia chi respira ancora."
+      - "[narratore] Chi si sveglia trova una coperta sulle spalle, e accanto un foglio da firmare."
+    max_usi: 1
+  - id: nar_sconfitta_vischi_sale
+    chi: narratore
+    tipo: finale
+    sconfitta: true
+    scena: scena_casa_del_sale
+    quando: "i PG cadono tutti alla Casa del Sale e Vischi è ancora in piedi"
+    temi: [sconfitta, gradini, guardie]
+    attori: [png_vischi]
+    richiede: {stati: {png_vischi: in_gioco, tutti: [in_gioco, a_terra]}}
+    testo:
+      - "[narratore] Vischi fa un cenno alle guardie, senza alzare la voce."
+      - "[narratore] Vi svegliate fuori, sui gradini della Casa del Sale, con la porta chiusa alle spalle."
+    max_usi: 1
+  - id: nar_sconfitta_vischi_sale_caduti
+    chi: narratore
+    tipo: finale
+    sconfitta: true
+    scena: scena_casa_del_sale
+    quando: "i PG cadono tutti alla Casa del Sale, qualcuno è morto, Vischi è in piedi"
+    temi: [sconfitta, gradini, guardie]
+    attori: [png_vischi]
+    richiede: {stati: {png_vischi: in_gioco, tutti: [in_gioco, a_terra, morto]}}
+    testo:
+      - "[narratore] Vischi fa un cenno alle guardie, senza alzare la voce."
+      - "[narratore] Chi respira ancora si sveglia fuori, sui gradini, con la porta chiusa alle spalle."
     max_usi: 1
 
   # --- chiusura della serata: una per scena (Chiudi la sessione) ------------------------------

@@ -20,12 +20,12 @@ parole:
   - parola: "l'onda scolpita"
     regex: "\\bonda\\b"
     fatti: [f_onda_pontieri, f_libro_piena]
-    pubblica_dopo: [nar_pilone_parapetto, nar_pilone_barca, i_onda_pilone, nar_libro_sfoglia, bic_libro_cerca, i_libro_piena]
+    pubblica_dopo: [nar_pilone_parapetto, nar_pilone_barca, i_onda_pilone, nar_libro_sfoglia, bic_libro_cerca, i_libro_piena, nar_stallo2_ponte]
     nota: "il vero segno del pericolo, sul pilone e nel libro dei passi. Per questo la gilda dei costruttori si chiama Pontieri della Valle"
   - parola: "due spanne"
     regex: "due spanne"
     fatti: [f_leone_calato, f_onda_pontieri, f_scrivano_misura]
-    pubblica_dopo: [nar_pilone_parapetto, nar_pilone_barca, i_onda_pilone, nar_corda_studio, i_corda_nodi, nar_registro_cassa, i_registro_padre, bic_notte_promessa, bic_notte_nassa, i_bice_scrivano, vis_leone_accordo]
+    pubblica_dopo: [nar_pilone_parapetto, nar_pilone_barca, i_onda_pilone, nar_corda_studio, i_corda_nodi, nar_registro_cassa, i_registro_padre, bic_notte_promessa, bic_notte_nassa, i_bice_scrivano, vis_leone_accordo, nar_stallo2_ponte]
     nota: "la distanza tra il leone e l'onda: la misura dello scrivano e la riga del registro"
   - parola: "un'ora in più"
     regex: "un'ora in più|regge un'ora|regge[^.]{0,30}dopo il (terzo )?tocco|un'ora oltre"
@@ -77,7 +77,7 @@ parole:
   - parola: "contratti di prestito, casa in pegno"
     regex: "contratt\\w* di prestito|casa in pegno"
     fatti: [f_carte_pronte]
-    pubblica_dopo: [nar_carte_tavolo, nar_carte_cartella, i_carte_pronte]
+    pubblica_dopo: [nar_carte_tavolo, nar_carte_cartella, i_carte_pronte, nar_stallo2_sale]
     nota: "le carte già pronte con i nomi delle Case Lunghe e del Ricovero"
   - parola: "solo chi ha firmato"
     regex: "solo chi (ha )?firma"
