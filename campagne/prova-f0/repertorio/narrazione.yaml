@@ -538,6 +538,8 @@ battute:
     temi: [cesta, pagnotta]
     scena: scena_forno_vecchio
     stallo: 2
+    richiede:
+      battute_non_usate: [nar_pane_nel_forno]
     testo:
       - "[narratore] Sul tavolo lungo una cesta troppo piena si inclina, e una pagnotta rotola giù."
       - "[narratore] Si spacca sulla pietra, ancora tiepida."
@@ -553,12 +555,13 @@ battute:
     temi: [mollica, grata]
     scena: scena_forno_vecchio
     stallo: 3
-    attori: [png_sebastiano]
+    menzionati: [png_sebastiano]
     richiede:
       indizi_rivelati: [i_speroni_neri]
+      battute_non_usate: [nar_prove_al_paese]
     testo:
       - "[narratore] Vi tornano in mente i chicchi neri nella mollica, curvi come piccole unghie."
-      - "[narratore] Il paese incolpa il forestiero della febbre, e lui è ancora dietro la grata."
+      - "[narratore] Il paese, intanto, incolpa il forestiero della febbre."
     max_usi: 1
 
   # --- finali di sconfitta (docs/combattimento.md, «The defeat path») -----------------------------

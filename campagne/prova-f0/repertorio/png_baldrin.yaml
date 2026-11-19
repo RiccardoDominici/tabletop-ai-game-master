@@ -377,6 +377,8 @@ battute:
     temi: [martello, paese]
     scena: scena_forno_vecchio
     stallo: 1
+    richiede:
+      battute_non_usate: [bal_capisce, bal_apre, bal_testimoni_nomi, bal_testimoni_sano]
     testo:
       - "[narratore] Baldrin batte il martello piano sul palmo, e vi guarda uno per uno."
       - "[png_baldrin] Chi difende quello, stanotte, resta solo. Il paese ricorda."
