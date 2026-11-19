@@ -1,0 +1,315 @@
+{
+ "etichetta": "finale6-torre-mozza-combattimento-A-manuale",
+ "turni": {
+  "giocati": 30,
+  "copione": 14,
+  "fine_prima": {
+   "turno_copione": 14,
+   "turno_server": 32,
+   "motivo": "finale"
+  },
+  "finale": {
+   "turno": 1,
+   "id": "fin_ovile_senza"
+  },
+  "cambi_scena": [
+   "scena_carbonaia",
+   "scena_torre"
+  ],
+  "orologi_max": {
+   "o_mezzanotte": "1/8"
+  }
+ },
+ "fughe": {
+  "improvvisate": 0,
+  "prescritte": 0,
+  "elenco": [],
+  "righe_segrete_fermate": 0,
+  "selettore_con_parola_segreta": []
+ },
+ "coerenza": {
+  "violazioni": 8,
+  "per_regola": {
+   "R-dovuto": {
+    "aggiunta": 7
+   },
+   "R-inesistente": {
+    "aggiunta": 1
+   }
+  },
+  "esempi": [
+   {
+    "turno": 9,
+    "regola": "R-dovuto",
+    "azione": "aggiunta",
+    "frase": ""
+   },
+   {
+    "turno": 13,
+    "regola": "R-dovuto",
+    "azione": "aggiunta",
+    "frase": ""
+   },
+   {
+    "turno": 15,
+    "regola": "R-dovuto",
+    "azione": "aggiunta",
+    "frase": ""
+   },
+   {
+    "turno": 16,
+    "regola": "R-dovuto",
+    "azione": "aggiunta",
+    "frase": ""
+   },
+   {
+    "turno": 17,
+    "regola": "R-dovuto",
+    "azione": "aggiunta",
+    "frase": ""
+   },
+   {
+    "turno": 19,
+    "regola": "R-inesistente",
+    "azione": "aggiunta",
+    "frase": ""
+   },
+   {
+    "turno": 30,
+    "regola": "R-dovuto",
+    "azione": "aggiunta",
+    "frase": ""
+   },
+   {
+    "turno": 32,
+    "regola": "R-dovuto",
+    "azione": "aggiunta",
+    "frase": ""
+   }
+  ]
+ },
+ "private": {
+  "azioni_private": 3,
+  "righe_privato": 0,
+  "esiti_privati_log": 8,
+  "spostate_dalla_guardia": 0,
+  "righe_al_tavolo_sospette": 0,
+  "sospette": [],
+  "al_tavolo_candidate": 0,
+  "al_tavolo": []
+ },
+ "prove": {
+  "azioni_risolte": 22,
+  "con_tiro": 9,
+  "tipi": {
+   "nessuna": 13,
+   "prova": 1,
+   "attacco": 8
+  },
+  "dadi": {
+   "d6": 35,
+   "d20": 27,
+   "d8": 4
+  },
+  "regole_tipo": {
+   "Spada lunga, Attacco in mischia (Forza): dNN contro CA N (difesa di zirrà)": 4,
+   "Ascoltare N%: dN serve N o meno": 1,
+   "Pugnale, Attacco in mischia (Forza): dNN contro CA N (difesa di zirrà) (compresi: Attacco ": 1,
+   "Spada corta, Attacco in mischia (Forza): dNN contro CA N (difesa di zirrà) (compresi: Atta": 1,
+   "Pugnale, Attacco in mischia (Forza): dNN contro CA N (difesa di zirrà)": 1,
+   "Attacco automatico: Dardo incantato NdN": 1
+  },
+  "set": "basic-fantasy-r142",
+  "arbitro": "regole (classificatore del Motore, senza modello)"
+ },
+ "combattimento": {
+  "eventi": {
+   "combattimento: sorpresa": 1,
+   "combattimento: inizia": 1,
+   "combattimento: iniziativa ritirata": 21,
+   "combattimento: esce dallo scontro": 1,
+   "combattimento: every PC down, the death saves rolled to the end": 1,
+   "combattimento: finito": 1
+  },
+  "fatti_morale_terra": 42,
+  "esempi": [
+   "voce: audio pre-generato mancante, sintesi dal vivo: {\"level\": 20, \"time\": \"2026-11-19T08:43:59.431Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"voce\", \"id_frase\": \"t4-f2\", \"chiave\": \"[omessa]\", \"testo\": \"Un ciocco crolla dentro la carbonaia, e la terra si crepa. Un filo di fumo",
+   "manual rolls: waiting for the dice at the table: {\"level\": 30, \"time\": \"2026-11-19T08:47:07.428Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"prove\", \"turno\": 9, \"richieste\": [{\"id\": \"r_t9_morte_pg_nespola_0\", \"chi\": \"pg_nespola\", \"cosa\": \"Tiro salvezza contro la morte\", \"dad",
+   "dice: player roll: {\"level\": 20, \"time\": \"2026-11-19T08:47:07.834Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"prove\", \"dado\": \"d20\", \"valore\": 15, \"prova\": \"Tiro salvezza contro la morte\", \"msg\": \"dice: player roll\"}",
+   "prove: tiri del turno: {\"level\": 30, \"time\": \"2026-11-19T08:47:07.834Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 9, \"attesa_ms\": 2, \"tardive\": [\"a11\"], \"tiri\": [\"Nespola Tondi: Spada corta 5 contro CA 14, fallita\", \"Grosso: Mazza ",
+   "coherence: block of the call: {\"level\": 30, \"time\": \"2026-11-19T08:47:07.835Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 9, \"righe\": [\"In scena: Grosso in piedi; Tonio Benni in piedi; Zirrà in piedi.\", \"PG: Livia Sarti in piedi; Fulco Gra",
+   "coherence: block of the call: {\"level\": 30, \"time\": \"2026-11-19T08:47:50.767Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 10, \"righe\": [\"In scena: Grosso in piedi; Tonio Benni in piedi; Zirrà in piedi.\", \"PG: Livia Sarti in piedi; Fulco Gr",
+   "coherence: block of the call: {\"level\": 30, \"time\": \"2026-11-19T08:48:15.481Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 11, \"righe\": [\"In scena: Grosso in piedi; Tonio Benni in piedi; Zirrà in piedi.\", \"PG: Livia Sarti in piedi; Fulco Gr",
+   "coherence: block of the call: {\"level\": 30, \"time\": \"2026-11-19T08:48:52.369Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 12, \"righe\": [\"In scena: Grosso in piedi; Tonio Benni in piedi; Zirrà ferito.\", \"PG: Livia Sarti in piedi; Fulco Gran"
+  ],
+  "fatti_morale": [
+   "Morale dei nemici: 5 contro 8 → tengono."
+  ],
+  "fatti_a_terra": [
+   "Turno di Zirrà: Zirrà colpisce Nespola Tondi: 6 danni, e Nespola Tondi va a terra (raccontalo in una frase sua). Dettagli: attacco con Spada corta a Nespola Ton",
+   "Nespola Tondi è a terra: tiro salvezza contro la morte 15 contro CD 10 → successi 1 su 1: è stabile, resta privo di sensi.",
+   "Turno di Grosso: Grosso colpisce Eliandro: 4 danni, e Eliandro va a terra (raccontalo in una frase sua). Dettagli: attacco con Mazza ferrata a Eliandro: Mazza f",
+   "Eliandro è a terra: tiro salvezza contro la morte 12 contro CD 10 → successi 1 su 1: è stabile, resta privo di sensi.",
+   "[1] Livia Sarti: attacco con Spada lunga a Zirrà: Spada lunga, Attacco in mischia (Forza): d20+3 contro CA 14 (difesa di zirrà) → COLPITO, 4 danni; Zirrà è A TE",
+   "Turno di Grosso: Grosso colpisce Livia Sarti: 7 danni, e Livia Sarti va a terra (raccontalo in una frase sua). Dettagli: attacco con Mazza ferrata a Livia Sarti",
+   "Livia Sarti è a terra: tiro salvezza contro la morte 18 contro CD 10 → successi 1 su 1: è stabile, resta privo di sensi.",
+   "Il combattimento è finito: i PG sono tutti a terra."
+  ],
+  "fuori_gioco_log": {
+   "prove: PNG fuori gioco nel messaggio del narratore": 16
+  }
+ },
+ "lettore": {
+  "scelte": 22,
+  "nessuna": 17,
+  "ms_classifica_med": 958,
+  "ms_classifica_peggiore": 2262
+ },
+ "sceneggiatore": {
+  "richieste": {
+   "subito:ok": 18,
+   "prossime:ok": 22,
+   "prossime:saltata": 6
+  },
+  "consegnate": 7,
+  "dette_a_finestra_aperta": 7,
+  "accettate": 140,
+  "scartate": {
+   "sceneggiatore.yaml:sc_prossime_t11_mwnb5rqt_21_04: riga non nel formato «[etiche": 6,
+   "sceneggiatore.yaml:sc_prossime_t16_mwnba2ss_28_06 menzionati: «pg_nespola» non è": 6,
+   "in combattimento una battuta di png_grosso dichiara richiede.esito (anche nessun": 2,
+   "png_zirra non è nella scena": 2,
+   "dà per vera una ferita o una caduta («ferit») senza dire di chi (richiede.stati ": 2,
+   "racconta un esito («caduto») senza richiede.esito": 1,
+   "in combattimento una battuta di png_zirra dichiara richiede.esito (anche nessuno": 1,
+   "racconta un esito («mordo») senza richiede.esito": 1
+  },
+  "ms_claude_med": 11426,
+  "ms_totale_med_subito": 17030,
+  "processo": {
+   "avvio": 1,
+   "ok": 40,
+   "saltata": 6,
+   "arresto": 1
+  }
+ },
+ "tempi": {
+  "finestra_ms": {
+   "mediana": 20032,
+   "peggiore": 20178,
+   "n": 30
+  },
+  "llm_prima_frase": {
+   "mediana": 13,
+   "peggiore": 51,
+   "n": 16
+  },
+  "voce_primo_audio": {
+   "mediana": 247,
+   "peggiore": 2980,
+   "n": 29
+  },
+  "schermo_inizio_audio": {
+   "mediana": 387,
+   "peggiore": 857,
+   "n": 19
+  },
+  "llm_fine": {
+   "mediana": 206,
+   "peggiore": 1847,
+   "n": 30
+  },
+  "audio_fine": {
+   "mediana": 12460,
+   "peggiore": 44705,
+   "n": 29
+  },
+  "s_tra_turni_med": 33,
+  "s_tra_turni_peggiore": 65.206
+ },
+ "voce": {
+  "motore": "mock",
+  "buchi": {
+   "totale": 89,
+   "in_frase": 0,
+   "tra_frasi": 89,
+   "silenzio_ms": 27795,
+   "per_turno": [
+    0,
+    null,
+    1,
+    5,
+    1,
+    0,
+    6,
+    0,
+    6,
+    2,
+    5,
+    0,
+    5,
+    5,
+    7,
+    2,
+    3,
+    2,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    4,
+    3,
+    5
+   ]
+  },
+  "proiettore_secondi": 510,
+  "errori_voce": {
+   "campagna: voce_id ripetuti tra i PNG: vincent": 1
+  }
+ },
+ "log": {
+  "errori": 0,
+  "avvisi": 32,
+  "per_messaggio": [
+   "40 ×12 llm: risposta strutturata non valida",
+   "40 ×7 prove: fatti dello scontro non detti dalla narrazione, li dice il Motore",
+   "40 ×6 llm: si usa il ripiego deterministico",
+   "40 ×2 sceneggiatore: the outcome the line tells is not on the card",
+   "40 ×1 campagna: voce_id ripetuti tra i PNG: vincent",
+   "40 ×1 https: the certificate does not cover this LAN address: run scripts/certificato.sh again",
+   "40 ×1 repertorio: rilascio dopo una prova fallita, rifiutato",
+   "40 ×1 repertorio: [usa] rifiutato",
+   "40 ×1 repertorio: rilascio fuori contesto, al suo posto la battuta indicata dal Motore"
+  ],
+  "provider": [
+   "lettore         → locale (minimo) mlx-community/Qwen3-0.6B-4bit — configurato (.",
+   "arbitro_azioni  → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "arbitro_prove   → regole (completo) — configurato (../../../../private/tmp/claud",
+   "riassunto       → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "regole          → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "voce            → finto — variabile d'ambiente TAGM_TTS",
+   "ascolto         → nessuno — configurato (../../../../private/tmp/claude-501/-Use",
+   "immagini        → nessuno — configurato (../../../../private/tmp/claude-501/-Use"
+  ]
+ },
+ "serata": {
+  "ore": null,
+  "consiglio_ai_turni": [],
+  "chiusura": {}
+ },
+ "costo_usd": 0,
+ "righe": {
+  "prescritte": 16,
+  "improvvisate": 19,
+  "usa_rifiutati": 1,
+  "azioni_pubbliche": 19,
+  "azioni_senza_risposta": 9,
+  "riparazioni": 0,
+  "conferme_motore": 5
+ }
+}
