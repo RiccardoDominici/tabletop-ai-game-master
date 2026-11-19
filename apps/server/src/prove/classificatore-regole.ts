@@ -148,6 +148,32 @@ function attaccoAncora(
  * (`attacco`, or in a fight the first-person `attacco_mio`) or a weapon used; then, in a fight only, a go-on (`attaccoAncora`)
  * and the PC's own attack in the first person with no target named, both at the PC's last target.
  */
+/**
+ * Every match of the PC's attack words in the text is negated: a negation of the pack (`attacco_negazioni`) at most
+ * three words before it, with only short words (clitics: «lo», «gli») between. «Non lo colpisco ancora, aspetto la
+ * risposta» is no attack (final round, attempt 6, CM T17 and CA T14: the last-target rule rolled one). false = there
+ * is an attack word that is not negated, or none at all.
+ */
+export function attaccoNegato(t: string, ...espressioni: RegExp[]): boolean {
+  const neg = paroleProve().attaccoNegazioni;
+  if (!neg.size) return false;
+  let n = 0;
+  for (const re of espressioni) {
+    const g = new RegExp(re.source, re.flags.includes('g') ? re.flags : `${re.flags}g`);
+    for (let m = g.exec(t); m; m = g.exec(t)) {
+      if (m[0].length === 0) {
+        g.lastIndex++;
+        continue;
+      }
+      n++;
+      const prima = t.slice(0, m.index).split(/[\s,;:.!?]+/).filter(Boolean).slice(-3);
+      const k = prima.map((w) => neg.has(w)).lastIndexOf(true);
+      if (k < 0 || prima.slice(k + 1).some((w) => w.length > 3)) return false;
+    }
+  }
+  return n > 0;
+}
+
 export function attaccoDiRegole(az: { id: string; testo: string; autore: string }, i: IngressoClassificatore): DecisioneProva | null {
   const fatti = senzaParlato(az.testo);
   const t = normalizza(fatti);
@@ -160,6 +186,8 @@ export function attaccoDiRegole(az: { id: string; testo: string; autore: string 
   const attacco = (bersaglio: string, conArma: string | null): DecisioneProva => ({ ...vuota(az.id), tipo: 'attacco', bersaglio, arma: conArma }) as DecisioneProva;
   // The first-person words count with a named target only in a fight: «Tiro ancora la corda verso Ruggero» outside one
   // is no attack (attacco_mio has «tiro ancora»), and an attack would open a fight.
+  // A negated attack verb is no attack («Non lo colpisco ancora»), whatever else the sentence names.
+  if (attaccoNegato(t, paroleProve().attaccoMio, paroleProve().attacco)) return null;
   if (nominato && (paroleProve().attacco.test(t) || (!!i.bersaglioImplicito && paroleProve().attaccoMio.test(t)) || arma)) return attacco(nominato, arma);
   if (!i.bersaglioImplicito) return null;
   // In a fight, a go-on with no verb: at the target named in its own clause, else at the PC's last target.

@@ -64,6 +64,10 @@ describe('arbitro a regole, SRD', () => {
     expect(cf('Tiro ancora a Ruggero.')).toMatchObject({ tipo: 'attacco', bersaglio: 'png_ruggero' });
     // Not a go-on: other words in its clause, or a target that is not one.
     expect(cf('Ancora non capisco Ruggero.')).not.toMatchObject({ tipo: 'attacco' });
+    // A negated attack verb is no attack (final round, attempt 6, CM T17 and CA T14 rolled one at the last target).
+    expect(cf('Non lo colpisco ancora, aspetto la risposta.')).not.toMatchObject({ tipo: 'attacco' });
+    expect(cc('Non colpisco Ruggero: aspetto che parli.')).not.toMatchObject({ tipo: 'attacco' });
+    expect(cf('Non scappo: lo colpisco ancora.')).toMatchObject({ tipo: 'attacco', bersaglio: 'png_ruggero' });
     expect(cf('Ancora contro il fiume.')).not.toMatchObject({ tipo: 'attacco' });
     expect(cf('Ancora contro Ruggero e Bertoldo.')).not.toMatchObject({ tipo: 'attacco' });
     // Outside a fight (no implicit target) nothing changes: the first-person words do not make a named NPC a target.
@@ -205,6 +209,7 @@ describe('arbitro a regole in inglese: parlato, domande, arma in mano', () => {
     const lotta: IngressoClassificatore = { ...ing, bersaglioImplicito: () => 'png_guard' };
     expect(classificaARegole({ id: 'a1', autore: 'pg_mara', testo: 'I hit him again' }, lotta)).toMatchObject({ tipo: 'attacco', bersaglio: 'png_guard' });
     expect(classificaARegole({ id: 'a1', autore: 'pg_mara', testo: 'The guard hits me hard' }, lotta)).not.toMatchObject({ tipo: 'attacco' });
+    expect(classificaARegole({ id: 'a1', autore: 'pg_mara', testo: "I don't hit him yet, I wait for the answer" }, lotta)).not.toMatchObject({ tipo: 'attacco' });
     // The go-on (`attacco_ancora`, `attacco_verso` of the English pack), with an enemy named in its clause or later.
     const contro: IngressoClassificatore = { ...ing, bersaglioImplicito: () => 'png_keeper' };
     expect(classificaARegole({ id: 'a1', autore: 'pg_mara', testo: 'Shortsword again, Guard Lia turns to me' }, lotta)).toMatchObject({ tipo: 'attacco', bersaglio: 'png_guard', arma: 'shortsword' });

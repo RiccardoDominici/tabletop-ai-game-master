@@ -49,6 +49,11 @@ export interface PacchettoProve {
      * goblin»): prepositions and articles. Anything else there and it is no go-on.
      */
     attacco_verso?: string[];
+    /**
+     * Whole words that negate the PC's attack verb a few words before it («Non lo colpisco ancora»: final round, attempt
+     * 6, CM T17 rolled an attack); the words between may only be short (clitics).
+     */
+    attacco_negazioni?: string[];
     aiuto: string[];
     senz_armi: string[];
     /** Parole intere dell'arbitro a regole (prove/parole-testo.ts). */
@@ -106,6 +111,8 @@ export interface ParoleCompilate {
   attaccoAncora: RegExp;
   /** `attacco_verso`, the words that aim a go-on at the target named in its clause. */
   attaccoVerso: ReadonlySet<string>;
+  /** `attacco_negazioni`: a negation before the PC's attack verb («non lo colpisco»). */
+  attaccoNegazioni: ReadonlySet<string>;
   aiuto: RegExp;
   /** Sull'id dell'arma scelta dall'arbitro (snake_case), in qualsiasi punto. */
   senzArmi: RegExp;
@@ -135,6 +142,7 @@ export function paroleProve(): ParoleCompilate {
       attaccoMio: parole.attacco_mio?.length ? new RegExp(`\\b(${parole.attacco_mio.join('|')})\\b`) : MAI,
       attaccoAncora: parole.attacco_ancora?.length ? new RegExp(`^(?:(\\S+)\\s+)?(?:${[...parole.attacco_ancora].sort((a, b) => b.length - a.length).join('|')})(?:\\s+(.+))?$`) : MAI,
       attaccoVerso: new Set(parole.attacco_verso ?? []),
+      attaccoNegazioni: new Set((parole.attacco_negazioni ?? []).map((x) => x.toLowerCase())),
       aiuto: inizioParola(parole.aiuto),
       senzArmi: parole.senz_armi.length ? new RegExp(parole.senz_armi.join('|')) : MAI,
       seDifficile: Object.entries(parole.abilita_se_difficile ?? {}).map(([abilita, voci]) => ({ abilita, re: inizioParola(voci) })),

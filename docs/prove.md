@@ -235,7 +235,9 @@ test/gregari.test.ts. Example: ponte-lanterne, the consul's two guards at the Ca
      words and that enemy's name words) goes to that enemy; a bare go-on keeps the last target, whoever is named later
      («Ancora! Bertoldo, scappa» does not hit Bertoldo). In a fight, a named target with the first-person words («Tiro
      ancora a Ruggero») is an attack on it; outside one they do not make a named NPC a target («Tiro ancora la corda
-     verso Ruggero»). A player's claim («il goblin mi colpisce») is not an attack;
+     verso Ruggero»). A player's claim («il goblin mi colpisce») is not an attack, nor is a negated one: «Non lo colpisco
+     ancora, aspetto la risposta» (a negation of `parole.attacco_negazioni` at most three words before every attack word,
+     with only short words between; final round, attempt 6, CM T17 rolled it at the last target);
      an invented foe («quello con la lancia») is rolled against a real enemy.
    - «Impossibile» needs a reason the scene records (prove/impossibile.ts, after every arbiter; A1, 17 November): Haiku
      called lifting an overturned cart impossible three runs of three, its own `motivo` saying a strong fighter can

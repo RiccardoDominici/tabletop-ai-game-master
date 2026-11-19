@@ -227,6 +227,9 @@ parole:
   # Whole words that may aim a go-on at a target named in the same clause («Ancora contro il goblin», «Di nuovo sul
   # capo»): with the target's words and the PC's weapon words, nothing else may be in that clause (round 7, CA T11).
   attacco_verso: [contro, su, sul, sullo, sulla, sui, sugli, sulle, sull, a, ad, al, allo, alla, ai, agli, alle, all, addosso, verso, con, col, coi, il, lo, la, l, i, gli, le, quel, quello, quella, quei, quegli, quelle]
+  # A negation a few words before the PC's attack verb, with only short words between («Non lo colpisco ancora»): no
+  # attack (final round, attempt 6, CM T17 rolled one).
+  attacco_negazioni: [non, senza, mai, neanche, nemmeno]
   # Aiutare un compagno (con il nome di un PG che agisce nello stesso turno).
   aiuto: ['aiuto\b', 'do una mano a\b', 'copro\b', 'sostengo\b', 'faccio luce a\b']
   # L'arma scelta dall'arbitro (id in snake_case) che vuol dire «a mani nude»: qualsiasi punto dell'id.

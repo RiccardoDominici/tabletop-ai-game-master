@@ -219,6 +219,9 @@ parole:
   # Whole words that may aim a go-on at a target named in the same clause («Again at the goblin», «Once more against
   # the chief»): with the target's words and the PC's weapon words, nothing else may be in that clause.
   attacco_verso: [at, on, against, to, toward, towards, into, upon, with, the, that, this, a, an]
+  # A negation a few words before the PC's attack verb, with only short words between («I don't hit him yet»): no
+  # attack (final round, attempt 6, CM T17 rolled one).
+  attacco_negazioni: [not, "don't", "won't", never, without]
   # Helping a companion (together with the name of a PC acting in the same turn).
   aiuto: ['help\b', 'helping\b', assist, 'give (\w+ ){1,3}a hand', 'lend (\w+ )?a hand', 'a hand to\b', 'i cover\b', 'back (\w+ ){1,2}up\b', 'support\b', 'steady\b', 'boost\b', 'hold the (light|torch|lantern) for\b']
   # The weapon id chosen by the arbiter (snake_case) that means «bare-handed»: anywhere in the id.
