@@ -725,8 +725,8 @@ battute:
     attori: [png_bice]
     testo:
       - "[narratore] Bice cala una lanterna dal parapetto con una corda, per guardare l'acqua."
-      - "[narratore] La luce scivola sul pilone di mezzo, e sale oltre il leone."
-      - "[narratore] Due spanne più su, dove manca il muschio, c'è un'onda scolpita nella pietra, asciutta."
+      - "[narratore] Una folata la sbatte contro il pilone di mezzo, e un ciuffo di muschio si stacca."
+      - "[narratore] Alla luce, due spanne sopra il leone, c'è un'onda scolpita nella pietra, asciutta."
     effetti: {rivela_indizi: [i_onda_pilone]}
     max_usi: 1
   - id: nar_stallo3_ponte
@@ -736,7 +736,7 @@ battute:
     stallo: 3
     quando: "il tavolo resta fermo sul ponte, dopo le lanterne del Borgo"
     temi: [lanterne, viaggio]
-    richiede: {indizi_rivelati: [i_lanterna_ricovero]}
+    richiede: {indizi_rivelati: [i_lanterna_ricovero], battute_non_usate: [tr_borgo]}
     testo:
       - "[narratore] Vi tornano in mente le lanterne del Borgo: quella del Ricovero dondola a scatti."
       - "[narratore] Quella delle Case Lunghe resta sempre ferma."
@@ -761,8 +761,8 @@ battute:
     quando: "il tavolo resta fermo nel Borgo Basso"
     temi: [lume, porte]
     testo:
-      - "[narratore] Sopra il vicolo qualcuno accende un lume alla finestra, e la luce scende sulle porte."
-      - "[narratore] A pelo d'acqua, su ogni porta, c'è una croce di gesso fresca."
+      - "[narratore] Sopra il vicolo qualcuno accende un lume, e la luce scende sull'acqua."
+      - "[narratore] Su ogni porta di chi aspetta la barca c'è una croce di gesso fresca."
       - "[narratore] La pioggia non l'ha ancora lavata."
     effetti: {rivela_indizi: [i_croci_gesso]}
     max_usi: 1
@@ -773,7 +773,7 @@ battute:
     stallo: 3
     quando: "il tavolo resta fermo nel Borgo Basso, dopo la tosse al Ricovero"
     temi: [tosse, ballatoi]
-    richiede: {indizi_rivelati: [i_tosse_ernesto]}
+    richiede: {indizi_rivelati: [i_tosse_ernesto], battute_non_usate: [nar_bambini_barca]}
     testo:
       - "[narratore] Vi torna in mente la tosse lunga e roca, dal piano di sopra del Ricovero."
       - "[narratore] A valle, sui ballatoi delle Case Lunghe, le famiglie aspettano la barca."
@@ -839,7 +839,7 @@ battute:
     quando: "il tavolo resta fermo sul ponte a mezzanotte, dopo il pilone"
     temi: [pilone, manovella]
     attori: [png_tullio]
-    richiede: {indizi_rivelati: [i_onda_pilone]}
+    richiede: {indizi_rivelati: [i_onda_pilone], battute_non_usate: [nar_console_onda, nar_console_registro, vis_smascherato, vis_smascherato_registro]}
     testo:
       - "[narratore] Vi torna in mente l'onda scolpita sul pilone di mezzo, due spanne sopra il leone."
       - "[narratore] Tullio ha la mano sulla manovella, e il paese vuole la catena chiusa al leone."
