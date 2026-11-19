@@ -409,7 +409,8 @@ function leggiStati(v: unknown, dove: string, parlanti: Set<string>, errori: str
   }
   const out: Record<string, ClasseStato[]> = {};
   for (const [id, x] of Object.entries(v as DatiYaml)) {
-    if (id === ID_NARRATORE || !(parlanti.has(id) || pg.includes(id))) errori.push(`${dove}: «${id}» non è un PNG con scheda né un PG`);
+    // `tutti`: every PC, as in the attitudes (repertorio/fatti-battuta.ts).
+    if (id === ID_NARRATORE || !(parlanti.has(id) || pg.includes(id) || id === TUTTI_I_PG)) errori.push(`${dove}: «${id}» non è un PNG con scheda né un PG`);
     const classi = typeof x === 'string' ? [x] : Array.isArray(x) ? x : null;
     if (!classi?.length || !classi.every((c) => (CLASSI_STATO as readonly unknown[]).includes(c))) {
       errori.push(`${dove}.${id}: uno o più di ${CLASSI_STATO.join(', ')}`);

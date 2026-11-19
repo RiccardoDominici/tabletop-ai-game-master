@@ -60,6 +60,7 @@ battute:
     attori: [png_ottavia]             # NPCs who act in (or are there in) the narrator rows, even unnamed
     menzionati: []                    # NPCs only talked about: no presence asked
     # richiede.stati: {png_x: [a_terra, morto]}   # the states the line assumes (in_gioco, a_terra, morto, fuggito), NPCs and PCs
+    #                                            # (`tutti`: every PC, e.g. {tutti: [in_gioco, a_terra]} = nobody dead)
     # richiede.esito: {tipo: mancato, chi: png_x} # the outcome it tells: colpito, mancato, a_terra, fugge
 ```
 
@@ -72,7 +73,8 @@ break coherence; the deterministic rules on the lines that come out (R-esito, R-
 - who speaks (`chi`, `[png_x]` rows): in the scene and able to speak (as before);
 - `attori`: each in the scene and in play;
 - `richiede.stati`: the ledger's state matches (a body in play, down or dead must also be in the scene); only in the base
-  of `richiede`;
+  of `richiede`. The key `tutti` (as in the attitudes) is every PC: each must be in one of the classes. A prepared
+  line cannot name the PCs, and a defeat ending that wakes them all must not be said over a dead one (final round);
 - an NPC a row names that no tag covers (every NPC of an untagged line): it must be in play (the rule before the tags,
   «Zirrà schiocca le dita.» eight turns after she fell); an untagged NPC away from the scene is left alone, since an
   older line may talk about someone elsewhere (an ending at the tower about the village);

@@ -31,8 +31,11 @@ request [V].
 **Defeat ending** (`tipo: finale`, `sconfitta: true`, docs/combattimento.md «The defeat path»): in a scene with a
 hostile NPC write the consequence of the whole party falling (captured, left for dead, rescued…), one line per likely
 victor, with that victor in `attori` and `richiede.stati: {png_x: in_gioco}`, and no PC's name (the Engine cannot know
-who died) [V `REPERTORIO.sconfitta_mancante`, a warning; `REPERTORIO.sconfitta`]. The Engine says it, then the table
-pauses for the Game Master.
+who died) [V `REPERTORIO.sconfitta_mancante`, a warning; `REPERTORIO.sconfitta`]. Say the PCs' states it takes as true
+with `tutti` in `richiede.stati`: an ending that wakes, ties or carries everybody gets `tutti: [in_gioco, a_terra]`
+(nobody dead), and write a second one for the same victor that fits a dead PC too (`tutti: [in_gioco, a_terra, morto]`:
+«il freddo sveglia chi respira ancora»), after it in the file [V `REPERTORIO.sconfitta_stati`, a warning]. The Engine
+says the first available, then the table pauses for the Game Master; with every PC dead, its own sentence.
 
 **Stall lines** (`stallo: 1 | 2 | 3`, docs/mondo.md §5): for every scene write at least one line per level [V
 `REPERTORIO.stallo_scarso`, a warning], with `scena:` set. The Engine says them when the table stays still, with no

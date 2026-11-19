@@ -137,7 +137,12 @@ combattimento:
    the turn's narration (a prepared `finale` with `sconfitta: true`, available now: its speakers in the scene and the
    victors it assumes in play, `richiede.stati`; it names no PC, since it cannot know who died; mode B; not when every
    PC at the table is dead, since it assumes survivors: round 6 heard «vi lascia legati» over three dead PCs), else
-   its own sentence (`regia.righe.sconfitta`, or `sconfitta_morti` when all are dead), withdraws the narrator's invitation, says «La scena è finita: il master sceglie
+   its own sentence (`regia.righe.sconfitta`, or `sconfitta_morti` when all are dead). A prepared ending says the PCs'
+   states it takes as true with the collective key `tutti` of `richiede.stati`: `tutti: [in_gioco, a_terra]` for one
+   that wakes or ties everybody, so it is out as soon as one PC died. The Engine then takes the next available ending,
+   one that also fits a dead PC (`tutti: [in_gioco, a_terra, morto]`, «il freddo sveglia chi respira ancora»), else
+   its own sentence. The final round heard «Vi sveglia il freddo» with one PC dead three times (CM T32, CA T22,
+   PR T32); the validator warns about a defeat ending without `tutti` (`REPERTORIO.sconfitta_stati`). It then withdraws the narrator's invitation, says «La scena è finita: il master sceglie
    come andare avanti.» and pauses the table: the Game Master chooses (another scene, healing, the end of the evening).
    Round 5 of the coherence layer (combat manual, T21–T25) had five turns of «Livia Sarti non agisce.» and nothing
    moving after the party fell. A defeat ending never enters the catalogue nor the clock's finale; the validator wants

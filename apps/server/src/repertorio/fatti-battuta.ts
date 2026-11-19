@@ -17,6 +17,7 @@ import { ID_NARRATORE } from '../campagna/tipi';
 import type { EntitaRegistro, EsitoRegistro, StatoEntita } from '../coerenza/registro';
 import { pngNominati } from './pertinenza';
 import type { Battuta, ClasseStato } from './tipi';
+import { TUTTI_I_PG } from '../campagna/mondo';
 
 const IN_GIOCO: ReadonlySet<StatoEntita> = new Set(['in_piedi', 'ferito', 'grave', 'nascosto']);
 
@@ -57,6 +58,14 @@ export function nominatiSenzaSegno(b: Battuta, entita: readonly EntitaRegistro[]
 export function motivoControRegistro(b: Battuta, entita: readonly EntitaRegistro[]): string | null {
   const per = new Map(entita.map((e) => [e.id, e]));
   for (const [id, classi] of Object.entries(b.richiede.stati)) {
+    // `tutti`: every PC (the key the attitudes use). A prepared line cannot name the PCs, so it says the states it
+    // assumes for all of them (final round, CM T32, CA T22, PR T32: «Vi sveglia il freddo» woke a dead PC):
+    // `{tutti: [in_gioco, a_terra]}` = nobody dead or fled.
+    if (id === TUTTI_I_PG) {
+      const fuori = entita.find((e) => e.tipo === 'pg' && !classi.includes(classeDi(e.stato)));
+      if (fuori) return `assumes every PC ${classi.join('/')}, the ledger has ${fuori.id} ${classeDi(fuori.stato)}`;
+      continue;
+    }
     const e = per.get(id);
     if (!e) return `assumes ${id}, who is not in the ledger`;
     const c = classeDi(e.stato);

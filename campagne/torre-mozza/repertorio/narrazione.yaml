@@ -727,7 +727,9 @@ battute:
     max_usi: 1
 
   # Finali di sconfitta (docs/combattimento.md, «The defeat path»): li dice il Motore quando il gruppo cade tutto,
-  # poi il tavolo si ferma e decide il master. Nessun nome di PG: chi è morto lo dicono già le carte.
+  # poi il tavolo si ferma e decide il master. Nessun nome di PG: chi è morto lo dicono già le carte. Ognuno dice
+  # quali stati dei PG dà per veri (`tutti`): i primi due svegliano o legano tutti, quindi nessun morto; gli ultimi due
+  # valgono anche con un PG morto («chi respira ancora»). Con tutti i PG morti il Motore dice la sua frase.
   - id: nar_sconfitta_zirra
     chi: narratore
     tipo: finale
@@ -736,7 +738,7 @@ battute:
     temi: [sconfitta, legati, cripta]
     scena: scena_torre
     attori: [png_zirra]
-    richiede: {stati: {png_zirra: in_gioco}}
+    richiede: {stati: {png_zirra: in_gioco, tutti: [in_gioco, a_terra]}}
     testo:
       - "[narratore] Zirrà fruga nelle vostre bisacce, poi vi trascina giù per i gradini."
       - "[narratore] Vi lascia legati davanti alla porta di ferro, con la candela che si consuma."
@@ -750,8 +752,36 @@ battute:
     temi: [sconfitta, fuoco, notte]
     scena: scena_torre
     attori: [png_grosso]
-    richiede: {stati: {png_grosso: in_gioco}}
+    richiede: {stati: {png_grosso: in_gioco, tutti: [in_gioco, a_terra]}}
     testo:
       - "[narratore] Grosso vi guarda a lungo, poi torna al fuoco e al suo osso."
       - "[narratore] La notte passa sulla torre. Vi sveglia il freddo, prima dell'alba."
+    max_usi: 1
+
+  - id: nar_sconfitta_zirra_caduti
+    chi: narratore
+    tipo: finale
+    sconfitta: true
+    quando: "i PG cadono tutti alla torre, qualcuno è morto, e Zirrà è ancora in piedi"
+    temi: [sconfitta, legati, cripta]
+    scena: scena_torre
+    attori: [png_zirra]
+    richiede: {stati: {png_zirra: in_gioco, tutti: [in_gioco, a_terra, morto]}}
+    testo:
+      - "[narratore] Zirrà fruga nelle vostre bisacce, poi trascina giù per i gradini chi respira ancora."
+      - "[narratore] Lo lascia legato davanti alla porta di ferro, con la candela che si consuma."
+    max_usi: 1
+
+  - id: nar_sconfitta_grosso_caduti
+    chi: narratore
+    tipo: finale
+    sconfitta: true
+    quando: "i PG cadono tutti alla torre, qualcuno è morto, e resta in piedi solo Grosso"
+    temi: [sconfitta, fuoco, notte]
+    scena: scena_torre
+    attori: [png_grosso]
+    richiede: {stati: {png_grosso: in_gioco, tutti: [in_gioco, a_terra, morto]}}
+    testo:
+      - "[narratore] Grosso vi guarda a lungo, poi torna al fuoco e al suo osso."
+      - "[narratore] La notte passa sulla torre. Prima dell'alba il freddo sveglia chi respira ancora."
     max_usi: 1

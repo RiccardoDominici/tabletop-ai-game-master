@@ -17,6 +17,7 @@ from .carica import Campagna
 from .esito import Esito
 
 CLASSI_STATO = ("in_gioco", "a_terra", "morto", "fuggito")
+TUTTI = "tutti"   # richiede.stati: every PC (apps/server/src/repertorio/fatti-battuta.ts)
 TIPI_ESITO = ("colpito", "mancato", "ferito", "a_terra", "fugge", "nessuno")
 
 
@@ -67,8 +68,9 @@ def controlla(c: Campagna, e: Esito) -> None:
             else:
                 for pid, v in stati.items():
                     classi = [v] if isinstance(v, str) else v
-                    if pid not in c.png and pid not in c.pg_ids:
-                        e.errore("REPERTORIO.fatti", dove, f"richiede.stati: {pid} non è un PNG con scheda né un PG")
+                    # `tutti`: every PC (as in the attitudes): a prepared line cannot name them.
+                    if pid not in c.png and pid not in c.pg_ids and pid != TUTTI:
+                        e.errore("REPERTORIO.fatti", dove, f"richiede.stati: {pid} non è un PNG con scheda, né un PG, né «{TUTTI}»")
                     if not isinstance(classi, list) or not classi or any(x not in CLASSI_STATO for x in classi):
                         e.errore("REPERTORIO.fatti", dove, f"richiede.stati.{pid}: uno o più di {', '.join(CLASSI_STATO)}")
                     coperti.add(pid)

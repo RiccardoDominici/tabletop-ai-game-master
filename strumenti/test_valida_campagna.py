@@ -2098,6 +2098,21 @@ def test_repertorio_sconfitta(camp):
     assert "REPERTORIO.sconfitta" in errori(camp)
 
 
+def test_repertorio_sconfitta_stati_dei_pg(camp):
+    # Final round (docs/coerenza.md): «Vi sveglia il freddo» woke a dead PC. A defeat ending says the PCs' states it takes
+    # as true with the collective key `tutti`; without it, a warning.
+    finale = {
+        "id": "nar_sconfitta", "chi": "narratore", "tipo": "finale", "sconfitta": True, "quando": "i PG cadono tutti",
+        "temi": ["sconfitta"], "attori": ["png_bruno"], "richiede": {"stati": {"png_bruno": "in_gioco"}},
+        "testo": ["[narratore] Bruno vi chiude in cantina e se ne va."], "max_usi": 1}
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: d["battute"].append(finale))
+    assert _voci_di(camp, "REPERTORIO.sconfitta_stati", "nar_sconfitta")
+    modifica(camp, "repertorio/narrazione.yaml",
+             lambda d: battuta(d, "nar_sconfitta")["richiede"]["stati"].update(tutti=["in_gioco", "a_terra"]))
+    assert not _voci_di(camp, "REPERTORIO.sconfitta_stati", "nar_sconfitta")
+    assert "REPERTORIO.fatti" not in errori(camp, rigoroso=True)
+
+
 def test_repertorio_stato_di_un_pg(camp):
     # A line may take a PC's state as true too (round 6, CA T15): the Engine checks it against the ledger.
     modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte").setdefault("richiede", {}).update(stati={"pg_lia": "a_terra"}))

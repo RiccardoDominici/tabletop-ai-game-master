@@ -5,7 +5,9 @@ consequence: captured, left for dead, rescued…) and the table pauses for the G
 Round 5 of the coherence layer had five silent turns after the whole party fell. Error: `sconfitta` on a line that is
 not a `finale`, or not `true`. Warning: a scene with a hostile NPC (one whose attitude toward some PC is «ostile») and
 no defeat ending; the line should take the victors as in play (`richiede.stati`) and name no PC (it cannot know who
-died).
+died). Warning too: a defeat ending that does not say the PCs' states it takes as true (`richiede.stati.tutti`): «Vi
+sveglia il freddo» woke a dead PC three times in the final round (docs/coerenza.md); `tutti: [in_gioco, a_terra]` for
+an ending that wakes or ties everybody, and a second one for when someone died («chi respira ancora»).
 """
 
 from __future__ import annotations
@@ -30,6 +32,11 @@ def controlla(c: Campagna, e: Esito) -> None:
             e.errore("REPERTORIO.sconfitta", f"{b.get('_file', '?')} {b.get('id', '?')}", "sconfitta: true solo su una battuta di tipo finale")
             continue
         finali.append(b)
+        stati = (b.get("richiede") or {}).get("stati")
+        if not (isinstance(stati, dict) and "tutti" in stati):
+            e.avviso("REPERTORIO.sconfitta_stati", f"{b.get('_file', '?')} {b.get('id', '?')}",
+                     "il finale di sconfitta non dice quali stati dei PG dà per veri: richiede.stati.tutti: [in_gioco, a_terra] "
+                     "se sveglia o lega tutti (nessun morto), e un secondo finale per quando qualcuno è morto")
     for _, s in c.scene:
         sid = s.get("id")
         if not isinstance(sid, str):

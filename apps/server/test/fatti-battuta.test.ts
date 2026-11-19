@@ -202,3 +202,27 @@ describe('a PC\'s state as a line fact (round 6, CA T15: «Tre per terra» on a 
     expect(() => carica([base('nar_x', ['[narratore] Qualcosa.'], { richiede: { stati: { pg_nessuno: 'a_terra' } } })])).toThrow(/né un PG/);
   });
 });
+
+describe('every PC\'s state as a line fact (`tutti`; final round, CM T32, CA T22, PR T32: «Vi sveglia il freddo» over a dead PC)', () => {
+  const pg = (id: string, stato: EntitaRegistro['stato']): EntitaRegistro => ({ id, tipo: 'pg', nome: id, nomi: [id], stato, presenza: 'in_scena', uscito: null });
+  const sveglia = base('nar_sveglia', ["[narratore] La notte passa. Vi sveglia il freddo, prima dell'alba."], { tipo: 'finale', sconfitta: true, richiede: { stati: { tutti: ['in_gioco', 'a_terra'] } } });
+  const chiRespira = base('nar_chi_respira', ["[narratore] La notte passa. Prima dell'alba il freddo sveglia chi respira ancora."], { tipo: 'finale', sconfitta: true, richiede: { stati: { tutti: ['in_gioco', 'a_terra', 'morto'] } } });
+
+  it('the loader reads it; the line is out as soon as one PC is outside those states (a dying PC is down)', () => {
+    const [b] = carica([sveglia]) as [Battuta];
+    expect(b.richiede.stati).toEqual({ tutti: ['in_gioco', 'a_terra'] });
+    expect(motivoControRegistro(b, [pg('pg_anna', 'a_terra'), pg('pg_bea', 'morente'), ...ledger({})])).toBeNull();
+    expect(motivoControRegistro(b, [pg('pg_anna', 'a_terra'), pg('pg_bea', 'morto'), ...ledger({})])).toMatch(/assumes every PC in_gioco\/a_terra, the ledger has pg_bea morto/);
+  });
+
+  it('the defeat ending: the one that wakes everybody while nobody died, else the one that fits a dead PC', () => {
+    const battute = carica([sveglia, chiRespira]);
+    const s = new StatoRepertorio({ battute, perId: new Map(battute.map((b) => [b.id, b])), avvisi: [] }, campagna, new StatoOrologi(campagna));
+    s.presenza = null;
+    s.presenti = null;
+    s.registro = () => ({ entita: [pg('pg_anna', 'a_terra'), pg('pg_bea', 'a_terra'), ...ledger({})] });
+    expect(s.finaleDiSconfitta(1)?.id).toBe('nar_sveglia');
+    s.registro = () => ({ entita: [pg('pg_anna', 'a_terra'), pg('pg_bea', 'morto'), ...ledger({})] });
+    expect(s.finaleDiSconfitta(1)?.id).toBe('nar_chi_respira');
+  });
+});
