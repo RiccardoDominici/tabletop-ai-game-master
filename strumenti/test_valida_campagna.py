@@ -1994,6 +1994,55 @@ def test_repertorio_png_nominato_senza_segno(camp):
     assert "REPERTORIO.png_non_segnato" not in errori(camp, rigoroso=True)
 
 
+# --- a character who acts in the lines needs a sheet (strumenti/valida/regole_senza_scheda.py) ---------------------
+
+def _senza_scheda(cartella: Path) -> list:
+    esito, _ = valida(cartella, voci=VOCI if VOCI.exists() else None)
+    return [v for v in esito.voci if v.codice == "PNG.senza_scheda"]
+
+
+def _garzone(camp: Path, riga: str) -> None:
+    """Bruno's sheet declares a helper with no sheet of his own; a narrator row of nar_botte gets `riga`."""
+    modifica(camp, "png/png_bruno.yaml", lambda d: d.update(relazioni={"Gino": "il garzone della bottega"}))
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte")["testo"].append(riga))
+
+
+def test_personaggio_senza_scheda_che_agisce(camp):
+    # «Il garzone» is how Bruno's sheet describes Gino: a narrator row where he acts needs a sheet for him.
+    _garzone(camp, "[narratore] Il garzone porta una lanterna giù per la scala.")
+    voci = _senza_scheda(camp)
+    assert len(voci) == 1 and "«Gino»" in voci[0].messaggio and "nar_botte" in voci[0].messaggio
+    assert voci[0].dove == "png_bruno"
+    assert "PNG.senza_scheda" not in errori(camp, rigoroso=True)
+
+
+def test_personaggio_senza_scheda_nei_temi(camp):
+    modifica(camp, "png/png_bruno.yaml", lambda d: d.update(relazioni={"Gino": "il garzone della bottega"}))
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte")["temi"].append("gino"))
+    assert _senza_scheda(camp)
+
+
+def test_personaggio_senza_scheda_solo_nominato(camp):
+    # A genitive or a preposition in front is a mention: nobody has to track him for that.
+    _garzone(camp, "[narratore] Sulla botte c'è il cappello di Gino, e il grembiule del garzone.")
+    assert not _senza_scheda(camp)
+
+
+def test_personaggio_senza_scheda_nelle_righe_di_un_png(camp):
+    # An NPC who speaks of him only mentions him; only narrator material counts.
+    modifica(camp, "png/png_bruno.yaml", lambda d: d.update(relazioni={"Gino": "il garzone della bottega"}))
+    modifica(camp, "repertorio/png_bruno.yaml", lambda d: d["battute"][0]["testo"].append("[png_bruno] Il garzone dorme."))
+    assert not _senza_scheda(camp)
+
+
+def test_personaggio_con_scheda_non_segnalato(camp):
+    # A key that is the first name of a sheet (or an id) is a character the Engine already tracks.
+    modifica(camp, "png/png_bruno.yaml", lambda d: d.update(relazioni={"Irma": "l'ostessa del paese", "png_irma": "la sorella"}))
+    modifica(camp, "repertorio/narrazione.yaml",
+             lambda d: battuta(d, "nar_botte")["testo"].append("[narratore] L'ostessa porta una lanterna giù per la scala."))
+    assert not _senza_scheda(camp)
+
+
 def _voci_di(cartella: Path, codice: str, bid: str) -> list:
     """The validator's entries with that code about that line."""
     esito, _ = valida(cartella, voci=VOCI if VOCI.exists() else None)

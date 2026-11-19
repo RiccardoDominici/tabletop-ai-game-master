@@ -24,7 +24,7 @@ elementi_interattivi:
   - {cosa: "la corda di Tonio", dove: "ai polsi del ragazzo", azioni: "si guarda, si taglia"}
   - {cosa: "il nodo della corda", dove: "ai polsi del ragazzo", azioni: "NASCOSTA: non c'è nodo, la corda è solo avvolta"}
   - {cosa: "il cosciotto di montone", dove: "accanto a Grosso", azioni: "Grosso lo rosicchia; con del cibo in più si compra la sua attenzione"}
-png_presenti: [png_zirra, png_grosso]
+png_presenti: [png_zirra, png_grosso, png_tonio]
 # Nessun orologio attivo: qui è già mezzanotte. Un orologio pieno farebbe dire al Motore un finale nel mezzo dello scontro;
 # i finali della torre li sceglie il tavolo (che cosa si racconta a Spinalba, o la discesa).
 orologi_attivi: []

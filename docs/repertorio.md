@@ -88,7 +88,14 @@ A line the sceneggiatore wrote `subito` for one action carries the turn of that 
 and is not offered after it: it is said while the window is open, or not at all (round 4 heard T6's «Mancata!» at T9).
 The loader rejects a wrong id or state; the validator checks the same (`REPERTORIO.fatti`) and warns about an NPC a
 narrator row names without a tag (`REPERTORIO.png_non_segnato`). The sceneggiatore writes the tags too
-(docs/sceneggiatore.md). Not tracked: objects (who holds what), so a line cannot assume them yet.
+(docs/sceneggiatore.md). A tag can only name a sheet, so a character who acts in the prose without one escapes all of
+this: the Engine never knows whether they are there. The validator warns about a character the sheets declare (a
+`relazioni` key or a `chi_altro_sa` entry that is no sheet's id, name or alias) when a narrator line has them act:
+their name in the id, `temi`, `quando` or a narrator row, or the noun the sheets describe them with, after its
+article («il ragazzo si alza»; «gli stivali del ragazzo» or «il giaciglio di Tonio» is a mention and does not count)
+(`PNG.senza_scheda`, strumenti/valida/regole_senza_scheda.py). The fix is a minimal sheet, `png_presenti` and the
+tags. It is a warning in strict mode too, for now: nozze-neve, ponte-lanterne and prova-f0 still have such
+characters. torre-mozza's boy got his sheet after the final round (docs/coerenza.md, «Final round»). Not tracked: objects (who holds what), so a line cannot assume them yet.
 
 Rules for whoever writes the lines:
 - text following the rules of the manual §5 and §6 (short sentences, the NPC's voice, a signal when lying, no PC

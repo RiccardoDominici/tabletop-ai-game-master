@@ -74,6 +74,31 @@ def parole_generiche(codice: str) -> frozenset[str]:
     return frozenset(normalizza_parola(str(v)) for v in voci or [])
 
 
+@lru_cache(maxsize=None)
+def sezione_motore(codice: str, nome: str) -> dict:
+    """One top-level section of lingue/<code>/motore.yaml (empty if absent). Only that section is parsed: the rest of
+    motore.yaml is read by the server and is not all PyYAML."""
+    f = LINGUE_DIR / codice / "motore.yaml"
+    if not f.exists():
+        return {}
+    m = re.search(rf"^{re.escape(nome)}:\n(?:[ #].*\n?)*", f.read_text(encoding="utf-8"), re.M)
+    dati = (yaml.safe_load(m.group(0)) or {}) if m else {}
+    return dati.get(nome) or {}
+
+
+def articoli(codice: str) -> frozenset[str]:
+    """The articles of the language (`nomi.articoli`), the list the server uses to take the trade word of an NPC's
+    `ruolo` (campagna/nomi.ts)."""
+    return frozenset(str(v).lower() for v in sezione_motore(codice, "nomi").get("articoli") or [])
+
+
+def genitivo(codice: str) -> tuple[frozenset[str], str]:
+    """The genitive prepositions and the possessive ending of the language (`sceneggiatore.genitivo`, `possessivo`):
+    «la casa di Tecla», «Tecla's house» speak of someone, they do not have them act."""
+    sez = sezione_motore(codice, "sceneggiatore")
+    return frozenset(str(v).lower() for v in sez.get("genitivo") or []), str(sez.get("possessivo") or "")
+
+
 def normalizza_parola(t: str) -> str:
     """Minuscole e senza accenti (come normalizza del server)."""
     import unicodedata

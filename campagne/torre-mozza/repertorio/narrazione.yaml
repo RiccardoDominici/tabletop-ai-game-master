@@ -161,6 +161,7 @@ battute:
   # ------------------------------------------------------------------ scena 2: la carbonaia
   - id: nar_impronte
     chi: narratore
+    menzionati: [png_tonio]
     tipo: indizio
     quando: "un PG guarda le impronte sul sentiero dei goblin"
     temi: [impronte, orme, tracce, fango, sentiero, segni]
@@ -286,7 +287,7 @@ battute:
 
   - id: nar_piccone
     chi: narratore
-    attori: [png_zirra]
+    attori: [png_zirra, png_tonio]
     tipo: indizio
     riempitivo: true
     quando: "i PG indugiano dentro la torre"
@@ -363,7 +364,7 @@ battute:
 
   - id: nar_tonio_zitto
     chi: narratore
-    attori: [png_zirra]
+    attori: [png_zirra, png_tonio]
     tipo: reazione
     quando: "un PG parla con il ragazzo davanti ai goblin"
     temi: [ragazzo, tonio]
@@ -379,6 +380,7 @@ battute:
 
   - id: nar_tonio_parla
     chi: narratore
+    attori: [png_tonio]
     tipo: momento
     quando: "un PG chiede al ragazzo perché è salito alla torre"
     temi: [ragazzo, tonio, salito, motivo]
@@ -398,6 +400,7 @@ battute:
 
   - id: nar_tonio_sottovoce
     chi: narratore
+    attori: [png_tonio]
     tipo: momento
     quando: "in cantina, sottovoce, un PG avverte il ragazzo di Zirrà"
     temi: [tradirà, tradire, tradimento, ingannare, avverto, attento]
@@ -423,7 +426,7 @@ battute:
   # selettore quando un giocatore dice che cosa racconterà a Spinalba, o che il gruppo scende con il ragazzo.
   - id: fin_alba_fontana
     chi: narratore
-    menzionati: [png_berta]
+    menzionati: [png_berta, png_tonio]
     tipo: finale
     quando: "un PG dice che a Spinalba racconteranno chi ha aiutato i goblin"
     temi: [racconteremo, raccontiamo, diremo, diciamo, sapere]
@@ -442,6 +445,7 @@ battute:
 
   - id: fin_alba_silenzio
     chi: narratore
+    menzionati: [png_tonio]
     tipo: finale
     quando: "un PG dice che a Spinalba il ragazzo sarà soltanto un prigioniero liberato"
     temi: [prigioniero, liberato, taceremo, tacere, silenzio]
@@ -459,7 +463,7 @@ battute:
 
   - id: fin_alba_riserva
     chi: narratore
-    menzionati: [png_ugo, png_zirra]
+    menzionati: [png_ugo, png_zirra, png_tonio]
     tipo: finale
     quando: "un PG dice che scagioneranno Ugo raccontando della sua caccia nella riserva"
     temi: [scagionare, scagioniamo, caccia, cervo, riserva]
@@ -476,6 +480,7 @@ battute:
   # La chiusura (C13): la dice il Motore dopo il finale, a orologio pieno. La scelta resta aperta.
   - id: fin_alba_discesa
     chi: narratore
+    menzionati: [png_tonio]
     tipo: finale
     quando: "i PG scendono dalla torre con il ragazzo"
     temi: [scendiamo, torniamo, riportiamo, andiamocene, riportarlo]
@@ -593,6 +598,7 @@ battute:
   # ------------------------------------------------------------------ chiusure della serata (una per scena)
   - id: nar_chiusura_ovile
     chi: narratore
+    menzionati: [png_tonio]
     tipo: chiusura
     quando: "il master chiude la serata all'ovile dei Benni"
     temi: [ovile, cortile]
@@ -685,7 +691,7 @@ battute:
     temi: [orme, stivali]
     scena: scena_carbonaia
     stallo: 3
-    menzionati: [png_zirra]
+    menzionati: [png_zirra, png_tonio]
     richiede: {indizi_rivelati: [i_impronte]}
     testo:
       - "[narratore] Vi tornano in mente le orme nel fango."

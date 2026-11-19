@@ -19,7 +19,7 @@ from collections import defaultdict
 from . import costanti as K
 from .carica import Campagna
 from .esito import Esito
-from . import regole_fatti_battuta, regole_sconfitta, regole_stallo
+from . import regole_fatti_battuta, regole_senza_scheda, regole_sconfitta, regole_stallo
 from .regole_scena import nomi_propri
 from .regole_campagna import battute_del_motore
 from .voce import solo_parole
@@ -94,6 +94,8 @@ def controlla(c: Campagna, e: Esito) -> None:
     _schema(c, e)
     # The facts a line carries (who acts, who is only named, the states it assumes): regole_fatti_battuta.py.
     regole_fatti_battuta.controlla(c, e)
+    # A character declared in the sheets but with no sheet of its own, acting in narrator rows: regole_senza_scheda.py.
+    regole_senza_scheda.controlla(c, e)
     # Prepared stall lines (stallo: 1 | 2 | 3): regole_stallo.py.
     regole_stallo.controlla(c, e)
     # The defeat ending of a scene with hostile NPCs (sconfitta: true on a finale): regole_sconfitta.py.

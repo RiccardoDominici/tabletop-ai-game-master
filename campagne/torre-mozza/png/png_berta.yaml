@@ -26,7 +26,7 @@ desiderio: "Riportare a casa Tonio prima di mezzanotte, a qualunque prezzo."
 paura: "Che il paese sappia della decima e la tratti come una mendicante."
 segreto:
   testo: "Non ha pagato la decima: alla prima neve il balivo si prende l'ovile, e lei ha nascosto l'avviso dietro la porta di casa."
-  chi_altro_sa: ["Tonio"]
+  chi_altro_sa: [png_tonio]
   se_rivelato: "Il paese la compatisce e la evita; lei, ferita nell'orgoglio, smette di chiedere aiuto."
 voce:
   tts: {voce_id: nadine, eta_apparente: "50-55", altezza: media, velocita: 1.0, timbro: "caldo e roco, da chi chiama le pecore"}
@@ -55,7 +55,7 @@ atteggiamento_pg:
   pg_nespola: {stato: indifferente, perche: "diffida dei forestieri piccoli e svelti, che rubano le galline", vuole: "che tenga le mani lontane dalla casa"}
   pg_eliandro: {stato: indifferente, perche: "un elfo che copia le pietre non serve a un ovile", vuole: "che usi la sua magia per riportarle il figlio"}
 relazioni:
-  Tonio: "il figlio di sedici anni, l'unico che le resta"
+  png_tonio: "il figlio di sedici anni, l'unico che le resta"
   png_ugo: "lo odia dai tempi delle tre pecore sparite"
   png_zirra: "la goblin che, a quanto crede, le ha preso il figlio"
 info_chiave: [i_berta_debito, i_giaciglio, i_pali]

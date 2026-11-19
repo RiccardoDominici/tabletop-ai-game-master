@@ -29,6 +29,7 @@ battute:
   # La chiave e il patto.
   - id: zir_chiave_prima
     chi: png_zirra
+    attori: [png_tonio]
     tipo: momento
     quando: "un PG mostra la chiave a Zirrà o propone uno scambio"
     temi: [chiave, scambio, scambiare, consegno, consegnare]
@@ -64,6 +65,7 @@ battute:
   # Quando la cripta è aperta: il tradimento (se non c'è un patto).
   - id: zir_cassa
     chi: png_zirra
+    attori: [png_tonio]
     tipo: momento
     quando: "la cripta è aperta e un PG si avvicina alla cassa"
     temi: [cassa, argento, monete, forziere]

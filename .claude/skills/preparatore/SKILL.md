@@ -344,6 +344,12 @@ those listed in «the examples in lingue/<lingua>/preparatore/skill.md») and an
 - **Who moves**: search every text that takes an NPC out of their scenes (desire, initiatives, evolution, solutions
   of the bottlenecks, `taglio` and endings, lines with `scena`). Each must respect rule 9 in the scene where it takes
   them.
+- **Everyone who acts gets a sheet**: a character who speaks or acts in the lines (the captive, the helper, the
+  scribe the narrator has stand up or answer) has a sheet, even a minimal `comparsa` one, with `nascosto: true` if the
+  PCs do not see them at once, and is in the `png_presenti` of the scenes where they are. Only a sheet lets the Engine
+  track presence and state. A character named only in passing, or in the past, needs none. The validator warns about
+  a character declared in the sheets (`relazioni`, `chi_altro_sa`) who acts in narrator rows with no sheet
+  [V `PNG.senza_scheda`]: for a new campaign, treat it as an error.
 
 **Check**:
 - read the three sample lines one after the other, without names: you must recognise who speaks;

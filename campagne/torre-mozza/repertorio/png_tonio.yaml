@@ -1,0 +1,26 @@
+# Battute di Tonio (voce vincent): solo alla torre. Parla pochissimo e a voce bassa; il resto lo racconta il
+# narratore (nar_tonio_* in narrazione.yaml, con «attori: [png_tonio]»). Qui l'attesa e la deviazione che ogni PNG
+# presente in una scena deve avere (COPERTURA).
+battute:
+  - id: ton_attesa
+    chi: png_tonio
+    tipo: richiesta
+    riempitivo: true
+    quando: i PG restano fermi nella torre
+    temi: [attesa]
+    testo:
+      - "[narratore] Il ragazzo alza gli occhi, poi li riabbassa."
+      - "[png_tonio] La chiave. L'avete portata?"
+    max_usi: 1
+
+  - id: ton_rifiuto
+    chi: png_tonio
+    tipo: rifiuto
+    quando: un PG chiede al ragazzo di cose che non sa
+    temi: [domanda]
+    testo:
+      - "[narratore] Il ragazzo scuote la testa."
+      - "[png_tonio] Non lo so. Io non so niente."
+    varianti:
+      - ["[narratore] Il ragazzo guarda per terra.", "[png_tonio] Non lo so, davvero."]
+    max_usi: 2

@@ -52,7 +52,7 @@ atteggiamento_pg:
   pg_eliandro: {stato: ostile, perche: "odia gli elfi", vuole: "vederlo scappare, o peggio"}
 relazioni:
   png_zirra: "la capa che lo paga con gli ossi"
-  Tonio: "il ragazzo del pane"
+  png_tonio: "il ragazzo del pane"
 info_chiave: [i_grosso]
 iniziative:
   - "Se vede un elfo, si mette tra lui e Zirrà con la mazza alzata."

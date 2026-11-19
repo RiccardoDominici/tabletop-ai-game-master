@@ -69,7 +69,7 @@ atteggiamento_pg:
   pg_eliandro: {stato: indifferente, perche: "gli elfi parlano agli alberi e poi li lasciano tagliare agli altri", vuole: "che non tocchi i suoi faggi"}
 relazioni:
   png_berta: "la vedova di chi lo accusò delle tre pecore"
-  Tonio: "il ragazzo che a volte gli porta il latte, e che ha visto salire alla torre"
+  png_tonio: "il ragazzo che a volte gli porta il latte, e che ha visto salire alla torre"
   png_zirra: "i goblin della torre, che gli rubano la legna"
 info_chiave: [i_ugo_racconta, i_ugo_frodo, i_rovi]
 iniziative:

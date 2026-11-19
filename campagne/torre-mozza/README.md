@@ -40,9 +40,12 @@ Intensità 2, 3, 5. Il master passa di scena dal pannello; Ugo torna comunque al
 | Ugo Faggioli, carbonaio | vincent | vendere il carbone senza domande | dove era la notte scorsa; che cosa ha visto sul sentiero | si rigira il cappello tra le mani; si gratta la barba bruciacchiata e guarda altrove |
 | Zirrà, guerriera goblin | tabitha | tutto l'argento della cripta | che il ragazzo sia suo prigioniero | si gratta l'orecchio con la punta della spada e sorride storto |
 | Grosso, hobgoblin | lucian | carne fresca, non gli ossi di Zirrà | (comparsa: non mente) | — |
+| Tonio Benni, pastorello | vincent | pagare la decima con l'argento della cripta | (comparsa: non mente) | — |
 
-nadine e tabitha sono voci simili: Berta resta all'ovile e Zirrà resta alla torre. Tonio non ha scheda né voce:
-parla poco, e le sue parole le riferisce il narratore.
+nadine e tabitha sono voci simili: Berta resta all'ovile e Zirrà resta alla torre. Tonio ha una scheda minima
+(comparsa, solo alla torre) perché il Motore ne segua presenza e stato: parla poco, quasi sempre per bocca del
+narratore, e le sue due battute (attesa e rifiuto) usano la voce di Ugo, che alla torre non c'è. Il suo ritratto e l'audio
+delle sue due battute non sono ancora generati: `scripts/prepara.sh campagne/torre-mozza --voce` li aggiunge.
 
 ## I PG
 

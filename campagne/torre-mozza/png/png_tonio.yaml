@@ -1,0 +1,64 @@
+# Tonio: il ragazzo «rapito», alla torre. Una scheda minima perché il Motore ne segua presenza e stato: nelle righe
+# del narratore il ragazzo si alza, porta un piccone a Zirrà, confessa (docs/coerenza.md, «Final round»: senza scheda
+# la sua confessione è arrivata come risposta a una domanda fatta a un goblin morto). Visibile appena i PG entrano
+# nella torre (la corda ai polsi è un oggetto della scena), quindi niente `nascosto`. Parla quasi solo attraverso il
+# narratore; le sue due battute (repertorio/png_tonio.yaml) usano la voce vincent, la stessa di Ugo: il registro delle
+# voci non ne ha una giovane libera, e Ugo non è nei `png_presenti` della torre.
+id: png_tonio
+nome: "Tonio Benni"
+pronuncia: "Tònio Bènni"
+alias: [pastorello]
+livello: comparsa
+ruolo: "pastorello, figlio di Berta Benni; alla torre con i goblin, con una corda ai polsi"
+fronte: fronte_torre
+scheda:
+  # Gente comune (Normal Man, p. 53): bonus d'attacco +0, 1d4 punti ferita. Non combatte.
+  caratteristiche: {forza: 10, intelligenza: 10, saggezza: 10, destrezza: 13, costituzione: 10, carisma: 10}
+  abilita: {mischia: 0}
+  pf: 3
+  difesa: 11
+  attacchi: []
+aspetto:
+  lettura: "Un ragazzo di sedici anni, magro e spettinato, in un mantello troppo grande. Ha una corda ai polsi."
+  invarianti: ["sedici anni", "magro e spettinato", "mantello di lana troppo grande", "corda ai polsi"]
+  prompt_immagine: "a thin sixteen-year-old shepherd boy with tousled hair and an oversized wool cloak, a rope around his wrists, sitting by a campfire inside a ruined tower at night, eyes lowered, [STILE]"
+personalita:
+  superficie: ["tiene gli occhi bassi e parla piano", "guarda Zirrà prima di rispondere"]
+  sotto_pressione: ["si morde il labbro e ripete una parola sola: la chiave"]
+  contraddizione: "Ha finto il rapimento per salvare l'ovile della madre, e adesso ha paura di lei più che dei goblin."
+desiderio: "Pagare la decima con l'argento della cripta, prima che il balivo prenda l'ovile."
+paura: "Che la madre sappia che è salito da solo."
+segreto:
+  testo: "Non è stato rapito: ha portato lui i goblin alla cripta e ha scritto la lavagna, per avere la chiave dei Benni."
+  chi_altro_sa: [png_zirra, png_grosso]
+  se_rivelato: "Torna a casa con la vergogna, e il paese gli chiede conto; la madre lo difende davanti a tutti."
+voce:
+  tts: {voce_id: vincent, eta_apparente: "16", altezza: media, velocita: 1.05, timbro: "giovane, incerto, quasi un sussurro"}
+  registro: "Dà del voi ai PG, come ai grandi del paese."
+  stile: "Frasi di due-sei parole, a voce bassa. Quando è messo alle strette dice soltanto «la chiave»."
+  tic: ["si morde il labbro"]
+  gesto: "tiene gli occhi bassi e si tocca la corda ai polsi"
+  mai_dice: ["che è salito da solo, finché non ha ceduto", "la parola «decima» davanti a Zirrà"]
+  battuta_campione: "Sto bene. La chiave, l'avete?"
+sa: [f_tonio_complice, f_tonio_lavagna, f_tonio_pane, f_tonio_motivo, f_tonio_libero, f_debito]
+non_sa: [f_ugo_visto, f_ugo_frodo, f_zirra_inganno]
+crede_a_torto:
+  - {testo: "Zirrà lo lascerà andare con la sua parte d'argento.", contraddice: f_zirra_inganno}
+mente_su: []
+atteggiamento_pg:
+  pg_livia: {stato: indifferente, perche: "una soldata della milizia lo riporterebbe a casa per forza", vuole: "che non dica niente alla madre"}
+  pg_fulco: {stato: indifferente, perche: "il chierico conosce sua madre", vuole: "che non gli faccia domande"}
+  pg_nespola: {stato: indifferente, perche: "non la conosce", vuole: "che non si metta tra lui e l'argento"}
+  pg_eliandro: {stato: indifferente, perche: "non lo conosce", vuole: "che non legga le scritte della cantina"}
+relazioni:
+  png_berta: "la madre, a cui vuole salvare l'ovile"
+  png_zirra: "la socia del patto, di cui ormai ha paura"
+info_chiave: [i_tonio_libero]
+iniziative:
+  - "Se Zirrà lo guarda, si alza e fa quello che lei vuole."
+  - "Se un PG gli parla di sua madre, abbassa gli occhi e non risponde."
+evoluzione:
+  - {se: "Zirrà cade o fugge", allora: "si toglie la corda dai polsi e chiede di tornare a casa"}
+  - {se: "un PG gli mostra che la corda non ha nodo", allora: "confessa il patto e chiede di non dirlo a Spinalba"}
+statistiche: "Gente comune (Normal Man del manuale): bonus d'attacco +0, 1d4 punti ferita, Classe d'Armatura 11; non combatte."
+registro_attivita: []

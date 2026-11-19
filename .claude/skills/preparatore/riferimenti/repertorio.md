@@ -173,7 +173,10 @@ assumes is true in the ledger (who is in the scene, who is down, dead or fled), 
   `fuggito`; a line about a body («il corpo di Zirrà giace…») needs it, or the Engine keeps it back while Zirrà is out of
   play. Only in the base of `richiede`, not in an `oppure` alternative.
 Every NPC a narrator row names goes in one of the three; an untagged one is a warning [V `REPERTORIO.png_non_segnato`]
-(the Engine then only asks it to be in play, not in the scene).
+(the Engine then only asks it to be in play, not in the scene). A character who acts in a narrator row needs a sheet
+before it can be tagged: one declared in the sheets (`relazioni`, `chi_altro_sa`) but never given a sheet, named by
+its name or by the noun the sheets describe it with («il ragazzo»), is a warning [V `PNG.senza_scheda`] (SKILL.md,
+step 7).
 - `richiede.stati` takes PCs too (`{pg_x: a_terra}`): a line that assumes a PC's state («la soldata è a terra») is
   offered only when the ledger has it; a player's own claim about the PC is never a fact.
 - `richiede.esito: {tipo: colpito | mancato | ferito | a_terra | fugge | nessuno, chi?: png_x, bersaglio?: id}`: a line

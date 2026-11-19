@@ -67,7 +67,7 @@ atteggiamento_pg:
   pg_eliandro: {stato: ostile, perche: "un mago fa paura anche a lei", vuole: "che non faccia magie vicino alla cripta"}
 relazioni:
   png_grosso: "il suo guardaspalle, che le obbedisce per la carne"
-  Tonio: "il ragazzo che le apre la cripta, e che vuole tenersi"
+  png_tonio: "il ragazzo che le apre la cripta, e che vuole tenersi"
   png_berta: "la madre che deve portare la chiave"
 info_chiave: [i_tonio_libero, i_mappa]
 iniziative:
