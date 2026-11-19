@@ -1,0 +1,43 @@
+[torre-mozza-combattimento-B] campagna torre-mozza, porta 4961, modalità repertorio: riavvio del server di prova…
+[torre-mozza-combattimento-B] server: {"ok":true,"fase":"attesa","turno":0,"versione_scena":0,"voce":"mock","schermo":false,"narratore":"minimo","modello":"mlx-community/Qwen3-0.6B-4bit","campagna":"torre-mozza","immagini":17,"audio":26,"sessione":"","modo":"repertorio","ripresa":null,"pacchetto":null,"lingua":"it","lingua_contenuti":"it"}
+[torre-mozza-combattimento-B] turno 1/14 fatto (server 1)
+[torre-mozza-combattimento-B] turno 2/14 fatto (server 2)
+[torre-mozza-combattimento-B] turno 3 (server 3): scena → scena_carbonaia
+[torre-mozza-combattimento-B] turno 3/14 fatto (server 4)
+[torre-mozza-combattimento-B] turno 4 (server 5): scena → scena_torre
+[torre-mozza-combattimento-B] turno 4/14 fatto (server 6)
+[torre-mozza-combattimento-B] server 7: combat, on turn pg_eliandro, pg_livia; waiting for their turn: pg_nespola
+[torre-mozza-combattimento-B] turno 5/14 fatto (server 7), 1 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 8: combat, on turn pg_nespola
+[torre-mozza-combattimento-B] turno 5/14 fatto (server 8)
+[torre-mozza-combattimento-B] server 9: combat, on turn pg_livia; waiting for their turn: pg_nespola, pg_eliandro
+[torre-mozza-combattimento-B] turno 6/14 fatto (server 9), 2 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 10: 1 scripted actions dropped, their PC is dead (pg_eliandro)
+[torre-mozza-combattimento-B] server 10: combat, on turn pg_nespola
+[torre-mozza-combattimento-B] turno 6/14 fatto (server 10)
+[torre-mozza-combattimento-B] server 11: combat, on turn pg_livia; waiting for their turn: pg_nespola
+[torre-mozza-combattimento-B] turno 7/14 fatto (server 11), 1 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 12: 1 scripted actions dropped, their PC is dead (pg_eliandro, pg_nespola)
+[torre-mozza-combattimento-B] server 12: combat, on turn pg_livia; waiting for their turn: pg_nespola, pg_eliandro
+[torre-mozza-combattimento-B] turno 8/14 fatto (server 12), 2 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 13: 2 scripted actions dropped, their PC is dead (pg_eliandro, pg_nespola)
+[torre-mozza-combattimento-B] server 13: combat, on turn pg_livia; waiting for their turn: pg_eliandro
+[torre-mozza-combattimento-B] turno 9/14 fatto (server 13), 1 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 14: 1 scripted actions dropped, their PC is dead (pg_eliandro, pg_nespola)
+[torre-mozza-combattimento-B] server 14: combat, on turn pg_livia; waiting for their turn: pg_eliandro
+[torre-mozza-combattimento-B] turno 10/14 fatto (server 14), 1 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 15: 1 scripted actions dropped, their PC is dead (pg_eliandro, pg_nespola)
+[torre-mozza-combattimento-B] server 15: combat, on turn pg_livia; waiting for their turn: pg_eliandro
+[torre-mozza-combattimento-B] turno 11/14 fatto (server 15), 1 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 16: 1 scripted actions dropped, their PC is dead (pg_eliandro, pg_nespola)
+[torre-mozza-combattimento-B] server 16: combat, on turn pg_livia; waiting for their turn: pg_eliandro
+[torre-mozza-combattimento-B] turno 12/14 fatto (server 16), 1 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 17: 1 scripted actions dropped, their PC is dead (pg_eliandro, pg_nespola)
+[torre-mozza-combattimento-B] server 17: combat, on turn pg_livia
+[torre-mozza-combattimento-B] turno 13/14 fatto (server 17)
+[torre-mozza-combattimento-B] server 18: combat, on turn pg_livia; waiting for their turn: pg_eliandro; nothing left in the script, passing: pg_livia
+[torre-mozza-combattimento-B] turno 14/14 fatto (server 18), 1 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 19: 1 scripted actions dropped, their PC is dead (pg_eliandro, pg_nespola)
+[torre-mozza-combattimento-B] server 19: combat, on turn pg_livia; nothing left in the script, passing: pg_livia
+[torre-mozza-combattimento-B] turno 14/14 fatto (server 19)
+[torre-mozza-combattimento-B] fatto → esperimenti/risultati/finale/finale6-torre-mozza-combattimento-A-automatico (costo $0.00000)
