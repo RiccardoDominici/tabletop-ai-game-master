@@ -330,6 +330,7 @@ battute:
     tipo: momento
     quando: "qualcuno porta il pane dei lumi alla bocca davanti al forestiero"
     temi: [mangio, mangiare, assaggio, assaggiare, morso, boccone, bocca]
+    attori: [png_baldrin]
     testo:
       - "[png_sebastiano] Non lo mangi! Lo sputi, subito!"
       - "[narratore] La grata trema sotto i suoi pugni, e Baldrin si volta di scatto."

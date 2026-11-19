@@ -186,6 +186,7 @@ battute:
     tipo: indizio
     quando: "un PG accosta una candela alla grata per vedere il forestiero in faccia"
     temi: [candela, luce, lanterna, faccia, volto, viso, sopracciglio]
+    attori: [png_sebastiano]
     testo:
       - "[narratore] La luce passa tra le sbarre. Il forestiero si tira indietro, troppo tardi."
       - "[narratore] Sotto il cappuccio, una cicatrice bianca gli taglia il sopracciglio sinistro."
@@ -199,6 +200,7 @@ battute:
     tipo: indizio
     quando: "il forestiero esce dal ripostiglio, alla luce del forno"
     temi: [esce, uscire, faccia, volto]
+    attori: [png_sebastiano]
     testo:
       - "[narratore] Il forestiero esce piano, curvo sotto l'architrave, e il cappuccio gli scivola indietro."
       - "[narratore] Alla luce del forno, una cicatrice bianca gli taglia il sopracciglio sinistro."
@@ -228,6 +230,7 @@ battute:
     temi: [orologio]
     richiede:
       orologio: {id: o_colpevole, min: 1, max: 1}
+    attori: [png_baldrin]
     testo:
       - "[narratore] Un sasso batte su un'imposta: Baldrin si alza e va alla finestra."
       - "[narratore] Fuori, una voce di ragazzo grida corvo, poi si sentono passi che scappano."
@@ -243,6 +246,7 @@ battute:
     temi: [orologio]
     richiede:
       orologio: {id: o_colpevole, min: 2, max: 2}
+    attori: [png_baldrin]
     testo:
       - "[narratore] La campana suona un rintocco: Baldrin infila la chiave nella serratura, poi la toglie."
     effetti:
@@ -256,6 +260,7 @@ battute:
     temi: [orologio]
     richiede:
       orologio: {id: o_colpevole, min: 3, max: 3}
+    attori: [png_baldrin]
     testo:
       - "[narratore] Dalla finestra, lanterne in fila escono dalla cappella e si fermano vicino al pozzo."
       - "[narratore] Baldrin va a guardarle. Per un momento, nessuno ascolta la grata."
@@ -284,6 +289,7 @@ battute:
     temi: [orologio]
     richiede:
       orologio: {id: o_colpevole, min: 5, max: 5}
+    menzionati: [png_sebastiano]
     testo:
       - "[narratore] Tre rintocchi: la veglia è finita, e bussano alla porta."
       - "[narratore] Le lanterne riempiono il portico, e il fiato della gente fuma nel freddo."
@@ -301,6 +307,7 @@ battute:
     temi: [esitare, aprire, paese, entra]
     richiede:
       orologio: {id: o_colpevole, min: 6, max: 6}
+    attori: [png_baldrin]
     testo:
       - "[narratore] Baldrin apre la porta d'ingresso. Con le lanterne entra il freddo della notte."
       - "[narratore] Il paese è dentro, in silenzio. Guarda le ceste, poi il ripostiglio, poi voi."
@@ -314,6 +321,7 @@ battute:
     richiede:
       indizi_rivelati: [i_speroni_neri]
       orologio: {id: o_colpevole, min: 6, max: 6}
+    attori: [png_ottavia]
     testo:
       - "[narratore] La mollica passa di mano in mano, sotto le lanterne."
       - "[narratore] Qualcuno guarda le ceste, poi si volta piano verso Ottavia."
@@ -328,6 +336,7 @@ battute:
     temi: [paese, forestiero, folla, ripostiglio]
     richiede:
       orologio: {id: o_colpevole, min: 6, max: 6}
+    menzionati: [png_sebastiano]
     testo:
       - "[narratore] Le voci si alzano tutte insieme: vogliono il forestiero."
       - "[narratore] Due uomini avanzano verso il ripostiglio, con le lanterne alte."
@@ -349,6 +358,7 @@ battute:
     tipo: momento
     quando: "un PG prova a sfondare la porta del ripostiglio"
     temi: [sfondo, sfondare, spallata, spallate, spalla, calcio, sfondarla]
+    attori: [png_baldrin]
     testo:
       - "[narratore] La porta trema sotto la spalla. Il legno scricchiola, ma la serratura tiene."
       - "[narratore] Il colpo rimbomba fino in piazza. Baldrin è già in piedi, col martello alzato."
@@ -371,6 +381,7 @@ battute:
     tipo: momento
     quando: "un PG forza la serratura del ripostiglio"
     temi: [serratura, scasso, scassino, scassinare, grimaldello, forzo, forzare]
+    attori: [png_baldrin]
     testo:
       - "[narratore] Il ferro gratta, poi la serratura scatta con un colpo che rimbomba nella sala."
       - "[narratore] Baldrin si volta di scatto, con il martello già in mano."
@@ -442,6 +453,7 @@ battute:
     temi: [consegniamo, consegnato, prendetelo, portatelo]
     richiede:
       orologio: {id: o_colpevole, min: 6, max: 6}
+    attori: [png_sebastiano]
     testo:
       - "[narratore] Il paese si porta via il forestiero, verso il buio della strada."
       - "[narratore] Poi spezza il pane dei lumi, e ne mangiano anche i bambini."
@@ -455,6 +467,7 @@ battute:
     temi: [consegniamo, consegnato, prendetelo, portatelo]
     richiede:
       orologio: {id: o_colpevole, min: 6, max: 6}
+    attori: [png_sebastiano]
     testo:
       - "[narratore] Il paese si porta via il forestiero, e lui non si volta indietro."
       - "[narratore] Le ceste restano sul tavolo, sotto il lino, e nessuno le tocca."
@@ -468,6 +481,7 @@ battute:
     temi: [prendetela, portatela]
     richiede:
       orologio: {id: o_colpevole, min: 6, max: 6}
+    attori: [png_ottavia]
     testo:
       - "[narratore] Il paese circonda Ottavia sotto il portico."
       - "[narratore] Il fazzoletto rosso le scivola dai capelli. Nessuno si china a raccoglierlo."
@@ -481,6 +495,7 @@ battute:
     temi: [tornate, andate, andatevene]
     richiede:
       orologio: {id: o_colpevole, min: 6, max: 6}
+    attori: [png_ottavia, png_sebastiano]
     testo:
       - "[narratore] Le ceste finiscono nel forno, una dopo l'altra."
       - "[narratore] Il paese torna a casa senza nessuno da punire."
@@ -513,12 +528,79 @@ battute:
       - "[narratore] Sul sentiero del passo, una sagoma col cappuccio si volta verso le candele."
     max_usi: 1
 
+  # --- battute di stallo (docs/mondo.md §5): le dice il Motore quando il tavolo resta fermo -------
+  # Il lettore non le riceve mai. 1: una mossa piccola del pericolo (è di Baldrin, in png_baldrin.yaml);
+  # 2: un indizio che arriva da solo; 3: un riassunto di ciò che i PG hanno già trovato.
+  - id: nar_stallo2_forno
+    chi: narratore
+    tipo: indizio
+    quando: "il tavolo resta fermo nell'osteria"
+    temi: [cesta, pagnotta]
+    scena: scena_forno_vecchio
+    stallo: 2
+    testo:
+      - "[narratore] Sul tavolo lungo una cesta troppo piena si inclina, e una pagnotta rotola giù."
+      - "[narratore] Si spacca sulla pietra, ancora tiepida."
+      - "[narratore] Dentro, la mollica è grigia, con chicchi neri e curvi, come piccole unghie."
+    effetti:
+      rivela_indizi: [i_speroni_neri]
+    max_usi: 1
+
+  - id: nar_stallo3_forno
+    chi: narratore
+    tipo: momento
+    quando: "il tavolo resta fermo nell'osteria, dopo la mollica"
+    temi: [mollica, grata]
+    scena: scena_forno_vecchio
+    stallo: 3
+    attori: [png_sebastiano]
+    richiede:
+      indizi_rivelati: [i_speroni_neri]
+    testo:
+      - "[narratore] Vi tornano in mente i chicchi neri nella mollica, curvi come piccole unghie."
+      - "[narratore] Il paese incolpa il forestiero della febbre, e lui è ancora dietro la grata."
+    max_usi: 1
+
+  # --- finali di sconfitta (docs/combattimento.md, «The defeat path») -----------------------------
+  # Li dice il Motore quando il gruppo cade tutto, poi il tavolo si ferma e decide il master. Nessun nome
+  # di PG. Il primo lega tutti (nessun morto); il secondo vale anche con un PG morto («chi respira ancora»).
+  - id: nar_sconfitta_baldrin
+    chi: narratore
+    tipo: finale
+    sconfitta: true
+    quando: "i PG cadono tutti nell'osteria e Baldrin è ancora in piedi"
+    temi: [sconfitta, spago, polsi]
+    scena: scena_forno_vecchio
+    attori: [png_baldrin]
+    richiede:
+      stati: {png_baldrin: in_gioco, tutti: [in_gioco, a_terra]}
+    testo:
+      - "[narratore] Baldrin vi lega i polsi con lo spago dei sacchi, senza una parola."
+      - "[narratore] Poi torna a sedersi accanto alla grata, col martello sulle ginocchia."
+    max_usi: 1
+
+  - id: nar_sconfitta_baldrin_caduti
+    chi: narratore
+    tipo: finale
+    sconfitta: true
+    quando: "i PG cadono tutti nell'osteria, qualcuno è morto, e Baldrin è ancora in piedi"
+    temi: [sconfitta, spago, polsi]
+    scena: scena_forno_vecchio
+    attori: [png_baldrin]
+    richiede:
+      stati: {png_baldrin: in_gioco, tutti: [in_gioco, a_terra, morto]}
+    testo:
+      - "[narratore] Baldrin lega con lo spago dei sacchi i polsi di chi respira ancora."
+      - "[narratore] Poi torna a sedersi accanto alla grata, col martello sulle ginocchia."
+    max_usi: 1
+
   # --- transizioni ------------------------------------------------------------------------
   - id: tr_retro
     chi: narratore
     tipo: transizione
     quando: "i PG passano dietro la tenda, nel retro"
     temi: [retro, tenda, sgattaiolo]
+    attori: [png_baldrin]
     testo:
       - "[narratore] Dietro la tenda fa più freddo. Sacchi, una madia, una scala che scende."
       - "[narratore] La voce di Baldrin arriva smorzata, lontana."
@@ -539,6 +621,7 @@ battute:
     tipo: transizione
     quando: "i PG rientrano nell'osteria dalla piazza"
     temi: [rientro, torno, rientrare]
+    attori: [png_baldrin]
     testo:
       - "[narratore] Dentro, il caldo del forno vi prende in faccia. Baldrin alza gli occhi dal martello."
     max_usi: 1
@@ -549,6 +632,7 @@ battute:
     riempitivo: true
     quando: "passa un po' di tempo senza decisioni nuove"
     temi: [tempo, attesa, aspettare]
+    attori: [png_ottavia]
     testo:
       - "[narratore] Il fuoco si abbassa, e Ottavia aggiunge un ciocco che sfrigola sulla brace."
     varianti:
@@ -587,6 +671,7 @@ battute:
     quando: "il master chiude la serata nell'osteria del forno"
     temi: [forno]
     scena: scena_forno_vecchio
+    attori: [png_sebastiano]
     testo:
       - "[narratore] Il paiolo smette di sobbollire. Dalla cappella, oltre la piazza, il canto della veglia arriva a ondate."
       - "[narratore] Il forestiero tossisce ancora, e la notte della veglia è ancora lunga."

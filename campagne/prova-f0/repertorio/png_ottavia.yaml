@@ -52,6 +52,7 @@ battute:
     solo_esempio: true
     quando: "un PG minaccia Ottavia o alza le mani su di lei"
     temi: [minaccia, forza, mani]
+    attori: [png_baldrin]
     testo:
       - "[narratore] Ottavia stringe il mestolo come un bastone, e guarda verso il nano."
       - "[png_ottavia] In casa mia no. Baldrin, li senti?"
@@ -143,6 +144,7 @@ battute:
     richiede:
       orologio: {id: o_colpevole, min: 3, max: 5}
       battute_non_usate: [ott_benedizione_chierica]
+    attori: [png_baldrin]
     testo:
       - "[png_ottavia] Baldrin, la chierica non c'è. Il pane lo benedici tu, da massaro."
       - "[narratore] Il nano annuisce, senza alzare gli occhi."

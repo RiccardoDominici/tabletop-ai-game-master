@@ -42,7 +42,7 @@ parole:
   - parola: "chicchi neri e curvi"
     regex: "chicc\\w* ner|ner\\w* e curv"
     fatti: [f_chicchi_neri]
-    pubblica_dopo: [i_speroni_neri, nar_sacco_apre, nar_pagnotta_spezza, ott_parla_al_paese]
+    pubblica_dopo: [i_speroni_neri, nar_sacco_apre, nar_pagnotta_spezza, ott_parla_al_paese, nar_stallo2_forno]
     nota: "f_chicchi_neri: la segale ha gli speroni"
   - parola: "setaccio"
     regex: "setacciat|setaccio"

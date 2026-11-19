@@ -367,3 +367,17 @@ battute:
     varianti:
       - ["[narratore] Baldrin si alza, guarda la porta, e si rimette a sedere.", "[png_baldrin] Il tempo non è affar mio. La porta sì."]
     max_usi: 2
+
+  # Battuta di stallo (docs/mondo.md §5): la mossa piccola del pericolo, detta dal suo PNG quando il tavolo
+  # resta fermo. Il lettore non la riceve mai.
+  - id: bal_stallo1_forno
+    chi: png_baldrin
+    tipo: momento
+    quando: "il tavolo resta fermo nell'osteria"
+    temi: [martello, paese]
+    scena: scena_forno_vecchio
+    stallo: 1
+    testo:
+      - "[narratore] Baldrin batte il martello piano sul palmo, e vi guarda uno per uno."
+      - "[png_baldrin] Chi difende quello, stanotte, resta solo. Il paese ricorda."
+    max_usi: 1
