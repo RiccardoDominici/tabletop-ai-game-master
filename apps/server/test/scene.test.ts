@@ -114,8 +114,8 @@ describe.skipIf(!presente)('campagne con più scene (ponte-lanterne)', () => {
       ['scena_terzo_tocco', false],
     ]);
     expect(entrata.stato.luoghi.filter((l) => l.tipo === 'scena').map((l) => l.id)).toHaveLength(4);
-    // Le battute di altre scene non sono disponibili.
-    expect(entrata.stato.repertorio!.disponibili.every((b) => b.scena === null || b.scena === 'scena_ponte_imbrunire')).toBe(true);
+    // Le battute di altre scene non sono disponibili (una battuta di più scene le elenca, «a, b»: c'è anche questa).
+    expect(entrata.stato.repertorio!.disponibili.every((b) => b.scena === null || b.scena.split(', ').includes('scena_ponte_imbrunire'))).toBe(true);
 
     const schermo = nuovoClient();
     await emetti<{ stato: StatoTavolo; info: InfoServer }>((cb) => schermo.emit('schermo:osserva', cb));
