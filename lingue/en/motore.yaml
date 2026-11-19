@@ -22,9 +22,15 @@ annuncio:
   fuori: '{nome} does not act.'
   # A clause that states the world or the PC's state instead of saying what the PC does: not announced (flag i).
   # «I am / I'm» followed by an -ing verb is an act («I'm going down»); anything else is a claim («I'm the fastest»).
-  affermazione: '^(i\s+(have|feel|see|hear|think|believe|guess)|i\s+am\s+(?!\w+ing\b)|i''m\s+(?!\w+ing\b)|there\s+(is|are|was|were)|it\s+is|it''s)\b'
+  # Also, anywhere in the clause, an encounter or a find that would make something exist («I meet a traveller»), and the
+  # PC's own state («I can't stand any more»; final round).
+  affermazione: '^(i\s+(have|feel|see|hear|think|believe|guess)|i\s+am\s+(?!\w+ing\b)|i''m\s+(?!\w+ing\b)|there\s+(is|are|was|were)|it\s+is|it''s)\b|i\s+(meet|find|spot|notice|discover|run\s+into|come\s+across)\b|^i\s+(can''t|cannot)\s+stand\b|^i''m\s+(bleeding|dying|fainting)\b'
   # A clause whose subject is someone else («The goblin throws its spear at me»): not announced (flag i).
-  terza_parte: '^(the|a|an|this|that|these|those|he|she|they|it|his|her|their|its|everyone|someone|somebody)\b'
+  # And someone else's arrival («Another one arrives»; final round, PR T13).
+  terza_parte: '^(the|a|an|this|that|these|those|he|she|they|it|his|her|their|its|everyone|someone|somebody)\b|^(another\s+(one\s+)?)?(arrives|comes in|enters|appears|shows up)\b'
+  # A clause where the PC looks or listens, before a colon («I look through the door: three or four goblins»): what
+  # follows the colon is what the PC says it perceives, a claim (final round, PR T12). Flag i, at the clause's head.
+  percezione: '^(i\s+)?(look|peek|peer|check|watch|listen|glance|scan)\b'
   # A clause that is the PC's own act in the first person («I block it»): after someone else's clause, the
   # announcement starts again here (flag i).
   atto_del_pg: '^(i|i''ll|i''d)\b'

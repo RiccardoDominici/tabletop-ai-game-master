@@ -23,7 +23,6 @@ describe('annunci D4, italiano', () => {
     ['Livia Sarti', 'Anch’io, Ugo: parla, o la milizia ti trova in fretta.', 'Livia Sarti dice: «Parla, o la milizia ti trova in fretta».'],
     ['Nespola Tondi', 'Ugo! Mi devi tre argenti. Dimmi la strada per la torre o te li riscuoto davanti a tutti.', 'Nespola Tondi dice: «Mi devi tre argenti».'],
     ['Livia Sarti', "Berta, quando hai visto Tonio per l'ultima volta? E chi sapeva della chiave, oltre a te?", "Livia Sarti dice: «Quando hai visto Tonio per l'ultima volta?»."],
-    ['Nespola Tondi', 'Ne arriva un altro: lo colpisco di nuovo, poi gli passo alle spalle.', 'Nespola Tondi: «Ne arriva un altro: lo colpisco di nuovo, poi gli passo alle spalle».'],
   ];
   it.each(casi)('%s: «%s»', (nome, testo, atteso) => {
     const a = annuncioBreve(nome, testo);
@@ -37,12 +36,33 @@ describe('annunci D4, italiano', () => {
   // announcement voicing a player's claim. Only the PC's own act is announced, and as the player's words.
   it.each([
     ['Livia Sarti', 'Il goblin mi tira la lancia, la paro con lo scudo. Resisto.', 'Livia Sarti: «La paro con lo scudo. Resisto».'],
-    ['Nespola Tondi', 'Ho zero punti ferita, sono a terra. Non mi reggo più, striscio dietro la pietra.', 'Nespola Tondi: «Non mi reggo più, striscio dietro la pietra».'],
+    // The PC's own state is a claim too (final round, CM T15 / CA T14: «Non mi reggo più» was said for an unhurt PC).
+    ['Nespola Tondi', 'Ho zero punti ferita, sono a terra. Non mi reggo più, striscio dietro la pietra.', 'Nespola Tondi: «Striscio dietro la pietra».'],
     ['Nespola Tondi', 'Il goblin mi prende alla spalla, sento sangue. Indietreggio ma resto in piedi.', 'Nespola Tondi: «Indietreggio ma resto in piedi».'],
     ['Livia Sarti', 'Vedo tre goblin davanti alla porta. Io carico dopo di lei, scudo avanti.', 'Livia Sarti: «Io carico dopo di lei, scudo avanti».'],
     ['Livia Sarti', 'Il goblin davanti esita, guarda il compagno. Non lo colpisco ancora, aspetto la risposta.', 'Livia Sarti: «Non lo colpisco ancora, aspetto la risposta».'],
     ['Livia Sarti', 'Ehi goblin! Chi vi paga? Fermatevi, e nessuno si fa più male!', 'Livia Sarti dice: «Chi vi paga?».'],
   ])('claims and someone else\'s acts are not announced: %s, «%s»', (nome, testo, atteso) => {
+    expect(annuncioBreve(nome, testo)).toBe(atteso);
+  });
+
+  // The final round's second judge (docs/coerenza.md, «Final round»): the filter kept a world clause and dropped the PC's
+  // own act or question. The act stays, the world goes; never the other way round.
+  it.each([
+    // Someone else's arrival is not the PC's act (PR T13).
+    ['Nespola Tondi', 'Ne arriva un altro: lo colpisco di nuovo, poi gli passo alle spalle.', 'Nespola Tondi: «Lo colpisco di nuovo, poi gli passo alle spalle».'],
+    // What the PC says it sees after a looking clause's colon is a claim; the act in the next sentence is said (PR T12).
+    ['Nespola Tondi', 'Guardo dentro la porta: tre o quattro goblin. Tiro il dardo al più vicino!', 'Nespola Tondi: «Tiro il dardo al più vicino».'],
+    ['Nespola Tondi', 'Guardo dentro la porta: tre o quattro goblin.', 'Nespola Tondi: «Guardo dentro la porta».'],
+    // An encounter makes someone exist; a call before the question is only a call (FB T9).
+    ['Livia Sarti', 'Sulla strada della grotta incontro una viandante con un carretto. Madre Carla? Dove vai con quel carico?', 'Livia Sarti dice: «Dove vai con quel carico?».'],
+    // Going towards someone is a movement, not an encounter; a colon after a speech verb is still the PC's words.
+    ['Livia Sarti', 'Vado incontro a Berta e le chiedo della chiave.', 'Livia Sarti: «Vado incontro a Berta e le chiedo della chiave».'],
+    ['Eliandro', 'Dico agli altri: i goblin non sanno fare lettere con il carbone.', 'Eliandro: «Dico agli altri: i goblin non sanno fare lettere con il carbone».'],
+    // A question after a looking clause asks what the PC would see; a capitalised first word is not a call.
+    ['Fulco Granito', 'Guardo la chiave che Berta stringe: è ferro vecchio, o lavoro di nano?', 'Fulco Granito: «Guardo la chiave che Berta stringe: è ferro vecchio, o lavoro di nano?».'],
+    ['Livia Sarti', 'Ehi tu, pastore! Sei Oreste? Mi vendi un formaggio, dai?', 'Livia Sarti dice: «Sei Oreste?».'],
+  ])('the act stays, the world clause goes: %s, «%s»', (nome, testo, atteso) => {
     expect(annuncioBreve(nome, testo)).toBe(atteso);
   });
 
@@ -102,5 +122,11 @@ describe('annunci D4, inglese', () => {
     expect(annuncioBreve('Mara', "I'm the fastest, I go first.")).toBe('Mara: “I go first.”');
     expect(annuncioBreve('Mara', "I'm going down the stairs.")).toBe("Mara: “I'm going down the stairs.”");
     expect(annuncioBreve('Mara', 'Who pays you?')).toBe('Mara says: “Who pays you?”');
+  });
+  it('the act stays, the world clause goes (final round)', () => {
+    impostaLingua('en');
+    expect(annuncioBreve('Mara', 'I look through the door: three or four goblins. I shoot the nearest one!')).toBe('Mara: “I shoot the nearest one.”');
+    expect(annuncioBreve('Mara', 'On the road I meet a traveller with a cart. I ask her where she is going.')).toBe('Mara: “I ask her where she is going.”');
+    expect(annuncioBreve('Mara', "I can't stand any more, I crawl behind the stone.")).toBe('Mara: “I crawl behind the stone.”');
   });
 });

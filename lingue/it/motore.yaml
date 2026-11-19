@@ -25,13 +25,20 @@ annuncio:
   fuori: '{nome} non agisce.'
   # Un inciso o una frase che afferma lo stato del mondo o del PG invece di dire cosa fa («Ho zero punti ferita»,
   # «Vedo tre goblin», «sento sangue») non si annuncia (flag i, in testa all'inciso).
-  affermazione: '^(io\s+)?(non\s+)?(ho|sono|sento|vedo|credo|penso|sembra|mi sembra|c''è|ci sono|c''era)\b'
+  # Also the PC's own state («Non mi reggo più», «sanguino»: final round, CM T15) and, anywhere in the clause, an
+  # encounter or a find that would make something exist («…incontro una viandante», «trovo la chiave»: FB T9);
+  # «vado incontro a Berta» is a movement, not an encounter.
+  affermazione: '^(io\s+)?(non\s+)?(ho|sono|sento|vedo|credo|penso|sembra|mi sembra|c''è|ci sono|c''era|mi reggo|ce la faccio|sto male|sto morendo|sanguino|muoio|svengo)\b|\b(incontro|trovo|scopro|noto)\b(?!\s+(a|ad|al|allo|alla|ai|agli|alle|all''))'
   # Un inciso che ha per soggetto qualcun altro («Il goblin mi tira la lancia», «La lancia mi colpisce»): non si
   # annuncia. Gli articoli che possono essere pronomi («la paro», «lo colpisco») contano solo davanti a una parola
   # che non è un verbo in prima persona (flag i, in testa all'inciso).
   # Also a clause opening with a reflexive or impersonal third person («non si ferma nessuno», «si gira») or with a
   # word and a third-person verb («Oreste dice che…»; round 6, FB T8), not a question («Chi ha scritto…»).
-  terza_parte: '^((il|i|un|uno|una|l''|quel|quello|quella|quei|quegli|quelle|questo|questa|lui|lei|loro|tutti|qualcuno|nessuno)\b|(lo|la|le|gli)\s+(?!\S*(o|isco)\b)|(non\s+)?si\s+\S+[aeè]\b|(?!(chi|cosa|che|dove|come|quando|perché|se|e|ma|o|poi|io)\b)\S+\s+(dice|ha|è|sta|fa|vuole|sa|vede|dicono|hanno|stanno|fanno)\b)'
+  # And a clause opening with someone else's arrival or exit («Ne arriva un altro», «Entra il capo»: final round, PR T13).
+  terza_parte: '^((ne\s+|ce\s+ne\s+)?(arriva|arrivano|entra|entrano|esce|escono|spunta|spuntano|compare|compaiono|appare|appaiono|sbuca|sbucano)\b|(il|i|un|uno|una|l''|quel|quello|quella|quei|quegli|quelle|questo|questa|lui|lei|loro|tutti|qualcuno|nessuno)\b|(lo|la|le|gli)\s+(?!\S*(o|isco)\b)|(non\s+)?si\s+\S+[aeè]\b|(?!(chi|cosa|che|dove|come|quando|perché|se|e|ma|o|poi|io)\b)\S+\s+(dice|ha|è|sta|fa|vuole|sa|vede|dicono|hanno|stanno|fanno)\b)'
+  # A clause where the PC looks or listens, before a colon («Guardo dentro la porta: tre o quattro goblin»): what
+  # follows the colon is what the PC says it perceives, a claim (final round, PR T12). Flag i, at the clause's head.
+  percezione: '^(io\s+)?(guardo|osservo|controllo|sbircio|scruto|spio|ascolto|annuso|esamino)\b'
   # Un inciso che è un atto del PG in prima persona («la paro», «non lo colpisco», «io carico»): dopo un inciso di un
   # altro soggetto, si riprende da qui (flag i).
   # A word in -ano/-ono/-anno is a third person plural («mi hanno detto»), not the PC's own verb.

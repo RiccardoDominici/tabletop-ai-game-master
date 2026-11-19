@@ -30,6 +30,11 @@ export function paroleDiMestiere(nome: string, ruoloScheda: string | null | unde
   return [...new Set(out.filter((w) => w.length > 3))];
 }
 
+/** A title of the language before a name («Madre», «Sister»): the announcement reads «Madre Carla?» as a call. */
+export function èTitolo(parola: string): boolean {
+  return titoli().has(comeTitolo(parola));
+}
+
 /** Nome breve per gli avvisi: il primo nome proprio. */
 export function nomeBreve(nome: string): string {
   const parole = nome.split(/\s+/).filter(Boolean);

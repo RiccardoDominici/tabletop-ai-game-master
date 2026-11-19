@@ -665,6 +665,25 @@ at its head counts even when it ends like a verb, «Quando hai visto Tonio?»). 
 as narration because claims and other people's acts were in it; those are still left out, so only the PC's own act
 is ever framed neutrally.
 
+**The act stays, the world clause goes (final round, the second judge of attempt 3).** Five announcements kept a claim
+and dropped the PC's act: «Non mi reggo più, striscio dietro la pietra» for an unhurt PC (CM T15, CA T14), «Sulla
+strada della grotta incontro una viandante con un carretto» (FB T9, the question to her dropped), «Guardo dentro la
+porta: tre o quattro goblin» (PR T12, the shot dropped), «Ne arriva un altro: lo colpisco…» (PR T13). Now (words in the
+pack, `annuncio`):
+- the PC's own state is a claim (`affermazione`: «non mi reggo», «sanguino», «sto male»…);
+- so is an encounter or a find anywhere in the clause («incontro», «trovo», «scopro», «noto»; «vado incontro a» is a
+  movement);
+- someone else's arrival opens a clause of a third party (`terza_parte`: «ne arriva», «entra», «spunta»…);
+- after a looking clause's colon (`percezione`: «guardo», «osservo», «ascolto»…) comes what the PC says it perceives,
+  never announced, and when the next sentence is the PC's own act that act is announced instead («Tiro il dardo al
+  più vicino»);
+- a call of up to three capitalised words before more sentences («Madre Carla?») gives way to the next sentence, like
+  «Ehi goblin!».
+
+The five become «Striscio dietro la pietra», «Dove vai con quel carico?» (with «dice»), «Tiro il dardo al più vicino»
+and «Lo colpisco di nuovo, poi gli passo alle spalle». The English pack has the same fields. Test:
+test/annuncio-d4.test.ts.
+
 ### Outcome lines carry their outcome; a `subito` line is bound to its action
 Round 4's two outcome errors were both lines that tell a blow: a scriptwriter's miss («… la lancia taglia l'aria dove
 nessuno c'è più») heard while Zirrà's card hit, and a miss written for T6 picked at T9 for a dagger that hit. Now a line

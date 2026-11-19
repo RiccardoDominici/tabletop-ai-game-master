@@ -11,6 +11,7 @@
  * (docs/coerenza.md): «Ginestra opens the door.» tells the act as done before any roll.
  */
 import { campoCoppie, campoElenco, campoNumero, campoRegex, campoTesto, regole, type Sezione } from '../lingua/motore';
+import { èTitolo } from '../campagna/nomi';
 
 export interface PrimaPersona {
   /** Soggetto e verbo fusi all'inizio («i'm» → «is»). */
@@ -46,6 +47,8 @@ interface RegoleAnnuncio {
   attoDelPg: RegExp | null;
   /** The PC's own first-person verb anywhere in a clause («La fisarmonica la tiro fuori io»). */
   attoInterno: RegExp | null;
+  /** A clause where the PC looks or listens: after its colon comes what the PC says it perceives, a claim. */
+  percezione: RegExp | null;
   /** Mai un annuncio vuoto: «{nome} agisce.». */
   vuoto: string;
   minContenuto: number;
@@ -96,6 +99,7 @@ function compila(s: Sezione): RegoleAnnuncio {
     terzaParte: campoRegex(s, 'terza_parte', 'i'),
     attoDelPg: campoRegex(s, 'atto_del_pg', 'i'),
     attoInterno: campoRegex(s, 'atto_interno', 'i'),
+    percezione: campoRegex(s, 'percezione', 'i'),
     vuoto: campoTesto(s, 'vuoto'),
     minContenuto: campoNumero(s, 'min_contenuto'),
     nonContenuto: campoRegex(s, 'non_contenuto', 'i'),
@@ -262,10 +266,23 @@ function nonDelPg(inciso: string, r: RegoleAnnuncio): boolean {
 /** How many words a first clause may go past the limit to be said whole rather than cut mid-phrase. */
 const MARGINE_CLAUSOLA = 6;
 
+/**
+ * A call and nothing else: one word («Ehi goblin!» after the interjection), or a title of the language and a name
+ * («Madre Carla?», «Sister Ada!»). Not «Sei Oreste?»: the capital of its first word is only the sentence's.
+ */
+function soloChiamata(frase: string): boolean {
+  const parole = frase.replace(/^[«"“(]+/, '').split(' ').filter(Boolean);
+  if (parole.length === 1) return true;
+  return parole.length <= 3 && èTitolo(nuda(parole[0]!)) && parole.slice(1).every((w) => /^\p{Lu}/u.test(nuda(w)));
+}
+
 export function fraseAnnuncio(testo: string, max: number, r: RegoleAnnuncio = regoleAnnuncio()): string {
   const tutte = frasi(testo, r);
   let k = 0;
   let frase = '';
+  // A sentence that only looks before its colon («Guardo dentro la porta: tre o quattro goblin»), kept in case no
+  // later sentence holds the PC's act (final round, PR T12: the shot after it was the act).
+  let riserva = '';
   while (k < tutte.length && !frase) {
     const incisi = tutte[k]!.split(/(?<=[,;:])\s+|\s+-\s+/);
     // Leading clauses that say nothing (a vocative), or that are not the PC's own act (a claim, someone else's act).
@@ -277,13 +294,24 @@ export function fraseAnnuncio(testo: string, max: number, r: RegoleAnnuncio = re
     // Only the PC's own words: a later clause that is a claim or someone else's act ends the announcement («Pugnale
     // ancora, il goblin si gira verso di me»; round 6, CM T11).
     // After a colon the PC is saying something («Dico agli altri: i goblin non sanno…»): that clause is its words.
+    // What follows a looking clause's colon is what the PC says it perceives: a claim, never announced. Not in a
+    // question («Guardo la chiave: è ferro vecchio?»): there the PC asks what it would see.
+    const guarda = tutte.domanda?.[k] ? -1 : incisi.findIndex((x) => /:$/.test(x) && !!r.percezione?.test(x.replace(/^[«"“(]+/, '').trim()));
+    if (guarda >= 0) incisi.splice(guarda + 1);
     const fino = incisi.findIndex((x, i) => i > 0 && !/:$/.test(incisi[i - 1]!) && nonDelPg(x, r));
     if (fino > 0) incisi.splice(fino);
     frase = incisi.join(' ').trim();
-    // A lone call before more sentences («Ehi goblin!»): the next sentence says what the PC does.
-    if (frase && frase.split(' ').length === 1 && k + 1 < tutte.length) frase = '';
+    // A lone call before more sentences («Ehi goblin!», «Madre Carla?»): the next sentence says what the PC does.
+    if (frase && soloChiamata(frase) && k + 1 < tutte.length) frase = '';
+    // Only a look, and the next sentence is the PC's own act: that act is what the table needs to hear.
+    const dopo = tutte[k + 1]?.replace(/^[«"“(]+/, '').trim();
+    if (frase && guarda >= 0 && dopo && r.attoDelPg?.test(dopo) && !nonDelPg(dopo, r)) {
+      riserva = frase;
+      frase = '';
+    }
     k++;
   }
+  if (!frase && riserva) frase = riserva;
   // Una frase sola fatta di un inciso «vuoto» per forma ma che dice qualcosa («Parla!»): resta com'è. Not a claim.
   if (!frase && tutte.length && contenuto(tutte[0]!, r) > 0 && !nonDelPg(tutte[0]!, r)) {
     frase = tutte[0]!;
