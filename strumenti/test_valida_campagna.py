@@ -1982,6 +1982,12 @@ def test_repertorio_fatti_della_battuta_sbagliati(camp):
     assert "REPERTORIO.fatti" in errori(camp)
 
 
+def test_repertorio_stato_ferito(camp):
+    # `ferito` (in play and hurt) is a class of richiede.stati too (final round, attempt 4, CM T19).
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte").setdefault("richiede", {}).update(stati={"png_bruno": "ferito"}))
+    assert "REPERTORIO.fatti" not in errori(camp)
+
+
 def test_repertorio_stato_fuori_elenco(camp):
     modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte").setdefault("richiede", {}).update(stati={"png_bruno": "svenuto"}))
     assert "REPERTORIO.fatti" in errori(camp)

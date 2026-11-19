@@ -127,6 +127,29 @@ describe('controllo delle battute dello sceneggiatore', () => {
     ]);
   });
 
+  it('a wound or a fall in a fight, or of a named PC, says whose (final round, attempt 4, CM T19: «una striscia scura»)', () => {
+    const nar = (id: string, riga: string, o: Record<string, unknown> = {}) => battuta({ id, chi: 'narratore', quando: 'un PG trascina una compagna a terra', testo: [`[narratore] ${riga}`], ...o });
+    const lotta = validaBattute(
+      yaml([
+        nar('sc_x_1', 'Sui sassi gelati resta una striscia scura, fino al riparo dello scudo.'),
+        nar('sc_x_2', 'Sui sassi gelati resta una striscia scura, fino al riparo dello scudo.', { richiede: { stati: { pg_anna: ['ferito', 'a_terra'] } } }),
+        nar('sc_x_3', 'Il fuoco crepita tra le pietre.', { quando: 'un PG guarda il fuoco' }),
+      ]),
+      { ...ctx, scontro: true },
+    );
+    expect(lotta.accettate.map((b) => b.id)).toEqual(['sc_x_2', 'sc_x_3']);
+    expect(lotta.scartate).toEqual([{ id: 'sc_x_1', motivo: expect.stringMatching(/dà per vera una ferita o una caduta \(«a terra»|«striscia scura»\)/) }]);
+    // Out of a fight only when it names a PC: the miller's floury blood of a story is not a PC's state.
+    const fuori = validaBattute(
+      yaml([
+        nar('sc_x_4', 'Anna ha sangue sulla manica.', { quando: 'un PG guarda Anna' }),
+        nar('sc_x_5', 'Il macellaio ha sangue sul grembiule.', { quando: 'un PG guarda la bottega' }),
+      ]),
+      ctx,
+    );
+    expect(fuori.accettate.map((b) => b.id)).toEqual(['sc_x_5']);
+  });
+
   it('a place or a person the players invented: a line that takes it as true is refused, one that denies it passes', () => {
     // Round 6 and 7 (off the rails, T7): «Il guado è dall'altra parte, halfling.» for a ford the campaign does not have.
     const r = validaBattute(

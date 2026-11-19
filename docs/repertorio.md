@@ -59,7 +59,7 @@ battute:
     max_usi: 1                        # variants count as uses of the same line
     attori: [png_ottavia]             # NPCs who act in (or are there in) the narrator rows, even unnamed
     menzionati: []                    # NPCs only talked about: no presence asked
-    # richiede.stati: {png_x: [a_terra, morto]}   # the states the line assumes (in_gioco, a_terra, morto, fuggito), NPCs and PCs
+    # richiede.stati: {png_x: [a_terra, morto]}   # the states the line assumes (in_gioco, a_terra, morto, fuggito, ferito = in play and hurt), NPCs and PCs
     #                                            # (`tutti`: every PC, e.g. {tutti: [in_gioco, a_terra]} = nobody dead)
     # richiede.esito: {tipo: mancato, chi: png_x} # the outcome it tells: colpito, mancato, a_terra, fugge
 ```

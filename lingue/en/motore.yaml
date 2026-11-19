@@ -206,6 +206,10 @@ sceneggiatore:
   genitivo: [of]
   possessivo: "'s"
   parti_del_corpo: [hand, hands, fist, fists, finger, fingers, arm, arms, shoulder, shoulders, back, head, face, eye, eyes, gaze, mouth, lips, voice, smile, breath, breathing, heart, leg, legs, foot, feet, step, steps, knee, knees, forehead, cheeks, chin, neck, skin, body, jaw, brow]
+  # Words that tell someone's wound or fall (prefixes of words, or phrases): a scriptwriter's line with one during a
+  # fight, or naming a PC, says whose state it takes as true (richiede.stati or richiede.esito), so the Engine can check
+  # it (final round, attempt 4, CM T19: «a dark trail on the frozen stones…» for a PC no card had hurt).
+  stato_pg: [blood, bleed, bloodied, wound, hurt, on the ground, unconscious, limp, dark trail, dark stain, bruise]
 
 # Combat facts the table must hear (apps/server/src/prove/fatti-dovuti.ts): a spoken line tells one if it names the
 # creature and has a word starting with one of these stems (lowercase, no accents). Without one, the Engine adds the

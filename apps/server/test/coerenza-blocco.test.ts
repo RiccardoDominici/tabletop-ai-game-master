@@ -49,6 +49,10 @@ describe('the block «Cosa è vero adesso»', () => {
   it('a character losing the round in progress (surprise…) says so in its row; only in play, never for the fallen', () => {
     const righe = righeVeroAdesso(costruisciRegistro(fonti({ fermo: (id) => (id === 'png_ruggero' ? 'sorpreso' : null) })));
     expect(righe[0]).toBe('In scena: Ruggero lo sgherro ferito gravemente (sorpreso: in questo round non agisce né parla).');
+    // Hurt (any lost hit point) is the ledger's `ferite`, the `ferito` class of richiede.stati; no sheet, no flag.
+    const r = costruisciRegistro(fonti());
+    expect(r.entita.find((e) => e.id === 'png_ruggero')?.ferite).toBe(true);
+    expect(r.entita.find((e) => e.id === 'pg_ida')?.ferite).toBeUndefined();
     const morto = costruisciRegistro(fonti({ fuori: (id) => (id === 'png_ruggero' ? 'morto' : null), fermo: () => 'sorpreso' }));
     expect(morto.entita.find((e) => e.id === 'png_ruggero')?.fermo).toBeUndefined();
   });

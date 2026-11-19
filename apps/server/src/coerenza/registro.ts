@@ -32,6 +32,8 @@ export interface EntitaRegistro {
   uscito: { turno: number; verso: string | null } | null;
   /** In play but losing the round in progress, by the condition's name (surprise…): it neither acts nor speaks in it. */
   fermo?: string;
+  /** In play and hurt: it lost hit points (any, also a scratch the bands call «in piedi»). Absent = unhurt or no sheet. */
+  ferite?: true;
 }
 
 /** A fact and who knows it: everybody at the table, or only some PCs (a private outcome, a whisper). */
@@ -138,13 +140,20 @@ export function esitiDelleCarte(carte: readonly TiroMostrato[]): EsitoRegistro[]
 
 export function costruisciRegistro(f: FontiRegistro): Registro {
   const entita: EntitaRegistro[] = [];
-  for (const p of f.pg) entita.push({ id: p.id, tipo: 'pg', nome: p.nome, nomi: [...p.nomi], stato: statoDi(f, p.id, false), presenza: 'in_scena', uscito: null });
+  const ferite = (id: string, stato: StatoEntita): { ferite?: true } => {
+    const pf = f.pf(id);
+    return IN_GIOCO_REGISTRO.has(stato) && !!pf && pf.attuali < pf.massimi ? { ferite: true } : {};
+  };
+  for (const p of f.pg) {
+    const stato = statoDi(f, p.id, false);
+    entita.push({ id: p.id, tipo: 'pg', nome: p.nome, nomi: [...p.nomi], stato, presenza: 'in_scena', uscito: null, ...ferite(p.id, stato) });
+  }
   const png = (tipo: 'png' | 'gregario' | 'improvvisato', p: { id: string; nome: string; nomi: readonly string[]; nascosto?: boolean }): void => {
     const uscito = f.usciti?.get(p.id) ?? null;
     const presenza: PresenzaEntita = uscito ? 'uscito' : f.presenti.has(p.id) ? 'in_scena' : 'altrove';
     const stato = statoDi(f, p.id, p.nascosto === true && presenza === 'in_scena');
     const fermo = IN_GIOCO_REGISTRO.has(stato) ? (f.fermo?.(p.id) ?? null) : null;
-    entita.push({ id: p.id, tipo, nome: p.nome, nomi: [...p.nomi], stato, presenza, uscito: uscito ? { ...uscito } : null, ...(fermo ? { fermo } : {}) });
+    entita.push({ id: p.id, tipo, nome: p.nome, nomi: [...p.nomi], stato, presenza, uscito: uscito ? { ...uscito } : null, ...(fermo ? { fermo } : {}), ...ferite(p.id, stato) });
   };
   for (const p of f.png) png('png', p);
   for (const g of f.gregari) png('gregario', g);

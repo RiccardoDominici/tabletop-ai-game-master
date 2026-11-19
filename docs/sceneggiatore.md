@@ -70,6 +70,12 @@ The same rules as the prepared repertoire, plus those for whoever writes on the 
   declares `richiede.esito`, `nessuno` included, or it is refused; a line by or about a fighter of this visit
   (speaker, actor, or named) with an outcome word and no outcome (or `nessuno`) is refused too; narration about nobody
   («il buio cade sulla torre») passes.
+- **wounds and falls**: a line whose text or `quando` tells blood, a wound or a fall (the pack's
+  `sceneggiatore.stato_pg`: «sangue», «ferit», «a terra», «striscia scura»…), during a fight or naming a PC, says
+  whose: `richiede.stati` (the class `ferito` is in play and hurt) or an outcome in `richiede.esito`; without it, it is
+  refused. With the tag the Engine checks it against the ledger, so a player's claim («sento sangue») never becomes a
+  wound. The final round (attempt 4, CM T19) heard «Sui sassi gelati resta una striscia scura…», whose `quando` said
+  «una compagna a terra», for a PC no card had hurt (test/sceneggiatore.test.ts);
   The request says so (`scontro`) and asks, for each likely attack, a hit and a miss line with the same `quando`: the
   Engine says the one the card confirms, also for a `subito` answer. The refused lines are recorded with their text;
 - **invented places and people**: a line that names a place or a person the players invented in this visit (an

@@ -21,6 +21,16 @@ import { TUTTI_I_PG } from '../campagna/mondo';
 
 const IN_GIOCO: ReadonlySet<StatoEntita> = new Set(['in_piedi', 'ferito', 'grave', 'nascosto']);
 
+/**
+ * Whether a character is in one of the classes a line assumes. `ferito` is in play and hurt (the ledger's `ferite`, or
+ * a wounded band): a standing, unhurt PC is not, whatever its player wrote («sento sangue»).
+ */
+function inClasse(e: EntitaRegistro, classi: readonly ClasseStato[]): boolean {
+  const c = classeDi(e.stato);
+  if (classi.includes(c)) return true;
+  return classi.includes('ferito') && c === 'in_gioco' && (e.ferite === true || e.stato === 'ferito' || e.stato === 'grave');
+}
+
 /** The class of a ledger state, as `richiede.stati` names it. */
 export function classeDi(s: StatoEntita): ClasseStato {
   if (IN_GIOCO.has(s)) return 'in_gioco';
@@ -62,14 +72,14 @@ export function motivoControRegistro(b: Battuta, entita: readonly EntitaRegistro
     // assumes for all of them (final round, CM T32, CA T22, PR T32: «Vi sveglia il freddo» woke a dead PC):
     // `{tutti: [in_gioco, a_terra]}` = nobody dead or fled.
     if (id === TUTTI_I_PG) {
-      const fuori = entita.find((e) => e.tipo === 'pg' && !classi.includes(classeDi(e.stato)));
+      const fuori = entita.find((e) => e.tipo === 'pg' && !inClasse(e, classi));
       if (fuori) return `assumes every PC ${classi.join('/')}, the ledger has ${fuori.id} ${classeDi(fuori.stato)}`;
       continue;
     }
     const e = per.get(id);
     if (!e) return `assumes ${id}, who is not in the ledger`;
     const c = classeDi(e.stato);
-    if (!classi.includes(c)) return `assumes ${id} ${classi.join('/')}, the ledger has ${c}`;
+    if (!inClasse(e, classi)) return `assumes ${id} ${classi.join('/')}, the ledger has ${c}${c === 'in_gioco' && !e.ferite ? ' (unhurt)' : ''}`;
     if (c !== 'fuggito' && e.presenza !== 'in_scena') return `assumes ${id} here (${classi.join('/')}), the ledger has ${id} away`;
   }
   // Losing the round in progress (surprise…): it neither speaks nor acts in a line of that round (final round, PR T11/T13).

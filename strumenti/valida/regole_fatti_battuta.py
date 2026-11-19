@@ -16,7 +16,7 @@ import re
 from .carica import Campagna
 from .esito import Esito
 
-CLASSI_STATO = ("in_gioco", "a_terra", "morto", "fuggito")
+CLASSI_STATO = ("in_gioco", "a_terra", "morto", "fuggito", "ferito")   # ferito: in play and hurt
 TUTTI = "tutti"   # richiede.stati: every PC (apps/server/src/repertorio/fatti-battuta.ts)
 TIPI_ESITO = ("colpito", "mancato", "ferito", "a_terra", "fugge", "nessuno")
 

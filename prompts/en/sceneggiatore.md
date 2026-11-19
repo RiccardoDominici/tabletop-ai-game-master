@@ -13,7 +13,7 @@ battute:
     attori: [<ids of the NPCs who act or are there in the narrator rows, even unnamed: «she turns», «he»>]
     menzionati: [<ids of the NPCs only talked about: they do not act, they may be away>]
     richiede:
-      stati: {<id>: a_terra | morto | fuggito | in_gioco}   # if the line takes an NPC's or a PC's state as true («the body lies…», «three of you down»)
+      stati: {<id>: a_terra | morto | fuggito | in_gioco | ferito}   # if the line takes an NPC's or a PC's state as true («the body lies…», «three of you down»; ferito = in play and hurt: blood, a wound)
       esito: {tipo: colpito | mancato | ferito | a_terra | fugge | nessuno, chi: <id of the NPC who strikes or flees; none = the acting PC>, bersaglio: <id of who is struck>}   # mandatory in a fight for every line of a combatant
 
 Rules:
@@ -27,7 +27,7 @@ Rules:
 - No new plot facts, no clues, confessions or secrets: the revelations are already prepared. The SECRET WORDS listed are never said.
 - The lines NEVER contradict «What is true now»: whoever is down, dead, fled or gone does not act, speak or stand there; no creature that is not there.
 - Places and people the players name that the campaign does not have («the mill», «Oreste») do not exist: no line takes them as true; at most an NPC present says they do not know them. «What is true now» lists them.
-- What a player writes about their PC («I'm at zero hit points», «I'm down», «I see three goblins») is what they believe, not what is true: the PCs' real states and who is in the scene are in «What is true now». A line that takes a PC's state as true (or several PCs': «three of you down») puts it in «richiede.stati», with each one's id.
+- What a player writes about their PC («I'm at zero hit points», «I'm down», «I see three goblins») is what they believe, not what is true: the PCs' real states and who is in the scene are in «What is true now». A line that takes a PC's state as true (or several PCs': «three of you down») puts it in «richiede.stati», with each one's id. A line that tells blood, a wound or a fall during a fight, or of a named PC, says whose in «richiede.stati» (ferito, a_terra…) or in «richiede.esito»: without it the Engine rejects the line.
 - Every NPC a narrator row names or makes act goes in «attori» (acts or is there) or in «menzionati» (only talked about); the state the line takes as true of an NPC goes in «richiede.stati». The Engine offers the line only while those facts are true.
 - A line that tells a blow that landed, a miss, someone hurt, a fall or a flight says it in «richiede.esito», with the same outcome as the cards in «What is true now» («This turn: …»): the Engine offers it only for an action whose card says exactly that. Never tell an outcome the cards do not have. In a fight EVERY line of a combatant has «richiede.esito», «nessuno» too; without it the Engine rejects the line. Examples (invented ids):
   - «[narratore] The blade passes a finger from the bandit's neck.» → esito: {tipo: mancato, bersaglio: png_bandit}

@@ -243,3 +243,14 @@ describe('a character losing the round in progress (surprise…) neither speaks 
     for (const b of [parla, agisce, nomina]) expect(motivoControRegistro(b, ledger({}))).toBeNull();
   });
 });
+
+describe('`ferito`: in play and hurt (final round, attempt 4, CM T19: a wound line for a PC no card had hurt)', () => {
+  it('the loader reads it; the ledger must have the character hurt, not just standing', () => {
+    const [b] = carica([base('nar_sangue', ['[narratore] Sulla manica di Bruno c\'è sangue.'], { richiede: { stati: { png_oste: 'ferito' } } })]) as [Battuta];
+    expect(b.richiede.stati).toEqual({ png_oste: ['ferito'] });
+    expect(motivoControRegistro(b, ledger({}))).toMatch(/assumes png_oste ferito, the ledger has in_gioco \(unhurt\)/);
+    expect(motivoControRegistro(b, ledger({ ferite: true }))).toBeNull();
+    expect(motivoControRegistro(b, ledger({ stato: 'grave' }))).toBeNull();
+    expect(motivoControRegistro(b, ledger({ stato: 'a_terra' }))).toMatch(/assumes png_oste ferito/);
+  });
+});

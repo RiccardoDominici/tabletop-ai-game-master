@@ -50,9 +50,10 @@ export interface AlternativaRichiede extends CondizioniStato {
 
 /**
  * The state class of a character a line assumes (`richiede.stati`, docs/repertorio.md): in play (standing, wounded,
- * hidden), down (on the ground or dying), dead, fled.
+ * hidden), down (on the ground or dying), dead, fled; and `ferito`, in play and hurt (it lost hit points: a line about
+ * its blood or wound; final round, attempt 4, CM T19, «una striscia scura» for a PC no card had hurt).
  */
-export const CLASSI_STATO = ['in_gioco', 'a_terra', 'morto', 'fuggito'] as const;
+export const CLASSI_STATO = ['in_gioco', 'a_terra', 'morto', 'fuggito', 'ferito'] as const;
 export type ClasseStato = (typeof CLASSI_STATO)[number];
 
 /**

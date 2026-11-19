@@ -204,6 +204,10 @@ sceneggiatore:
   genitivo: [di, del, della]
   possessivo: ''
   parti_del_corpo: [mano, mani, pugno, pugni, dito, dita, braccio, braccia, spalla, spalle, schiena, testa, viso, faccia, volto, occhio, occhi, sguardo, bocca, labbra, voce, sorriso, fiato, respiro, cuore, gamba, gambe, piede, piedi, passo, passi, ginocchia, fronte, guance, mento, collo, pelle, corpo]
+  # Words that tell someone's wound or fall (prefixes of words, or phrases): a scriptwriter's line with one during a
+  # fight, or naming a PC, says whose state it takes as true (richiede.stati or richiede.esito), so the Engine can check
+  # it (final round, attempt 4, CM T19: «Sui sassi gelati resta una striscia scura…» for a PC no card had hurt).
+  stato_pg: [sangue, sanguin, insanguin, ferit, feriscon, ferisce, a terra, svenut, privo di sensi, priva di sensi, zoppic, striscia scura, macchia scura, scia scura, livid]
 
 # Fatti dello scontro che il tavolo deve sentire (apps/server/src/prove/fatti-dovuti.ts): una riga detta li racconta
 # se nomina la creatura e contiene una parola che comincia con una di queste radici (minuscole, senza accenti).

@@ -173,8 +173,8 @@ assumes is true in the ledger (who is in the scene, who is down, dead or fled), 
   (`chi`, a `[png_x]` row) needs no tag.
 - `menzionati: [png_x]`: an NPC the line only talks about («dicono che Zirrà…», «Ugo l'aveva detto»): no presence asked.
 - `richiede.stati: {png_x: [a_terra, morto]}`: the state the line takes as true, of `in_gioco`, `a_terra`, `morto`,
-  `fuggito`; a line about a body («il corpo di Zirrà giace…») needs it, or the Engine keeps it back while Zirrà is out of
-  play. Only in the base of `richiede`, not in an `oppure` alternative.
+  `fuggito`, `ferito` (in play and hurt: a line about someone's blood or wound); a line about a body («il corpo di Zirrà
+  giace…») needs it, or the Engine keeps it back while Zirrà is out of play. Only in the base of `richiede`, not in an `oppure` alternative.
 Every NPC a narrator row names goes in one of the three; an untagged one is a warning [V `REPERTORIO.png_non_segnato`]
 (the Engine then only asks it to be in play, not in the scene). A character who acts in a narrator row needs a sheet
 before it can be tagged: one declared in the sheets (`relazioni`, `chi_altro_sa`) but never given a sheet, named by

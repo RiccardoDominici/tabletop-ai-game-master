@@ -110,6 +110,19 @@ function paroleDiEsito(t: string): string | null {
   return null;
 }
 
+/**
+ * The first word of a wound or a fall in the text (language pack, `sceneggiatore.stato_pg`: word prefixes, or phrases),
+ * or null. Lowercase, accents kept as the pack writes them.
+ */
+export function parolaDiStato(t: string): string | null {
+  const testo = ` ${t.toLowerCase().replace(/[^\p{L}\p{N}' ]+/gu, ' ').replace(/\s+/g, ' ')} `;
+  for (const w of guardia().stato) {
+    const i = w.includes(' ') ? testo.indexOf(` ${w} `) : testo.search(new RegExp(`[ ']${escapa(w)}`, 'u'));
+    if (i >= 0) return w;
+  }
+  return null;
+}
+
 /** Whether a row names that NPC (name, short name, alias), as the ledger has them. */
 function nominaPng(testo: string, id: string, entita: readonly EntitaRegistro[]): boolean {
   const e = entita.find((x) => x.id === id);
@@ -222,6 +235,15 @@ export function validaBattute(testo: string, ctx: ContestoValidazione): EsitoVal
       const parola = paroleDiEsito(b.testo.map((r) => r.testo).join(' '));
       if (parola) return void scartate.push({ id: b.id, motivo: `racconta un esito («${parola}») senza richiede.esito` }), false;
     }
+    // A wound or a fall told during a fight, or of a named PC, says whose (richiede.stati, or an outcome in
+    // richiede.esito), so the Engine checks it against the ledger: final round, attempt 4, CM T19, «Sui sassi gelati
+    // resta una striscia scura…» (in the `quando`: «una compagna a terra») for a PC no card had hurt, written on the
+    // player's «sento sangue». The prompt already said a claim is not a fact; the check makes it the Engine's.
+    const tuttoIlTesto = [b.quando, ...b.testo.map((r) => r.testo)].join(' ');
+    const ferita = parolaDiStato(tuttoIlTesto);
+    const nominaPg = nomi.some((n) => ` ${normalizzaFrase(tuttoIlTesto)} `.includes(` ${normalizzaFrase(n)} `));
+    const senzaStato = !Object.keys(b.richiede.stati).length && (!b.richiede.esito || b.richiede.esito.tipo === 'nessuno');
+    if (ferita && (ctx.scontro || nominaPg) && senzaStato) return void scartate.push({ id: b.id, motivo: `dà per vera una ferita o una caduta («${ferita}») senza dire di chi (richiede.stati o richiede.esito)` }), false;
     const confermato = ctx.inventati?.size ? confermaInventato(b.testo.map((r) => r.testo), ctx.inventati) : null;
     if (confermato) return void scartate.push({ id: b.id, motivo: `dà per vero «${confermato}», che la campagna non ha` }), false;
     if (!b.temi.length) return void scartate.push({ id: b.id, motivo: 'senza temi: non entrerebbe mai in catalogo' }), false;
@@ -287,7 +309,7 @@ export function pgCheAgisce(testo: string, nomi: readonly string[]): string | nu
 const escapa = (x: string): string => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /** Le parole della guardia nella lingua dei contenuti (lingue/<codice>/motore.yaml, sezione `sceneggiatore`). */
-const guardia = (): { congiunzioni: string; coordinanti: string; negazioni: string; clitici: string; articoli: string; genitivo: string; possessivo: string; corpo: string } =>
+const guardia = (): { congiunzioni: string; coordinanti: string; negazioni: string; clitici: string; articoli: string; genitivo: string; possessivo: string; corpo: string; stato: string[] } =>
   regole('sceneggiatore', (s) => {
     const alt = (k: string): string => campoElenco(s, k).map((x) => escapa(x).replace(/ /g, '\\s+')).join('|');
     return {
@@ -299,6 +321,7 @@ const guardia = (): { congiunzioni: string; coordinanti: string; negazioni: stri
       genitivo: alt('genitivo'),
       possessivo: escapa(campoTesto(s, 'possessivo')),
       corpo: alt('parti_del_corpo'),
+      stato: campoElenco(s, 'stato_pg').map((x) => x.toLowerCase()),
     };
   });
 
