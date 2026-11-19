@@ -173,7 +173,7 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   `campagne/mulino-notte/NOTE_SULLA_SKILL.md` (2befef4, b97d3ef). The skill and the validator were then fixed from
   them: strict stall lines, defeat endings and tags (b02324d), SCELTA.premio (a5b4f4e), the tre-scene example and
   step 0 (bc59cc2), clock gates (d5be168), outcomes on a return (b4a5303), the misleading references (6d6f16e), and
-  the cheap low findings (next commit). The blind judgement of nozze-neve (65f572a) was done before.
+  the cheap low findings (f5ed7a3). The blind judgement of nozze-neve (65f572a) was done before.
 - **Images**:
   - ~~**location nodes without an image**~~ **Done**: the validator now says it (`strumenti/valida/regole_immagini.py:163-176`, from d252dd1), and `n_sasso` was fixed in d252dd1. The validator rule is in place; the text of skill v2 was not checked here;
   - **the style sheet must not impose the weather on everything**: the style sheets no longer name rain (`campagne/*/stile.yaml`), ~~but the flagged images below still show it inside. Better the weather in the prompt of the outdoor locations than in the style. Open until those images pass;~~ **Done** (1a9fa04 "stop the rain falling inside rooms, regenerate five images"; 924646d; ponte-lanterne manifest entries all «ok»).

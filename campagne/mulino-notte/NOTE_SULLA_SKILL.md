@@ -307,3 +307,19 @@ Each finding: where in the skill, what happened, suggested fix.
      exclusive tick variants for one segment (W8).
   5. Fix the references that mislead the author: «singular formal pronoun» means Italian *voi*, not *lei* (N3); name a
      field for the climax mechanism (N4); add the «a `quando` that announces a hidden world event» example (W10).
+
+## Status after the fixes (19 November 2026)
+
+Every high and medium finding is fixed in the skill, the validator or the Engine; the low ones too, except W13.
+
+| Finding | Fix | Commit |
+|---|---|---|
+| N5 (high) | step 9 and §8 list stall lines, defeat endings and the tags; strict mode requires them (`stallo_scarso`, `sconfitta_mancante`, `sconfitta_stati`, `png_non_segnato`, new `esito_mancante`) | b02324d (campaigns: 458c950..4a1844a, 01203b4) |
+| W5 (high) | `SCELTA.premio` reads a loss or negation in the price, and the villain's win (`cattivo.png`) is a price | a5b4f4e |
+| N1, N2 (medium) | step 0 points to two invented fixtures (`mini`, new `tre-scene`) and lists docs/mondo.md, docs/prove.md §2 §9 | bc59cc2 |
+| W7, W8 (medium) | one clock bound is enough in lines and outcomes, with clear errors; exclusive variants of one sign are accepted (Engine test) | d5be168 |
+| W18 (medium) | Engine: an outcome already true when the table returns does not close the scene in that visit | b4a5303 (and 06b3f0d) |
+| N3, N4, W1, W10, W11 (medium), W16 | singular *voi*; `preparazione.meccanismo`; scene gates at step 5; `quando` that announces the future; `REPERTORIO.attore_assente`; line fields | 6d6f16e |
+| N6–N11, W3, W4, W9, W12, W14, W15, W17 (low) | checks per step, rule 9, fixture note, language file, version, VINCOLI note, posta message, one-word questions, music tags, SRD ids, world questions, README language | f5ed7a3 |
+| W2, W6 (low) | step 3 leaves rivelazioni/nodi to step 4; registers with fewer forms than NPCs (mestiere §2) | 6d6f16e |
+| W13 (low) | a generic script set for `--copioni`: not done | open |
