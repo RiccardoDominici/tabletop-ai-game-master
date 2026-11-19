@@ -1,0 +1,273 @@
+{
+ "etichetta": "finale7-torre-mozza-combattimento-A-automatico",
+ "turni": {
+  "giocati": 12,
+  "copione": 14,
+  "fine_prima": {
+   "turno_copione": 8,
+   "turno_server": 14,
+   "motivo": "finale"
+  },
+  "finale": {
+   "turno": 14,
+   "id": "nar_sconfitta_zirra_caduti"
+  },
+  "cambi_scena": [
+   "scena_carbonaia",
+   "scena_torre"
+  ],
+  "orologi_max": {
+   "o_mezzanotte": "1/8"
+  }
+ },
+ "fughe": {
+  "improvvisate": 0,
+  "prescritte": 0,
+  "elenco": [],
+  "righe_segrete_fermate": 0,
+  "selettore_con_parola_segreta": []
+ },
+ "coerenza": {
+  "violazioni": 6,
+  "per_regola": {
+   "R-dovuto": {
+    "aggiunta": 6
+   }
+  },
+  "esempi": [
+   {
+    "turno": 6,
+    "regola": "R-dovuto",
+    "azione": "aggiunta",
+    "frase": ""
+   },
+   {
+    "turno": 11,
+    "regola": "R-dovuto",
+    "azione": "aggiunta",
+    "frase": ""
+   },
+   {
+    "turno": 11,
+    "regola": "R-dovuto",
+    "azione": "aggiunta",
+    "frase": ""
+   },
+   {
+    "turno": 12,
+    "regola": "R-dovuto",
+    "azione": "aggiunta",
+    "frase": ""
+   },
+   {
+    "turno": 13,
+    "regola": "R-dovuto",
+    "azione": "aggiunta",
+    "frase": ""
+   },
+   {
+    "turno": 14,
+    "regola": "R-dovuto",
+    "azione": "aggiunta",
+    "frase": ""
+   }
+  ]
+ },
+ "private": {
+  "azioni_private": 2,
+  "righe_privato": 0,
+  "esiti_privati_log": 5,
+  "spostate_dalla_guardia": 0,
+  "righe_al_tavolo_sospette": 0,
+  "sospette": [],
+  "al_tavolo_candidate": 0,
+  "al_tavolo": []
+ },
+ "prove": {
+  "azioni_risolte": 17,
+  "con_tiro": 8,
+  "tipi": {
+   "nessuna": 9,
+   "prova": 1,
+   "attacco": 7
+  },
+  "dadi": {
+   "d6": 28,
+   "d10": 2,
+   "d20": 16,
+   "d8": 4,
+   "d4": 1
+  },
+  "regole_tipo": {
+   "Spada lunga, Attacco in mischia (Forza): dNN contro CA N (difesa di zirrà)": 3,
+   "Ascoltare N%: dN serve N o meno": 1,
+   "Spada corta, Attacco in mischia (Forza): dNN contro CA N (difesa di zirrà) (compresi: Atta": 1,
+   "Pugnale, Attacco in mischia (Forza): dNN contro CA N (difesa di zirrà) (compresi: Attacco ": 1,
+   "Spada corta, Attacco in mischia (Forza): dNN contro CA N (difesa di zirrà)": 1,
+   "Pugnale, Attacco in mischia (Forza): dNN contro CA N (difesa di zirrà)": 1
+  },
+  "set": "basic-fantasy-r142",
+  "arbitro": "regole (classificatore del Motore, senza modello)"
+ },
+ "combattimento": {
+  "eventi": {
+   "combattimento: sorpresa": 1,
+   "combattimento: inizia": 1,
+   "combattimento: iniziativa ritirata": 4,
+   "combattimento: esce dallo scontro": 2,
+   "combattimento: every PC down, the death saves rolled to the end": 1,
+   "combattimento: finito": 1
+  },
+  "fatti_morale_terra": 21,
+  "esempi": [
+   "voce: audio pre-generato mancante, sintesi dal vivo: {\"level\": 20, \"time\": \"2026-11-19T19:05:19.660Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"voce\", \"id_frase\": \"t4-f2\", \"chiave\": \"[omessa]\", \"testo\": \"Un ciocco crolla dentro la carbonaia, e la terra si crepa. Un filo di fumo",
+   "prove: tiri del turno: {\"level\": 30, \"time\": \"2026-11-19T19:09:13.227Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 11, \"attesa_ms\": 2, \"tardive\": [\"a14\"], \"tiri\": [\"Zirrà: Spada corta 22 contro CA 12, riuscita\", \"Grosso: Mazza ferra",
+   "coherence: block of the call: {\"level\": 30, \"time\": \"2026-11-19T19:09:13.228Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 11, \"righe\": [\"In scena: Grosso in piedi; Tonio Benni in piedi; Zirrà ferito gravemente.\", \"PG: Livia Sarti ferito; F",
+   "prove: fatti dello scontro non detti dalla narrazione, li dice il Motore: {\"level\": 40, \"time\": \"2026-11-19T19:09:13.839Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 11, \"mancanti\": [{\"tipo\": \"a_terra\", \"id\": \"pg_eliandro\", \"riga\": \"Eliandro cade a terra.\"}, {\"tipo\": \"colpito\", \"id\"",
+   "voce: testo per la sintesi: {\"level\": 20, \"time\": \"2026-11-19T19:09:23.833Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"voce\", \"id_frase\": \"t11-d0\", \"parlante\": \"narratore\", \"testo_voce\": \"Eliàndro cade a terra.\", \"msg\": \"voce: testo per la sintesi\"}",
+   "prove: tiri del turno: {\"level\": 30, \"time\": \"2026-11-19T19:09:52.291Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 12, \"attesa_ms\": 2, \"tardive\": [\"a15\"], \"tiri\": [\"Eliandro: Tiro salvezza contro la morte 17 contro CD 10, riuscita\",",
+   "coherence: block of the call: {\"level\": 30, \"time\": \"2026-11-19T19:09:52.291Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"regia\", \"turno\": 12, \"righe\": [\"In scena: Grosso in piedi; Tonio Benni in piedi; Zirrà ferito gravemente.\", \"PG: Livia Sarti ferito; F",
+   "combattimento: esce dallo scontro: {\"level\": 30, \"time\": \"2026-11-19T19:10:19.093Z\", \"app\": \"tabletop-ai-gm\", \"modulo\": \"combattimento\", \"id\": \"pg_livia\", \"esito\": \"morto\", \"msg\": \"combattimento: esce dallo scontro\"}"
+  ],
+  "fatti_morale": [],
+  "fatti_a_terra": [
+   "Turno di Zirrà: Zirrà colpisce Eliandro: 5 danni, e Eliandro va a terra (raccontalo in una frase sua). Dettagli: attacco con Spada corta a Eliandro: Spada corta",
+   "Eliandro è a terra: tiro salvezza contro la morte 17 contro CD 10 → successi 1 su 1: è stabile, resta privo di sensi.",
+   "Turno di Grosso: Grosso colpisce Livia Sarti: 8 danni, e Livia Sarti va a terra (raccontalo in una frase sua). Dettagli: attacco con Mazza ferrata a Livia Sarti",
+   "Livia Sarti è a terra: tiro salvezza contro la morte 3 contro CD 10 → fallimenti 1 su 1: è MORTO.",
+   "Turno di Grosso: Grosso colpisce Nespola Tondi: 7 danni, e Nespola Tondi va a terra (raccontalo in una frase sua). Dettagli: attacco con Mazza ferrata a Nespola",
+   "Nespola Tondi è a terra: tiro salvezza contro la morte 6 contro CD 10 → fallimenti 1 su 1: è MORTO.",
+   "Il combattimento è finito: i PG sono tutti a terra."
+  ],
+  "fuori_gioco_log": {}
+ },
+ "lettore": {
+  "scelte": 17,
+  "nessuna": 15,
+  "ms_classifica_med": 646,
+  "ms_classifica_peggiore": 2278
+ },
+ "sceneggiatore": {
+  "richieste": {
+   "subito:ok": 16,
+   "prossime:ok": 8,
+   "prossime:saltata": 3
+  },
+  "consegnate": 7,
+  "dette_a_finestra_aperta": 7,
+  "accettate": 73,
+  "scartate": {
+   "tic di png_berta troppo vicino all'ultimo: «le pecore non aspettano»": 1,
+   "png_zirra agisce nella battuta ma non è nella scena o non può agire": 1
+  },
+  "ms_claude_med": 10328,
+  "ms_totale_med_subito": 18036,
+  "processo": {
+   "avvio": 1,
+   "ok": 24,
+   "saltata": 3,
+   "arresto": 1
+  }
+ },
+ "tempi": {
+  "finestra_ms": {
+   "mediana": 20065.5,
+   "peggiore": 20149,
+   "n": 12
+  },
+  "llm_prima_frase": {
+   "mediana": 18,
+   "peggiore": 58,
+   "n": 11
+  },
+  "voce_primo_audio": {
+   "mediana": 672,
+   "peggiore": 1563,
+   "n": 11
+  },
+  "schermo_inizio_audio": {
+   "mediana": 822,
+   "peggiore": 865,
+   "n": 7
+  },
+  "llm_fine": {
+   "mediana": 886,
+   "peggiore": 2216,
+   "n": 12
+  },
+  "audio_fine": {
+   "mediana": 14306,
+   "peggiore": 31487,
+   "n": 12
+  },
+  "s_tra_turni_med": 35,
+  "s_tra_turni_peggiore": 68.737
+ },
+ "voce": {
+  "motore": "mock",
+  "buchi": {
+   "totale": 15,
+   "in_frase": 0,
+   "tra_frasi": 15,
+   "silenzio_ms": 5482,
+   "per_turno": [
+    0,
+    0,
+    0,
+    1,
+    0,
+    1,
+    1,
+    1,
+    4,
+    0,
+    4,
+    3
+   ]
+  },
+  "proiettore_secondi": 268,
+  "errori_voce": {
+   "campagna: voce_id ripetuti tra i PNG: vincent": 1
+  }
+ },
+ "log": {
+  "errori": 0,
+  "avvisi": 26,
+  "per_messaggio": [
+   "40 ×8 llm: risposta strutturata non valida",
+   "40 ×5 prove: fatti dello scontro non detti dalla narrazione, li dice il Motore",
+   "40 ×4 llm: si usa il ripiego deterministico",
+   "40 ×2 repertorio: rilascio dopo una prova fallita, rifiutato",
+   "40 ×2 repertorio: [usa] rifiutato",
+   "40 ×2 sceneggiatore: battuta non usabile",
+   "40 ×1 campagna: voce_id ripetuti tra i PNG: vincent",
+   "40 ×1 https: the certificate does not cover this LAN address: run scripts/certificato.sh again",
+   "40 ×1 sceneggiatore: the outcome the line tells is not on the card"
+  ],
+  "provider": [
+   "lettore         → locale (minimo) mlx-community/Qwen3-0.6B-4bit — configurato (.",
+   "arbitro_azioni  → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "arbitro_prove   → regole (completo) — configurato (../../../../private/tmp/claud",
+   "riassunto       → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "regole          → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "voce            → finto — variabile d'ambiente TAGM_TTS",
+   "ascolto         → nessuno — configurato (../../../../private/tmp/claude-501/-Use",
+   "immagini        → nessuno — configurato (../../../../private/tmp/claude-501/-Use"
+  ]
+ },
+ "serata": {
+  "ore": null,
+  "consiglio_ai_turni": [],
+  "chiusura": {}
+ },
+ "costo_usd": 0,
+ "righe": {
+  "prescritte": 13,
+  "improvvisate": 15,
+  "usa_rifiutati": 2,
+  "azioni_pubbliche": 15,
+  "azioni_senza_risposta": 8,
+  "riparazioni": 0,
+  "conferme_motore": 5
+ }
+}
