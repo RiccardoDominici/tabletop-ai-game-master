@@ -40,7 +40,7 @@ parole:
   - parola: "una A e una E incise sul Sasso"
     regex: "\\buna a,? e una e\\b|\\ba ed e\\b"
     fatti: [f_iniziali]
-    pubblica_dopo: [nar_iniziali_mano, nar_iniziali_custode, i_iniziali]
+    pubblica_dopo: [nar_iniziali_mano, nar_iniziali_custode, i_iniziali, nar_stallo2_sasso]
     nota: "le iniziali della promessa, sotto la neve; il Sasso ha anche altre iniziali, che sono pubbliche"
 
   # --- il giorno della prima neve di sessant'anni fa (r_passo) --------------------------------------------
@@ -89,7 +89,7 @@ parole:
   - parola: "la nonna deve dire al Sasso la storia vera"
     regex: "\\bla nonna,? al sasso,? dica\\b|\\bstoria vera\\b"
     fatti: [f_zelia_motivo]
-    pubblica_dopo: [zel_macchia_privato, zel_promessa_cugina, zel_promessa_lettere, i_zelia_confessa, nar_quaderno, nar_quaderno_privato, i_quaderno]
+    pubblica_dopo: [zel_macchia_privato, zel_promessa_cugina, zel_promessa_lettere, i_zelia_confessa, nar_quaderno, nar_quaderno_privato, i_quaderno, nar_stallo2_casa]
     nota: "il motivo di Zelia, che dice anche che la storia dei Bonfanti non è vera; «storie vere» al plurale, nel suo esempio di voce, non è un segreto"
   - parola: "le impronte verso la stalla dei Bonfanti"
     regex: "\\bimpront\\w*[^.]{0,60}\\bstalla dei bonfanti\\b|\\bstalla dei bonfanti\\b[^.]{0,60}\\bimpront"
@@ -99,7 +99,7 @@ parole:
   - parola: "la macchia d'inchiostro e il capello rosso"
     regex: "\\bmacchia d'inchiostro\\b|\\binchiostro fresco\\b|\\bcapello rosso\\b"
     fatti: [f_macchia_inchiostro]
-    pubblica_dopo: [nar_scatolina, i_macchia]
+    pubblica_dopo: [nar_scatolina, i_macchia, nar_stallo2_casera]
     nota: "le tracce sulla scatolina; le dita macchiate e la treccia rossa di Zelia sono pubbliche, il legame no"
   - parola: "Bastiano ferrava la Gigia"
     regex: "\\bferrav\\w*\\b|\\bferrare la (mula )?gigia\\b"

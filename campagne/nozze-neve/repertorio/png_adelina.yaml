@@ -191,6 +191,7 @@ battute:
     quando: "al Sasso, Adelina alza l'anello per raccontarne la storia"
     temi: [racconta, raccontare, storia, consegno, restituisco, ridò, porgo, benedizione]
     richiede: {orologio: {id: o_tramonto, min: 4, max: 7}, battute_non_usate: [ade_neve_lettera, ade_neve_giacca, ade_neve_tilde, ade_sasso_c]}
+    attori: [png_ettore]
     testo:
       - "[narratore] Adelina alza l'anello nella luce, e si aggiusta lo scialle sulle spalle, due volte."
       - "[png_adelina] Questo anello era di mia madre, Bonfanti come me."
@@ -207,6 +208,7 @@ battute:
     quando: "al Sasso, Adelina alza l'anello per raccontarne la storia"
     temi: [racconta, raccontare, storia, consegno, restituisco, ridò, porgo, benedizione]
     richiede: {orologio: {id: o_tramonto, min: 4, max: 7}, indizi_rivelati: [i_adelina_neve], battute_non_usate: [ade_sasso_a, ade_sasso_c]}
+    attori: [png_ettore]
     testo:
       - "[narratore] Adelina alza l'anello nella luce, e si toglie lo scialle."
       - "[png_adelina] Questo anello non era di mia madre. Me l'ha dato Ettore, sessant'anni fa, per sposarmi."

@@ -156,6 +156,7 @@ battute:
     quando: "è il momento dell'ultimo segno della lite"
     temi: [orologio]
     richiede: {orologio: {id: o_lite, min: 5, max: 5}}
+    attori: [png_ettore]
     testo:
       - "[narratore] Ettore batte il bastone, e i Morlacchi portano fuori le panche."
       - "[narratore] Escono nella neve una dopo l'altra, e mezza sala resta vuota."
@@ -181,6 +182,8 @@ battute:
     quando: "è il momento del secondo segno dello zio"
     temi: [orologio]
     richiede: {orologio: {id: o_zio, min: 1, max: 1}}
+    attori: [png_gaspare]
+    menzionati: [png_zelia]
     testo:
       - "[narratore] Lo zio Gaspare sale la scala, piano, e bussa alla porta di Zelia."
     effetti: {avanza_orologio: o_zio}
@@ -203,6 +206,7 @@ battute:
     quando: "è il momento dell'ultimo segno dello zio"
     temi: [orologio]
     richiede: {orologio: {id: o_zio, min: 3, max: 3}}
+    attori: [png_gaspare]
     testo:
       - "[narratore] Lo zio Gaspare esce dalla stalla, e si pulisce le mani nel fazzoletto."
     effetti: {avanza_orologio: o_zio}
@@ -248,6 +252,7 @@ battute:
     tipo: indizio
     quando: "un PG sfoglia il Libro del Sasso con il permesso del Custode"
     temi: [libro, sfoglio, sfogliare, spose, catenina, catenine, registro]
+    menzionati: [png_adelina]
     testo:
       - "[narratore] Il Custode apre il Libro sulle ginocchia e lo gira verso di voi, con un sospiro."
       - "[narratore] Cent'anni di nozze di neve dei Bonfanti: le spose portano tutte una catenina d'argento."
@@ -271,6 +276,7 @@ battute:
     scena: scena_casera
     quando: "accanto al camino, un PG chiede a Tilde della febbre di Gaspare bambino"
     temi: [tilde, levatrice, febbre]
+    menzionati: [png_gaspare]
     testo:
       - "[narratore] La vecchia Tilde alza la testa e parla forte, perché ci sente poco."
       - "[narratore] Quella notte il piccolo Gaspare scottava, dice."
@@ -284,6 +290,7 @@ battute:
     scena: scena_casera
     quando: "un PG guarda il caldaio di rame o ne chiede alla casara"
     temi: [caldaio, rame, paiolo, casara]
+    menzionati: [png_gaspare]
     testo:
       - "[narratore] Il caldaio è di rame di Pontebruno, con il segno del ramaio ancora lucido."
       - "[narratore] La casara, fiera, dice che l'ha pagato lo zio Gaspare in contanti, un mese fa."
@@ -298,6 +305,7 @@ battute:
     quando: "un PG fruga nella giacca di Ettore, appesa o addosso"
     temi: [giacca, frugo, rovisto, sfilo, borseggio]
     richiede: {battute_non_usate: [nar_giacca_tasca_privato]}
+    menzionati: [png_adelina]
     testo:
       - "[narratore] Nella tasca interna c'è una lettera gialla, piegata in quattro e chiusa con la ceralacca."
       - "[narratore] Sopra, in una grafia storta da mano grossa, c'è scritto: per Adelina."
@@ -310,6 +318,7 @@ battute:
     quando: "in privato, un PG fruga nella giacca di Ettore"
     temi: [giacca, frugo, rovisto, sfilo, borseggio]
     richiede: {privata: true, battute_non_usate: [nar_giacca_tasca]}
+    menzionati: [png_adelina]
     testo:
       - "[narratore] Nella tasca interna c'è una lettera gialla, piegata in quattro e chiusa con la ceralacca."
       - "[narratore] Sopra, in una grafia storta da mano grossa, c'è scritto: per Adelina."
@@ -322,6 +331,7 @@ battute:
     quando: "un PG rompe la ceralacca della lettera avuta da Ettore e la legge"
     temi: [ceralacca, sigillo, leggiamo, leggo]
     richiede: {battute_usate: [ett_lettera_data], battute_non_usate: [nar_sigillo_preso]}
+    menzionati: [png_adelina, png_ettore]
     testo:
       - "[narratore] La ceralacca si spezza con un rumore secco, come un rametto."
       - "[narratore] Ettore scrive che il fratello di Adelina bruciava di febbre, e il medico non saliva."
@@ -335,6 +345,7 @@ battute:
     quando: "un PG rompe la ceralacca della lettera presa dalla giacca di Ettore e la legge"
     temi: [ceralacca, sigillo, leggiamo, leggo]
     richiede: {battute_usate: [nar_giacca_tasca], battute_non_usate: [nar_sigillo_dato]}
+    menzionati: [png_adelina, png_ettore]
     testo:
       - "[narratore] La ceralacca si spezza con un rumore secco, come un rametto."
       - "[narratore] Ettore scrive che il fratello di Adelina bruciava di febbre, e il medico non saliva."
@@ -434,6 +445,7 @@ battute:
     scena: scena_casa_bonfanti
     quando: "un PG chiede alla sposa dov'è l'anello, o chi l'ha preso"
     temi: [agnese, sposa, gesti, mimare]
+    attori: [png_zelia]
     testo:
       - "[narratore] La sposa apre la bocca, si ricorda dell'usanza e la richiude."
       - "[narratore] Guarda la sorella e si spolvera il vestito, come se avesse addosso la paglia."
@@ -544,6 +556,7 @@ battute:
     quando: "il garzone tira fuori le carte della sua borsa"
     temi: [borsa, contratto, carte, bortolo]
     richiede: {battute_non_usate: [nar_borsa_garzone_privato], da_pg: [pg_remo]}
+    menzionati: [png_gaspare]
     testo:
       - "[narratore] Dalla borsa esce un foglio piegato in tre, con il sigillo di Sior Bortolo."
       - "[narratore] Cinque estati di pascolo al Prato Alto, venti fiorini di caparra già pagati a Gaspare Bonfanti."
@@ -556,6 +569,7 @@ battute:
     quando: "in privato, il garzone tira fuori le carte della sua borsa"
     temi: [borsa, contratto, carte, bortolo]
     richiede: {privata: true, battute_non_usate: [nar_borsa_garzone], da_pg: [pg_remo]}
+    menzionati: [png_gaspare]
     testo:
       - "[narratore] Dalla borsa esce un foglio piegato in tre, con il sigillo di Sior Bortolo."
       - "[narratore] Cinque estati di pascolo al Prato Alto, venti fiorini di caparra già pagati a Gaspare Bonfanti."
@@ -585,6 +599,7 @@ battute:
     scena: [scena_casera, scena_sasso]
     quando: "un PG parla con Tonio, lo sposo"
     temi: [tonio, sposo]
+    menzionati: [png_ettore]
     testo:
       - "[narratore] Tonio arrossisce fino al collo, e si rigira il cappello tra le mani grosse."
       - "[narratore] Borbotta che vuole sposarsi oggi, non a primavera, e che al nonno non si risponde."
@@ -598,6 +613,7 @@ battute:
     quando: "l'amica d'infanzia di Tonio gli chiede che cosa tiene il nonno nella giacca"
     temi: [lettera, giacca, tonio]
     richiede: {da_pg: [pg_ida]}
+    attori: [png_ettore]
     testo:
       - "[narratore] Tonio guarda verso il nonno, poi abbassa la voce."
       - "[narratore] La lettera sta nella tasca di dentro della giacca, a sinistra."
@@ -614,6 +630,7 @@ battute:
     audio: {umore: taverna_calda}   # musica.transizione: verso taverna_calda quando le due case ridono insieme
     quando: "un PG suona, canta o fa ballare insieme le due case"
     temi: [polka, suono, suonare, fisarmonica, ballo, ballare, balliamo, canzone, cantare]
+    attori: [png_ettore]
     testo:
       - "[narratore] La musica parte storta, poi si raddrizza alla seconda strofa."
       - "[narratore] Un Morlacchi scavalca le forme e fa girare una comare dei Bonfanti."
@@ -626,6 +643,7 @@ battute:
     quando: "davanti alla sala, un PG mostra che Bastiano a mezzogiorno ferrava un mulo"
     temi: [scagionare, scagiono, innocente, ferrava]
     richiede: {indizi_rivelati: [i_alibi], orologio: {id: o_lite, min: 0, max: 5}, battute_non_usate: [nar_panche_dentro]}
+    attori: [png_gaspare]
     testo:
       - "[narratore] La sala guarda le mani nere di Bastiano, e poi lo zio Gaspare."
       - "[narratore] Dal lato dei Morlacchi qualcuno si rimette a sedere. Dal lato dei Bonfanti, qualcuno tossisce."
@@ -637,6 +655,7 @@ battute:
     quando: "a panche uscite, un PG mostra a tutti che Bastiano ferrava un mulo"
     temi: [scagionare, scagiono, innocente, ferrava, panche]
     richiede: {indizi_rivelati: [i_alibi], orologio: {id: o_lite, min: 6, max: 6}, battute_non_usate: [nar_bastiano_sala]}
+    attori: [png_ettore]
     testo:
       - "[narratore] Ettore guarda le mani nere di Bastiano, poi la sala, a lungo."
       - "[narratore] Batte il bastone due volte, e le panche dei Morlacchi rientrano dalla neve, una alla volta."
@@ -663,6 +682,7 @@ battute:
     quando: "il sole tocca il passo dopo la storia di sempre"
     temi: [orologio]
     richiede: {orologio: {id: o_tramonto, min: 8, max: 8}, battute_usate: [ade_sasso_a]}
+    attori: [png_ettore]
     testo:
       - "[narratore] Il corno suona tre volte, e il Custode scrive nel Libro la storia di sempre."
       - "[narratore] L'anello brilla al dito della sposa, e le comari dei Bonfanti battono le mani."
@@ -690,6 +710,8 @@ battute:
     quando: "il sole tocca il passo dopo una storia raccontata contro Adelina"
     temi: [orologio]
     richiede: {orologio: {id: o_tramonto, min: 8, max: 8}, battute_usate: [ade_sasso_c]}
+    attori: [png_gaspare]
+    menzionati: [png_ettore]
     testo:
       - "[narratore] Il corno suona tre volte, e il Custode scrive nel Libro la storia nuova."
       - "[narratore] Da stasera la storia dei Bonfanti la racconta Ettore, e il paese la ripete sottovoce."
@@ -720,6 +742,88 @@ battute:
       - "[narratore] La neve smette di cadere, e in paese si accendono i fuochi della sera."
       - "[narratore] Domattina i muli scendono a valle, e il Prato Alto aspetta la primavera."
       - "[narratore] Che cosa pensate di fare, adesso?"
+    max_usi: 1
+
+  # --- finali di sconfitta (docs/combattimento.md, «The defeat path») ------------------------------------
+  # Li dice il Motore quando il gruppo cade tutto, poi il tavolo si ferma e decide il master. Nessun nome di
+  # PG. Per ogni luogo, il primo vale se nessuno è morto; il secondo anche con un PG morto («chi respira ancora»).
+  - id: nar_sconfitta_ettore_casera
+    chi: narratore
+    tipo: finale
+    sconfitta: true
+    scena: scena_casera
+    quando: "i PG cadono tutti alla casera ed Ettore è ancora in piedi"
+    temi: [sconfitta, vicolo, coperta]
+    attori: [png_ettore]
+    richiede: {stati: {png_ettore: in_gioco, tutti: [in_gioco, a_terra]}}
+    testo:
+      - "[narratore] Ettore vi guarda dall'alto, appoggiato al bastone, e fa un cenno ai suoi."
+      - "[narratore] Vi svegliate fuori, nella neve fresca del vicolo, con una coperta da mulo addosso."
+    max_usi: 1
+  - id: nar_sconfitta_ettore_casera_caduti
+    chi: narratore
+    tipo: finale
+    sconfitta: true
+    scena: scena_casera
+    quando: "i PG cadono tutti alla casera, qualcuno è morto, ed Ettore è ancora in piedi"
+    temi: [sconfitta, vicolo, coperta]
+    attori: [png_ettore]
+    richiede: {stati: {png_ettore: in_gioco, tutti: [in_gioco, a_terra, morto]}}
+    testo:
+      - "[narratore] Ettore vi guarda dall'alto, appoggiato al bastone, e fa un cenno ai suoi."
+      - "[narratore] Chi respira ancora si sveglia nella neve del vicolo, sotto una coperta da mulo."
+    max_usi: 1
+  - id: nar_sconfitta_gaspare_casa
+    chi: narratore
+    tipo: finale
+    sconfitta: true
+    scena: scena_casa_bonfanti
+    quando: "i PG cadono tutti a casa Bonfanti e Gaspare è ancora in piedi"
+    temi: [sconfitta, panca, camino]
+    attori: [png_gaspare]
+    richiede: {stati: {png_gaspare: in_gioco, tutti: [in_gioco, a_terra]}}
+    testo:
+      - "[narratore] Lo zio Gaspare si sistema il panciotto, e scuote la testa, piano."
+      - "[narratore] Vi svegliate in cucina, sulla panca accanto al camino, sotto il suo sguardo."
+    max_usi: 1
+  - id: nar_sconfitta_gaspare_casa_caduti
+    chi: narratore
+    tipo: finale
+    sconfitta: true
+    scena: scena_casa_bonfanti
+    quando: "i PG cadono tutti a casa Bonfanti, qualcuno è morto, e Gaspare è in piedi"
+    temi: [sconfitta, panca, camino]
+    attori: [png_gaspare]
+    richiede: {stati: {png_gaspare: in_gioco, tutti: [in_gioco, a_terra, morto]}}
+    testo:
+      - "[narratore] Lo zio Gaspare si sistema il panciotto, e scuote la testa, piano."
+      - "[narratore] Chi respira ancora si sveglia in cucina, sulla panca accanto al camino."
+    max_usi: 1
+  - id: nar_sconfitta_ettore_sasso
+    chi: narratore
+    tipo: finale
+    sconfitta: true
+    scena: scena_sasso
+    quando: "i PG cadono tutti al Sasso ed Ettore è ancora in piedi"
+    temi: [sconfitta, larice, casotto]
+    attori: [png_ettore]
+    richiede: {stati: {png_ettore: in_gioco, tutti: [in_gioco, a_terra]}}
+    testo:
+      - "[narratore] Ettore si appoggia al bastone e resta a guardarvi, mentre il paese tace."
+      - "[narratore] Vi svegliate dietro il larice, accanto al casotto, con la neve nel colletto."
+    max_usi: 1
+  - id: nar_sconfitta_ettore_sasso_caduti
+    chi: narratore
+    tipo: finale
+    sconfitta: true
+    scena: scena_sasso
+    quando: "i PG cadono tutti al Sasso, qualcuno è morto, ed Ettore è ancora in piedi"
+    temi: [sconfitta, larice, casotto]
+    attori: [png_ettore]
+    richiede: {stati: {png_ettore: in_gioco, tutti: [in_gioco, a_terra, morto]}}
+    testo:
+      - "[narratore] Ettore si appoggia al bastone e resta a guardarvi, mentre il paese tace."
+      - "[narratore] Chi respira ancora si sveglia dietro il larice, con la neve nel colletto."
     max_usi: 1
 
   # --- riempitivi: solo allo stallo ------------------------------------------------------------------
@@ -776,6 +880,7 @@ battute:
     quando: "al Sasso il vecchio Ettore aspetta dalla parte dei Morlacchi"
     temi: [ettore]
     richiede: {battute_non_usate: [ett_lettera_data, nar_giacca_tasca]}
+    attori: [png_ettore]
     testo:
       - "[narratore] Dalla parte dei Morlacchi, il vecchio Ettore si rigira in mano una lettera gialla."
       - "[narratore] È chiusa con la ceralacca, e lui non la apre."
@@ -802,9 +907,118 @@ battute:
     scena: scena_sasso
     quando: "al Sasso nessuno si muove, e il sole scende"
     temi: [aspetto]
+    attori: [png_adelina]
     testo:
       - "[narratore] Il Custode alza gli occhi verso il passo, poi guarda la nonna della sposa."
       - "[narratore] Tende la mano aperta, e aspetta l'anello."
+    max_usi: 1
+
+  # --- battute di stallo (docs/mondo.md §5): le dice il Motore quando il tavolo resta fermo -----------
+  # Il lettore non le riceve mai. 1: una mossa piccola del pericolo (a casa Bonfanti è di Gaspare, in
+  # png_gaspare.yaml); 2: un indizio che arriva da solo; 3: un riassunto di ciò che i PG hanno trovato.
+  - id: nar_stallo1_casera
+    chi: narratore
+    tipo: momento
+    scena: scena_casera
+    stallo: 1
+    quando: "il tavolo resta fermo alla casera"
+    temi: [cugino, bastone]
+    attori: [png_ettore]
+    testo:
+      - "[narratore] Dal lato dei Morlacchi un cugino si alza, rosso in faccia."
+      - "[narratore] Punta il dito verso i Bonfanti."
+      - "[narratore] Ettore lo rimette a sedere con il bastone, senza una parola."
+    max_usi: 1
+  - id: nar_stallo2_casera
+    chi: narratore
+    tipo: indizio
+    scena: scena_casera
+    stallo: 2
+    quando: "il tavolo resta fermo alla casera"
+    temi: [lucerna, scatolina]
+    testo:
+      - "[narratore] Il Custode avvicina la lucerna, e la luce entra nella scatolina di noce aperta."
+      - "[narratore] Sul velluto rosso brilla una macchia d'inchiostro fresco, piccola come un polpastrello."
+      - "[narratore] Nella cerniera è rimasto preso un capello rosso, lungo."
+    effetti: {rivela_indizi: [i_macchia], fatti_noti: [f_macchia_inchiostro]}
+    max_usi: 1
+  - id: nar_stallo3_casera
+    chi: narratore
+    tipo: momento
+    scena: scena_casera
+    stallo: 3
+    quando: "il tavolo resta fermo alla casera, dopo la scatolina"
+    temi: [velluto, cantina]
+    richiede: {indizi_rivelati: [i_macchia]}
+    testo:
+      - "[narratore] Vi tornano in mente la macchia d'inchiostro sul velluto, e il capello rosso nella cerniera."
+      - "[narratore] Dietro il tavolo alto, la cantina delle forme ha una porta sul vicolo."
+    max_usi: 1
+  - id: nar_stallo2_casa
+    chi: narratore
+    tipo: indizio
+    scena: scena_casa_bonfanti
+    stallo: 2
+    quando: "il tavolo resta fermo a casa Bonfanti"
+    temi: [spago, quaderno]
+    attori: [png_zelia]
+    testo:
+      - "[narratore] Lo spago della cintura di Zelia si scioglie, e il quaderno cade aperto per terra."
+      - "[narratore] Sull'ultima pagina c'è scritto: la vera storia dell'anello, capitolo primo."
+      - "[narratore] Sotto, sottolineato due volte: oggi la storia la scrive lei, e la Duchessa gliela tiene."
+    effetti: {rivela_indizi: [i_quaderno], fatti_noti: [f_zelia_motivo]}
+    max_usi: 1
+  - id: nar_stallo3_casa
+    chi: narratore
+    tipo: momento
+    scena: scena_casa_bonfanti
+    stallo: 3
+    quando: "il tavolo resta fermo a casa Bonfanti, dopo il quaderno"
+    temi: [quaderno, soffitta]
+    menzionati: [png_zelia]
+    richiede: {indizi_rivelati: [i_quaderno]}
+    testo:
+      - "[narratore] Vi torna in mente il quaderno di Zelia."
+      - "[narratore] La storia la scrive lei, e la Duchessa gliela tiene."
+      - "[narratore] Sotto la cucina c'è la stalla, e in cima alla casa la soffitta."
+    max_usi: 1
+  - id: nar_stallo1_sasso
+    chi: narratore
+    tipo: momento
+    scena: scena_sasso
+    stallo: 1
+    quando: "il tavolo resta fermo al Sasso"
+    temi: [impronte, passo]
+    testo:
+      - "[narratore] Intorno al Sasso la neve fresca copre piano le impronte del paese."
+      - "[narratore] Il Custode guarda il passo, poi sfoglia il Libro senza leggerlo."
+    max_usi: 1
+  - id: nar_stallo2_sasso
+    chi: narratore
+    tipo: indizio
+    scena: scena_sasso
+    stallo: 2
+    quando: "il tavolo resta fermo al Sasso"
+    temi: [folata, bordo]
+    richiede: {battute_non_usate: [nar_iniziali_mano, nar_iniziali_custode]}
+    testo:
+      - "[narratore] Una folata spazza la neve dal bordo del Sasso, e la pietra resta nuda."
+      - "[narratore] Tra le iniziali, più vecchie delle altre, compaiono una A e una E."
+      - "[narratore] Sotto c'è una fila di tacche, come giorni contati."
+      - "[narratore] I solchi sono puliti dal muschio, come se qualcuno li grattasse ogni anno."
+    effetti: {rivela_indizi: [i_iniziali], fatti_noti: [f_iniziali]}
+    max_usi: 1
+  - id: nar_stallo3_sasso
+    chi: narratore
+    tipo: momento
+    scena: scena_sasso
+    stallo: 3
+    quando: "il tavolo resta fermo al Sasso, dopo le iniziali"
+    temi: [iniziali, leggio]
+    richiede: {indizi_rivelati: [i_iniziali]}
+    testo:
+      - "[narratore] Vi tornano in mente la A e la E incise sul Sasso, e le tacche sotto."
+      - "[narratore] Sul leggio del Custode il Libro è aperto, e si legge sopra la sua spalla."
     max_usi: 1
 
   # --- transizioni ----------------------------------------------------------------------------------

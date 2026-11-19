@@ -107,6 +107,8 @@ battute:
     quando: "davanti ad Adelina, un PG dimostra a Gaspare che Bastiano a mezzogiorno ferrava un mulo"
     temi: [bastiano, ferrava, alibi, garzone]
     richiede: {indizi_rivelati: [i_alibi], battute_non_usate: [gas_macchia_sorella]}
+    attori: [png_adelina]
+    menzionati: [png_zelia]
     testo:
       - "[narratore] Gaspare guarda la sorella, e la matita gli scivola di mano."
       - "[png_gaspare] Il garzone non c'entra. A mezzogiorno ho visto Zelia prendere l'anello dalla scatolina."
@@ -120,6 +122,8 @@ battute:
     quando: "davanti ad Adelina, un PG mostra a Gaspare il capello rosso e la macchia d'inchiostro"
     temi: [macchia, inchiostro, capello, rosso]
     richiede: {indizi_rivelati: [i_macchia], battute_non_usate: [gas_alibi_sorella]}
+    attori: [png_adelina]
+    menzionati: [png_zelia]
     testo:
       - "[narratore] Gaspare guarda la sorella, e la matita gli scivola di mano."
       - "[png_gaspare] Inchiostro e un capello rosso. A mezzogiorno ho visto Zelia prendere l'anello."
@@ -219,3 +223,17 @@ battute:
     varianti:
       - ["[narratore] Gaspare chiude il libretto con un colpo secco, e lo riapre subito.", "[png_gaspare] Un minuto in più non cambia il saldo. Attendiamo."]
     max_usi: 2
+
+  # Battuta di stallo (docs/mondo.md §5): la mossa piccola del pericolo di casa Bonfanti, detta dal suo PNG
+  # quando il tavolo resta fermo. Il lettore non la riceve mai.
+  - id: gas_stallo1_casa
+    chi: png_gaspare
+    tipo: momento
+    scena: scena_casa_bonfanti
+    stallo: 1
+    quando: "il tavolo resta fermo a casa Bonfanti"
+    temi: [primavera, onore]
+    testo:
+      - "[narratore] Gaspare guarda il cielo dalla finestra, e si gratta il mento con la matita."
+      - "[png_gaspare] Facciamo due conti: senza anello, meglio rimandare a primavera. Con rispetto parlando, l'onore della casa viene prima."
+    max_usi: 1
