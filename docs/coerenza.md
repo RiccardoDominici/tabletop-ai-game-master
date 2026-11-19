@@ -964,6 +964,127 @@ T9) and some questions and later own clauses dropped by the «one sentence» rul
   private`): the rules catch 6 of 7 and touch no clean sentence; the miss is a sentence carried with no subject after
   a preposition («Tra un respiro e l'altro sussurra: …»), which R-fuori does not carry by design.
 
+## Final round (profile A, 18–19 November)
+
+Riccardo's goal (17 November): close the actionable items of `docs/da-fare.md`, then play a full blind round with
+0 H. The round was played after packages P1 and P2. Setup:
+- profile A: the Qwen3 0.6B reader on 4613, the rules arbiters, the sceneggiatore in the background (`claude -p`)
+  and the mock voice;
+- ports 4960–4964, one game at a time;
+- before each game the driver checks memory (≥ 25% free), disk (≥ 1000 MB) and swap (≤ 8 GB)
+  (`esperimenti/risultati/finale/giro.sh`).
+
+The scripts were the four blind torre-mozza scripts: combat with manual rolls (CM) and with automatic rolls (CA),
+off the rails (FB) and stall (ST). The fifth was `pressione` (PR), run B-style in profile A. It also checks A31:
+the server's ERROR «parola segreta nel messaggio del selettore» when a player's own words hold a secret. At T5 of
+every PR game Livia tells Berta in private about the bailiff and the unpaid tithe.
+
+The judge was an opus subagent with the rounds' rubric (`esperimenti/risultati/finale/brief-giudice.md`; from attempt 4
+`finale4-brief-giudice.md`, which adds what changed). Evidence: `esperimenti/risultati/finale/finale{1..5}-torre-mozza-*`
+and `finale{1..5}-evidenza-opus*.md`. When an attempt had an H, its cause was fixed with a test, and the round was
+played again. From attempt 3 on, the lead also had the unsure items that lean H fixed before calling it done.
+
+| attempt (HEAD) | CM | CA | FB | ST | PR | H | A31 ERRORs |
+|---|---|---|---|---|---|---|---|
+| 1 (`121b271`) | 0 | 0 (1 unsure) | 0 | 0 | 1 | 1 | FB 3, ST 1, others 0 |
+| 2 (`a92555d`) | 0 | 0 (1 unsure) | 0 | 0 | 1 | 1 | 0 in all five |
+| 3 (`ab2fc7d`) | 0 (2 unsure) | 0 (2 unsure) | 0 | 0 | 0 | **0** | 0 in all five |
+| 3, second judge | 0 (1 unsure) | 0 (1 unsure) | 0 (1 unsure) | 0 | 0 (1 unsure) | **0** | — |
+| 4 (`e44cea5`) | 0 (3 unsure) | 0 (1 unsure) | 0 | 0 | 0 (3 unsure) | **0** | 0 in all five |
+
+The H and their fixes:
+- **Attempt 1, PR T1.** Livia's Carisma check succeeded (20 against 17), yet the table heard Berta's refusal, «Questo
+  non lo so…». The confession was out of context for that action, so the Engine took Berta's deflection instead.
+  `fe01d82`: a release line out of context after a successful check is no longer replaced by a refusal. The Engine
+  first tries the line it indicated for that action (test/rilascio-indicata.test.ts).
+- **Attempt 1, A31.** FB had 3 ERRORs and ST had 1. Each came from the `quando` of a scriptwriter line, which goes
+  into the reader's catalogue: «un PG accusa Ugo di aver portato i goblin alla torre» and «un PG chiede a Ugo se ha
+  visto salire qualcuno». Both are public. They matched only because torre-mozza's secret-word regexes were too broad.
+  `0cb4448`: those regexes now need Tonio or the boy, and the scriptwriter's validator checks `quando` for secret
+  words as it checks the text («parole segrete nel quando», test/sceneggiatore.test.ts).
+- **Attempt 2, PR T2.** Eliandro failed his Intelligence check, and the table still heard the slate clue: «Ogni erre è
+  rovesciata…». `ab2fc7d`: a release line is refused for an action whose check failed, and has no passed one. The
+  NPC's deflection is said instead, and the Engine no longer indicates release lines for such an action
+  (test/rilascio-indicata.test.ts, docs/prove.md).
+
+Attempt 3 has 0 H in all five games, the goal. The first judge's four unsure items were Grosso answering «Ehi goblin!
+Chi vi paga?» (CM T19, CA T17: defensible, the plural and the only foe standing), «La spada corta batte sullo scudo
+rosso» (CA T8, may retell a miss) and a cellar-door line (CM T24). It counted no wrong over-fire, and all 15 stall
+moves were right.
+
+A second, independent opus judge (`finale3-evidenza-opus-2.md`) also counted 0 certain H. It flagged four things that
+are H by the letter of the rubric. All four were fixed before attempt 4:
+- the defeat ending «Vi sveglia il freddo» said with one PC dead (CM T32, CA T22, PR T32). `e44cea5`: an ending says
+  the PCs' states it assumes (`richiede.stati.tutti`), and torre-mozza has a second ending that fits a dead PC (docs/
+  combattimento.md);
+- announcements that kept a world or state clause and dropped the PC's act (CM T15, CA T14, FB T9, PR T12/T13).
+  `9ec6177`, «After round 4» above;
+- a Charisma success answered by Berta's rebuff (FB T2). `86a972e`: who gave way to a passed social check has no
+  refusal lines for the turn, and «Cosa è vero adesso» says so (docs/prove.md);
+- the clock sign said word for word again by a stall line (ST T7/T9). `7135e01`: the Engine does not pick a line the
+  table heard in the last three turns (docs/mondo.md).
+
+After attempt 3 torre-mozza's boy also got his NPC sheet (`95eafa4`, below).
+
+Attempt 4 has 0 certain H in all five games. The judge had 7 unsure items. Three lean H, and each had a general fix
+before attempt 5:
+- **PR T18:** the table heard «Eliandro cade a terra.» and the round order before Eliandro's own announcement. The
+  Engine took his announcement, which quoted a question, for the narrator's closing invitation. `f767a61`: the
+  invitation is never an announcement (docs/combattimento.md);
+- **PR T11/T13:** a surprised Zirrà, who lost the round, snapped her fingers, kicked the fire and spoke. `b8ffb24`: an
+  NPC losing the round neither acts nor speaks in a line of it, and R-fuori replaces a sentence where it acts
+  (docs/combattimento.md, «Surprise»);
+- **CM T19:** a scriptwriter line, «Sui sassi gelati resta una striscia scura…», implied a wound no card had dealt. It
+  was built on the player's «sento sangue». `4824d8e`: a line telling a wound or a fall says whose, and the ledger
+  checks it, with the new class `ferito` (docs/sceneggiatore.md).
+
+Also fixed: the round order said after a PC's death named the dead PC (CM T24, `6206bd1`).
+
+The other four unsure items are announcements that keep a false relative or label clause inside the PC's own act.
+They are attributed: «…al goblin che la sta per colpire» (CM T12), «…che scappa verso le scale» (PR T15), and
+«Ultimo goblin: lo blocco…» (CM T23, CA T18; corrected at the table at CM T23 by the who-is-there line).
+
+Checked in the attempt-4 logs: 0 ERROR lines, and the new announcements as intended. The defeat path at PR T23 chose
+the ending that ties everybody: nobody at the table was dead. There was no successful social check and no Engine
+repeat, so those two fixes are covered only by their tests.
+
+Attempt 5 replays CM and PR, where those cases happened, on `6206bd1`.
+
+Live checks (Playwright), both passed:
+- A9: on the projector a dead NPC shows greyed with «MORTO». Seen live during attempt 1's CM game, on Zirrà
+  (`finale1-fila-fuori-CM.png`, `apps/web/e2e/fila-fuori.spec.ts`).
+- A25: the panel's «Cambia a mano» on torre-mozza, on port 4965 with the scripted narrator
+  (`finale1-cambia-a-mano.png`).
+
+A31 needed a game where a player's own words hold a secret. That happened at PR T5 in all three attempts, with 0
+ERROR lines each time. After `0cb4448` no game had an ERROR line, so L1 is closed in play.
+
+**The boy without a sheet.** Attempts 1 and 2 both had the same unsure case, CA T17 and T16. Tonio's confession
+(«Il ragazzo tiene gli occhi bassi e parla piano…») came as the answer to a question put to a dead goblin. Right
+after it the Engine said «Oltre a voi, qui non si vede nessuno in piedi». The boy had no NPC sheet, so for the Engine
+he was not there.
+
+He has one now (`95eafa4`): a minimal comparsa, in the tower's `png_presenti`, with his rows tagged. The new validator
+warning `PNG.senza_scheda` flags a character who acts in narrator rows with no sheet (docs/repertorio.md). It also
+fires on nozze-neve, ponte-lanterne and prova-f0, which still need sheets for such characters.
+
+The sheet makes the Engine count him as present («Oltre a voi, in piedi qui si vedono soltanto Grosso e Tonio.» in
+attempt 4). It does not tie a confession to the character the question was put to: the line's actors are checked for
+presence and state, not against the action's addressee. Attempt 3 was measured without the sheet, attempt 4 with it.
+
+Still open, none of it H (judges of attempts 3 and 4):
+- **Announcements** keep a false relative or label clause inside the PC's own act («al goblin che scappa», «Ultimo
+  goblin:»). All of them are attributed.
+- **The combat flow:**
+  - PCs act several times inside one round before the NPCs reach their slot (attempt 3, CM: Zirrà was killed in round
+    1 without acting);
+  - some declared attacks get no roll;
+  - death saves come one turn late.
+- **The stall counter** resets on non-commitments (FB T6, ST T13 in attempt 3).
+- **Public actions with no answer at the table** (attempt 3): CM 8, CA 5, FB 4, ST 2, PR 8.
+- **The 0.6B reader** often returns invalid JSON, so the Engine's deterministic fallback picks the line.
+- **The theme matcher** misses inflections that are not a prefix («pagava» for the theme «pagare», attempt 4, FB T5).
+  A safe stem match needs the language's verb endings in the pack.
 ## Characters the players invent (Riccardo's decision, 16 November)
 
 The blind off-the-rails script addressed «Oreste» and «Madre Carla», people the campaign never had; Berta and Ugo

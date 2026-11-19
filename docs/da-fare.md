@@ -117,6 +117,43 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
   ~~`R-eco` and the projector mark~~ **Done** (f9847ff R-eco, a70e783 mark); ~~the stall's S3 sentence said twice word for word~~ **Done** (88baf0c); ~~profile A (the reader plus the
   Mac's swap were too much on 16 November)~~ **Done** (A40: rounds 4–7 ran in profile A at 42–74% free memory, docs/coerenza.md; a 18 November short run in profile A, swap 6.7 → 7.2 GB, memory 40–50% free) and ~~the dictated action not run~~ **Done** (26daa19, 7609bd1: end to end in profile A, docs/ascolto.md). The «Coerenza» box was seen in headless
   Chromium on a live test instance (16 November, 0 console errors), not on a real tablet (needs Riccardo: a real tablet).
+- **Final round** (Riccardo's goal, 17 November: close the actionable items, then a full blind round with 0 H): **Done**
+  on 19 November. Attempt 3 (ab2fc7d) heard 0 H in all five torre-mozza games (profile A, opus judge); attempts 1 and
+  2 had 1 H each, fixed in fe01d82, 0cb4448 and ab2fc7d. A second judge of attempt 3 and the judge of attempt 4
+  (e44cea5, 0 H) flagged items that lean H; they were fixed too:
+  - the defeat ending over a dead PC (e44cea5);
+  - announcements keeping the world and dropping the act (9ec6177);
+  - a rebuff after a passed social check (86a972e);
+  - an Engine line said twice (7135e01);
+  - a fall heard before the faller's act (f767a61);
+  - a surprised NPC acting (b8ffb24);
+  - a wound no card dealt (4824d8e);
+  - a dead PC in the round order (6206bd1).
+
+  Attempt 5 (CM and PR on 6206bd1) checks the last fixes. Details: docs/coerenza.md, «Final round». After attempt 3 torre-mozza's boy got an NPC sheet, and
+  the validator a warning for a character who acts with no sheet (95eafa4). Open from the round, none of it H:
+  - announcements keep a false relative or label clause inside the PC's own act («al goblin che scappa»,
+    «Ultimo goblin:»);
+  - PCs act several times in a round before the NPCs' slots;
+  - some declared attacks get no roll;
+  - death saves come a turn late;
+  - the stall counter resets on non-commitments;
+  - 27 public actions had no answer at the table (attempt 3);
+  - the 0.6B reader's JSON is often invalid (the fallback picks the line);
+  - a release line's actors are checked for presence, not against whom the action addresses (the CA T16/T17 unsure
+    case);
+  - the theme matcher misses non-prefix inflections («pagava» for «pagare»), which needs verb endings in the
+    language pack;
+  - live, not yet exercised: the passed-social-check rule and the Engine-repeat rule (tests only);
+  - sheets for the characters `PNG.senza_scheda` flags:
+    - nozze-neve: Agnese, Bastiano, Marta, Tilde, Tonio;
+    - ponte-lanterne: Contessa the goose, Ottone the scribe, Ugolino the consul;
+    - prova-f0: Tecla.
+
+    Then the warning can become an error in strict mode;
+  - mulino-notte's two defeat endings have no `richiede.stati.tutti` (REPERTORIO.sconfitta_stati, left to its
+    author);
+  - Tonio's portrait and the audio of his two lines (`scripts/prepara.sh campagne/torre-mozza --voce`).
 - **Duration in sessions and game layers** (Riccardo's request, 3 November 2026): the brief states the estimated duration in *number of sessions*, and that determines how many layers the framework generates. A one-shot has few things (situation, a few scenes and NPCs: this is what the skill does today); a campaign of years has more phases or arcs and a complete world, and the material for the next session is prepared between sessions, starting from what actually happened.
   Done, by step: research (c0ebcc1), design (96b59e7, 6e2df77), `strumenti/strati.py` (09b3ef4), validator of sessions and STATO/CONTINUITÀ (e02e26c, 8fcfe18), skill (a10a172), session packages and the server side (2d3f2d4, 5bc833b, 7201894).
   Still open: no campaign above one-shot has been played across several sessions yet (no commit records it), so this is not yet verified on a real run (needs Riccardo: a multi-session campaign played).
@@ -193,7 +230,7 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
 - ~~**D4** announcements: partly. 192bcff makes them never empty and cuts them at a sensible boundary, but the quotes of the player's words still come out broken («Livia Sarti: «Blocco un goblin ferito contro il muro: «Dov'è il ragazzo».»).~~ **Done** (4320e25): the inner quote marks are dropped from the citation, so the wrapper has one pair.
 - ~~**D5** cards say «contro CD 14» for an attack against the Armour Class, and repeat the label.~~ **Done** (87ce932): an attack against a defence is typed CA (AC in English, from the language package), and the label is not repeated when the attack has no ability.
 - ~~**E3** the session clock stays at 1/8 in every run (`o_mezzanotte`), so midnight never threatens and no game reaches the final choice in 16 turns. Open.~~ **Done** (2fbe575: the clock paces itself over the evening; not checked against `o_mezzanotte` in a run).
-- **L1** 12 ERROR lines per run «parola segreta nel messaggio del selettore» when a player types their own private knowledge. 3334bce takes out the players' words and the narrator's echo of them, but the third pass did not confirm it in play. Open until a run shows no ERROR. Checked on 18 November (A31, profile A reader Qwen3 0.6B, torre-mozza pressione B, six turns): 0 ERROR lines, but no player action of that run held a secret word, so the run does not test the trigger. Open until a run with such actions shows no ERROR.
+- ~~**L1** 12 ERROR lines per run «parola segreta nel messaggio del selettore» when a player types their own private knowledge. 3334bce takes out the players' words and the narrator's echo of them, but the third pass did not confirm it in play. Open until a run shows no ERROR. Checked on 18 November (A31, profile A reader Qwen3 0.6B, torre-mozza pressione B, six turns): 0 ERROR lines, but no player action of that run held a secret word, so the run does not test the trigger. Open until a run with such actions shows no ERROR.~~ **Done** (0cb4448, confirmed in play). Every pressione game of the final round had a player say a secret in their own words: Livia tells Berta of the bailiff and the unpaid tithe at T5. All three games logged 0 ERROR lines. The 4 ERRORs of attempt 1 (FB 3, ST 1) came from scriptwriter `quando`s and over-broad regexes, fixed in 0cb4448 (docs/coerenza.md, «Final round»).
 - ~~**L3** `PROVIDER:` start-up lines say «configurato» also when an environment variable forced the provider.~~ **Done** (2cc619a): the line names the variable (its name only, never its value) or the config file.
 - ~~**L5** the harness's `tavolo.md` does not contain the dice cards the projector showed.~~ **Done** (A32, 5c7adff: the harness writes the public cards from the server log into `tavolo.md`; checked in a run on 18 November).
 - **L6** validator and skill points: **Done** for `parole_chiave` ids, the «dalla/dal» stop-words and «non <verbo>» false positives (A33, 48fd74e, with tests). The skill path is not stale (checked in that commit). Open: the «stalla» ambience comes from a recording of geese (the audio tool's mapping, campagne audio; not changed here).
