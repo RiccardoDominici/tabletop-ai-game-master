@@ -1,0 +1,83 @@
+[torre-mozza-combattimento-B] campagna torre-mozza, porta 4960, modalità repertorio: riavvio del server di prova…
+[torre-mozza-combattimento-B] server: {"ok":true,"fase":"attesa","turno":0,"versione_scena":0,"voce":"mock","schermo":false,"narratore":"minimo","modello":"mlx-community/Qwen3-0.6B-4bit","campagna":"torre-mozza","immagini":17,"audio":26,"sessione":"","modo":"repertorio","ripresa":null,"pacchetto":null,"lingua":"it","lingua_contenuti":"it"}
+[torre-mozza-combattimento-B] turno 1/14 fatto (server 1)
+[torre-mozza-combattimento-B] turno 2/14 fatto (server 2)
+[torre-mozza-combattimento-B] turno 3 (server 3): scena → scena_carbonaia
+[torre-mozza-combattimento-B] pg_nespola rolls Ascoltare (1d100): 9
+[torre-mozza-combattimento-B] turno 3/14 fatto (server 4)
+[torre-mozza-combattimento-B] turno 4 (server 5): scena → scena_torre
+[torre-mozza-combattimento-B] pg_livia rolls Spada lunga (1d20 +3): 18
+[torre-mozza-combattimento-B] pg_livia rolls Danni: Spada lunga (1d8 +2): 6
+[torre-mozza-combattimento-B] pg_livia rolls Iniziativa (1d6 +1): 3
+[torre-mozza-combattimento-B] pg_nespola rolls Iniziativa (1d6 +2): 5
+[torre-mozza-combattimento-B] pg_eliandro rolls Iniziativa (1d6 +1): 1
+[torre-mozza-combattimento-B] turno 4/14 fatto (server 6)
+[torre-mozza-combattimento-B] server 7: combat, on turn pg_nespola; waiting for their turn: pg_livia, pg_eliandro
+[torre-mozza-combattimento-B] pg_nespola rolls Spada corta (1d20 +3): 5
+[torre-mozza-combattimento-B] turno 5/14 fatto (server 7), 2 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 8: combat, on turn pg_livia; waiting for their turn: pg_eliandro
+[torre-mozza-combattimento-B] pg_livia rolls Spada lunga (1d20 +3): 18
+[torre-mozza-combattimento-B] pg_livia rolls Danni: Spada lunga (1d8 +2): 6
+[torre-mozza-combattimento-B] turno 5/14 fatto (server 8), 1 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 9: combat, on turn pg_eliandro
+[torre-mozza-combattimento-B] pg_livia rolls Iniziativa (1d6 +1): 5
+[torre-mozza-combattimento-B] pg_nespola rolls Iniziativa (1d6 +2): 5
+[torre-mozza-combattimento-B] pg_eliandro rolls Iniziativa (1d6 +1): 4
+[torre-mozza-combattimento-B] turno 5/14 fatto (server 9)
+[torre-mozza-combattimento-B] server 10: combat, on turn pg_nespola; waiting for their turn: pg_livia, pg_eliandro
+[torre-mozza-combattimento-B] pg_nespola rolls Spada corta (1d20 +1): 12
+[torre-mozza-combattimento-B] turno 6/14 fatto (server 10), 2 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 11: combat, on turn pg_livia; waiting for their turn: pg_eliandro
+[torre-mozza-combattimento-B] turno 6/14 fatto (server 11), 1 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 12: combat, on turn pg_eliandro
+[torre-mozza-combattimento-B] pg_eliandro rolls Pugnale (1d20 +1): 20
+[torre-mozza-combattimento-B] pg_eliandro rolls Danni: Pugnale (1d4): 2
+[torre-mozza-combattimento-B] pg_livia rolls Iniziativa (1d6 +1): 1
+[torre-mozza-combattimento-B] pg_nespola rolls Iniziativa (1d6 +2): 2
+[torre-mozza-combattimento-B] pg_eliandro rolls Iniziativa (1d6 +1): 3
+[torre-mozza-combattimento-B] turno 6/14 fatto (server 12)
+[torre-mozza-combattimento-B] server 13: combat, on turn pg_eliandro, pg_nespola; waiting for their turn: pg_livia; nothing left in the script, passing: pg_eliandro
+[torre-mozza-combattimento-B] turno 7/14 fatto (server 13), 1 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 14: combat, on turn pg_livia
+[torre-mozza-combattimento-B] pg_livia rolls Iniziativa (1d6 +1): 4
+[torre-mozza-combattimento-B] pg_nespola rolls Iniziativa (1d6 +2): 5
+[torre-mozza-combattimento-B] pg_eliandro rolls Iniziativa (1d6 +1): 3
+[torre-mozza-combattimento-B] turno 7/14 fatto (server 14)
+[torre-mozza-combattimento-B] server 15: combat, on turn pg_nespola; waiting for their turn: pg_livia, pg_eliandro
+[torre-mozza-combattimento-B] turno 8/14 fatto (server 15), 2 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 16: combat, on turn pg_livia; waiting for their turn: pg_eliandro
+[torre-mozza-combattimento-B] turno 8/14 fatto (server 16), 1 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 17: combat, on turn pg_eliandro
+[torre-mozza-combattimento-B] pg_livia rolls Iniziativa (1d6 +1): 6
+[torre-mozza-combattimento-B] pg_nespola rolls Iniziativa (1d6 +2): 6
+[torre-mozza-combattimento-B] pg_eliandro rolls Iniziativa (1d6 +1): 4
+[torre-mozza-combattimento-B] turno 8/14 fatto (server 17)
+[torre-mozza-combattimento-B] server 18: combat, on turn pg_nespola; waiting for their turn: pg_livia, pg_eliandro; nothing left in the script, passing: pg_nespola
+[torre-mozza-combattimento-B] turno 14/14 fatto (server 18), 10 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 19: combat, on turn pg_livia; waiting for their turn: pg_eliandro
+[torre-mozza-combattimento-B] pg_eliandro rolls Tiro salvezza contro la morte (1d20): 4
+[torre-mozza-combattimento-B] pg_livia rolls Iniziativa (1d6 +1): 3
+[torre-mozza-combattimento-B] pg_nespola rolls Iniziativa (1d6 +2): 5
+[torre-mozza-combattimento-B] turno 14/14 fatto (server 19), 9 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 20: 5 scripted actions dropped, their PC is dead (pg_eliandro)
+[torre-mozza-combattimento-B] server 20: combat, on turn pg_nespola; waiting for their turn: pg_livia; nothing left in the script, passing: pg_nespola
+[torre-mozza-combattimento-B] turno 14/14 fatto (server 20), 4 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 21: combat, on turn pg_livia
+[torre-mozza-combattimento-B] pg_livia rolls Iniziativa (1d6 +1): 3
+[torre-mozza-combattimento-B] pg_nespola rolls Iniziativa (1d6 +2): 5
+[torre-mozza-combattimento-B] turno 14/14 fatto (server 21), 3 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 22: combat, on turn pg_nespola; waiting for their turn: pg_livia; nothing left in the script, passing: pg_nespola
+[torre-mozza-combattimento-B] turno 14/14 fatto (server 22), 3 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 23: combat, on turn pg_livia
+[torre-mozza-combattimento-B] pg_livia rolls Iniziativa (1d6 +1): 1
+[torre-mozza-combattimento-B] pg_nespola rolls Iniziativa (1d6 +2): 1
+[torre-mozza-combattimento-B] turno 14/14 fatto (server 23), 2 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 24: combat, on turn pg_nespola; waiting for their turn: pg_livia; nothing left in the script, passing: pg_nespola
+[torre-mozza-combattimento-B] turno 14/14 fatto (server 24), 2 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 25: combat, on turn pg_livia
+[torre-mozza-combattimento-B] pg_livia rolls Iniziativa (1d6 +1): 4
+[torre-mozza-combattimento-B] pg_nespola rolls Iniziativa (1d6 +2): 2
+[torre-mozza-combattimento-B] turno 14/14 fatto (server 25), 1 azioni in attesa del loro turno
+[torre-mozza-combattimento-B] server 26: combat, on turn pg_livia
+[torre-mozza-combattimento-B] turno 14/14 fatto (server 26)
+[torre-mozza-combattimento-B] fatto → esperimenti/risultati/finale/finale5-torre-mozza-combattimento-A-manuale (costo $0.00000)
