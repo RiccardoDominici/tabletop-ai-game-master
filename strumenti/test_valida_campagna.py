@@ -2277,3 +2277,26 @@ def test_segno_con_due_battute_che_valgono_insieme(camp):
     modifica(camp, "repertorio/narrazione.yaml", lambda d: _variante_del_segno(d))
     assert "COPERTURA.segno" in errori(camp)
 
+
+
+# --- the climax mechanism (MONDO.meccanismo) and a line whose actor is never there (REPERTORIO.attore_assente) -------
+
+def test_meccanismo_del_climax(camp):
+    # SKILL step 3: one line per state, «state: effect» (blind test A12, N4: the skill named no field for it).
+    modifica(camp, "campagna.yaml", lambda d: d["preparazione"].update(meccanismo=["botte piena: la lanterna non si sente",
+                                                                                     "botte aperta: la lanterna tintinna"]))
+    assert "MONDO.meccanismo" not in errori(camp, rigoroso=True)
+    modifica(camp, "campagna.yaml", lambda d: d["preparazione"].update(meccanismo=["la lanterna è nella botte"]))
+    assert "MONDO.meccanismo" in errori(camp)
+    modifica(camp, "campagna.yaml", lambda d: d["preparazione"].update(meccanismo="botte: chiusa"))
+    assert "MONDO.meccanismo" in errori(camp)
+
+
+def test_attore_mai_presente(camp):
+    # Blind test A12 (W11): a line whose actor is in none of its scenes is never offered. Irma acts at a place without
+    # a sheet while the mini's only scene is current: tag her only if she is there, or give the place a sheet.
+    modifica(camp, "repertorio/narrazione.yaml", lambda d: battuta(d, "nar_botte").update(attori=["png_irma"]))
+    assert "REPERTORIO.attore_assente" not in errori(camp, rigoroso=True)          # Irma is in the inn: fine
+    modifica(camp, "scena.yaml", lambda d: d.update(png_presenti=["png_bruno"]))
+    assert "REPERTORIO.attore_assente" in avvisi(camp)
+    assert "REPERTORIO.attore_assente" in errori(camp, rigoroso=True)

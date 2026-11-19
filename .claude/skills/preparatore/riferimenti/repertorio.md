@@ -67,6 +67,10 @@ gets them.
     (the list is in «lingue/<lingua>/preparatore/riferimenti.md», repertorio.md §3) [V].
   - If it is needed to cite a secret (the PC has found the black grains), the line must require the clue that makes it public
     (`richiede.indizi_rivelati`).
+  - No future the PCs do not know: a `quando` that announces a hidden event of the world («…before the water arrives»,
+    «…after the boards are raised») tells the selector the mechanism, with no forbidden word in it. Say the moment as the
+    table lives it («late in the evening», «with the wheel still»), and gate the line on the clock
+    (examples: «lingue/<lingua>/preparatore/riferimenti.md», repertorio.md §3).
 - **temi**: the words with which a player would write the action, in their real forms: the inflected forms and the
   singular/plural, as they are typed.
   - The Engine compares them with the action as whole words; a theme of at least five letters also works as the beginning of a
@@ -174,6 +178,10 @@ assumes is true in the ledger (who is in the scene, who is down, dead or fled), 
 - `attori: [png_x]`: every NPC who acts in, or is said to be there by, a narrator row of the line, even with no name
   («si volta verso la porta», «lei ride»). The line is offered only while each is in the scene and in play. Who speaks
   (`chi`, a `[png_x]` row) needs no tag.
+- An NPC who acts at a place without a scene sheet (a weir upstream, reached from the mill) cannot be in `attori`: the
+  Engine checks `attori` against the current scene, and the NPC is not there. Give that place a scene sheet with the NPC
+  present; a line whose actor is in none of its scenes is never offered [V `REPERTORIO.attore_assente`, an error in strict
+  mode].
 - `menzionati: [png_x]`: an NPC the line only talks about («dicono che Zirrà…», «Ugo l'aveva detto»): no presence asked.
 - `richiede.stati: {png_x: [a_terra, morto]}`: the state the line takes as true, of `in_gioco`, `a_terra`, `morto`,
   `fuggito`, `ferito` (in play and hurt: a line about someone's blood or wound); a line about a body («il corpo di Zirrà

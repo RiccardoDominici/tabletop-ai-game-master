@@ -20,4 +20,4 @@ decisioni:
     - {strada: "La verità sul pontile, davanti ai viandanti.", prezzo: "Mirella perde la locanda e i clienti dell'inverno.", pesa_su: [png_mirella]}
     - {strada: "Riparare la corda di notte e tacere.", prezzo: "Sandro resta debitore di Mirella, che gli chiede il doppio.", pesa_su: [png_sandro]}
   altre:
-    - "Meccanismo del climax, una riga per stato. Corda intera: il traghetto passa. Corda tagliata a metà: regge fino a mezzanotte. Corda spezzata: il guado è chiuso."
+    - "Il meccanismo del climax sta in campagna.yaml → preparazione.meccanismo (una riga per stato)."

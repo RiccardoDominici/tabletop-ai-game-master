@@ -192,7 +192,7 @@ segreto:
   se_rivelato: "La gilda la destituisce; orologio 'Il culto si protegge' +2."
 voce:
   tts: {voce_id: it_f_matura_roca_02, eta_apparente: 50-60, altezza: bassa, velocita: 0.9, timbro: "roco, poco fiato"}
-  registro: "Dà del voi agli estranei, li chiama 'foresti'. Passa al tu solo con chi le salva qualcosa."
+  registro: "Dà del lei agli estranei, li chiama 'foresti'. Passa al tu solo con chi le salva qualcosa."
   stile: "Frasi di 3-8 parole. Lessico di fiume (a monte, a valle, pelo dell'acqua). Spesso risponde con una domanda."
   tic: ["'Eh. La corrente.' per chiudere un discorso"]
   gesto: "batte due volte le nocche sul legno"

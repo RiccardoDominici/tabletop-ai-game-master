@@ -142,6 +142,8 @@ says so ("Only if the one who knows it proposes it").
 - `segreti_astratti` (C6): about ten, of one or two sentences each [V], without a fixed place.
 - `archi` (C8): `campagna_tre_atti: [3]` and `pg: {pg_<nome>: {tu, bisogno, vai, cerca, trova, paga, ritorna, cambia}}` for each PC [V].
 - `cronologia` and `logistica`: the accounts of the world, see below [R].
+- `meccanismo`: the climax mechanism, one line per state: `["chiusa aperta: la ruota gira", "fermo tra i raggi: la ruota
+  non gira"]` [V `MONDO.meccanismo`: a list of «state: effect»]. Every text that names the mechanism says the same.
 
 ### Chronology and logistics (preparazione)
 The accounts the validator redoes (class `MONDO`). They sit in `preparazione`, so the narrator never sees them in any way: they may
@@ -364,7 +366,7 @@ the stressed one in capitals (ee-VAWN, KOOM-tyth): the server lowercases them fo
 with `origine`): review them between sessions.
 
 ## Repertoire: see riferimenti/repertorio.md
-Fields of a line: `id, chi, tipo, quando, temi, richiede, testo, varianti, effetti, max_usi, solo_esempio, riempitivo, scena, audio, attori, menzionati` [V].
+Fields of a line: `id, chi, tipo, quando, temi, richiede, testo, varianti, effetti, max_usi, solo_esempio, riempitivo, scena, audio, attori, menzionati, stallo, sconfitta` [V].
 Nothing else [V]. `audio: {umore, effetto}` is an automatic signal (see "Audio" below and repertorio.md §6). `richiede.oppure` is applied
 by the Engine (repertorio.md §4); `scena` is an id or a list of ids.
 Every scene has at least one narrator waiting line (`chi: narratore`, `riempitivo: true`, without `scena` or with that scene); every NPC present

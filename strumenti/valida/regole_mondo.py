@@ -240,7 +240,24 @@ def _verifica_capienza(e: Esito, dove: str, v: dict, posti: dict[str, int], pers
                                          "ci stanno, contro ciò che la storia afferma")
 
 
+def _meccanismo(c: Campagna, e: Esito) -> None:
+    """The climax mechanism, one line per state (SKILL step 3): `preparazione.meccanismo: ["stato: effetto", …]`, the
+    line every text that names the mechanism is reread against (step 13). Blind test A12 (N4): the skill asked for it
+    but named no field. Here only its form: a list of «state: effect» sentences."""
+    m = c.preparazione.get("meccanismo")
+    if m is None:
+        return
+    if not isinstance(m, list) or not m or not all(isinstance(x, str) and x.strip() for x in m):
+        e.errore("MONDO.meccanismo", "preparazione.meccanismo", "una lista di frasi, una per stato: [\"stato: effetto\", …]")
+        return
+    for x in m:
+        stato, _, effetto = x.partition(":")
+        if not stato.strip() or not effetto.strip():
+            e.errore("MONDO.meccanismo", "preparazione.meccanismo", f"«{x[:60]}»: lo stato, due punti, l'effetto («chiusa aperta: la ruota gira»)")
+
+
 def controlla(c: Campagna, e: Esito) -> None:
+    _meccanismo(c, e)
     crono = c.preparazione.get("cronologia")
     log = c.preparazione.get("logistica")
     if crono is None:

@@ -103,10 +103,29 @@ def _scene(b: dict) -> set[str] | None:
     return {s} if isinstance(s, str) else {x for x in s if isinstance(x, str)}
 
 
+def _dove_sono(c: Campagna) -> dict[str, set[str]]:
+    """The scenes each NPC can be in: its scenes' `png_presenti`, plus a scene a clock's consequence moves it to."""
+    out: dict[str, set[str]] = {pid: set() for pid in c.png}
+    for _, s in c.scene:
+        for pid in s.get("png_presenti") or []:
+            if pid in out and isinstance(s.get("id"), str):
+                out[pid].add(s["id"])
+    orologi = list(c.orologi.values()) + [o for f in (c.preparazione.get("fronti") or []) if isinstance(f, dict)
+                                         for o in f.get("orologi_extra") or [] if isinstance(o, dict)]
+    for o in orologi:
+        for q in o.get("conseguenze") or []:
+            for pid, v in ((q.get("png") or {}) if isinstance(q, dict) else {}).items():
+                if pid in out and isinstance(v, dict) and isinstance(v.get("scena"), str):
+                    out[pid].add(v["scena"])
+    return out
+
+
 def controlla(c: Campagna, e: Esito) -> None:
     nomi = _nomi_png(c)
     codice = c.lingua or "it"
     scontro = _scene_di_scontro(c)
+    dove_sono = _dove_sono(c)
+    tutte_le_scene = {s.get("id") for _, s in c.scene if isinstance(s.get("id"), str)}
     for b in c.battute:
         dove = f"{b.get('_file', '?')} {b.get('id', '?')}"
         coperti: set[str] = set()
@@ -121,6 +140,16 @@ def controlla(c: Campagna, e: Esito) -> None:
                 if pid not in c.png:
                     e.errore("REPERTORIO.fatti", dove, f"{campo}: {pid} non è un PNG con scheda")
             coperti |= set(ids)
+        # An actor the line can never meet: the Engine offers a line only while each of its `attori` is in the current
+        # scene, so an NPC present in none of the line's scenes makes it dead (blind test A12, W11: the PCs watch Folco at
+        # the weir, a place without a sheet, while the current scene is the mill).
+        scene_battuta = _scene(b) or tutte_le_scene
+        for pid in _ids(b.get("attori")) or []:
+            if pid in dove_sono and not (dove_sono[pid] & scene_battuta):
+                e.avviso("REPERTORIO.attore_assente", dove,
+                         f"{pid} è in attori, ma non è presente in nessuna scena dove la battuta può uscire "
+                         f"({', '.join(sorted(scene_battuta))}): il Motore non la offrirà mai. Se agisce in un luogo senza "
+                         "scheda, dai una scheda a quel luogo; se se ne parla soltanto, mettilo in menzionati", rigoroso=True)
         doppi = set(_ids(b.get("attori")) or []) & set(_ids(b.get("menzionati")) or [])
         if doppi:
             e.errore("REPERTORIO.fatti", dove, f"{sorted(doppi)} sia in attori sia in menzionati: o agisce o se ne parla")

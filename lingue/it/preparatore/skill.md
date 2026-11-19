@@ -23,7 +23,8 @@ quelle elencate qui sotto: sono vincolate al validatore (`strumenti/valida/`), n
 
 - Segno d'orologio, in ordine crescente di pericolo, con il momento decisivo nell'ultimo: «catena alzata: il ponte
   è chiuso».
-- La riga per stato del meccanismo: «catena alzata: il ponte è chiuso».
+- La riga per stato del meccanismo, in `preparazione.meccanismo`: «catena alzata: il ponte è chiuso», «catena giù:
+  il ponte è aperto».
 
 ## Scelta finale (passo 1)
 
@@ -55,6 +56,9 @@ quelle elencate qui sotto: sono vincolate al validatore (`strumenti/valida/`), n
 - Il `quando` non dice chi mente, nasconde o confessa. Il validatore (`QUANDO_VIETATE` in
   `strumenti/valida/costanti.py`) cerca le radici: mente / menti / mentire / mentisce / mento / menzogna,
   bugi-, menzogn-, confess-, segret-, nascond-, «verità».
+- Niente futuro che i PG non sanno: «un PG infila il fermo tra i raggi prima che arrivi l'acqua» dice al selettore che
+  l'acqua arriverà (il meccanismo); meglio «un PG infila il fermo tra i raggi della ruota ferma», con l'orologio nel
+  `richiede`.
 - Nelle `id` delle battute il validatore cerca anche: versione, vero, vera, verità, bugia, mente, confessa,
   segreto, falso, colpa, ladro, nasconde, rivela, smaschera (`ID_RIVELATORI`).
 

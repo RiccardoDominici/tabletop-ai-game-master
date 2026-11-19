@@ -284,15 +284,18 @@ the rules is also public: no secret words in a list of words.
   attitude or place, a hidden NPC that appears, a clue offered); an omen that must come to pass on its own has
   `al_segno`. Write `detto` and `tracce` as sentences the narrator's voice reads as they are, with only what a PC
   could perceive. The fronts' `orologi_extra` move only by gates: their consequences are off-screen and need `tracce`.
+  A gate or a consequence that names a scene (`lascia_scena` with `scena`, `png: {png_x: {scena: …}}`) waits for step 5,
+  when the scene sheets exist: written now, it fails this step's check (`FRONTI.avanza_quando`: scena inesistente).
 - **Villain** with agenda (C3), abstract secrets (C6) and PC arcs (C8): all under `preparazione`.
 - **Session** (C9–C13): opening summary, five rooms, potential scenes, a closing with an open choice, and
   `colli_di_bottiglia_nota`.
 - **Backstory and logistics** (under `preparazione`, form in schema.md): the past that founds every secret, the
   night of the session with its hours, the documents with their date (the `indizio` link you add at step 5, when
   the clue exists). Every claim of the story about times, distances, places or dates becomes a verification that
-  the validator redoes: a claim that a trip fits in the time is a `ci_sta` plus a `non_ci_sta` (example in «the examples in lingue/<lingua>/preparatore/skill.md»). The
-  mechanism of the climax is written in one line per state (example in «the examples in lingue/<lingua>/preparatore/skill.md»), and every text
-  that names it is reread against that line.
+  the validator redoes: a claim that a trip fits in the time is a `ci_sta` plus a `non_ci_sta` (example in «the examples in lingue/<lingua>/preparatore/skill.md»).
+- **The mechanism of the climax**, in `preparazione.meccanismo`: one line per state, «state: effect» (example in «the
+  examples in lingue/<lingua>/preparatore/skill.md»; form [V `MONDO.meccanismo`]). Every text that names it is reread
+  against those lines (step 13). Leave `rivelazioni`, `colli_di_bottiglia` and `nodi` for step 4.
 
 **Check**: `--solo STILE,CANONE,FRONTI,SESSIONE,MONDO` with zero errors, and:
 - every clock sign is a single sentence, of 14 words at most, that can be seen or heard, in increasing order of
@@ -428,7 +431,9 @@ mode, because the Engine relies on it at the table:
 
 **Waiting lines and deviations (always)**: for every scene one waiting line of the narrator (`chi: narratore`,
 `riempitivo: true`, without `scena` or with that scene); for every NPC present in a scene, one of their waiting lines
-(`chi: <png>`, `riempitivo: true`) and one deviation (`tipo: rifiuto`, also `solo_esempio: true`). They are needed
+(`chi: <png>`, `riempitivo: true`) and one deviation (`tipo: rifiuto`, also `solo_esempio: true`). A waiting line
+whose text belongs to one place (the grain in the yard) gets that `scena`, and the NPC gets one for each scene where
+they are: a line without `scena` is heard in every scene. They are needed
 because, when the local reader finds no answer, it uses exactly those: the table hears something prepared, never
 silence. The scriptwriter writes the true answer while the table waits. Codes `COPERTURA.attesa_scena`,
 `COPERTURA.attesa_png`, `COPERTURA.deviazione_png` (warnings in normal mode, errors in strict mode).
@@ -502,7 +507,7 @@ lines of the repertoire. The validator counts the words, but does not hear the r
 - a line that cites what only another optional line introduced (see «the examples in lingue/<lingua>/preparatore/skill.md»);
 - letters, diaries and songs read by the narrator: in indirect speech, never in first or second person (a second-person
   address sounds addressed to a PC (see «the examples in lingue/<lingua>/preparatore/skill.md»); the validator warns, `PROSA.citazione`);
-- the mechanism of the climax read backwards: every text says the same thing as the line of step 3.
+- the mechanism of the climax read backwards: every text says the same thing as the lines of `preparazione.meccanismo`.
 
 ### 14. Independent review
 Launch a subagent (Agent, `model: "opus"`) with the text of `revisione.md`, replacing the id of the campaign. Do not give it

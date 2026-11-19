@@ -298,7 +298,7 @@ Each rule belongs to a **class**. The exact list is printed by `--classi`:
 | `COPERTURA` | minimum coverage of the repertoire: clues, lies, confessions, signs, endings, voice |
 | `SEGRETI` | nothing hidden in public fields or in the selector catalog |
 | `IMMAGINI` | image prompts |
-| `MONDO` | history and logistics: events in order, document dates, times and capacities |
+| `MONDO` | history and logistics: events in order, document dates, times and capacities; the form of the climax mechanism (`preparazione.meccanismo`, one «state: effect» line per state) |
 | `STATO`, `CONTINUITÀ`, `ARCO` | multi-session campaigns (see [multi-session campaigns](multi-session-campaigns.md)) |
 | `SCELTA` | the final choice in the brief: prices that fall on whoever does not want them |
 | `VINCOLI` | what anyone perceives of a clue, and that the scene does not contradict it |

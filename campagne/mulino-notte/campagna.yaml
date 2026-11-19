@@ -230,7 +230,14 @@ preparazione:
       orologi_extra:
         - {id: o_leggenda, nome: "La leggenda si mangia il mulino", segmenti: 4}
 
+  # The climax mechanism, one line per state (SKILL step 3): every text that names it is reread against these (step 13).
+  meccanismo:
+    - "chiusa di monte aperta: l'acqua scende nella gora e arriva alla ruota dopo poco più di un'ora"
+    - "chiusa di monte chiusa: la gora resta asciutta e la ruota sta ferma"
+    - "fermo infilato tra i raggi: la ruota non gira neanche con la gora piena"
+    - "fermo tolto e gora piena: la ruota gira da sola"
   cattivo:
+    png: png_folco
     nome: "Folco Rasi, il fattore del conte"
     obiettivo: "Far cacciare Ermete dal paese e dare il mulino al cognato a San Martino."
     cronologia_se_i_pg_non_intervengono:

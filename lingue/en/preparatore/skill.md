@@ -26,7 +26,8 @@ checks as warnings or misses, and the review must check these points by hand.
 
 - A clock sign, in increasing order of danger, with the decisive moment in the last one: "chain raised: the bridge
   is closed".
-- The line per state of the mechanism: "chain raised: the bridge is closed".
+- The line per state of the mechanism, in `preparazione.meccanismo`: "chain raised: the bridge is closed", "chain
+  down: the bridge is open".
 
 ## Final choice (step 1)
 
@@ -57,6 +58,8 @@ checks as warnings or misses, and the review must check these points by hand.
 
 - The `quando` does not say who lies, hides or confesses. Stems to forbid (English, to be added to
   `QUANDO_VIETATE`): lie / lies / lying / liar / lied, confess, secret, hide / hides / hidden, truth.
+- No future the PCs do not know: "a PC puts the brake back before the water arrives" tells the selector the water
+  will come (the mechanism); write "a PC puts the brake back in the still wheel", with the clock in `richiede`.
 - In the `id` of a line, words that reveal who lies or what is true (to be added to `ID_RIVELATORI`): version,
   true, truth, lie, liar, secret, false, guilt, guilty, thief, hides, reveals, unmasks, confesses.
 

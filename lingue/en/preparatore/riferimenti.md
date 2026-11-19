@@ -119,6 +119,8 @@ preparazione:
 
 ### §3 id, quando, temi
 - ids: `nar_volto_candela` (not `seb_cicatrice_candela`); `bal_chi_malato` (not `bal_carbonai`); `ott_segale_domanda`; `zel_macchia_privato`; `zel_presa_macchia` ("Zelia caught")
+- quando that announces the future: "a PC reaches the weir after the boards have been raised" (it says someone will
+  raise them); write "a PC reaches the weir late at night", with the clock in `richiede`
 - quando: "a PC asks Ettore why he did not climb to the high place"; "a PC shows Ottavia a black grain, where Baldrin does not hear", not "Ottavia confesses"
 - words that say who lies: lie, falsehood, confess, secret, hide, truth
 - themes: spezzo, spezzare, pezzo, pagnotta → in English: break, breaks, broke, loaf (stem: "loaf" also takes "loaves"; a short word takes unrelated words too)

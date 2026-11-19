@@ -24,8 +24,12 @@ those campaigns are in «lingue/<lingua>/preparatore/riferimenti.md», mestiere.
 - **Three different registers** among the NPCs of a scene: you and the trade names; you and a cold formal form; the formal
   form to everyone. Plus three lexicons (forge, kitchen, medicine) and three sentence lengths. Test: read the sample lines
   without names and guess who speaks.
-- **The singular formal pronoun is not used** where the language has one: it sounds like a plural when spoken. (Pronoun
-  and register forms are specific to each language: «lingue/<lingua>/preparatore/riferimenti.md», mestiere.md §2.)
+- **A formal pronoun that is also the plural is not used for one person**: spoken, it sounds like the whole group. In
+  Italian that is the old singular *voi*; the formal *lei* is fine, and the voi stays for the group. (Pronoun and register
+  forms are specific to each language: «lingue/<lingua>/preparatore/riferimenti.md», mestiere.md §2.)
+- **With fewer registers than NPCs**, tell them apart by lexicon and sentence length too: in Italian, tu with a trade
+  name, tu with a pet word for everyone («figlioli»), a cold lei, a respectful lei. Two NPCs of a scene with the same
+  register need different lexicons and lengths, and the sample-line test of step 7 decides.
 - **Few registered voices.** Two identical or similar voices (`simile_a` in voci.yaml) never stand in the same scene: decide
   it in the brief, because it decides who can meet whom (§9, "Voices between scenes").
 - **Every NPC wants something in this scene**, which sets it against another NPC or a front. The desire shows in the

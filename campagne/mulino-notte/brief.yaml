@@ -47,7 +47,7 @@ decisioni:
   altre:
     - "Tre scene per due ore e mezza (C11): l'aia di Adalgisa al tramonto, il mulino all'imbrunire, la ruota a mezzanotte. La terza è lo stesso mulino in un altro momento, con un nodo evento (mestiere.md §9)."
     - "Voci (regola 9): Ermete vincent, Folco lucian, Adalgisa nadine, Viola tabitha. Nadine e tabitha sono simili: Adalgisa e Viola non stanno mai nella stessa scena. All'aia Adalgisa e Folco; al mulino Ermete e Viola; a mezzanotte Ermete, Folco e Adalgisa, mentre Viola resta chiusa in casa, di là dal cortile."
-    - "Meccanismo del climax, una riga per stato. Chiusa di monte aperta: l'acqua scende nella gora e arriva alla ruota dopo poco più di un'ora. Chiusa di monte chiusa: la gora resta asciutta e la ruota sta ferma. Fermo infilato tra i raggi: la ruota non gira neanche con la gora piena. Fermo tolto e gora piena: la ruota gira da sola."
+    - "Il meccanismo del climax, una riga per stato, sta in campagna.yaml → preparazione.meccanismo."
     - "Nessun combattimento previsto: il pericolo è un paese spaventato, non un nemico armato. Folco ha la scheda per le prove sociali e per un eventuale scontro."
     - "La magia dei PG resta piccola e discreta (un chierico di paese, un bardo cantastorie), perché il brief chiede low fantasy."
     - "tiri_giocatori manuale e tiri_master nascosti: il brief non dice niente, valgono i predefiniti."

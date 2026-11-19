@@ -140,6 +140,11 @@ preparazione:
       domande_di_posta: ["Il traghetto passerà stanotte?"]
       orologi_extra:
         - {id: o_paura, nome: "La paura del guado", segmenti: 4}
+  # The climax mechanism, one line per state (SKILL step 3): «state: effect».
+  meccanismo:
+    - "corda intera: il traghetto passa"
+    - "corda tagliata a metà: regge fino a mezzanotte"
+    - "corda spezzata: il traghetto va alla deriva e il guado è chiuso"
   cattivo:
     png: png_mirella
     nome: "Mirella"

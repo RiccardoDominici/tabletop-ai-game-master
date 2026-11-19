@@ -117,6 +117,8 @@ preparazione:
 
 ### §3 id, quando, temi
 - id: `nar_volto_candela` (contro `seb_cicatrice_candela`); `bal_chi_malato` (contro `bal_carbonai`); `ott_segale_domanda`; `zel_macchia_privato`; `zel_presa_macchia` («Zelia presa»)
+- quando che annuncia il futuro: «un PG arriva alla chiusa dopo che le tavole si sono alzate» (dice che qualcuno le
+  alzerà); meglio «un PG arriva alla chiusa a notte fonda», con l'orologio nel `richiede`
 - quando: «un PG chiede a Ettore perché non salì al Sasso»; «un PG mostra a Ottavia un chicco nero, dove Baldrin non sente», non «Ottavia confessa»
 - parole che dicono chi mente: mente, bugia, menzogna, confessa, segreto, nasconde, verità
 - temi: spezzo, spezzare, pezzo, pagnotta («pagnott» prende pagnotta e pagnotte, ma «ponte» prende anche «pontieri»)

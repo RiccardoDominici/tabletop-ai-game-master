@@ -29,7 +29,7 @@ segreto:
   se_rivelato: "Il paese gli toglie la fiducia."
 voce:
   tts: {voce_id: vincent, eta_apparente: "70", altezza: bassa, velocita: 0.9, timbro: "roco"}
-  registro: "Dà del voi ai forestieri."
+  registro: "Dà del lei ai forestieri, del voi al gruppo."
   stile: "Frasi di tre-sette parole, lente."
   tic: ["«Mah.»"]
   gesto: "batte la pipa sul tavolo"
