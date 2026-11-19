@@ -65,7 +65,7 @@ import { audioDellaScena, type UmoreScelto } from '../audio/scena';
 import { LimiteUmori, risolviEffetto, risolviUmore, type CueAudio } from '../audio/cue';
 import { TavoloAzioni, type RiepilogoChiusura } from '../azioni/tavolo';
 import type { Arbitro, Azione } from '../azioni/tipi';
-import { narraTurno, type EsitoUsaTurno, type VoceUscita } from '../turni/narrazione';
+import { invitoDelNarratore, narraTurno, type EsitoUsaTurno, type VoceUscita } from '../turni/narrazione';
 import { messaggioChiusura, messaggioRiparazione } from '../narrazione/messaggio';
 import { segretiNascosti, type EsitoGuardiaSegreti } from '../narrazione/guardia-segreti';
 import { CanaleSceneggiatore } from '../sceneggiatore/canale';
@@ -4823,8 +4823,8 @@ export class Regia {
 
   /** L'invito finale del narratore («cosa fate?»), se non è ancora partito, si toglie da voce e trascrizione. */
   private ritiraInvito(turno: number, esito: { uscita: VoceUscita[] }, log: Logger): void {
-    const ultima = esito.uscita.at(-1);
-    if (ultima?.tipo !== 'improvvisata' || ultima.etichetta !== ID_NARRATORE || !ultima.testo.includes('?') || !ultima.frasi?.length) return;
+    const ultima = invitoDelNarratore(esito.uscita);
+    if (!ultima?.frasi?.length) return;
     if (!this.pipeline.ritira(ultima.frasi)) return;
     const voce = ultima.segmento !== undefined ? this.segmentiAperti.get(`${turno}:${ultima.segmento}`) : undefined;
     if (voce) this.trascrizione.splice(this.trascrizione.indexOf(voce), 1);
@@ -4885,8 +4885,8 @@ export class Regia {
     inFondo: boolean,
     prefisso: string,
   ): boolean {
-    const ultima = esito.uscita.at(-1);
-    const invito = !inFondo && ultima?.tipo === 'improvvisata' && ultima.etichetta === ID_NARRATORE && ultima.testo.includes('?') ? ultima : null;
+    // Never a player's announcement: facts of this turn come after the acts announced before them (turni/narrazione.ts).
+    const invito = inFondo ? null : invitoDelNarratore(esito.uscita);
     // Voce: prima della prima frase dell'invito, se è ancora in coda.
     const frasi = righe.map((r, k) => {
       const { voce_id, nome } = voceDi(this.campagna, r.etichetta);

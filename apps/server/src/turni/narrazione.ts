@@ -98,6 +98,17 @@ export type VoceUscita =
   /** `attribuita`: the Engine's announcement of a player's action (llm/annuncio.ts): the player's words, not narration. */
   | { tipo: 'improvvisata'; etichetta: string; testo: string; frasi?: string[]; segmento?: number; privato?: string; motore?: boolean; attribuita?: boolean };
 
+/**
+ * The narrator's closing invitation of a turn («Cosa fate?»): its last line, when it is an improvised narrator line that
+ * asks. Never a player's announcement (`attribuita`), even one that quotes a question: in the final round (attempt 4,
+ * PR T18) «Eliandro: «Anch'io lo stringo e chiedo: Chi vi ha dato le lettere…?».» was taken for the invitation, and the
+ * Engine put Eliandro's fall and the round order before it, so the table heard him fall before his own act.
+ */
+export function invitoDelNarratore(uscita: readonly VoceUscita[]): Extract<VoceUscita, { tipo: 'improvvisata' }> | null {
+  const u = uscita.at(-1);
+  return u?.tipo === 'improvvisata' && u.etichetta === ID_NARRATORE && !u.attribuita && u.testo.includes('?') ? u : null;
+}
+
 export interface EsitoTurnoNarrato {
   invito: string[] | 'tutti' | null;
   /** Id proposti con [orologio] (li valida la regia). */

@@ -165,8 +165,11 @@ combattimento:
      blow. So each blow needs a sentence of its own that also names whoever struck.
    - A fact not said: the Engine adds a short narrator line from the language package (testi-prove.yaml,
      `prove.dovuti.<tipo>`: «Corrado cade a terra.» (Corrado falls to the ground.), «Ruggero incassa il colpo.» (Ruggero
-     takes the blow)), before the invitation question if its voice has not yet started. It applies to the narrator and to
-     the selector. In the turn log: `fatti_aggiunti` ("type:id"); in the server log: «prove: fatti dello scontro non detti
+     takes the blow)), before the invitation question if its voice has not yet started. The invitation is the turn's last
+     improvised narrator line that asks, never a player's announcement (`invitoDelNarratore`, turni/narrazione.ts): in
+     the final round (attempt 4, PR T18) «Eliandro: «Anch'io lo stringo e chiedo: Chi vi ha dato le lettere…?».» was
+     taken for it, and the table heard «Eliandro cade a terra.» and the round order before Eliandro's own act. It
+     applies to the narrator and to the selector. In the turn log: `fatti_aggiunti` ("type:id"); in the server log: «prove: fatti dello scontro non detti
      dalla narrazione, li dice il Motore» (prove: clash facts not said by the narration, the Engine says them).
    - A row that names no character and opens with neither an article, an indefinite subject («Qualcuno…») nor a
      preposition continues the row before (Haiku writes one sentence per row): «Zirrà si volta e sale di corsa la scala
