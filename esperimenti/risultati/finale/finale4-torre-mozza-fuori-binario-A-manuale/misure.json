@@ -1,0 +1,204 @@
+{
+ "etichetta": "finale4-torre-mozza-fuori-binario-A-manuale",
+ "turni": {
+  "giocati": 13,
+  "copione": 13,
+  "fine_prima": null,
+  "finale": null,
+  "cambi_scena": [],
+  "orologi_max": {
+   "o_mezzanotte": "2/8"
+  }
+ },
+ "fughe": {
+  "improvvisate": 0,
+  "prescritte": 0,
+  "elenco": [],
+  "righe_segrete_fermate": 0,
+  "selettore_con_parola_segreta": []
+ },
+ "coerenza": {
+  "violazioni": 0,
+  "per_regola": {},
+  "esempi": []
+ },
+ "private": {
+  "azioni_private": 3,
+  "righe_privato": 0,
+  "esiti_privati_log": 6,
+  "spostate_dalla_guardia": 0,
+  "righe_al_tavolo_sospette": 0,
+  "sospette": [],
+  "al_tavolo_candidate": 2,
+  "al_tavolo": [
+   {
+    "turno": 5,
+    "turno_privata": 5,
+    "pg": "Nespola Tondi",
+    "chi": "Narratore",
+    "riga": "Dal crinale arriva un colpo di corno, lontano. Le pecore alzano la testa, poi tornano a brucare.",
+    "comuni": [
+     "pecor"
+    ],
+    "regola": "turno privato+1"
+   },
+   {
+    "turno": 13,
+    "turno_privata": 13,
+    "pg": "Livia Sarti",
+    "chi": "Narratore",
+    "riga": "Ogni erre è rovesciata, con la pancia dalla parte sbagliata.",
+    "comuni": [
+     "parte"
+    ],
+    "regola": "turno privato+1"
+   }
+  ]
+ },
+ "prove": {
+  "azioni_risolte": 16,
+  "con_tiro": 1,
+  "tipi": {
+   "prova": 1,
+   "nessuna": 15
+  },
+  "dadi": {},
+  "regole_tipo": {
+   "Carisma: dNN contro CD N (normale)": 1
+  },
+  "set": "basic-fantasy-r142",
+  "arbitro": "regole (classificatore del Motore, senza modello)"
+ },
+ "combattimento": {
+  "eventi": {},
+  "fatti_morale_terra": 0,
+  "esempi": [],
+  "fatti_morale": [],
+  "fatti_a_terra": [],
+  "fuori_gioco_log": {}
+ },
+ "lettore": {
+  "scelte": 16,
+  "nessuna": 9,
+  "ms_classifica_med": 825,
+  "ms_classifica_peggiore": 2481
+ },
+ "sceneggiatore": {
+  "richieste": {
+   "subito:ok": 7,
+   "prossime:ok": 12
+  },
+  "consegnate": 5,
+  "dette_a_finestra_aperta": 5,
+  "accettate": 80,
+  "scartate": {
+   "dà per vero «grotta», che la campagna non ha": 1
+  },
+  "ms_claude_med": 9463,
+  "ms_totale_med_subito": 11021,
+  "processo": {
+   "avvio": 1,
+   "ok": 19,
+   "arresto": 1
+  }
+ },
+ "tempi": {
+  "finestra_ms": {
+   "mediana": 20072,
+   "peggiore": 20158,
+   "n": 13
+  },
+  "llm_prima_frase": {
+   "mediana": 41,
+   "peggiore": 751,
+   "n": 11
+  },
+  "voce_primo_audio": {
+   "mediana": 693,
+   "peggiore": 3990,
+   "n": 13
+  },
+  "schermo_inizio_audio": {
+   "mediana": 843,
+   "peggiore": 1564,
+   "n": 9
+  },
+  "llm_fine": {
+   "mediana": 1427,
+   "peggiore": 2560,
+   "n": 13
+  },
+  "audio_fine": {
+   "mediana": 11364,
+   "peggiore": 22373,
+   "n": 13
+  },
+  "s_tra_turni_med": 33,
+  "s_tra_turni_peggiore": 42.481
+ },
+ "voce": {
+  "motore": "mock",
+  "buchi": {
+   "totale": 12,
+   "in_frase": 0,
+   "tra_frasi": 12,
+   "silenzio_ms": 8324,
+   "per_turno": [
+    1,
+    2,
+    1,
+    3,
+    0,
+    1,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "proiettore_secondi": 219,
+  "errori_voce": {
+   "campagna: voce_id ripetuti tra i PNG: vincent": 1
+  }
+ },
+ "log": {
+  "errori": 0,
+  "avvisi": 23,
+  "per_messaggio": [
+   "40 ×12 llm: risposta strutturata non valida",
+   "40 ×6 llm: si usa il ripiego deterministico",
+   "40 ×2 repertorio: [usa] rifiutato",
+   "40 ×1 campagna: voce_id ripetuti tra i PNG: vincent",
+   "40 ×1 https: the certificate does not cover this LAN address: run scripts/certificato.sh again",
+   "40 ×1 repertorio: rilascio fuori contesto, al suo posto la deviazione di chi è interpellato"
+  ],
+  "provider": [
+   "lettore         → locale (minimo) mlx-community/Qwen3-0.6B-4bit — configurato (.",
+   "arbitro_azioni  → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "arbitro_prove   → regole (completo) — configurato (../../../../private/tmp/claud",
+   "riassunto       → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "regole          → regole — configurato (../../../../private/tmp/claude-501/-User",
+   "voce            → finto — variabile d'ambiente TAGM_TTS",
+   "ascolto         → nessuno — configurato (../../../../private/tmp/claude-501/-Use",
+   "immagini        → nessuno — configurato (../../../../private/tmp/claude-501/-Use"
+  ]
+ },
+ "serata": {
+  "ore": null,
+  "consiglio_ai_turni": [],
+  "chiusura": {}
+ },
+ "costo_usd": 0,
+ "righe": {
+  "prescritte": 16,
+  "improvvisate": 14,
+  "usa_rifiutati": 2,
+  "azioni_pubbliche": 13,
+  "azioni_senza_risposta": 3,
+  "riparazioni": 0,
+  "conferme_motore": 0
+ }
+}
