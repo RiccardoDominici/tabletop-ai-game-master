@@ -237,6 +237,9 @@ describe('combattimento alla B/X e alla PbtA', () => {
     const r = g.dopoAzioni({ turno: 1, attacchi: [{ chi: 'pg_a', bersaglio: 'png_x' }], autori: ['pg_a'], candidati: () => cand });
     expect(r.fatti[0]).toBe('Inizia il combattimento. Iniziativa per schieramento: PG 5, PNG 2; agiscono prima i PG. Sorpresa: i nemici tirano 1 su 1d6 e sono colti di sorpresa (paralizzato): perdono il primo round.');
     expect(g.condizioniDi('png_x').map((c) => c.nome)).toEqual(['Paralizzato']);
+    // The lines of the round must not have it act (final round, attempt 4, PR T11/T13): the director reads this.
+    expect(g.perdeIlTurno('png_x')).toBe('Paralizzato');
+    expect(g.perdeIlTurno('pg_a')).toBeNull();
     // Round 1: the surprised NPC never acts in its phases; from round 2 the condition is gone.
     for (let t = 2; t <= 4; t++) g.dopoAzioni({ turno: t, attacchi: [], autori: ['pg_a'], candidati: () => cand });
     expect(attacchi).toEqual([]);

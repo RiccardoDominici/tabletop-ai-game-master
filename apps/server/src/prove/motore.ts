@@ -871,6 +871,11 @@ export class MotoreProve {
     return this.attivo && this.combattimento.attivo;
   }
 
+  /** The condition that makes this character lose the round in progress (surprise…), or null (prove/combattimento.ts). */
+  perdeIlTurno(id: string): string | null {
+    return this.inCombattimento ? this.combattimento.perdeIlTurno(id) : null;
+  }
+
   /** PG che devono agire adesso nello scontro a turni (null = niente turni: decide il narratore). */
   turnoCombattimento(): string[] | null {
     return this.inCombattimento ? this.combattimento.turnoDi() : null;

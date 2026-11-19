@@ -226,3 +226,20 @@ describe('every PC\'s state as a line fact (`tutti`; final round, CM T32, CA T22
     expect(s.finaleDiSconfitta(1)?.id).toBe('nar_chi_respira');
   });
 });
+
+describe('a character losing the round in progress (surprise…) neither speaks nor acts in a line of that round (final round, PR T11/T13)', () => {
+  it('as a speaker, a tagged actor, or an untagged NPC the line names; a mention is fine', () => {
+    const [parla, agisce, nomina, menziona] = carica([
+      { id: 'oste_parla', chi: 'png_oste', tipo: 'momento', quando: 'un PG parla con l\'oste', temi: ['oste'], testo: ['[png_oste] Allora? Io aspetto.'] },
+      base('nar_agisce', ['[narratore] Dà un calcio al fuoco, e le scintille volano.'], { attori: ['png_oste'] }),
+      base('nar_nomina', ['[narratore] Bruno schiocca le dita.']),
+      base('nar_menziona', ['[narratore] Dicono che Bruno abbia un cugino al mulino.'], { menzionati: ['png_oste'] }),
+    ]) as [Battuta, Battuta, Battuta, Battuta];
+    const sorpreso = ledger({ fermo: 'sorpreso' });
+    expect(motivoControRegistro(parla, sorpreso)).toMatch(/png_oste speaks in the line but loses this round \(sorpreso\)/);
+    expect(motivoControRegistro(agisce, sorpreso)).toMatch(/png_oste acts in the line but loses this round/);
+    expect(motivoControRegistro(nomina, sorpreso)).toMatch(/names png_oste, who loses this round/);
+    expect(motivoControRegistro(menziona, sorpreso)).toBeNull();
+    for (const b of [parla, agisce, nomina]) expect(motivoControRegistro(b, ledger({}))).toBeNull();
+  });
+});

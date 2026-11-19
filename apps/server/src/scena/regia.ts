@@ -1433,6 +1433,7 @@ export class Regia {
       usciti: new Map([...this.presenzeNarrate].filter(([id, v]) => !v.presente && !this.presenzeManuali.has(id)).map(([id, v]) => [id, { turno: v.turno, verso: v.verso }])),
       pf: (id) => prove?.stato.puntiFerita(id) ?? null,
       fuori: (id) => prove?.stato.fuoriGioco(id) ?? null,
+      fermo: (id) => prove?.perdeIlTurno(id) ?? null,
       morenti,
       fatti,
       carte: prove?.carteDelTurno(this.turno) ?? [],
@@ -3467,7 +3468,8 @@ export class Regia {
       ...(combattimento?.fuggiti ?? []).map((f) => f.id),
       ...(combattimento?.morte ?? []).map((m) => m.id),
     ]);
-    const fuori = guardiaFuori({ nomi, nome, fuoriDaPrima: (id) => (oraFuori.has(id) ? null : prove.stato.fuoriGioco(id)) });
+    // A character losing the round in progress (surprise…) is out for the sentences of this turn too, from now.
+    const fuori = guardiaFuori({ nomi, nome, fuoriDaPrima: (id) => (oraFuori.has(id) ? null : prove.stato.fuoriGioco(id)), fermo: (id) => (id.startsWith('pg_') ? null : prove.perdeIlTurno(id)) });
     // An attack or a flight told with no name inherits its actor from the visit's cards (coerenza/attori.ts): a card
     // rule like R-esito's, so it stays before the yes/no judge too.
     const storia: StoriaVisita = this.storiaVisita.ingresso === this.mondo.visita.ingresso ? this.storiaVisita : { carte: [], fughe: [] };

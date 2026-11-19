@@ -16,7 +16,7 @@ import type { EntitaRegistro, Registro } from './registro';
 export const RIGHE_MASSIME = 12;
 
 function stato(e: EntitaRegistro): string {
-  const s = testo(`coerenza.stato.${e.stato}`, { nome: e.nome });
+  const s = testo(`coerenza.stato.${e.stato}`, { nome: e.nome }) + (e.fermo ? testo('coerenza.fermo', { condizione: e.fermo }) : '');
   // An improvised character knows nothing of the canon's secrets: the narrator reads it here.
   return e.tipo === 'improvvisato' ? `${s}${testo('coerenza.improvvisato')}` : s;
 }

@@ -146,6 +146,15 @@ export class GestoreCombattimento {
     });
   }
 
+  /**
+   * The condition that makes a character lose this round (surprise, a stun: effect `perde_turno`), by name; null = none
+   * or no fight. The lines of the round must not have it act (final round, attempt 4, PR T11/T13: a surprised Zirrà
+   * snapped her fingers and kicked the fire).
+   */
+  perdeIlTurno(id: string): string | null {
+    return this.attivo ? this.haEffetto(id, 'perde_turno') : null;
+  }
+
   private haEffetto(id: string, e: Effetto): string | null {
     return this.condizioniDi(id).find((c) => c.effetti.includes(e))?.nome ?? null;
   }

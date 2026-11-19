@@ -89,6 +89,12 @@ export interface DatiGuardiaFuori {
   /** Out of play since before this turn's rolls, and how (null = in play, or out only since this turn). */
   fuoriDaPrima: (id: string) => FuoriGioco | null;
   nome: (id: string) => string;
+  /**
+   * In play but losing the round in progress, by the condition's name (surprise…: prove/combattimento.ts): a sentence
+   * where it acts or speaks is replaced too, by «Zirrà perde questo round (sorpreso): non agisce.» (final round,
+   * attempt 4, PR T11/T13). Absent = nobody.
+   */
+  fermo?: (id: string) => string | null;
 }
 
 /** How many words the name found at position `i` of the clause takes (the longest variant that matches there). */
@@ -109,7 +115,7 @@ export type CorrezioneFuori = { testo: string; motivo: 'fuori_gioco_agisce'; id:
  * when nobody is out of play since before the turn.
  */
 export function guardiaFuori(d: DatiGuardiaFuori): ((frase: string) => CorrezioneFuori) | null {
-  const fuori = [...d.nomi.keys()].filter((id) => d.fuoriDaPrima(id) !== null);
+  const fuori = [...d.nomi.keys()].filter((id) => d.fuoriDaPrima(id) !== null || !!d.fermo?.(id));
   if (!fuori.length) return null;
   // A name shared with a character still in play («goblin» for a standing minion) is not a sign of the fallen one.
   const inGioco = new Set([...d.nomi].filter(([id]) => !fuori.includes(id)).flatMap(([, v]) => v.map((n) => paroleDi(n).join(' '))));
@@ -173,7 +179,9 @@ export function guardiaFuori(d: DatiGuardiaFuori): ((frase: string) => Correzion
     if (!colpevole) return null;
     if (detti.has(colpevole)) return { testo: '', motivo: 'fuori_gioco_agisce', id: colpevole };
     detti.add(colpevole);
-    const come = d.fuoriDaPrima(colpevole)!;
-    return { testo: testo(`prove.guardia.fuori_${come}`, { nome: nomeBreve(d.nome(colpevole)) }), motivo: 'fuori_gioco_agisce', id: colpevole };
+    const come = d.fuoriDaPrima(colpevole);
+    const nome = nomeBreve(d.nome(colpevole));
+    const riga = come ? testo(`prove.guardia.fuori_${come}`, { nome }) : testo('prove.guardia.fermo', { nome, condizione: d.fermo?.(colpevole) ?? '' });
+    return { testo: riga, motivo: 'fuori_gioco_agisce', id: colpevole };
   };
 }

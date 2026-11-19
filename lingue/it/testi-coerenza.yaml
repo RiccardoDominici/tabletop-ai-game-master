@@ -29,6 +29,8 @@ coerenza:
     fuggito: "{nome} fuggito"
     nascosto: "{nome} nascosto"
   improvvisato: " (improvvisato: nessuna statistica, non sa nessun segreto)"
+  # A character losing the round in progress (surprise…, prove/combattimento.ts `perdeIlTurno`).
+  fermo: " ({condizione}: in questo round non agisce né parla)"
   # A name the players invent (coerenza/nomi-nuovi.ts): in mode B and with the local reader the Engine answers it.
   nome_nuovo: "{nome}? Qui nessuno conosce questo nome."
   # An action goes somewhere the campaign does not have (coerenza/destinazioni.ts): the roads that really leave the scene.

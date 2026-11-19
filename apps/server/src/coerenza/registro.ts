@@ -30,6 +30,8 @@ export interface EntitaRegistro {
   presenza: PresenzaEntita;
   /** For `uscito`: the turn it left and where to, if known. */
   uscito: { turno: number; verso: string | null } | null;
+  /** In play but losing the round in progress, by the condition's name (surprise…): it neither acts nor speaks in it. */
+  fermo?: string;
 }
 
 /** A fact and who knows it: everybody at the table, or only some PCs (a private outcome, a whisper). */
@@ -87,6 +89,8 @@ export interface FontiRegistro {
   usciti?: ReadonlyMap<string, { turno: number; verso: string | null }>;
   pf: (id: string) => { attuali: number; massimi: number } | null;
   fuori: (id: string) => 'a_terra' | 'morto' | 'fuggito' | null;
+  /** The condition that makes a character lose the round in progress (surprise…); absent = none. */
+  fermo?: (id: string) => string | null;
   /** PCs on the ground with death saves running. */
   morenti: ReadonlySet<string>;
   fatti: readonly FattoRegistro[];
@@ -104,6 +108,9 @@ export function bandaPf(pf: { attuali: number; massimi: number } | null): 'in_pi
   if (pf.attuali * 4 <= pf.massimi) return 'grave';
   return pf.attuali * 2 <= pf.massimi ? 'ferito' : 'in_piedi';
 }
+
+/** The states of a character in play (standing, wounded, hidden). */
+const IN_GIOCO_REGISTRO: ReadonlySet<StatoEntita> = new Set(['in_piedi', 'ferito', 'grave', 'nascosto']);
 
 function statoDi(f: FontiRegistro, id: string, nascosto: boolean): StatoEntita {
   const fuori = f.fuori(id);
@@ -135,7 +142,9 @@ export function costruisciRegistro(f: FontiRegistro): Registro {
   const png = (tipo: 'png' | 'gregario' | 'improvvisato', p: { id: string; nome: string; nomi: readonly string[]; nascosto?: boolean }): void => {
     const uscito = f.usciti?.get(p.id) ?? null;
     const presenza: PresenzaEntita = uscito ? 'uscito' : f.presenti.has(p.id) ? 'in_scena' : 'altrove';
-    entita.push({ id: p.id, tipo, nome: p.nome, nomi: [...p.nomi], stato: statoDi(f, p.id, p.nascosto === true && presenza === 'in_scena'), presenza, uscito: uscito ? { ...uscito } : null });
+    const stato = statoDi(f, p.id, p.nascosto === true && presenza === 'in_scena');
+    const fermo = IN_GIOCO_REGISTRO.has(stato) ? (f.fermo?.(p.id) ?? null) : null;
+    entita.push({ id: p.id, tipo, nome: p.nome, nomi: [...p.nomi], stato, presenza, uscito: uscito ? { ...uscito } : null, ...(fermo ? { fermo } : {}) });
   };
   for (const p of f.png) png('png', p);
   for (const g of f.gregari) png('gregario', g);

@@ -46,6 +46,13 @@ describe('the block «Cosa è vero adesso»', () => {
     expect(b.righe.join(' ')).not.toMatch(/Ombra|lucchetto|Teo manca/);
   });
 
+  it('a character losing the round in progress (surprise…) says so in its row; only in play, never for the fallen', () => {
+    const righe = righeVeroAdesso(costruisciRegistro(fonti({ fermo: (id) => (id === 'png_ruggero' ? 'sorpreso' : null) })));
+    expect(righe[0]).toBe('In scena: Ruggero lo sgherro ferito gravemente (sorpreso: in questo round non agisce né parla).');
+    const morto = costruisciRegistro(fonti({ fuori: (id) => (id === 'png_ruggero' ? 'morto' : null), fermo: () => 'sorpreso' }));
+    expect(morto.entita.find((e) => e.id === 'png_ruggero')?.fermo).toBeUndefined();
+  });
+
   it('who gave way to a passed social check, toward whom: public only (final round, FB T2)', () => {
     const righe = righeVeroAdesso(costruisciRegistro(fonti({ convinti: [{ png: 'png_ruggero', autore: 'pg_ida', privata: false }, { png: 'png_ruggero', autore: 'pg_teo', privata: true }] })));
     expect(righe.at(-1)).toBe('Hanno ceduto in questo turno, dopo una prova sociale riuscita (non rifiutano e non respingono chi li ha convinti): Ruggero lo sgherro a Ida.');

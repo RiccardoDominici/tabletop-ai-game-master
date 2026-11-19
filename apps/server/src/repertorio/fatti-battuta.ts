@@ -72,8 +72,14 @@ export function motivoControRegistro(b: Battuta, entita: readonly EntitaRegistro
     if (!classi.includes(c)) return `assumes ${id} ${classi.join('/')}, the ledger has ${c}`;
     if (c !== 'fuggito' && e.presenza !== 'in_scena') return `assumes ${id} here (${classi.join('/')}), the ledger has ${id} away`;
   }
+  // Losing the round in progress (surprise…): it neither speaks nor acts in a line of that round (final round, PR T11/T13).
+  for (const id of parlanti(b)) {
+    const e = per.get(id);
+    if (e?.fermo) return `${id} speaks in the line but loses this round (${e.fermo})`;
+  }
   for (const id of b.attori ?? []) {
     const e = per.get(id);
+    if (e?.fermo) return `${id} acts in the line but loses this round (${e.fermo})`;
     if (!e || parlanti(b).has(id)) continue;
     if (e.presenza !== 'in_scena') return `${id} acts in the line but is not in the scene`;
     if (!IN_GIOCO.has(e.stato)) return `${id} acts in the line but is out of play (${e.stato})`;
@@ -81,6 +87,7 @@ export function motivoControRegistro(b: Battuta, entita: readonly EntitaRegistro
   for (const id of nominatiSenzaSegno(b, entita)) {
     const e = per.get(id)!;
     if (!IN_GIOCO.has(e.stato)) return `the line names ${id}, out of play (${e.stato})`;
+    if (e.fermo) return `the line names ${id}, who loses this round (${e.fermo})`;
   }
   return null;
 }

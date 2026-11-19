@@ -76,7 +76,12 @@ combattimento:
      attacked; one the Game Master opens from the panel rolls for both. The fact goes to the narrator with the
      initiative («Sorpresa: i nemici tirano 1 su 1d6 e sono colti di sorpresa…»). The SRD 5.2 has no surprise roll (a
      surprised creature has disadvantage on initiative, a judgement the Engine cannot make without a model): a set
-     without `sorpresa` rolls none.
+     without `sorpresa` rolls none. An NPC that loses the round in progress (surprise, or any condition with the
+     effect `perde_turno`: `perdeIlTurno`) neither acts nor speaks in a line of that round. The ledger marks it
+     (`fermo`); «Cosa è vero adesso» says «Zirrà ferito (sorpreso: in questo round non agisce né parla)». A prepared or
+     scriptwriter line where it speaks, acts (`attori`) or is named with no tag is held back. R-fuori replaces a
+     narrator sentence where it acts with «Zirrà perde questo round (sorpreso): non agisce.», once per turn. The final
+     round (attempt 4, PR T11/T13) heard a surprised Zirrà snap her fingers and kick the fire at the PCs.
 2. **Steps**: a round is phases × order (individual), or phases × sides (per side).
    - **Ties** (individual): by default the Engine breaks them with a fixed order (higher modifier, then the PCs, then
      the id). A set with `iniziativa.pari: simultanei` (Basic Fantasy p. 51: equal numbers act simultaneously; A17, 17

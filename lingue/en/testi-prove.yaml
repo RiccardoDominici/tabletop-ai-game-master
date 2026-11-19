@@ -244,6 +244,8 @@ prove:
     fuori_a_terra: "{nome} lies on the ground, unconscious."
     fuori_morto: "{nome} lies on the ground, lifeless."
     fuori_fuggito: "{nome} is no longer here."
+    # In play but losing the round (surprise…): the line instead of a sentence where it acts (narrazione/guardia-fuori.ts).
+    fermo: "{nome} loses this round ({condizione}): no action."
 
 regole:
   domanda:

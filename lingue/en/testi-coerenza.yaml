@@ -28,6 +28,7 @@ coerenza:
     morto: "{nome} is no longer alive: neither speaks nor acts, the body is there"
     fuggito: "{nome} fled"
     nascosto: "{nome} hidden"
+  fermo: " ({condizione}: does not act or speak this round)"
   improvvisato: " (improvised: no stats, knows no secret)"
   # A name the players invent (coerenza/nomi-nuovi.ts): in mode B and with the local reader the Engine answers it.
   nome_nuovo: "{nome}? Nobody here knows that name."

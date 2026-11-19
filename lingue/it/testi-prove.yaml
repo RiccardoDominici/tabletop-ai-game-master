@@ -257,6 +257,8 @@ prove:
     fuori_a_terra: "{nome} giace a terra, senza sensi."
     fuori_morto: "{nome} giace a terra, senza vita."
     fuori_fuggito: "{nome} non è più qui."
+    # In play but losing the round (surprise…): the line instead of a sentence where it acts (narrazione/guardia-fuori.ts).
+    fermo: "{nome} perde questo round ({condizione}): non agisce."
 
 regole:
   # «Chiedi una regola» (regole/chiedi.ts): il prompt di sistema è prompts/<lingua>/risponditore-regole.md.
