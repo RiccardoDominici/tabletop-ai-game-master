@@ -69,7 +69,14 @@ The same rules as the prepared repertoire, plus those for whoever writes on the 
 - **outcomes in a fight**: while a fight is on, every line of a combatant (its speaker, a labelled row, or an actor)
   declares `richiede.esito`, `nessuno` included, or it is refused; a line by or about a fighter of this visit
   (speaker, actor, or named) with an outcome word and no outcome (or `nessuno`) is refused too; narration about nobody
-  («il buio cade sulla torre») passes.
+  («il buio cade sulla torre») passes. In a fight, any line that tells an attack's outcome must say which, whoever it
+  names (final round, attempt 5, PR T15: «Nessun dardo parte: … il mantello grigio resta fermo.», written for T14 and
+  heard after the card of the dart that hit). An attack's outcome is a weapon or a spell (pack,
+  `sceneggiatore.attacco_armi`) in a sentence with a hit or miss word, a launch verb (`attacco_lancio`), or a «no» right
+  before it (`attacco_nessun`). Without `richiede.esito` (or with `nessuno`) such a line is refused. With the tag, the
+  Engine checks it against the cards of the line's own turn (`fino_al_turno`), also when it is said in a later window.
+  Replayed on the lines accepted in attempts 3–5, the rule refuses 4 of 1025: the PR T15 line, two «nessuna lancia
+  vola…» and a falling stone;
 - **wounds and falls**: a line whose text or `quando` tells blood, a wound or a fall (the pack's
   `sceneggiatore.stato_pg`: «sangue», «ferit», «a terra», «striscia scura»…), during a fight or naming a PC, says
   whose: `richiede.stati` (the class `ferito` is in play and hurt) or an outcome in `richiede.esito`; without it, it is

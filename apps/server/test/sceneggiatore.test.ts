@@ -127,6 +127,25 @@ describe('controllo delle battute dello sceneggiatore', () => {
     ]);
   });
 
+  it('in a fight an attack\'s outcome carries richiede.esito, whoever the line names (final round, attempt 5, PR T15)', () => {
+    const nar = (id: string, riga: string, o: Record<string, unknown> = {}) => battuta({ id, chi: 'narratore', quando: 'un PG tira il dardo', temi: ['dardo'], testo: [`[narratore] ${riga}`], ...o });
+    const lotta = validaBattute(
+      yaml([
+        nar('sc_x_1', 'Nessun dardo parte: sul pavimento, vicino al fuoco, il mantello grigio resta fermo.'),
+        nar('sc_x_2', 'Nessun dardo parte: sul pavimento, vicino al fuoco, il mantello grigio resta fermo.', { richiede: { esito: { tipo: 'nessuno' } } }),
+        nar('sc_x_3', 'La freccia vola oltre il muro e si perde nel buio.'),
+        nar('sc_x_4', 'Il dardo parte e manca la goblin di un soffio.', { richiede: { esito: { tipo: 'mancato' } } }),
+        nar('sc_x_5', 'Il fuoco crepita, e il fumo sale fra le travi.'),
+      ]),
+      { ...ctx, scontro: true },
+    );
+    expect(lotta.accettate.map((b) => b.id)).toEqual(['sc_x_4', 'sc_x_5']);
+    expect(lotta.scartate.map((x) => x.id)).toEqual(['sc_x_1', 'sc_x_2', 'sc_x_3']);
+    expect(lotta.scartate[0]!.motivo).toMatch(/racconta l'esito di un attacco \(«nessun dardo»\) senza richiede\.esito/);
+    // Out of a fight the same words are narration.
+    expect(validaBattute(yaml([nar('sc_x_6', 'La freccia vola oltre il muro e si perde nel buio.')]), ctx).accettate).toHaveLength(1);
+  });
+
   it('a wound or a fall in a fight, or of a named PC, says whose (final round, attempt 4, CM T19: «una striscia scura»)', () => {
     const nar = (id: string, riga: string, o: Record<string, unknown> = {}) => battuta({ id, chi: 'narratore', quando: 'un PG trascina una compagna a terra', testo: [`[narratore] ${riga}`], ...o });
     const lotta = validaBattute(

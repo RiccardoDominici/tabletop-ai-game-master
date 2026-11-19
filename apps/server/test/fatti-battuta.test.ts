@@ -167,6 +167,24 @@ describe('a line that tells an outcome carries it, and the Engine checks it agai
     expect(s.motivoEsitoPer({ ...b, fino_al_turno: undefined }, 'pg_ida')).toMatch(/no card/);
   });
 
+  it('a late line is checked against its own turn\'s cards even when the answered PC died after acting (final round, attempt 5, PR T15)', () => {
+    // Written for T14 («nessun dardo parte»: a miss by the answered PC), said at T15. Eliandro's dart hit at T14 and he
+    // died later that turn: the ledger's «dead» fits the line's state tag, the card of T14 does not fit its outcome.
+    const [b0] = carica([base('sc_dardo', ['[narratore] Nessun dardo parte: il mantello grigio resta fermo.'], { richiede: { esito: { tipo: 'mancato' }, stati: { pg_anna: 'morto' } } })]) as [Battuta];
+    const b = { ...b0, fino_al_turno: 14 };
+    const s = new StatoRepertorio({ battute: [b], perId: new Map([[b.id, b]]), avvisi: [] }, campagna, new StatoOrologi(campagna));
+    s.presenza = null;
+    s.presenti = null;
+    s.registro = () => ({ entita: [{ ...pg, id: 'pg_anna', stato: 'morto' as const }, ...ledger({})], esiti: [], turno: 15 });
+    s.carteDi = (t) => ({ esiti: t === 14 ? [carta('pg_anna', 'png_oste', true)] : [] });
+    expect(s.motivoEsitoPer(b, 'pg_anna')).toMatch(/./);
+    // The same line on a turn whose card missed is fine.
+    s.carteDi = (t) => ({ esiti: t === 14 ? [carta('pg_anna', 'png_oste', false)] : [] });
+    expect(s.motivoEsitoPer(b, 'pg_anna')).toBeNull();
+    s.carteDi = (t) => ({ esiti: t === 14 ? [carta('pg_anna', 'png_oste', true)] : [] });
+    expect(s.motivoIndisponibile(b, 15)).not.toBeNull();
+  });
+
   it('a line written for one action is not offered after its turn', () => {
     const b = { ...colpo, richiede: { ...colpo.richiede, esito: null }, fino_al_turno: 4 };
     const s = new StatoRepertorio({ battute: [b], perId: new Map([[b.id, b]]), avvisi: [] }, campagna, new StatoOrologi(campagna));

@@ -208,6 +208,12 @@ sceneggiatore:
   # fight, or naming a PC, says whose state it takes as true (richiede.stati or richiede.esito), so the Engine can check
   # it (final round, attempt 4, CM T19: «Sui sassi gelati resta una striscia scura…» for a PC no card had hurt).
   stato_pg: [sangue, sanguin, insanguin, ferit, feriscon, ferisce, a terra, svenut, privo di sensi, priva di sensi, zoppic, striscia scura, macchia scura, scia scura, livid]
+  # An attack's outcome told in a fight (final round, attempt 5, PR T15: «Nessun dardo parte…» after a dart that hit):
+  # a weapon or a spell (`attacco_armi`, word prefixes) in a sentence with a hit or miss word (guardia_esiti), a launch
+  # verb (`attacco_lancio`), or right after a «no» (`attacco_nessun`). Such a line carries richiede.esito.
+  attacco_armi: [colpo, colpi, fendente, affondo, lancia, lame, lama, freccia, frecce, dardo, dardi, pugnale, spada, ascia, mazza, bastone, giavellotto, sasso, fionda, incantesimo, magia]
+  attacco_lancio: [parte, partono, vola, volano, scocca, scoccano, sibila, sibilano, si pianta, si conficca, esplode]
+  attacco_nessun: [nessun, nessuna, nessuno, niente]
 
 # Fatti dello scontro che il tavolo deve sentire (apps/server/src/prove/fatti-dovuti.ts): una riga detta li racconta
 # se nomina la creatura e contiene una parola che comincia con una di queste radici (minuscole, senza accenti).

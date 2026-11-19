@@ -123,6 +123,27 @@ export function parolaDiStato(t: string): string | null {
   return null;
 }
 
+/**
+ * An attack's outcome told in the text (final round, attempt 5, PR T15: «Nessun dardo parte…» for a dart that hit): a
+ * sentence with a weapon or a spell (pack, `sceneggiatore.attacco_armi`) and a hit or miss word (guardia_esiti), a
+ * launch verb (`attacco_lancio`), or a «no» right before the weapon (`attacco_nessun`). The words found, or null.
+ */
+export function esitoDiAttacco(t: string): string | null {
+  const g = guardia();
+  const esiti = [...paroleDelColpo().colpo, ...g.lancio];
+  for (const frase of t.split(/[.!?;:…]+/)) {
+    const w = paroleDi(frase);
+    for (const arma of g.armi) {
+      const i = posizione(w, arma);
+      if (i < 0) continue;
+      if ((i > 0 && g.nessun.has(w[i - 1]!)) || (i > 1 && g.nessun.has(w[i - 2]!))) return w.slice(Math.max(0, i - 2), i + arma.length).join(' ');
+      const e = esiti.find((v) => posizione(w, v) >= 0);
+      if (e) return `${w.slice(i, i + arma.length).join(' ')} … ${e.join(' ')}`;
+    }
+  }
+  return null;
+}
+
 /** Whether a row names that NPC (name, short name, alias), as the ledger has them. */
 function nominaPng(testo: string, id: string, entita: readonly EntitaRegistro[]): boolean {
   const e = entita.find((x) => x.id === id);
@@ -244,6 +265,15 @@ export function validaBattute(testo: string, ctx: ContestoValidazione): EsitoVal
     const nominaPg = nomi.some((n) => ` ${normalizzaFrase(tuttoIlTesto)} `.includes(` ${normalizzaFrase(n)} `));
     const senzaStato = !Object.keys(b.richiede.stati).length && (!b.richiede.esito || b.richiede.esito.tipo === 'nessuno');
     if (ferita && (ctx.scontro || nominaPg) && senzaStato) return void scartate.push({ id: b.id, motivo: `dà per vera una ferita o una caduta («${ferita}») senza dire di chi (richiede.stati o richiede.esito)` }), false;
+    // In a fight, any line that tells an attack's outcome says which, whoever it names (final round, attempt 5, PR T15:
+    // «Nessun dardo parte: … il mantello grigio resta fermo.», written for T14 and heard after the card of Eliandro's
+    // dart that hit; it named no fighter, so the rule above did not see it). With the tag the Engine checks it against
+    // the cards of the line's own turn (`fino_al_turno`), also when it is said later.
+    const esitoDetto = !b.richiede.esito || b.richiede.esito.tipo === 'nessuno' || b.richiede.esito.tipo === 'fugge';
+    if (ctx.scontro && esitoDetto) {
+      const att = esitoDiAttacco(b.testo.map((r) => r.testo).join(' '));
+      if (att) return void scartate.push({ id: b.id, motivo: `racconta l'esito di un attacco («${att}») senza richiede.esito (colpito, mancato…)` }), false;
+    }
     const confermato = ctx.inventati?.size ? confermaInventato(b.testo.map((r) => r.testo), ctx.inventati) : null;
     if (confermato) return void scartate.push({ id: b.id, motivo: `dà per vero «${confermato}», che la campagna non ha` }), false;
     if (!b.temi.length) return void scartate.push({ id: b.id, motivo: 'senza temi: non entrerebbe mai in catalogo' }), false;
@@ -309,7 +339,7 @@ export function pgCheAgisce(testo: string, nomi: readonly string[]): string | nu
 const escapa = (x: string): string => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /** Le parole della guardia nella lingua dei contenuti (lingue/<codice>/motore.yaml, sezione `sceneggiatore`). */
-const guardia = (): { congiunzioni: string; coordinanti: string; negazioni: string; clitici: string; articoli: string; genitivo: string; possessivo: string; corpo: string; stato: string[] } =>
+const guardia = (): { congiunzioni: string; coordinanti: string; negazioni: string; clitici: string; articoli: string; genitivo: string; possessivo: string; corpo: string; stato: string[]; armi: string[][]; lancio: string[][]; nessun: ReadonlySet<string> } =>
   regole('sceneggiatore', (s) => {
     const alt = (k: string): string => campoElenco(s, k).map((x) => escapa(x).replace(/ /g, '\\s+')).join('|');
     return {
@@ -322,6 +352,9 @@ const guardia = (): { congiunzioni: string; coordinanti: string; negazioni: stri
       possessivo: escapa(campoTesto(s, 'possessivo')),
       corpo: alt('parti_del_corpo'),
       stato: campoElenco(s, 'stato_pg').map((x) => x.toLowerCase()),
+      armi: campoElenco(s, 'attacco_armi').map((x) => paroleDi(x)),
+      lancio: campoElenco(s, 'attacco_lancio').map((x) => paroleDi(x)),
+      nessun: new Set(campoElenco(s, 'attacco_nessun').flatMap((x) => paroleDi(x))),
     };
   });
 

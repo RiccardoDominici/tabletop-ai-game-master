@@ -210,6 +210,12 @@ sceneggiatore:
   # fight, or naming a PC, says whose state it takes as true (richiede.stati or richiede.esito), so the Engine can check
   # it (final round, attempt 4, CM T19: «a dark trail on the frozen stones…» for a PC no card had hurt).
   stato_pg: [blood, bleed, bloodied, wound, hurt, on the ground, unconscious, limp, dark trail, dark stain, bruise]
+  # An attack's outcome told in a fight (final round, attempt 5, PR T15: «Nessun dardo parte…» after a dart that hit):
+  # a weapon or a spell (`attacco_armi`, word prefixes) in a sentence with a hit or miss word (guardia_esiti), a launch
+  # verb (`attacco_lancio`), or right after a «no» (`attacco_nessun`). Such a line carries richiede.esito.
+  attacco_armi: [blow, blows, strike, thrust, spear, blade, arrow, arrows, bolt, bolts, dart, darts, dagger, sword, axe, mace, club, javelin, stone, sling, spell, magic]
+  attacco_lancio: [flies, fly, leaves, shoots, whistles, sinks in, explodes]
+  attacco_nessun: [no, none, nothing]
 
 # Combat facts the table must hear (apps/server/src/prove/fatti-dovuti.ts): a spoken line tells one if it names the
 # creature and has a word starting with one of these stems (lowercase, no accents). Without one, the Engine adds the
