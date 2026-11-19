@@ -46,6 +46,12 @@ describe('the block «Cosa è vero adesso»', () => {
     expect(b.righe.join(' ')).not.toMatch(/Ombra|lucchetto|Teo manca/);
   });
 
+  it('who gave way to a passed social check, toward whom: public only (final round, FB T2)', () => {
+    const righe = righeVeroAdesso(costruisciRegistro(fonti({ convinti: [{ png: 'png_ruggero', autore: 'pg_ida', privata: false }, { png: 'png_ruggero', autore: 'pg_teo', privata: true }] })));
+    expect(righe.at(-1)).toBe('Hanno ceduto in questo turno, dopo una prova sociale riuscita (non rifiutano e non respingono chi li ha convinti): Ruggero lo sgherro a Ida.');
+    expect(righe.join(' ')).not.toMatch(/a Teo/);
+  });
+
   it('the fallen are rows like the others; nothing to say, no block', () => {
     const morto = righeVeroAdesso(costruisciRegistro(fonti({ fuori: (id) => (id === 'png_ruggero' ? 'morto' : null), carte: [], usciti: new Map() })));
     expect(morto[0]).toBe('In scena: Ruggero lo sgherro non è più in vita: non parla né agisce, il corpo è lì.');

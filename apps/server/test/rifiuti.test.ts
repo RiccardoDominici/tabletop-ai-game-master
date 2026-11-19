@@ -80,6 +80,25 @@ describe('the Engine marks who refused; the repertoire keeps only the refusal', 
     expect((await motore(new Arbitro(), [20]).risolvi(1, [{ id: 'a1', autore: 'pg_ida', testo, privata: false, revisione: 1 }])).negati).toEqual([]);
   });
 
+  it('a passed social check: the NPC’s refusal line is out, its other lines stay (final round, FB T2)', () => {
+    const rifiuto = { ...caricaRepertorio(c).perId.get('bertoldo_saluto')!, id: 'bertoldo_no', tipo: 'rifiuto' as const };
+    const rep = caricaRepertorio(c);
+    rep.perId.set(rifiuto.id, rifiuto);
+    rep.battute.push(rifiuto);
+    const s = new StatoRepertorio(rep, c, new StatoOrologi(c));
+    expect(s.motivoIndisponibile(rifiuto)).toBeNull();
+    s.convinti = () => new Set(['png_bertoldo']);
+    expect(s.motivoIndisponibile(rifiuto)).toMatch(/png_bertoldo ha appena ceduto/);
+    expect(s.motivoIndisponibile(rep.perId.get('bertoldo_saluto')!)).toBeNull();
+  });
+
+  it('a passed social check toward the NPC → sociali with riuscita, and no negati', async () => {
+    const testo = 'Offro a Bertoldo il pane e due monete: dimmi la strada.';
+    const r = await motore(new Arbitro(), [20]).risolvi(1, [{ id: 'a1', autore: 'pg_ida', testo, privata: false, revisione: 1 }]);
+    expect(r.negati).toEqual([]);
+    expect(r.sociali).toEqual([{ png: 'png_bertoldo', autore: 'pg_ida', riuscita: true, privata: false }]);
+  });
+
   it('only the NPC’s refusal line is available while it refuses', () => {
     const rifiuto = { ...caricaRepertorio(c).perId.get('bertoldo_saluto')!, id: 'bertoldo_no', tipo: 'rifiuto' as const };
     const rep = caricaRepertorio(c);

@@ -118,6 +118,11 @@ export class StatoRepertorio {
    */
   negati: (() => ReadonlySet<string>) | null = null;
   /**
+   * NPCs who gave way this turn after a passed social check (the director decides): their `rifiuto` lines are out, a
+   * success is not answered with a rebuff (final round, FB T2). The mirror of `negati`.
+   */
+  convinti: (() => ReadonlySet<string>) | null = null;
+  /**
    * Lines only the Engine says: the `battuta` of a clock's consequence (docs/mondo.md §3). They never enter the
    * reader's catalogue, so the reader cannot use the consequence before its mark (A41: torre-mozza's mark-3 line was a
    * filler the reader picked first, and the consequence fell back to its sentence).
@@ -208,6 +213,11 @@ export class StatoRepertorio {
     if (negati?.size && b.tipo !== 'rifiuto') {
       const chi = parlantiDi(b).find((x) => negati.has(x));
       if (chi) return `${chi} ha appena rifiutato (prova sociale fallita): solo la sua battuta di rifiuto`;
+    }
+    const convinti = this.convinti?.();
+    if (convinti?.size && b.tipo === 'rifiuto') {
+      const chi = parlantiDi(b).find((x) => convinti.has(x));
+      if (chi) return `${chi} ha appena ceduto (prova sociale riuscita): niente rifiuto`;
     }
     if (this.stradaGiàPercorsa(b)) return `indizio già trovato in un altro modo (${b.effetti.rivela_indizi.join(', ')})`;
     // I segni di un orologio che non è ancora partito (parte_dopo) restano fuori dal catalogo.

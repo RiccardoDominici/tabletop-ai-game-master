@@ -572,6 +572,12 @@ export class Regia {
   private negatiTurno: ReadonlySet<string> = new Set();
   /** The same refusals with who asked and whether in private (the coherence ledger, coerenza/registro.ts). */
   private negatiDettaglio: Array<{ png: string; autore: string; privata: boolean }> = [];
+  /**
+   * NPCs who gave way in the turn being narrated: a social check toward them succeeded (prove/motore.ts, `sociali`).
+   * Their refusal lines are out for the turn (final round, FB T2: a Charisma success answered with Berta's rebuff).
+   */
+  private convintiTurno: ReadonlySet<string> = new Set();
+  private convintiDettaglio: Array<{ png: string; autore: string; privata: boolean }> = [];
   /** The coherence ledger's journal (docs/coerenza.md §1): rebuilt before every model call and check. */
   private readonly diarioRegistro = new DiarioRegistro();
   /**
@@ -1431,6 +1437,7 @@ export class Regia {
       fatti,
       carte: prove?.carteDelTurno(this.turno) ?? [],
       negati: this.negatiDettaglio,
+      convinti: this.convintiDettaglio,
       oggetti: this.oggetti.tenuti(),
     };
   }
@@ -2408,6 +2415,7 @@ export class Regia {
     // Chi parla nelle battute: i PNG in scena che possono parlare, decisi qui (anche a mano e dopo un colpo).
     s.presenza = () => this.pngInScena();
     s.negati = () => this.negatiTurno;
+    s.convinti = () => this.convintiTurno;
     // A line that names an NPC out of play (on the ground, dead, fled) does not come out, whoever says it.
     s.fuoriGioco = () => this.nomiFuoriGioco();
     // With the ledger, each line's facts (who acts, the states it assumes, who it names) are checked against what is true
@@ -3861,6 +3869,9 @@ export class Regia {
     this.fallitePerAzione = new Map([...esito.perAzione].map(([id, e]) => [id, e.fallite]));
     this.negatiTurno = new Set(esito.negati.map((n) => n.png));
     this.negatiDettaglio = esito.negati.map((n) => ({ png: n.png, autore: n.autore, privata: n.privata }));
+    const convinti = (esito.sociali ?? []).filter((x) => x.riuscita);
+    this.convintiTurno = new Set(convinti.map((x) => x.png));
+    this.convintiDettaglio = convinti.map((x) => ({ png: x.png, autore: x.autore, privata: x.privata }));
     this.registroOra('carte del turno');
     this.o.log.info(
       {
@@ -4000,6 +4011,7 @@ export class Regia {
     this.riuscitePerAzione = new Map();
     this.fallitePerAzione = new Map();
     this.negatiTurno = new Set();
+    this.convintiTurno = new Set();
     // In combattimento si tira anche senza azioni: i turni dei PNG vanno avanti.
     const scontroPrima = this.prove?.inCombattimento ?? false;
     const tiri = this.prove?.attivo && (r.azioni.length || this.prove.inCombattimento || giocate.decisioni) ? await this.tiriDelTurno(r, giocate) : null;

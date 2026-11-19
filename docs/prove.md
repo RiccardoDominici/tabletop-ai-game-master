@@ -359,6 +359,14 @@ test/gregari.test.ts. Example: ponte-lanterne, the consul's two guards at the Ca
      written version of the `rifiuto` line is said once, then the neutral narrator line («Bertoldo scuote la testa e non
      risponde.»): in the third e2e pass (bug 10) Berta's only refusal line came back word for word at T1 and T4, as the
      answer to questions it did not address.
+   - The mirror: after a PASSED social check toward an NPC, that NPC gives way for the rest of the turn (final round,
+     FB T1–T2: Nespola's Charisma success, Berta indifferent → friendly, was answered with her rebuff «questa chiave
+     non si vende»). Same targets (`EsitoTurnoProve.sociali` with `riuscita`); in the repertoire its `rifiuto` lines are
+     out (`StatoRepertorio.convinti`), also for a scriptwriter's line said in the next window; «Cosa è vero adesso»
+     says «Hanno ceduto in questo turno, dopo una prova sociale riuscita…: Berta Benni a Nespola.», so the
+     scriptwriter, which writes the answer, knows the NPC does not rebuff. A rebuff the scriptwriter tags as a
+     `reazione` is not caught by the tag: the block line is what keeps it out. Test: test/rifiuti.test.ts,
+     test/coerenza-blocco.test.ts.
 6. **State and resume**.
    - `FotografiaSessione.prove` holds HP, the seed and the dice counter, and the latest cards: a restart resumes with the
      same HP.

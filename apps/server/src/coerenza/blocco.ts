@@ -54,6 +54,12 @@ export function righeVeroAdesso(r: Registro): string[] {
     const nome = (id: string): string => r.entita.find((e) => e.id === id)?.nome ?? id;
     righe.push(testo('coerenza.negati', { elenco: negati.map((n) => testo('coerenza.negato', { png: nome(n.png), pg: nomeBreve(nome(n.autore)) })).join('; ') }));
   }
+  // The mirror: who gave way to a passed social check does not rebuff that PC (final round, FB T2).
+  const convinti = (r.convinti ?? []).filter((n) => !n.privata);
+  if (convinti.length) {
+    const nome = (id: string): string => r.entita.find((e) => e.id === id)?.nome ?? id;
+    righe.push(testo('coerenza.convinti', { elenco: convinti.map((n) => testo('coerenza.convinto', { png: nome(n.png), pg: nomeBreve(nome(n.autore)) })).join('; ') }));
+  }
   return righe.slice(0, RIGHE_MASSIME);
 }
 

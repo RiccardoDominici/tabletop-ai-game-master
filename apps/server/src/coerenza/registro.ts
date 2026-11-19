@@ -65,6 +65,8 @@ export interface Registro {
   esiti: EsitoRegistro[];
   /** NPCs who refused this turn after a failed social check, toward whom (the refusal guard's input). */
   negati: Array<{ png: string; autore: string; privata: boolean }>;
+  /** NPCs who gave way this turn after a passed social check, toward whom (absent = none). */
+  convinti?: Array<{ png: string; autore: string; privata: boolean }>;
   /** Who holds what (A22): objects with an id someone holds or that moved; `chi` null = in its place. */
   oggetti?: Array<{ id: string; nome: string; chi: string | null; privato?: string | null }>;
 }
@@ -90,6 +92,8 @@ export interface FontiRegistro {
   fatti: readonly FattoRegistro[];
   carte: readonly TiroMostrato[];
   negati: ReadonlyArray<{ png: string; autore: string; privata: boolean }>;
+  /** NPCs who gave way this turn after a passed social check (absent = none). */
+  convinti?: ReadonlyArray<{ png: string; autore: string; privata: boolean }>;
   /** Objects with an id someone holds or that moved (scena/oggetti.ts, A22); absent = none tracked. */
   oggetti?: ReadonlyArray<{ id: string; nome: string; chi: string | null; privato?: string | null }>;
 }
@@ -144,6 +148,7 @@ export function costruisciRegistro(f: FontiRegistro): Registro {
     fatti: f.fatti.map((x) => ({ ...x, conosciutoDa: [...x.conosciutoDa] })),
     esiti,
     negati: f.negati.map((n) => ({ ...n })),
+    ...(f.convinti?.length ? { convinti: f.convinti.map((n) => ({ ...n })) } : {}),
     ...(f.oggetti?.length ? { oggetti: f.oggetti.map((o) => ({ ...o })) } : {}),
   };
 }
