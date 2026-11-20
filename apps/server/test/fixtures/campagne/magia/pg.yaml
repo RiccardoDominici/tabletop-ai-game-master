@@ -16,6 +16,7 @@ personaggi:
     caratteristiche: {forza: 8, destrezza: 13, costituzione: 10, intelligenza: 17, saggezza: 12}
     classe: mago
     livello: 2
+    razza: umano
     pf: 5
     difesa: 11
     incantesimi: [dardo_arcano, sonno]
@@ -37,6 +38,7 @@ personaggi:
     caratteristiche: {forza: 13, destrezza: 9, costituzione: 13, intelligenza: 10, saggezza: 16}
     classe: chierico
     livello: 2
+    razza: umano
     pf: 10
     difesa: 15
     incantesimi: [cura_ferite]
@@ -59,6 +61,7 @@ personaggi:
     caratteristiche: {forza: 12, destrezza: 16, costituzione: 12, intelligenza: 10, saggezza: 10}
     classe: guerriero
     livello: 1
+    razza: folletto
     pf: 8
     difesa: 14
     risorse: {frecce: 2, monete: 12}

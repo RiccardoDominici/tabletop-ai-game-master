@@ -14,6 +14,7 @@
 import { chiave, leggiFormula, modificatore } from '../campagna/regole-srd';
 import type { Campagna, DatiYaml } from '../campagna/tipi';
 import type { SchedaGenerica, SistemaRegole } from './tipi';
+import { leggiTratti, type Tratto } from './tratti';
 
 const ogg = (v: unknown): DatiYaml | null => (v !== null && typeof v === 'object' && !Array.isArray(v) ? (v as DatiYaml) : null);
 const intero = (v: unknown): number | null => (typeof v === 'number' && Number.isInteger(v) ? v : null);
@@ -109,9 +110,14 @@ function risorseDellaScheda(s: SistemaRegole, o: DatiYaml, dove: string, avvisi:
  * The sheet's class, level, race and «save as» (`classe`, `livello`, `razza`, `salva_come`), as ids of the set: they
  * pick the rows of the class tables and the race's traits. An id the set does not have is reported and dropped.
  */
-function classeDellaScheda(s: SistemaRegole, o: DatiYaml, dove: string, avvisi: string[]): Pick<SchedaGenerica, 'classe' | 'livello' | 'razza' | 'salvaCome'> {
+function classeDellaScheda(s: SistemaRegole, o: DatiYaml, dove: string, avvisi: string[]): Pick<SchedaGenerica, 'classe' | 'livello' | 'razza' | 'salvaCome' | 'tratti'> {
   const classi = new Set((s.classi ?? []).map((c) => c.id));
-  const out: Pick<SchedaGenerica, 'classe' | 'livello' | 'razza' | 'salvaCome'> = {};
+  const out: Pick<SchedaGenerica, 'classe' | 'livello' | 'razza' | 'salvaCome' | 'tratti'> = {};
+  if (o['tratti'] !== undefined) {
+    const errori: string[] = [];
+    out.tratti = leggiTratti(o['tratti'], `${dove}.tratti`, { abilita: new Set(s.abilita.map((a) => a.id)), colonne: new Set((s.tiriSalvezza?.colonne ?? []).map((c) => c.id)) }, errori);
+    avvisi.push(...errori);
+  }
   if (typeof o['classe'] === 'string') {
     if (classi.has(o['classe'])) out.classe = o['classe'];
     else avvisi.push(`${dove}.classe: «${o['classe']}» non è una classe del set ${s.id}`);
@@ -119,7 +125,10 @@ function classeDellaScheda(s: SistemaRegole, o: DatiYaml, dove: string, avvisi: 
   const livello = intero(o['livello']);
   if (o['livello'] !== undefined && (livello === null || livello < 0)) avvisi.push(`${dove}.livello: un intero da 0 in su`);
   else if (livello !== null) out.livello = livello;
-  if (typeof o['razza'] === 'string') out.razza = o['razza'];
+  if (typeof o['razza'] === 'string') {
+    if (!s.razze?.length || s.razze.some((r) => r.id === o['razza'])) out.razza = o['razza'];
+    else avvisi.push(`${dove}.razza: «${o['razza']}» non è una razza del set ${s.id}`);
+  }
   const sc = ogg(o['salva_come']);
   if (o['salva_come'] !== undefined) {
     const lv = intero(sc?.['livello']);
@@ -141,6 +150,13 @@ export function caricaSchedeGeneriche(s: SistemaRegole, c: Pick<Campagna, 'pg' |
   }
   for (const x of out.values()) for (const a of x.avvisi) avvisa(`scheda ${a}`);
   return out;
+}
+
+/** Every trait of a sheet: its race's, its class's and its own (regole/tratti.ts). */
+export function trattiDi(s: SistemaRegole, sch: SchedaGenerica): Tratto[] {
+  const razza = sch.razza ? (s.razze ?? []).find((r) => r.id === sch.razza)?.tratti : undefined;
+  const classe = sch.classe ? (s.classi ?? []).find((c) => c.id === sch.classe)?.tratti : undefined;
+  return [...(razza ?? []), ...(classe ?? []), ...(sch.tratti ?? [])];
 }
 
 /** Il valore di una caratteristica che manca dalla scheda: quello che dà +0 (10 nell'SRD, la riga +0 della tabella). */

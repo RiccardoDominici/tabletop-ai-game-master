@@ -2,8 +2,8 @@
 # `conoscenze_private`, che va solo sul telefono di quel giocatore (T9).
 #
 # Schede nel set di Basic Fantasy (regole/regole.yaml): ogni caratteristica scrive il suo punteggio da 3 a 18, e
-# il bonus lo dà la tabella del set (13–15 = +1…, p. 4); i tiri salvezza sono bonus sul d20 contro 17 (bonus = 17 −
-# numero della tabella); le abilità del ladro (percentuali) e le possibilità «x su 6» scrivono la soglia del loro
+# il bonus lo dà la tabella del set (13–15 = +1…, p. 4); i tiri salvezza li dà la tabella della classe e del livello del
+# set (p. 61), con i tratti della razza; le abilità del ladro (percentuali) e le possibilità «x su 6» scrivono la soglia del loro
 # dado, d100 o d6, come nel manuale. Bonus d'attacco +1 a tutti al primo livello.
 # Punti ferita: dado vita al massimo più la Costituzione (decisione nel brief).
 situazione_comune: "Siete arrivati a Spinalba all'imbrunire, ognuno per la sua strada, e la pastora Berta Benni vi ha chiamati al suo ovile. In paese dicono che la notte scorsa i goblin della Torre Mozza le hanno preso il figlio, e che vogliono la chiave di famiglia entro mezzanotte."
@@ -28,10 +28,11 @@ personaggi:
     scheda:
       # Punteggi del manuale: il bonus lo dà la tabella del set (regole/regole.yaml, modificatore).
       caratteristiche: {forza: 16, intelligenza: 10, saggezza: 9, destrezza: 13, costituzione: 15, carisma: 11}
-      # Guerriera di primo livello: salvezza 12, 13, 14, 15, 17. Porte bloccate: 3 su 6 con la Forza.
+      # Guerriera di primo livello: i salvezza (12, 13, 14, 15, 17) li dà la tabella del set. Porte bloccate: 3 su 6 con la Forza.
       classe: guerriero
       livello: 1
-      abilita: {mischia: 1, distanza: 1, ts_morte: 5, ts_morte_destrezza: 5, ts_bacchette: 4, ts_paralisi: 3, ts_soffio: 2, ts_incantesimi: 0, forzare: 3}
+      razza: umano
+      abilita: {mischia: 1, distanza: 1, forzare: 3}
       pf: 9                      # 1d8 al massimo, più 1 di Costituzione
       difesa: 17                 # cotta di maglia 15, scudo +1, Destrezza +1
       attacchi:
@@ -59,12 +60,13 @@ personaggi:
     scheda:
       # Punteggi del manuale: il bonus lo dà la tabella del set (regole/regole.yaml, modificatore).
       caratteristiche: {forza: 13, intelligenza: 9, saggezza: 15, destrezza: 8, costituzione: 14, carisma: 10}
-      # Chierico di primo livello (11, 12, 14, 16, 15) con il bonus dei nani (+4, e +3 al soffio).
+      # Chierico di primo livello (11, 12, 14, 16, 15, dalla tabella) con il bonus dei nani (+4, e +3 al soffio: un tratto).
       # Occhio per la pietra: 2 su 6. Porte bloccate: 2 su 6 con la Forza.
       # Il chierico lancia incantesimi dal secondo livello (p. 7): al primo non ne ha.
       classe: chierico
       livello: 1
-      abilita: {mischia: 1, distanza: 1, ts_morte: 10, ts_morte_destrezza: 10, ts_bacchette: 9, ts_paralisi: 7, ts_soffio: 4, ts_incantesimi: 6, forzare: 2, pietra: 2}
+      razza: nano
+      abilita: {mischia: 1, distanza: 1, forzare: 2, pietra: 2}
       pf: 7                      # 1d6 al massimo, più 1 di Costituzione
       difesa: 15                 # cotta di maglia 15, scudo +1, Destrezza −1
       attacchi:
@@ -93,13 +95,13 @@ personaggi:
     scheda:
       # Punteggi del manuale: il bonus lo dà la tabella del set (regole/regole.yaml, modificatore).
       caratteristiche: {forza: 9, intelligenza: 12, saggezza: 10, destrezza: 17, costituzione: 13, carisma: 13}
-      # Ladra di primo livello (13, 14, 13, 16, 15) con il bonus degli halfling (+4, e +3 al soffio).
+      # Ladra di primo livello (13, 14, 13, 16, 15, dalla tabella) con il bonus degli halfling (+4, e +3 al soffio).
       # Abilità del ladro in percentuale; nascondersi al chiuso come halfling (70%).
-      # Distanza: +1 degli halfling. Attacco furtivo: +4. Il +1 degli halfling all'iniziativa lo schema non lo porta
-      # (l'iniziativa somma solo la Destrezza).
+      # Il +1 degli halfling con le armi a distanza e all'iniziativa sono tratti della razza (regole.yaml). Attacco furtivo: +4.
       classe: ladro
       livello: 1
-      abilita: {mischia: 1, distanza: 2, alle_spalle: 5, ts_morte: 8, ts_morte_destrezza: 8, ts_bacchette: 7, ts_paralisi: 8, ts_soffio: 4, ts_incantesimi: 6,
+      razza: halfling
+      abilita: {mischia: 1, distanza: 1, alle_spalle: 5,
                 scassinare: 25, trappole: 20, borseggiare: 30, muoversi_in_silenzio: 25, scalare: 80, nascondersi: 70, ascoltare: 30}
       pf: 5                      # 1d4 al massimo, più 1 di Costituzione
       difesa: 15                 # armatura di cuoio 13, Destrezza +2
@@ -130,13 +132,14 @@ personaggi:
     scheda:
       # Punteggi del manuale: il bonus lo dà la tabella del set (regole/regole.yaml, modificatore).
       caratteristiche: {forza: 10, intelligenza: 16, saggezza: 12, destrezza: 14, costituzione: 12, carisma: 9}
-      # Mago di primo livello (13, 14, 13, 16, 15) con il bonus degli elfi (+2 bacchette e incantesimi, +1 paralisi).
+      # Mago di primo livello (13, 14, 13, 16, 15, dalla tabella) con il bonus degli elfi (+2 bacchette e incantesimi, +1 paralisi: un tratto).
       # Porte segrete: 3 su 6 (elfo con Intelligenza 15 o più). Dardo incantato: un potere del set (regole.yaml).
       # Un posto di primo livello al giorno (p. 8): prepara il dardo incantato. Leggere il magico lo conosce (è nel libro).
       classe: mago
       livello: 1
+      razza: elfo
       incantesimi: [dardo_incantato]
-      abilita: {mischia: 1, distanza: 1, ts_morte: 4, ts_morte_destrezza: 4, ts_bacchette: 5, ts_paralisi: 5, ts_soffio: 1, ts_incantesimi: 4, cercare: 3}
+      abilita: {mischia: 1, distanza: 1, cercare: 3}
       pf: 4                      # 1d4 al massimo
       difesa: 12                 # senza armatura 11, Destrezza +1
       attacchi:

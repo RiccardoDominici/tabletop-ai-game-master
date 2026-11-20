@@ -42,7 +42,9 @@ import { vagliaImpossibile, vincoliPubblici } from './impossibile';
 import { combattimentoSrd, type Combattimento, type Fase } from '../regole/combattimento';
 import { strumentiRegole } from './risolutore-regole';
 import { attaccoPngSrd } from './risolutore';
-import { valoreCaratteristica } from '../regole/schede';
+import { trattiDi, valoreCaratteristica } from '../regole/schede';
+import { bonusTratti, type Tratto } from '../regole/tratti';
+import { colonnaDi } from '../regole/salvezze';
 import { comeCaratteristica } from '../campagna/regole-srd';
 import { modCaratteristica } from '../campagna/schede';
 import type { CombattimentoMaster, CombattimentoPubblico, RichiestaTiroMaster } from '@tabletop-ai-gm/shared';
@@ -187,7 +189,7 @@ export class MotoreProve {
     this.gregari = new Map((o.gregari ?? []).map((g) => [g.id, g]));
     this.stato = new StatoProve(this.generico ? this.generico.schede : o.schede);
     this.risorse = this.generico ? new Risorse(this.generico.regole.sistema, this.generico.schede) : null;
-    this.attivi = new Attivi({ nome: (id) => this.nomeDi(this.o.contesto(), id), nomeCondizione: (id) => this.regoleCombattimento().condizioni.find((c) => c.id === id)?.nome ?? id });
+    this.attivi = new Attivi({ nome: (id) => this.nomeDi(this.o.contesto(), id), nomeCondizione: (id) => this.regoleCombattimento().condizioni.find((c) => c.id === id)?.nome ?? id, immuneDiScheda: (id, cosa) => this.immuneDiScheda(id, cosa) });
     this.dadi = o.dadi ?? this.nuoviDadi(o.seme);
     this.combattimento = new GestoreCombattimento({
       regole: this.regoleCombattimento(),
@@ -207,6 +209,7 @@ export class MotoreProve {
       dadiDelPg: (pg, gruppo) => this.tavolo?.fonte({ pg, azione: null, privata: false, ...gruppo }) ?? null,
       // The timed effects' conditions count in the fight; they tick at each new round (prove/attivi.ts).
       condizioniEsterne: (id) => this.attivi.condizioni(id),
+      sorpresaMod: (id) => this.trattiDi(id).reduce((n, t) => (t.tipo === 'sorpresa' ? n + t.modificatore : n), 0),
       nuovoRound: (fatti) => {
         const f = Attivi.fatto(this.attivi.passaRound(), (id) => this.nomeDi(this.o.contesto(), id));
         if (f) fatti.push(f);
@@ -797,8 +800,9 @@ export class MotoreProve {
       condizioni: (id) => this.combattimento.condizioniDi(id),
       turni: { regole: this.regoleCombattimento().iniziativa.tipo !== 'nessuna', inCorso: this.combattimento.aTurni },
       effetti: this.contestoEffetti(turno, c),
-      ...(this.risorse ? { poteri: { risorse: this.risorse, nemici: (autore: string) => this.nemiciDi(c, autore), alleati: () => c.pgAlTavolo.filter((id) => g.schede.has(id)), immuneAttivo: (id: string, cosa: string) => this.attivi.immune(id, cosa) } } : {}),
-      extraSalvezza: (id: string) => this.attivi.bonus(id, 'salvezze'),
+      ...(this.risorse ? { poteri: { risorse: this.risorse, nemici: (autore: string) => this.nemiciDi(c, autore), alleati: () => c.pgAlTavolo.filter((id) => g.schede.has(id)), immuneAttivo: (id: string, cosa: string) => this.attivi.immune(id, cosa) || this.immuneDiScheda(id, cosa) } } : {}),
+      extraSalvezza: (id: string, abilita: string) => this.attivi.bonus(id, 'salvezze') + bonusTratti(this.trattiDi(id), { tipo: 'salvezza', colonna: colonnaDi(g.regole.sistema, abilita) }),
+      extraAbilita: (id: string, abilita: string) => bonusTratti(this.trattiDi(id), { tipo: 'abilita', abilita }),
       bonusAttivi: (id: string, a: 'difesa' | 'attacchi' | 'danni', contro: 'mischia' | 'distanza') => this.attivi.bonus(id, a, contro),
       log: this.o.log.child({ turno }),
     };
@@ -814,6 +818,19 @@ export class MotoreProve {
     const presenti = c.presenti ?? new Set(c.campagna.scena.png_presenti);
     const ostili = [...presenti].filter((id) => ha(id) && !this.stato.fuoriGioco(id) && this.atteggiamento(c.campagna, id, autore) === 'ostile');
     return [...ostili, ...this.gregariInScena(c).map((x) => x.id).filter((id) => ha(id) && !this.stato.fuoriGioco(id))];
+  }
+
+  /** A sheet's traits: its race's, its class's, its own (regole/tratti.ts); none on the SRD path. */
+  private trattiDi(id: string): Tratto[] {
+    const g = this.generico;
+    const sch = g?.schede.get(id);
+    return g && sch ? trattiDi(g.regole.sistema, sch) : [];
+  }
+
+  /** Immune by its sheet (`immune`) or a trait (`{immune: [...]}`) to a power or a condition. */
+  private immuneDiScheda(id: string, cosa: string): boolean {
+    const sch = this.generico?.schede.get(id);
+    return !!sch?.immune?.includes(cosa) || this.trattiDi(id).some((t) => t.tipo === 'immune' && t.a.includes(cosa));
   }
 
   /** The rule set in use: the campaign's, or the SRD 5.2 of the code (its falls, its rest). */
@@ -917,7 +934,8 @@ export class MotoreProve {
       if (!car) return 0;
       if (g) {
         const sch = g.schede.get(id);
-        return sch ? valoreCaratteristica(g.regole.sistema, sch, car) : 0;
+        // Initiative: the characteristic and the race or class trait (Basic Fantasy's halflings +1, regole/tratti.ts).
+        return sch ? valoreCaratteristica(g.regole.sistema, sch, car) + bonusTratti(this.trattiDi(id), { tipo: 'iniziativa' }) : 0;
       }
       const sch = this.o.schede.get(id);
       const k = comeCaratteristica(car);

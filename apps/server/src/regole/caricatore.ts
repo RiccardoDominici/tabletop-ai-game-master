@@ -25,6 +25,7 @@ import { leggiModificatori } from './modificatori';
 import { leggiCadute, leggiRiposo } from './salute';
 import { leggiClassi, leggiColonneSalvezza } from './classi';
 import { leggiPoteri } from './poteri';
+import { leggiRazze } from './tratti';
 import { leggiMagia, leggiRisorse } from './risorse';
 
 export const CARTELLA_REGOLE = 'regole';
@@ -254,15 +255,17 @@ function attaccoSpeciale(o: D, id: string, errori: string[]): { danno?: 'doppio'
 }
 
 /** The save columns and the classes (regole/classi.ts); an ability's `salvezza` column must be one of the set's. */
-function tabelleDiClasse(d: D, abilita: SistemaRegole['abilita'], errori: string[]): Pick<SistemaRegole, 'tiriSalvezza' | 'classi'> {
+function tabelleDiClasse(d: D, abilita: SistemaRegole['abilita'], errori: string[]): Pick<SistemaRegole, 'tiriSalvezza' | 'classi' | 'razze'> {
   const colonne = leggiColonneSalvezza(d['tiri_salvezza'], errori);
-  const classi = leggiClassi(d['classi'], colonne?.length ?? null, errori);
+  const ctx = { abilita: new Set(abilita.map((a) => a.id)), colonne: new Set((colonne ?? []).map((c) => c.id)) };
+  const classi = leggiClassi(d['classi'], colonne?.length ?? null, errori, ctx);
+  const razze = leggiRazze(d['razze'], ctx, errori);
   for (const a of abilita) {
     if (typeof a.salvezza !== 'string') continue;
     if (!colonne?.some((c) => c.id === a.salvezza)) errori.push(`abilita.${a.id}.salvezza: «${a.salvezza}» is not a column of tiri_salvezza`);
   }
   const tabelle = Object.fromEntries(classi.filter((c) => c.tiriSalvezza.length).map((c) => [c.id, c.tiriSalvezza]));
-  return { tiriSalvezza: colonne ? { colonne, classi: tabelle } : null, classi };
+  return { tiriSalvezza: colonne ? { colonne, classi: tabelle } : null, classi, razze };
 }
 
 /** `parole_chiave: {id: [parole]}`: gli id devono essere abilità, mosse o caratteristiche del set. */

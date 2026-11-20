@@ -256,6 +256,7 @@ prove:
     etichetta_morte: "Tiro salvezza contro la morte"
     sorpresi: "Sorpresa: {chi} tirano {valore} su 1d{dado} e sono colti di sorpresa ({condizione}): perdono il primo round."
     non_sorpresi: "Sorpresa: {chi} tirano {valore} su 1d{dado}: non sono colti di sorpresa."
+    sorpresi_alcuni: "Sorpresa: {chi} tirano {valore} su 1d{dado}: {nomi} colti di sorpresa ({condizione}), perdono il primo round; gli altri no."
     lato_pg: "i personaggi"
     lato_png: "i nemici"
     morale_cedono: "Morale dei nemici: {tiro} contro {morale} → CEDONO e fuggono ({nomi})."

@@ -10,13 +10,14 @@ fronte: fronte_torre
 scheda:
   # Goblin guerriera, 3−3 dadi vita: per il sonno conta 3 (p. 54); umanoide per gli incantesimi che toccano solo le persone (charme, blocca persone).
   tipo: umanoide
+  salva_come: {classe: guerriero, livello: 3}
   dadi_vita: 3
   # Goblin, guerriera (p. 104): Classe d'Armatura 14 (cuoio e scudo), dadi vita 3-3, quindi bonus d'attacco +3
   # e 3d8−3 punti ferita (qui 12). Salva come guerriero di livello 3 (11, 12, 14, 15, 16). Morale 7.
   # Il manuale non dà caratteristiche ai mostri: valgono tutte zero.
   # Punteggi scelti per il bonus che il PNG deve avere: la tabella del set (regole/regole.yaml) lo ricava.
   caratteristiche: {forza: 10, intelligenza: 10, saggezza: 10, destrezza: 10, costituzione: 10, carisma: 10}
-  abilita: {mischia: 3, distanza: 3, ts_morte: 6, ts_bacchette: 5, ts_paralisi: 3, ts_soffio: 2, ts_incantesimi: 1}
+  abilita: {mischia: 3, distanza: 3}
   pf: 12
   difesa: 14
   morale: 7

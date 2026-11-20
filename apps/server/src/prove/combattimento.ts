@@ -78,6 +78,11 @@ export interface DipendenzeCombattimento {
   condizioniEsterne?: (id: string) => string[];
   /** A new round began: the timed effects tick (prove/attivi.ts); the facts of what ended go to the narrator. */
   nuovoRound?: (fatti: string[]) => void;
+  /**
+   * A combatant's own surprise range modifier (a race trait: Basic Fantasy's elves −1, regole/tratti.ts): the side's
+   * die is read against each member's range, as the manual says (p. 50). Absent = 0 for everyone.
+   */
+  sorpresaMod?: (id: string) => number;
   log: Logger;
 }
 
@@ -272,17 +277,14 @@ export class GestoreCombattimento {
       const membri = s.partecipanti.filter((p) => p.lato === lato && p.esito === 'in_gioco');
       if (!membri.length) continue;
       const valore = dadi.tira(so.dado);
-      const sorpresi = valore <= so.finoA;
-      if (sorpresi) for (const p of membri) this.aggiungiCondizione(p.id, so.condizione, 1);
-      this.d.log.info({ lato, dado: `d${so.dado}`, valore, fino_a: so.finoA, sorpresi, chi: membri.map((p) => p.id) }, 'combattimento: sorpresa');
-      fatti.push(
-        testo(sorpresi ? 'prove.combattimento.sorpresi' : 'prove.combattimento.non_sorpresi', {
-          chi: testo(lato === 'pg' ? 'prove.combattimento.lato_pg' : 'prove.combattimento.lato_png'),
-          valore,
-          dado: so.dado,
-          condizione: nomeCond.toLowerCase(),
-        }),
-      );
+      // One die per side, read against each member's own range (a trait may lower it: the elf's −1).
+      const colti = membri.filter((p) => valore <= so.finoA + (this.d.sorpresaMod?.(p.id) ?? 0));
+      const sorpresi = colti.length === membri.length;
+      for (const p of colti) this.aggiungiCondizione(p.id, so.condizione, 1);
+      this.d.log.info({ lato, dado: `d${so.dado}`, valore, fino_a: so.finoA, sorpresi: colti.map((p) => p.id), chi: membri.map((p) => p.id) }, 'combattimento: sorpresa');
+      const chi = testo(lato === 'pg' ? 'prove.combattimento.lato_pg' : 'prove.combattimento.lato_png');
+      if (colti.length && !sorpresi) fatti.push(testo('prove.combattimento.sorpresi_alcuni', { chi, valore, dado: so.dado, nomi: colti.map((p) => p.nome).join(', '), condizione: nomeCond.toLowerCase() }));
+      else fatti.push(testo(sorpresi ? 'prove.combattimento.sorpresi' : 'prove.combattimento.non_sorpresi', { chi, valore, dado: so.dado, condizione: nomeCond.toLowerCase() }));
     }
     return fatti;
   }

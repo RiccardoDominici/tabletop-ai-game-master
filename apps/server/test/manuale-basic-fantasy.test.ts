@@ -7,8 +7,11 @@
  */
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { caricaCampagna } from '../src/campagna/caricatore';
 import { caricaRegole } from '../src/regole/caricatore';
-import { rigaAlLivello } from '../src/regole/salvezze';
+import { bersaglioSalvezza, rigaAlLivello } from '../src/regole/salvezze';
+import { caricaSchedeGeneriche, trattiDi } from '../src/regole/schede';
+import { bonusTratti } from '../src/regole/tratti';
 import type { SistemaRegole } from '../src/regole/tipi';
 
 const BF = path.join(import.meta.dirname, '..', '..', '..', 'campagne', 'torre-mozza');
@@ -74,9 +77,60 @@ describe('the level-1 and level-2 Cleric and Magic-User spells (pp. 15–41)', (
     ]);
     // Hold Person, p. 25: a humanoid; one target saves at −2; 2d8 turns (no game clock: the scene).
     expect(di('blocca_persone')).toMatchObject({ soloTipi: ['umanoide'], salvezza: { modificatore: -2 } });
-    // Charm Person, p. 18: a humanoid of 4 HD or less, save vs Spells.
-    expect(di('charme')).toMatchObject({ soloTipi: ['umanoide'], dadiVitaMax: 4, salvezza: { abilita: 'ts_incantesimi' } });
+    // Charm Person, p. 18: a humanoid of 4 HD or less, save vs Spells (with Wisdom against charm, p. 60).
+    expect(di('charme')).toMatchObject({ soloTipi: ['umanoide'], dadiVitaMax: 4, salvezza: { abilita: 'ts_charme' } });
     // Bless, p. 17: +1 to attack rolls for 1 minute per level (6 rounds).
     expect(di('benedizione').effetti[0]).toMatchObject({ tipo: 'bonus', a: 'attacchi', valore: 1, durata: { perLivello: 6 } });
+  });
+});
+
+const ts = (s: SistemaRegole, classe: string, livello: number): number[] => rigaAlLivello(s.tiriSalvezza!.classi[classe]!, livello)!.valori;
+
+describe('saving throws by class and level (p. 61): Death Ray or Poison, Wands, Paralysis, Breath, Spells', () => {
+  it('a few rows of each class', () => {
+    const s = set();
+    expect(s.tiriSalvezza!.colonne.map((c) => c.id)).toEqual(['morte', 'bacchette', 'paralisi', 'soffio', 'incantesimi']);
+    expect(ts(s, 'guerriero', 0)).toEqual([13, 14, 15, 16, 18]);
+    expect(ts(s, 'guerriero', 1)).toEqual([12, 13, 14, 15, 17]);
+    expect(ts(s, 'guerriero', 3)).toEqual([11, 12, 14, 15, 16]);
+    expect(ts(s, 'guerriero', 20)).toEqual([5, 6, 8, 9, 10]);
+    expect(ts(s, 'chierico', 1)).toEqual([11, 12, 14, 16, 15]);
+    expect(ts(s, 'chierico', 20)).toEqual([5, 6, 9, 11, 10]);
+    expect(ts(s, 'mago', 11)).toEqual([11, 10, 9, 13, 11]);
+    expect(ts(s, 'mago', 20)).toEqual([8, 6, 5, 11, 8]);
+    expect(ts(s, 'ladro', 1)).toEqual([13, 14, 13, 16, 15]);
+    expect(ts(s, 'ladro', 20)).toEqual([6, 8, 8, 6, 8]);
+  });
+
+  it('race traits (pp. 5–6) and the exceptions of p. 60', () => {
+    const s = set();
+    const razza = (id: string) => s.razze!.find((r) => r.id === id)!.tratti;
+    expect(bonusTratti(razza('nano'), { tipo: 'salvezza', colonna: 'morte' })).toBe(4);
+    expect(bonusTratti(razza('nano'), { tipo: 'salvezza', colonna: 'soffio' })).toBe(3);
+    expect(bonusTratti(razza('elfo'), { tipo: 'salvezza', colonna: 'incantesimi' })).toBe(2);
+    expect(bonusTratti(razza('elfo'), { tipo: 'salvezza', colonna: 'paralisi' })).toBe(1);
+    expect(bonusTratti(razza('halfling'), { tipo: 'iniziativa' })).toBe(1);
+    expect(bonusTratti(razza('halfling'), { tipo: 'abilita', abilita: 'distanza' })).toBe(1);
+    expect(s.abilita.find((a) => a.id === 'ts_veleno')).toMatchObject({ caratteristica: 'costituzione', salvezza: 'morte' });
+    expect(s.abilita.find((a) => a.id === 'ts_charme')).toMatchObject({ caratteristica: 'saggezza', salvezza: 'incantesimi' });
+    expect(s.abilita.find((a) => a.id === 'ts_illusioni')).toMatchObject({ caratteristica: 'intelligenza', salvezza: 'incantesimi' });
+  });
+
+  it('the four pregenerated PCs save as they did before the tables (the same odds), now from the table and the race', () => {
+    const s = set();
+    const schede = caricaSchedeGeneriche(s, caricaCampagna(BF));
+    const tiro = (pg: string, abilita: string) => {
+      const sch = schede.get(pg)!;
+      const t = bersaglioSalvezza(s, sch, abilita, bonusTratti(trattiDi(s, sch), { tipo: 'salvezza', colonna: s.abilita.find((a) => a.id === abilita)!.salvezza as string }))!;
+      // The number the d20 alone must reach.
+      return t.contro - t.modificatore;
+    };
+    // Before: the sheet's bonus against 17 (Livia ts_morte 5 → 12, Fulco 10 → 7, Nespola ts_soffio 4 → 13, Eliandro ts_incantesimi 4 → 13).
+    expect(tiro('pg_livia', 'ts_morte')).toBe(12);
+    expect(tiro('pg_fulco', 'ts_morte')).toBe(7);
+    expect(tiro('pg_nespola', 'ts_soffio')).toBe(13);
+    expect(tiro('pg_eliandro', 'ts_incantesimi')).toBe(13);
+    // Zirrà saves as a level-3 fighter (11 12 14 15 16).
+    expect(bersaglioSalvezza(s, schede.get('png_zirra')!, 'ts_incantesimi')).toMatchObject({ contro: 16, fonte: 'tabella' });
   });
 });

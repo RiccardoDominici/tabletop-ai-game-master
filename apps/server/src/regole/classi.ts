@@ -18,12 +18,15 @@
  */
 import type { TiriSalvezza } from './salvezze';
 import type { Voce } from './tipi';
+import { leggiTratti, type Tratto } from './tratti';
 
 export interface Classe extends Voce {
   /** Save rows (one value per column of `tiri_salvezza.colonne`); empty = the class has none. */
   tiriSalvezza: Array<{ da: number; valori: number[] }>;
   /** Spells per day by spell level, by class level; empty = the class casts no spells. */
   incantesimiAlGiorno: Array<{ da: number; slot: number[] }>;
+  /** The class's traits (regole/tratti.ts). */
+  tratti: Tratto[];
 }
 
 type D = Record<string, unknown>;
@@ -74,7 +77,7 @@ export function leggiColonneSalvezza(v: unknown, errori: string[]): TiriSalvezza
 }
 
 /** `classi:` of the set (the tables of each class). */
-export function leggiClassi(v: unknown, colonne: number | null, errori: string[]): Classe[] {
+export function leggiClassi(v: unknown, colonne: number | null, errori: string[], ctx: { abilita: ReadonlySet<string>; colonne: ReadonlySet<string> } = { abilita: new Set(), colonne: new Set() }): Classe[] {
   if (v === undefined || v === null) return [];
   if (!Array.isArray(v)) {
     errori.push('classi: a list of {id, nome, tiri_salvezza, incantesimi_al_giorno}');
@@ -91,7 +94,7 @@ export function leggiClassi(v: unknown, colonne: number | null, errori: string[]
     if (out.some((c) => c.id === id)) errori.push(`classi: id repeated «${id}»`);
     const ts = righe(o['tiri_salvezza'], 'valori', `classi.${id}.tiri_salvezza`, errori, colonne);
     if (ts.length && colonne === null) errori.push(`classi.${id}.tiri_salvezza: the set has no tiri_salvezza.colonne`);
-    out.push({ id, nome: typeof o['nome'] === 'string' ? o['nome'] : id, tiriSalvezza: ts, incantesimiAlGiorno: righe(o['incantesimi_al_giorno'], 'slot', `classi.${id}.incantesimi_al_giorno`, errori, null) });
+    out.push({ id, nome: typeof o['nome'] === 'string' ? o['nome'] : id, tiriSalvezza: ts, incantesimiAlGiorno: righe(o['incantesimi_al_giorno'], 'slot', `classi.${id}.incantesimi_al_giorno`, errori, null), tratti: leggiTratti(o['tratti'], `classi.${id}.tratti`, ctx, errori) });
   }
   return out;
 }

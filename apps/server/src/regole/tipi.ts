@@ -14,6 +14,7 @@ import type { TiriSalvezza } from './salvezze';
 import type { Classe } from './classi';
 import type { Potere } from './poteri';
 import type { Magia, Risorsa } from './risorse';
+import type { Razza, Tratto } from './tratti';
 
 export interface Voce {
   id: string;
@@ -164,6 +165,8 @@ export interface SistemaRegole {
   risorse?: Risorsa[];
   /** How spells are prepared (regole.yaml → magia); null = `slot`. */
   magia?: Magia | null;
+  /** The races and their traits (regole.yaml → razze; regole/tratti.ts). */
+  razze?: Razza[];
 }
 
 /** Un passo del manuale (regole/estratti/*.md), per l'arbitro e per «Chiedi una regola». */
@@ -217,6 +220,8 @@ export interface SchedaGenerica {
   immune?: string[];
   /** Hit dice, for powers limited by them (`scheda.dadi_vita`); a PC's are its level. */
   dadiVita?: number | null;
+  /** The sheet's own traits (`scheda.tratti`), besides its race's and class's (regole/tratti.ts). */
+  tratti?: Tratto[];
   /** The set's class id and level (`scheda.classe`, `scheda.livello`): they pick the rows of the class tables. */
   classe?: string | null;
   livello?: number | null;

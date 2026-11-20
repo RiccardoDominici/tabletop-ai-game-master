@@ -487,8 +487,10 @@ def controlla(c: Campagna, e: Esito) -> None:
     risorse = regole_poteri.risorse_del_set(r, e, dove)
     regole_poteri.abilita_d_attacco(r, e, dove)
 
+    razze = regole_classi.razze_del_set(r, abi, set(colonne), e, dove)
+
     def per_scheda(s: dict, d: str) -> None:
-        regole_classi.controlla_scheda(s, d, classi, col_abil, tabelle, e)
+        regole_classi.controlla_scheda(s, d, classi, col_abil, tabelle, e, razze, abi, set(colonne))
         regole_poteri.controlla_scheda(s, d, r, poteri, risorse, e)
     _schede(c, e, car, abi, dadi_attivi(c), tabella_modificatori(r), soglie_abilita(r), per_scheda=per_scheda)
     _prove_di_scena(c, e, car, abi, mosse, diff, condizioni_del_set(r))

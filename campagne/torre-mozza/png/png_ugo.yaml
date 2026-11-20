@@ -10,6 +10,7 @@ fronte: fronte_torre
 scheda:
   # Gente comune: livello 0; umanoide per gli incantesimi che toccano solo le persone (charme, blocca persone).
   tipo: umanoide
+  salva_come: {classe: guerriero, livello: 0}
   dadi_vita: 0
   # Gente comune (Normal Man, p. 53), forte di braccia: bonus d'attacco +0, accetta con la Forza.
   # Punteggi scelti per il bonus che il PNG deve avere: la tabella del set (regole/regole.yaml) lo ricava.

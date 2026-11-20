@@ -10,8 +10,9 @@
 #   il bonus.
 # - Percentuali (abilità del ladro, p. 9) e possibilità «x su 1d6» (porte, porte segrete, pietra, p. 43–44): si
 #   tirano a parte (`soglia` dell'abilità), d100 o d6 sotto il valore della scheda, come nel manuale.
-# - Tiri salvezza (p. 60–61): d20 ≥ numero della tabella. Con la difficoltà normale (17) il bonus è 17 − numero,
-#   più il bonus di razza (nani e halfling +4, elfi +1/+2): è esatto. Il 20 naturale che riesce sempre e l'1 che
+# - Tiri salvezza (p. 60–61): d20 ≥ numero della tabella della classe e del livello (`tiri_salvezza`, `classi`); la
+#   scheda dice classe e livello (i mostri `salva_come`), il bonus di razza è un tratto (`razze`), il veleno somma la
+#   Costituzione, il charme la Saggezza, le illusioni l'Intelligenza (p. 60). Il 20 naturale che riesce sempre e l'1 che
 #   fallisce sempre valgono negli attacchi (`critico`, `disastro`, p. 53), senza raddoppiare il danno, e nei tiri
 #   salvezza, «as with attack rolls» (p. 60): `critici: attacchi_e_salvezze`, coi cinque salvezza segnati
 #   `salvezza: true`. Non nelle prove di caratteristica.
@@ -75,15 +76,20 @@ abilita:
   # scontro. Il +4 è nel bonus della scheda; il danno doppio è dell'abilità (il tiro dell'arma per due); dopo il primo,
   # contro quel bersaglio si attacca in mischia normale (`ripiego`).
   - {id: alle_spalle, nome: "Attacco furtivo", caratteristica: forza, danno: doppio, una_volta_per_bersaglio: true, ripiego: mischia}
-  # I cinque tiri salvezza (p. 60–61): bonus = 17 − numero della tabella della classe, più la razza.
-  - {id: ts_morte, nome: "Tiro salvezza contro raggio della morte o veleno", caratteristica: null, salvezza: true}
-  # Lo stesso salvezza con la Destrezza, come il manuale lo chiede per fosse, cadute e inseguimenti (p. 43, 52): stesso
-  # bonus della scheda, e il Motore somma la Destrezza.
-  - {id: ts_morte_destrezza, nome: "Tiro salvezza contro raggio della morte, con la Destrezza", caratteristica: destrezza, salvezza: true}
-  - {id: ts_bacchette, nome: "Tiro salvezza contro bacchette magiche", caratteristica: null, salvezza: true}
-  - {id: ts_paralisi, nome: "Tiro salvezza contro paralisi o pietrificazione", caratteristica: null, salvezza: true}
-  - {id: ts_soffio, nome: "Tiro salvezza contro soffio del drago", caratteristica: null, salvezza: true}
-  - {id: ts_incantesimi, nome: "Tiro salvezza contro incantesimi", caratteristica: null, salvezza: true}
+  # I cinque tiri salvezza (p. 60–61): il numero da fare è quello della tabella della classe e del livello (colonna in
+  # `salvezza`), il bonus di razza un tratto (`razze`).
+  - {id: ts_morte, nome: "Tiro salvezza contro raggio della morte o veleno", caratteristica: null, salvezza: morte}
+  # Lo stesso salvezza con la Destrezza, come il manuale lo chiede per fosse, cadute e inseguimenti (p. 43, 52).
+  - {id: ts_morte_destrezza, nome: "Tiro salvezza contro raggio della morte, con la Destrezza", caratteristica: destrezza, salvezza: morte}
+  - {id: ts_bacchette, nome: "Tiro salvezza contro bacchette magiche", caratteristica: null, salvezza: bacchette}
+  - {id: ts_paralisi, nome: "Tiro salvezza contro paralisi o pietrificazione", caratteristica: null, salvezza: paralisi}
+  - {id: ts_soffio, nome: "Tiro salvezza contro soffio del drago", caratteristica: null, salvezza: soffio}
+  - {id: ts_incantesimi, nome: "Tiro salvezza contro incantesimi", caratteristica: null, salvezza: incantesimi}
+  # Le eccezioni di p. 60: il veleno somma la Costituzione, il charme e il controllo della mente la Saggezza, le
+  # illusioni (forza fantasmatica) l'Intelligenza.
+  - {id: ts_veleno, nome: "Tiro salvezza contro veleno", caratteristica: costituzione, salvezza: morte}
+  - {id: ts_charme, nome: "Tiro salvezza contro charme e controllo della mente", caratteristica: saggezza, salvezza: incantesimi}
+  - {id: ts_illusioni, nome: "Tiro salvezza contro illusioni", caratteristica: intelligenza, salvezza: incantesimi}
   # Abilità del ladro (p. 9), in percentuale come nel manuale: d100 sotto il valore della scheda. Chi non ce l'ha
   # nella scheda tira come una prova qualunque (d20 contro la difficoltà).
   - {id: scassinare, nome: "Scassinare serrature", caratteristica: null, soglia: {dado: 100}}
@@ -130,13 +136,47 @@ attacchi:
   danno_critico: normale
   danno_minimo: 1
 
-# Classi (p. 7–8): gli incantesimi al giorno per livello d'incantesimo (1°…6°), dalla tabella di ogni classe. I tiri
-# salvezza per classe e livello (p. 61) sono nella stessa voce.
+# Tiri salvezza (p. 60–61): le cinque categorie del manuale, nell'ordine delle sue tabelle.
+tiri_salvezza:
+  colonne:
+    - {id: morte, nome: "Raggio della morte o veleno"}
+    - {id: bacchette, nome: "Bacchette magiche"}
+    - {id: paralisi, nome: "Paralisi o pietrificazione"}
+    - {id: soffio, nome: "Soffio del drago"}
+    - {id: incantesimi, nome: "Incantesimi"}
+
+# Classi (p. 7–8, 61): i tiri salvezza per livello (p. 61: una riga vale dal suo livello in su; NM, «normal man», è il
+# livello 0 del guerriero, per la gente comune) e gli incantesimi al giorno per livello d'incantesimo (1°…6°, p. 7–8).
 classi:
   - id: guerriero
     nome: "Guerriero"
+    tiri_salvezza:
+      - {da: 0, valori: [13, 14, 15, 16, 18]}
+      - {da: 1, valori: [12, 13, 14, 15, 17]}
+      - {da: 2, valori: [11, 12, 14, 15, 16]}
+      - {da: 4, valori: [11, 11, 13, 14, 15]}
+      - {da: 6, valori: [10, 11, 12, 14, 15]}
+      - {da: 8, valori: [9, 10, 12, 13, 14]}
+      - {da: 10, valori: [9, 9, 11, 12, 13]}
+      - {da: 12, valori: [8, 9, 10, 12, 13]}
+      - {da: 14, valori: [7, 8, 10, 11, 12]}
+      - {da: 16, valori: [7, 7, 9, 10, 11]}
+      - {da: 18, valori: [6, 7, 8, 10, 11]}
+      - {da: 20, valori: [5, 6, 8, 9, 10]}
   - id: chierico
     nome: "Chierico"
+    tiri_salvezza:
+      - {da: 1, valori: [11, 12, 14, 16, 15]}
+      - {da: 2, valori: [10, 11, 13, 15, 14]}
+      - {da: 4, valori: [9, 10, 13, 15, 14]}
+      - {da: 6, valori: [9, 10, 12, 14, 13]}
+      - {da: 8, valori: [8, 9, 12, 14, 13]}
+      - {da: 10, valori: [8, 9, 11, 13, 12]}
+      - {da: 12, valori: [7, 8, 11, 13, 12]}
+      - {da: 14, valori: [7, 8, 10, 12, 11]}
+      - {da: 16, valori: [6, 7, 10, 12, 11]}
+      - {da: 18, valori: [6, 7, 9, 11, 10]}
+      - {da: 20, valori: [5, 6, 9, 11, 10]}
     # p. 7: niente al 1° livello.
     incantesimi_al_giorno:
       - {da: 1, slot: []}
@@ -161,6 +201,18 @@ classi:
       - {da: 20, slot: [6, 5, 5, 4, 3, 3]}
   - id: mago
     nome: "Mago"
+    tiri_salvezza:
+      - {da: 1, valori: [13, 14, 13, 16, 15]}
+      - {da: 2, valori: [13, 14, 13, 15, 14]}
+      - {da: 4, valori: [12, 13, 12, 15, 13]}
+      - {da: 6, valori: [12, 12, 11, 14, 13]}
+      - {da: 8, valori: [11, 11, 10, 14, 12]}
+      - {da: 10, valori: [11, 10, 9, 13, 11]}
+      - {da: 12, valori: [10, 10, 9, 13, 11]}
+      - {da: 14, valori: [10, 9, 8, 12, 10]}
+      - {da: 16, valori: [9, 8, 7, 12, 9]}
+      - {da: 18, valori: [9, 7, 6, 11, 9]}
+      - {da: 20, valori: [8, 6, 5, 11, 8]}
     # p. 8.
     incantesimi_al_giorno:
       - {da: 1, slot: [1]}
@@ -185,6 +237,45 @@ classi:
       - {da: 20, slot: [6, 5, 5, 4, 4, 3]}
   - id: ladro
     nome: "Ladro"
+    tiri_salvezza:
+      - {da: 1, valori: [13, 14, 13, 16, 15]}
+      - {da: 2, valori: [12, 14, 12, 15, 14]}
+      - {da: 4, valori: [11, 13, 12, 14, 13]}
+      - {da: 6, valori: [11, 13, 11, 13, 13]}
+      - {da: 8, valori: [10, 12, 11, 12, 12]}
+      - {da: 10, valori: [9, 12, 10, 11, 11]}
+      - {da: 12, valori: [9, 10, 10, 10, 11]}
+      - {da: 14, valori: [8, 10, 9, 9, 10]}
+      - {da: 16, valori: [7, 9, 9, 8, 9]}
+      - {da: 18, valori: [7, 9, 8, 7, 9]}
+      - {da: 20, valori: [6, 8, 8, 6, 8]}
+
+# Razze (p. 5–6): i tratti che cambiano un tiro. Nani e halfling +4 ai salvezza (+3 al soffio); elfi +1 a paralisi,
+# +2 a bacchette e incantesimi, sorpresi con un numero in meno su 1d6, immuni alla paralisi dei ghoul; halfling +1
+# all'iniziativa e +1 con le armi da lancio e da tiro. L'occhio del nano per la pietra e le porte segrete dell'elfo
+# sono già soglie della scheda (`pietra`, `cercare`).
+razze:
+  - id: umano
+    nome: "Umano"
+  - id: nano
+    nome: "Nano"
+    tratti:
+      - {tiro: salvezza, colonne: [morte, bacchette, paralisi, incantesimi], bonus: 4}
+      - {tiro: salvezza, colonne: [soffio], bonus: 3}
+  - id: elfo
+    nome: "Elfo"
+    tratti:
+      - {tiro: salvezza, colonne: [paralisi], bonus: 1}
+      - {tiro: salvezza, colonne: [bacchette, incantesimi], bonus: 2}
+      - {sorpresa: -1}
+      - {immune: [paralisi_ghoul]}
+  - id: halfling
+    nome: "Halfling"
+    tratti:
+      - {tiro: salvezza, colonne: [morte, bacchette, paralisi, incantesimi], bonus: 4}
+      - {tiro: salvezza, colonne: [soffio], bonus: 3}
+      - {tiro: iniziativa, bonus: 1}
+      - {tiro: abilita, abilita: [distanza], bonus: 1}
 
 # Incantesimi (p. 15): il mago e il chierico preparano ogni mattina un incantesimo per posto; lanciato, se ne va fino al
 # riposo successivo (Basic Fantasy, alla vecchia maniera).
@@ -368,7 +459,7 @@ poteri:
     bersaglio: uno
     solo_tipi: [umanoide]
     dadi_vita_max: 4
-    salvezza: {abilita: ts_incantesimi, esito: annulla}
+    salvezza: {abilita: ts_charme, esito: annulla}
     parole: ["charme", "charmo"]
     effetti: [{tipo: condizione, condizione: affascinato, durata: riposo}]
     pagina: 18

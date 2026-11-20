@@ -104,8 +104,12 @@ def colonne_delle_abilita(r: dict, colonne: list[str], e: Esito, dove: str) -> d
     return out
 
 
-def controlla_scheda(s: dict, dove: str, classi: set[str], colonne_abilita: dict[str, str], tabelle: set[str], e: Esito) -> None:
-    """A set sheet's `classe`, `livello`, `razza`, `salva_come`; a table save the sheet should not write."""
+def controlla_scheda(s: dict, dove: str, classi: set[str], colonne_abilita: dict[str, str], tabelle: set[str], e: Esito,
+                     razze: set[str] | None = None, abilita: set[str] | None = None, colonne: set[str] | None = None) -> None:
+    """A set sheet's `classe`, `livello`, `razza`, `salva_come`, `tratti`; a table save the sheet should not write."""
+    if razze and "razza" in s and s["razza"] not in razze:
+        _err(e, dove, f"scheda.razza «{s['razza']}» non è una razza del set")
+    controlla_tratti(s.get("tratti"), f"{dove} scheda.tratti", abilita or set(), colonne or set(), e)
     if "classe" in s and s["classe"] not in classi:
         _err(e, dove, f"scheda.classe «{s['classe']}» non è una classe del set")
     if "livello" in s and not (_intero(s["livello"]) and s["livello"] >= 0):
@@ -121,3 +125,62 @@ def controlla_scheda(s: dict, dove: str, classi: set[str], colonne_abilita: dict
         if scritte:
             e.avviso("REGOLE.classi", dove, f"abilita {', '.join(scritte)}: il numero viene dalla tabella della classe "
                      "(tiri_salvezza), il Motore ignora il bonus della scheda: toglilo", rigoroso=True)
+
+
+def controlla_tratti(v, dove: str, abilita: set[str], colonne: set[str], e: Esito) -> None:
+    """A list of traits (regole/tratti.ts): {tiro: iniziativa | abilita | salvezza, bonus}, {immune: [...]}, {sorpresa}."""
+    if v is None:
+        return
+    if not isinstance(v, list):
+        _err(e, dove, "tratti: un elenco")
+        return
+    for i, x in enumerate(v, start=1):
+        o = _ogg(x) or {}
+        d = f"{dove}[{i}]"
+        if "immune" in o:
+            if not (isinstance(o["immune"], list) and o["immune"] and all(isinstance(w, str) and RE_ID.match(w) for w in o["immune"])):
+                _err(e, d, "immune: un elenco di id (poteri o condizioni)")
+            continue
+        if "sorpresa" in o:
+            if not (_intero(o["sorpresa"]) and o["sorpresa"] != 0):
+                _err(e, d, "sorpresa: un intero diverso da 0")
+            continue
+        if not (_intero(o.get("bonus")) and o["bonus"] != 0):
+            _err(e, d, "{tiro: iniziativa | abilita | salvezza, bonus: n}, {immune: [...]} o {sorpresa: n}")
+            continue
+        tiro = o.get("tiro")
+        if tiro == "abilita":
+            ignote = [a for a in o.get("abilita") or [] if a not in abilita]
+            if not o.get("abilita") or ignote:
+                _err(e, d, f"abilita: abilità del set{' (non: ' + ', '.join(map(str, ignote)) + ')' if ignote else ''}")
+        elif tiro == "salvezza":
+            ignote = [c for c in o.get("colonne") or [] if c not in colonne]
+            if not o.get("colonne") or ignote:
+                _err(e, d, f"colonne: colonne di tiri_salvezza{' (non: ' + ', '.join(map(str, ignote)) + ')' if ignote else ''}")
+        elif tiro != "iniziativa":
+            _err(e, d, "tiro: iniziativa, abilita o salvezza")
+
+
+def razze_del_set(r: dict, abilita: set[str], colonne: set[str], e: Esito, dove: str) -> set[str]:
+    """`razze:` of the set and the traits of races and classes. Returns the race ids."""
+    for c in r.get("classi") or []:
+        if isinstance(c, dict):
+            controlla_tratti(c.get("tratti"), f"{dove} classi.{c.get('id')}.tratti", abilita, colonne, e)
+    v = r.get("razze")
+    if v is None:
+        return set()
+    if not isinstance(v, list):
+        _err(e, dove, "razze: un elenco di {id, nome, tratti}")
+        return set()
+    ids: set[str] = set()
+    for i, x in enumerate(v, start=1):
+        o = _ogg(x) or {}
+        rid = o.get("id")
+        if not isinstance(rid, str) or not RE_ID.match(rid):
+            _err(e, dove, f"razze[{i}]: serve un id in snake_case")
+            continue
+        if rid in ids:
+            _err(e, dove, f"razze: id ripetuto «{rid}»")
+        ids.add(rid)
+        controlla_tratti(o.get("tratti"), f"{dove} razze.{rid}.tratti", abilita, colonne, e)
+    return ids

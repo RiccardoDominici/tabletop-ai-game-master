@@ -106,6 +106,8 @@ export interface OpzioniRisolutoreRegole {
   effetti?: ContestoEffetti;
   /** What a character's traits and active effects add to one of its saves (regole/tratti.ts, prove/attivi.ts). */
   extraSalvezza?: (id: string, abilita: string) => number;
+  /** What a character's traits add to a roll of one of the set's abilities, attacks included (regole/tratti.ts). */
+  extraAbilita?: (id: string, abilita: string) => number;
   /** The active bonuses of a character (prove/attivi.ts): to its AC, attack rolls, damage; against melee or missiles. */
   bonusAttivi?: (id: string, a: 'difesa' | 'attacchi' | 'danni', contro: 'mischia' | 'distanza') => number;
   /**
@@ -334,7 +336,9 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
       const base = carAbil ? valoreCaratteristica(s, sch, carAbil) : 0;
       // A saving throw of the manual (`salvezza: true`): its natural d20s may count (`risoluzione.critici`).
       const salvezza = s.abilita.find((x) => x.id === abil)?.salvezza ? { salvezza: true } : {};
-      return { valore: base + (sch.abilita[abil] ?? 0), etichetta: carAbil ? etichettaComposta(nomeAbil(abil), nomeCar(carAbil)) : nomeAbil(abil), mossa: null, ...salvezza };
+      // A race or class trait to this ability (the halfling's +1 with missiles); a save takes its traits by column.
+      const tratto = salvezza.salvezza ? 0 : (o.extraAbilita?.(sch.id, abil) ?? 0);
+      return { valore: base + (sch.abilita[abil] ?? 0) + tratto, etichetta: carAbil ? etichettaComposta(nomeAbil(abil), nomeCar(carAbil)) : nomeAbil(abil), mossa: null, ...salvezza };
     }
     if (car) return { valore: valoreCaratteristica(s, sch, car), etichetta: nomeCar(car), mossa: null };
     return null;

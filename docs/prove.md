@@ -775,6 +775,12 @@ Now every source goes through one Engine path, prove/effetti.ts, with the typed 
   damage; an immunity blocks a power (Shield and the magic missile) or a condition. Damage ends the conditions marked
   `finisce_se_ferito` (a sleeper wakes: «Il colpo scuote …»). What ends is a fact for the narrator. Saved in the
   snapshot (`StatoProveSalvato.attivi`). Tests: test/attivi.test.ts.
+- **Traits** (regole/tratti.ts; audit C-RACE-20, C-RACE-13, C-RACE-18). A race's, a class's or the sheet's own traits
+  add to initiative (`candidati`), to an ability's rolls and the attacks that use it (`cheCosa`), to the saves of some
+  table columns (`extraSalvezza`), make it immune to a power or a condition, or change its own surprise range (the
+  side's die is read against each member's: the elf surprised only on 1). torre-mozza's sheets now name their race and
+  class and no longer write `ts_*`: the class table and the race traits give the same odds as before. Tests:
+  test/tratti.test.ts, and test/manuale-basic-fantasy.test.ts for the set's numbers against the manual.
 - Tests: test/effetti.test.ts (the closed list, the scaling, both falling tables, damage halved by a save, healing that
   never revives, a trap's attack, save-or-die, a failed scene check's fall, a rest, the Game Master's hazard, the SRD's
   data), strumenti/test_valida_effetti.py (the validator's mirror).

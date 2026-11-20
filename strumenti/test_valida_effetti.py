@@ -188,3 +188,20 @@ def test_schede_con_poteri_e_risorse(tmp_path: Path) -> None:
     assert "scheda.risorse: «gemme» non è una risorsa del set" in errori
     assert "attacchi[3].consuma: «dardi» non è una risorsa del set" in errori
     assert "scheda.dadi_vita: un intero" in errori
+
+
+def test_razze_e_tratti(tmp_path: Path) -> None:
+    """razze and traits (regole_classi.py): the closed list, the set's abilities and columns, the sheet's race."""
+    dest = copia(MAGIA, tmp_path)
+
+    def rompi(d: dict) -> None:
+        d["razze"].append({"id": "gigante", "tratti": [{"tiro": "fortuna", "bonus": 1}, {"tiro": "abilita", "abilita": ["volare"], "bonus": 1},
+                                                      {"tiro": "salvezza", "colonne": ["fulmini"], "bonus": 2}, {"sorpresa": 0}]})
+    modifica(dest, "regole/regole.yaml", rompi)
+    modifica(dest, "pg.yaml", lambda d: d["personaggi"][2]["scheda"].update(razza="drago"))
+    errori = " | ".join(regole_di(dest))
+    assert "tiro: iniziativa, abilita o salvezza" in errori
+    assert "abilita: abilità del set (non: volare)" in errori
+    assert "colonne: colonne di tiri_salvezza (non: fulmini)" in errori
+    assert "sorpresa: un intero diverso da 0" in errori
+    assert "scheda.razza «drago» non è una razza del set" in errori

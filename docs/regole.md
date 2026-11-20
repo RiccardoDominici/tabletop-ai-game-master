@@ -162,6 +162,15 @@ classi:                                     # optional [V]: the classes and thei
     nome: "Mago"
     tiri_salvezza: [{da: 1, valori: [13, 15]}, {da: 4, valori: [12, 13]}]   # [V] one value per column; `da` grows
     incantesimi_al_giorno: [{da: 1, slot: [1]}, {da: 3, slot: [2, 1]}]      # [V] spells per day by spell level
+razze:                                      # optional [V]: races and their traits (regole/tratti.ts)
+  - id: halfling
+    nome: "Halfling"
+    tratti:                                 # [V] the closed list; also `classi[].tratti` and the sheet's own `tratti`
+      - {tiro: iniziativa, bonus: 1}        #   added to initiative
+      - {tiro: abilita, abilita: [distanza], bonus: 1}             # to those abilities' rolls (attacks included)
+      - {tiro: salvezza, colonne: [morte, incantesimi], bonus: 4}  # to the saves of those table columns
+      - {immune: [paralisi_ghoul]}          #   powers or conditions it ignores
+      - {sorpresa: -1}                      #   its own surprise range (the side's die read against each member's)
 magia: {preparazione: vanciana}             # optional [V]: vanciana (each prepared copy is one cast, back at a rest)
                                             #   | slot (the sheet's spells are known; a cast spends a slot of its level)
 risorse:                                    # optional [V]: per-character counters (prove/risorse.ts), in the snapshot

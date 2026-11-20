@@ -73,6 +73,17 @@ classi:
     nome: Chierico
     tiri_salvezza: [{da: 1, valori: [11, 15]}, {da: 3, valori: [10, 14]}]
     incantesimi_al_giorno: [{da: 1, slot: []}, {da: 2, slot: [1]}, {da: 3, slot: [2]}]
+razze:
+  - id: umano
+    nome: Umano
+  - id: folletto
+    nome: Folletto
+    tratti:
+      - {tiro: iniziativa, bonus: 1}
+      - {tiro: abilita, abilita: [distanza], bonus: 1}
+      - {tiro: salvezza, colonne: [morte, magia], bonus: 2}
+      - {sorpresa: -1}
+      - {immune: [paralizzato]}
 magia: {preparazione: vanciana}
 risorse:
   - {id: frecce, nome: Frecce, ricarica: mai}
@@ -163,4 +174,5 @@ combattimento:
     - {id: affascinato, nome: Affascinato, icona: AF, effetti: [fuori_combattimento], testo: Vede in chi lo ha incantato un amico.}
     - {id: svenuto, nome: Svenuto, icona: SV, effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio], testo: A terra senza sensi.}
   condizione_a_zero: svenuto
+  sorpresa: {dado: 6, fino_a: 2, condizione: sorpreso}
   fine: {morale: true}
