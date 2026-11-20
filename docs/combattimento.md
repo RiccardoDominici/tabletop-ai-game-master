@@ -115,6 +115,15 @@ combattimento:
    - SRD: death saving throws at the start of its turn, then stable, dead, or standing with a 20; the 20 that gets it back
      up and the 1 that counts as two failures belong to the set (`tiri_morte.venti_rialza`, `uno_doppio`), with the SRD as
      default: before, they applied to every set (final e2e, §2);
+   - a set's own death rule (`tiri_morte.abilita`, `finestra`, `perde_incantesimi`; Basic Fantasy's «Save vs. Death»,
+     p. 188): the PC rolls its own save (regole/salvezze.ts: the class table's number, with its race) instead of `cd`;
+     failed, it dies; made, it is alive, unconscious and dying for `finestra` rounds (2d10), counted by prove/morte.ts
+     at each new round and, outside a fight, at each closed window (the interim rule until the game clock), each round a
+     fact («Ilaria sta morendo: restano 2 round…»); a power with `stabilizza` (binding wounds) makes it stable at 0,
+     healing above 0 ends the window, and when it runs out the PC dies. A caster who survives loses its prepared spells.
+     With every PC down nobody can bind them: the dying die (`senzaSoccorso`). A PC dropped to 0 outside a fight (a
+     trap, a fall) gets the set's rule at once: dead, or the single save rolled now; a rule of several saves (the SRD's
+     three) leaves it down for the Game Master;
    - otherwise out of play or dead.
    - The Game Master may restore HP: whoever goes back above 0 gets up.
    - A PC already out of play when the window closes (0 HP, dead) does not act, even if the player writes: the

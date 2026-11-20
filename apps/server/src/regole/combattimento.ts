@@ -9,6 +9,7 @@
  */
 import type { TipoRisoluzione } from '@tabletop-ai-gm/shared';
 import { datiProve } from '../prove/lingua';
+import { leggiFormula, type FormulaDadi } from '../campagna/regole-srd';
 
 /** Effetti meccanici che il Motore sa applicare (le condizioni li combinano). */
 export const EFFETTI = [
@@ -80,7 +81,25 @@ export interface Combattimento {
      * conta due fallimenti. Sono regole dell'SRD 5.2: valgono se il set non dice altro (`venti_rialza`,
      * `uno_doppio` di `tiri_morte`); prima valevano per ogni set, anche dove il manuale non le ha.
      */
-    tiriMorte: { cd: number; successi: number; fallimenti: number; ventiRialza: boolean; unoDoppio: boolean } | null;
+    tiriMorte: {
+      cd: number;
+      successi: number;
+      fallimenti: number;
+      ventiRialza: boolean;
+      unoDoppio: boolean;
+      /**
+       * The PC rolls its own save of the set instead of the fixed `cd` (Basic Fantasy p. 188: «save vs. Death Ray»):
+       * the save's number and bonus come from regole/salvezze.ts. Absent = `cd`, as the SRD.
+       */
+      abilita?: string;
+      /**
+       * A success does not stabilise: the PC is dying for these rounds (Basic Fantasy: 2d10) and dies unless its wounds
+       * are bound (a power with `stabilizza`) or it is healed above 0 (prove/morte.ts). Absent = stable at once.
+       */
+      finestra?: FormulaDadi;
+      /** A caster who goes to 0 and survives loses every prepared spell (Basic Fantasy p. 189). */
+      perdeIncantesimi?: boolean;
+    } | null;
   };
   condizioni: Condizione[];
   /** Condizione data a chi va a 0 (Privo di sensi nell'SRD); null = nessuna. */
@@ -236,6 +255,20 @@ export function leggiCombattimento(v: unknown, base: Combattimento, caratteristi
         ventiRialza: bool('venti_rialza'),
         unoDoppio: bool('uno_doppio'),
       };
+      // Basic Fantasy's «Save vs. Death» (p. 188): the PC's own save, a dying window, prepared spells lost.
+      if (tm['abilita'] !== undefined) {
+        if (typeof tm['abilita'] === 'string' && /^[a-z0-9_]+$/.test(tm['abilita'])) out.danni.tiriMorte.abilita = tm['abilita'];
+        else errori.push('combattimento.danni.tiri_morte.abilita: the id of a save of the set');
+      }
+      if (tm['finestra'] !== undefined) {
+        const f = leggiFormula(tm['finestra']);
+        if (f && (f.numero > 0 || f.bonus > 0)) out.danni.tiriMorte.finestra = f;
+        else errori.push('combattimento.danni.tiri_morte.finestra: rounds as a formula like 2d10, or a number');
+      }
+      if (tm['perde_incantesimi'] !== undefined) {
+        if (typeof tm['perde_incantesimi'] !== 'boolean') errori.push('combattimento.danni.tiri_morte.perde_incantesimi: true o false');
+        else if (tm['perde_incantesimi']) out.danni.tiriMorte.perdeIncantesimi = true;
+      }
     }
     if (out.danni.pgAZero === 'tiri_morte' && !out.danni.tiriMorte) out.danni.tiriMorte = { cd: 10, successi: 3, fallimenti: 3, ventiRialza: true, unoDoppio: true };
   }

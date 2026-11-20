@@ -205,3 +205,14 @@ def test_razze_e_tratti(tmp_path: Path) -> None:
     assert "colonne: colonne di tiri_salvezza (non: fulmini)" in errori
     assert "sorpresa: un intero diverso da 0" in errori
     assert "scheda.razza «drago» non è una razza del set" in errori
+
+
+def test_tiri_morte_del_set(tmp_path: Path) -> None:
+    """The death rule's extras (regole_combattimento.py): the PC's own save, a dying window, lost spells."""
+    dest = copia(MAGIA, tmp_path)
+    modifica(dest, "regole/regole.yaml", lambda d: d["combattimento"]["danni"]["tiri_morte"].update(
+        abilita="mischia", finestra="presto", perde_incantesimi="sì"))
+    errori = " | ".join(regole_di(dest))
+    assert "danni.tiri_morte.abilita «mischia»: un tiro salvezza del set" in errori
+    assert "danni.tiri_morte.finestra: i round come formula" in errori
+    assert "danni.tiri_morte.perde_incantesimi: true o false" in errori

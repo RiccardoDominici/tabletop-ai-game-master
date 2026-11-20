@@ -10,6 +10,7 @@ from __future__ import annotations
 import re
 
 from .esito import Esito
+from .regole_effetti import formula_valida
 
 EFFETTI = (
     "svantaggio_attacchi", "vantaggio_attacchi", "svantaggio_prove", "svantaggio_salvezze",
@@ -72,7 +73,7 @@ def _fasi(fasi, e: Esito, dove: str) -> None:
             _err(e, dove, f"fasi.{fid}.png «{o.get('png')}»: attacco, attacco_distanza, attacco_mischia o vuoto")
 
 
-def _danni(d: dict, e: Esito, dove: str) -> None:
+def _danni(d: dict, e: Esito, dove: str, salvezze: set[str] | None = None) -> None:
     if d.get("modello") is not None and d["modello"] not in MODELLI_DANNO:
         _err(e, dove, f"danni.modello «{d['modello']}»: pf, ferite o stress")
     az = _ogg(d.get("a_zero")) or {}
@@ -86,9 +87,15 @@ def _danni(d: dict, e: Esito, dove: str) -> None:
         if not all(_intero(v) and v > 0 for v in valori):
             _err(e, dove, "danni.tiri_morte: cd, successi e fallimenti sono numeri interi positivi")
         # Le regole dell'SRD sul 20 e sull'1 naturali: del set (assenti = SRD).
-        for k in ("venti_rialza", "uno_doppio"):
+        for k in ("venti_rialza", "uno_doppio", "perde_incantesimi"):
             if _ogg(tm) and k in _ogg(tm) and not isinstance(_ogg(tm)[k], bool):
                 _err(e, dove, f"danni.tiri_morte.{k}: true o false")
+        # Basic Fantasy's «Save vs. Death» (p. 188): the PC's own save, a dying window of rounds (prove/morte.ts).
+        o = _ogg(tm) or {}
+        if "abilita" in o and o["abilita"] not in (salvezze or set()):
+            _err(e, dove, f"danni.tiri_morte.abilita «{o['abilita']}»: un tiro salvezza del set (un'abilità con salvezza)")
+        if "finestra" in o and not formula_valida(o["finestra"]):
+            _err(e, dove, "danni.tiri_morte.finestra: i round come formula (2d10) o un numero")
 
 
 def _condizioni(cond, e: Esito, dove: str) -> set[str]:
@@ -135,7 +142,8 @@ def controlla(r: dict, car: set[str], e: Esito, dove: str = "regole/regole.yaml"
         if d is None:
             _err(e, dove, "danni: una mappa")
         else:
-            _danni(d, e, dove)
+            salvezze = {o["id"] for o in r.get("abilita") or [] if isinstance(o, dict) and o.get("salvezza")}
+            _danni(d, e, dove, salvezze)
     ids = _condizioni(c.get("condizioni"), e, dove)
     cz = c.get("condizione_a_zero")
     if cz is not None and cz not in ids:

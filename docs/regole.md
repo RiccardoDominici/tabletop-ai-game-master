@@ -147,6 +147,9 @@ combattimento:                              # optional: without it, the full SRD
     modello: pf | ferite | stress           # [V]
     a_zero: {pg: tiri_morte | fuori_gioco | morte, png: morte | fuori_gioco}   # [V]
     tiri_morte: {cd: 10, successi: 3, fallimenti: 3, venti_rialza: true, uno_doppio: true}
+    # optional [V]: abilita: ts_morte (the PC's own save of the set instead of `cd`), finestra: "2d10" (a success leaves it
+    #   dying for these rounds; binding wounds, a power with `stabilizza`, or healing saves it), perde_incantesimi: true
+    #   (a caster who survives 0 loses its prepared spells). Basic Fantasy's «Save vs. Death», p. 188 (prove/morte.ts).
     # venti_rialza: a natural 20 gets back on its feet with 1 HP; uno_doppio: a natural 1 counts as two failures.
     # These are SRD 5.2 rules: they apply if the set does not write them (before, they applied to every set, even where the
     # manual does not have them, like Basic Fantasy's «save vs. death»).

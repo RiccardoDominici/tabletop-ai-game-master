@@ -145,6 +145,14 @@ prove:
     finiti: "Finiscono: {elenco}."
     finito: "{cosa} di {nome}"
     sempre_colpito: " (colpito comunque: {condizione})"
+  # The dying window of a death rule (prove/morte.ts).
+  morte:
+    inizia: "{nome} ha {n} round perché qualcuno gli fasci le ferite o lo curi: poi muore."
+    ancora: "{nome} sta morendo: restano {n} round per fasciargli le ferite o curarlo."
+    morto: "{nome} muore: nessuno gli ha fasciato le ferite in tempo."
+    senza_soccorso: "Nessuno è in piedi per fasciare le ferite: chi stava morendo muore."
+    incantesimi_persi: "{nome} perde gli incantesimi preparati (è andato a zero punti ferita)."
+    subito: "{nome} è a terra fuori da uno scontro: tiro salvezza contro la morte {dado} contro {cd} → {esito}."
   # Saving throws pinned to their own number (regole/salvezze.ts).
   salvezze:
     tiro_salvezza: "tiro salvezza"
@@ -248,6 +256,7 @@ prove:
     morte_senza_soccorso: "Nessuno è in piedi per soccorrerli: i tiri contro la morte decidono adesso."
     morte_morto: "fallimenti {n} su {n}: è MORTO"
     morte_stabile: "successi {n} su {n}: è stabile, resta privo di sensi"
+    morte_finestra: "riuscito: è vivo ma svenuto, e sta morendo"
     morte_parziale: "{esito} (successi {successi}, fallimenti {fallimenti})"
     morte_riuscito: "riuscito"
     morte_fallito: "fallito"

@@ -44,7 +44,7 @@ import { strumentiRegole } from './risolutore-regole';
 import { attaccoPngSrd } from './risolutore';
 import { trattiDi, valoreCaratteristica } from '../regole/schede';
 import { bonusTratti, type Tratto } from '../regole/tratti';
-import { colonnaDi } from '../regole/salvezze';
+import { bersaglioSalvezza, colonnaDi } from '../regole/salvezze';
 import { comeCaratteristica } from '../campagna/regole-srd';
 import { modCaratteristica } from '../campagna/schede';
 import type { CombattimentoMaster, CombattimentoPubblico, RichiestaTiroMaster } from '@tabletop-ai-gm/shared';
@@ -52,6 +52,8 @@ import { applicaEffetti, type ContestoEffetti } from './effetti';
 import { riposa } from './riposo';
 import { Risorse } from './risorse';
 import { Attivi } from './attivi';
+import { Morenti } from './morte';
+import { danno as tiraDanno } from './regole';
 import { sistemaSrd } from '../regole/srd';
 import { leggiEffetto } from '../regole/effetti';
 import type { SistemaRegole } from '../regole/tipi';
@@ -184,6 +186,8 @@ export class MotoreProve {
   private readonly risorse: Risorse | null;
   /** Timed effects of powers and hazards (prove/attivi.ts): conditions, bonuses, immunities that outlive a fight. */
   readonly attivi: Attivi;
+  /** The PCs in a dying window of the death rule (prove/morte.ts, Basic Fantasy p. 188). */
+  readonly morenti = new Morenti();
 
   constructor(private readonly o: OpzioniMotoreProve) {
     this.gregari = new Map((o.gregari ?? []).map((g) => [g.id, g]));
@@ -213,6 +217,20 @@ export class MotoreProve {
       nuovoRound: (fatti) => {
         const f = Attivi.fatto(this.attivi.passaRound(), (id) => this.nomeDi(this.o.contesto(), id));
         if (f) fatti.push(f);
+        fatti.push(...this.passaRoundMorenti());
+      },
+      salvezzaMorte: (id, abilita) => this.salvezzaMorte(id, abilita),
+      morente: (id, fatti) => this.iniziaMorente(id, fatti),
+      senzaSoccorso: (fatti) => {
+        const ids = this.morenti.tutti();
+        if (!ids.length) return;
+        fatti.push(testo('prove.morte.senza_soccorso'));
+        for (const id of ids) {
+          this.morenti.ferma(id);
+          this.combattimento.segnaMorto(id);
+          fatti.push(testo('prove.morte.morto', { nome: this.nomeDi(this.o.contesto(), id) }));
+        }
+        this.o.log.info({ morti: ids }, 'death: nobody standing to bind the dying, they die');
       },
       log: o.log.child({ modulo: 'combattimento' }),
     });
@@ -703,10 +721,11 @@ export class MotoreProve {
     const c = this.o.contesto();
     this.tavolo = tavolo;
     try {
-      // Outside a fight a closed window is a round for the timed effects (no game clock): they tick before the actions.
-      const finiti = this.combattimento.attivo ? null : Attivi.fatto(this.attivi.passaRound(), (id) => this.nomeDi(c, id));
+      // Outside a fight a closed window is a round for the timed effects and the dying (no game clock yet): they tick
+      // before the actions, so binding a dying friend in this window still comes in time.
+      const finiti = this.combattimento.attivo ? [] : [Attivi.fatto(this.attivi.passaRound(), (id) => this.nomeDi(c, id)), ...this.passaRoundMorenti()].filter((x): x is string => !!x);
       const r = this.passaRisolutore(turno, c, azioni, decisioni, { dadiDeiPg: tavolo });
-      if (finiti) r.fatti.unshift(finiti);
+      if (finiti.length) r.fatti.unshift(...finiti);
       // What the Game Master applied from the panel since the last turn (a rest, a hazard) comes first for the narrator.
       if (this.fattiInSospeso.length) {
         r.fatti.unshift(...this.fattiInSospeso);
@@ -820,6 +839,75 @@ export class MotoreProve {
     return [...ostili, ...this.gregariInScena(c).map((x) => x.id).filter((id) => ha(id) && !this.stato.fuoriGioco(id))];
   }
 
+  // ------------------------------------------------------------------ death and dying (prove/morte.ts)
+
+  /** A PC's own save for the death rule: the set's save ability with its table number, traits and active bonuses. */
+  private salvezzaMorte(id: string, abilita: string): { contro: number; modificatore: number; naturali: boolean } | null {
+    const g = this.generico;
+    const sch = g?.schede.get(id);
+    if (!g || !sch) return null;
+    const s = g.regole.sistema;
+    const b = bersaglioSalvezza(s, sch, abilita, this.attivi.bonus(id, 'salvezze') + bonusTratti(this.trattiDi(id), { tipo: 'salvezza', colonna: colonnaDi(s, abilita) }));
+    return b ? { contro: b.contro, modificatore: b.modificatore, naturali: s.risoluzione.critici !== 'attacchi' } : null;
+  }
+
+  /** The death save made, with a dying window: it starts now (rounds rolled with the Engine's dice), and its fact. */
+  private iniziaMorente(id: string, fatti: string[]): void {
+    const tm = this.regoleCombattimento().danni.tiriMorte;
+    const f = tm?.finestra;
+    if (!f) return;
+    const n = Math.max(1, tiraDanno(this.dadi, f, 0, false).totale);
+    this.morenti.inizia(id, n);
+    fatti.push(testo('prove.morte.inizia', { nome: this.nomeDi(this.o.contesto(), id), n }));
+    if (tm.perdeIncantesimi && this.risorse?.dimenticaIncantesimi(id)) fatti.push(testo('prove.morte.incantesimi_persi', { nome: this.nomeDi(this.o.contesto(), id) }));
+    this.o.log.info({ id, round: n }, 'death: save made, dying for a few rounds unless bound or healed');
+  }
+
+  /** A round of the dying windows: who dies (in the fight too), who is still dying. Facts for the narrator. */
+  private passaRoundMorenti(): string[] {
+    const t = this.morenti.passaRound();
+    for (const id of t.morti) {
+      this.combattimento.segnaMorto(id);
+      this.o.log.info({ id }, 'death: the dying window ran out, dead');
+    }
+    return Morenti.fatti(t, (id) => this.nomeDi(this.o.contesto(), id));
+  }
+
+  /**
+   * A character went to 0 outside a fight's own steps (a trap, a fall, a spell before any fight: prove/effetti.ts). In a
+   * fight the fight handles it (prove/combattimento.ts); outside one the set's rule at zero applies now: dead, or a
+   * single death save rolled at once (the PC's own dice with manual rolls), then stable or dying. A rule of several
+   * saves (the SRD's three) leaves the PC down for the Game Master, as before.
+   */
+  private aZeroFuoriScontro(id: string, turno: number, fatti: string[], tiri: TiroMostrato[]): void {
+    if (this.combattimento.attivo) return;
+    const r = this.regoleCombattimento().danni;
+    const nome = this.nomeDi(this.o.contesto(), id);
+    const pg = !id.startsWith('png_');
+    if ((pg ? r.pgAZero : r.pngAZero) === 'morte') {
+      this.stato.segnaUscito(id, 'morto');
+      fatti.push(testo('prove.effetti.morte', { nome, fonte: this.sistema.danni.aZero }));
+      return;
+    }
+    const tm = r.tiriMorte;
+    if (!pg || r.pgAZero !== 'tiri_morte' || !tm || tm.successi !== 1 || tm.fallimenti !== 1) return;
+    const sv = tm.abilita ? this.salvezzaMorte(id, tm.abilita) : null;
+    const contro = sv?.contro ?? tm.cd;
+    const mod = sv?.modificatore ?? 0;
+    const dado = (this.tavolo?.fonte({ pg: id, per: 'morte', azione: null, privata: false, etichetta: testo('prove.combattimento.etichetta_morte'), contro, ...(mod ? { modificatore: mod } : {}) }) ?? this.dadi).tira(20);
+    const riuscita = sv?.naturali && dado === 20 ? true : sv?.naturali && dado === 1 ? false : dado + mod >= contro;
+    tiri.push({ id: this.stato.nuovoIdTiro(), turno, chi: id, nome, di_png: false, tipo: 'salvezza', etichetta: testo('prove.combattimento.etichetta_morte'), dadi: [dado], dado, vantaggio: null, motivo_vantaggio: null, modificatore: mod, totale: dado + mod, contro: { tipo: 'CD', valore: contro, descrizione: null }, bersaglio: null, riuscita, critico: false, fallimento_critico: false, danno: null, a_terra: true, privata: false, avversario: null });
+    if (!riuscita) {
+      this.stato.segnaUscito(id, 'morto');
+      fatti.push(testo('prove.morte.subito', { nome, dado: dado + mod, cd: contro, esito: testo('prove.combattimento.morte_morto', { n: 1 }) }));
+      this.o.log.info({ id, dado, contro }, 'death: down outside a fight, the save failed: dead');
+      return;
+    }
+    fatti.push(testo('prove.morte.subito', { nome, dado: dado + mod, cd: contro, esito: testo(tm.finestra ? 'prove.combattimento.morte_finestra' : 'prove.combattimento.morte_stabile', { n: 1 }) }));
+    if (tm.finestra) this.iniziaMorente(id, fatti);
+    else if (tm.perdeIncantesimi && this.risorse?.dimenticaIncantesimi(id)) fatti.push(testo('prove.morte.incantesimi_persi', { nome }));
+  }
+
   /** A sheet's traits: its race's, its class's, its own (regole/tratti.ts); none on the SRD path. */
   private trattiDi(id: string): Tratto[] {
     const g = this.generico;
@@ -853,11 +941,20 @@ export class MotoreProve {
       cadute: s.cadute ?? null,
       danni: s.danni,
       difesa: (id) => (g ? (g.schede.get(id)?.difesa ?? null) : (this.o.schede.get(id)?.ca ?? null)),
-      dopoCura: (id) => this.combattimento.dopoCura(id),
+      dopoCura: (id) => {
+        this.combattimento.dopoCura(id);
+        if (this.morenti.ferma(id)) this.o.log.info({ id }, 'death: healed above 0, no longer dying');
+      },
+      aZero: (id, fatti, tiri) => this.aZeroFuoriScontro(id, turno, fatti, tiri),
       attivi: {
         aggiungi: (id, e, fonte, livello, dadi) => this.attivi.aggiungi(id, e, fonte, livello, dadi),
         ferito: (id) => this.attivi.ferito(id),
-        stabilizza: () => false,
+        stabilizza: (id) => {
+          const era = this.morenti.ferma(id);
+          const inScontro = this.combattimento.stabilizza(id);
+          if (era || inScontro) this.o.log.info({ id }, 'death: bound, stable at 0');
+          return era || inScontro;
+        },
       },
       log: this.o.log.child({ turno, modulo: 'effetti' }),
     };
@@ -1191,7 +1288,7 @@ export class MotoreProve {
   // ------------------------------------------------------------------ sessione
 
   esporta(): StatoProveSalvato {
-    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta() };
+    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta() };
   }
 
   importa(s: StatoProveSalvato): void {
@@ -1201,6 +1298,7 @@ export class MotoreProve {
     this.fattiInSospeso = Array.isArray(s.fatti_in_sospeso) ? s.fatti_in_sospeso.filter((x): x is string => typeof x === 'string') : [];
     this.risorse?.importa(s.risorse);
     this.attivi.importa(s.attivi);
+    this.morenti.importa(s.morenti);
     if (!this.o.dadi && s.seme && /^[0-9a-f]{8,128}$/i.test(s.seme)) this.dadi = this.nuoviDadi(s.seme, s.contatore ?? 0);
     const ultimo = s.recenti?.at(-1)?.turno;
     this.ultimoTurno = ultimo !== undefined ? { turno: ultimo, tiri: (s.recenti ?? []).filter((t) => t.turno === ultimo) } : null;
@@ -1215,6 +1313,7 @@ export class MotoreProve {
     this.fattiInSospeso = [];
     this.risorse?.azzera();
     this.attivi.azzera();
+    this.morenti.azzera();
     this.intestazione = null;
     this.cache.clear();
     this.ultimi.clear();

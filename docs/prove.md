@@ -781,6 +781,10 @@ Now every source goes through one Engine path, prove/effetti.ts, with the typed 
   side's die is read against each member's: the elf surprised only on 1). torre-mozza's sheets now name their race and
   class and no longer write `ts_*`: the class table and the race traits give the same odds as before. Tests:
   test/tratti.test.ts, and test/manuale-basic-fantasy.test.ts for the set's numbers against the manual.
+- **Death and dying by the set** (prove/morte.ts; audit P8-14): `tiri_morte.abilita` rolls the PC's own save, a
+  `finestra` keeps it dying for some rounds (each a fact) until it is bound (`stabilizza`), healed, or dies, in and out of
+  a fight (docs/combattimento.md §3, «At 0»); the window is in the snapshot (`StatoProveSalvato.morenti`). Tests:
+  test/morte.test.ts.
 - Tests: test/effetti.test.ts (the closed list, the scaling, both falling tables, damage halved by a save, healing that
   never revives, a trap's attack, save-or-die, a failed scene check's fall, a rest, the Game Master's hazard, the SRD's
   data), strumenti/test_valida_effetti.py (the validator's mirror).

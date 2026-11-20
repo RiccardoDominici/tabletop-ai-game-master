@@ -8,6 +8,7 @@ import type { SchedaNumerica } from '../campagna/schede';
 import type { StatoCombattimentoSalvato } from './combattimento';
 import type { StatoRisorseSalvato } from './risorse';
 import type { StatoAttiviSalvato } from './attivi';
+import type { StatoMorentiSalvato } from './morte';
 
 export interface StatoProveSalvato {
   seme: string;
@@ -29,6 +30,8 @@ export interface StatoProveSalvato {
   risorse?: StatoRisorseSalvato;
   /** Timed effects of powers and hazards (prove/attivi.ts). */
   attivi?: StatoAttiviSalvato;
+  /** PCs in a dying window of the death rule (prove/morte.ts). */
+  morenti?: StatoMorentiSalvato;
 }
 
 /** Fuori gioco oltre ai PF: morto (finché il master non lo cura), fuggito (finché la scena non cambia). */

@@ -671,6 +671,15 @@ poteri:
     parole: ["chiudo a chiave", "serratura magica"]
     descrittivo: true
     pagina: 41
+  # Fasciare le ferite (p. 188): chi è a terra e sta morendo, fasciato in tempo, è stabile a zero punti ferita; finché
+  # non torna sopra zero non si muove più di qualche passo, non combatte e non lancia incantesimi. Lo fa chiunque.
+  - id: fasciare
+    nome: "Fasciare le ferite"
+    tipo: azione
+    bersaglio: uno
+    parole: [fascio, fasciare, bendo, benda, tampono]
+    effetti: [{tipo: stabilizza}]
+    pagina: 188
 
 # Cadute (p. 59): 1d6 ogni 10 piedi (3 metri), al massimo 20d6, arrotondando all'altezza più vicina (da 1–4 piedi
 # niente, da 5–14 piedi 1d6: in metri, da un metro e mezzo si prende 1d6). Le altezze delle scene sono in metri.
@@ -717,7 +726,7 @@ sottosistemi:
     testo: "Si prende 1d6 di danno ogni tre metri di caduta, arrotondando: già da un metro e mezzo si prende 1d6. Per non cadere in una fossa coperta si tira salvezza contro raggio della morte con la Destrezza (p. 43, 59)."
   - id: guarigione
     nome: "Guarigione"
-    testo: "Si recupera un punto ferita per ogni notte di sonno (p. 59). Chi è stato fasciato a zero punti ferita non combatte finché non torna sopra zero (p. 188)."
+    testo: "Si recupera un punto ferita per ogni notte di sonno (p. 59). A zero punti ferita si tira il salvezza contro la morte: riuscito, si resta svenuti e si muore entro 2d10 round se nessuno fascia le ferite. Chi è stato fasciato a zero punti ferita non combatte finché non torna sopra zero (p. 188)."
 
 parole_chiave:
   scassinare: [scassino, scassinare, grimaldello, grimaldelli, serratura, lucchetto]
@@ -749,12 +758,13 @@ combattimento:
   danni:
     modello: pf
     # Regola base: a zero punti ferita si muore (p. 55). Per i PG la regola facoltativa «Save vs. Death» (p. 188):
-    # un tiro salvezza contro raggio della morte; riuscito, si resta vivi e svenuti. Lo schema ha i tiri contro la
-    # morte dell'SRD: con un successo e un fallimento basta un tiro solo. Il numero da fare cambia con la classe e la
-    # razza (da 7 a 13 tra i PG di questa campagna); qui è uno per tutti, 10. Il 20 che rimette in piedi con un punto
-    # e l'1 che conta doppio sono dell'SRD, non del manuale: spenti.
+    # un tiro salvezza contro raggio della morte, il suo (`abilita: ts_morte`: il numero della tabella della classe,
+    # con la razza); fallito, muore; riuscito, resta vivo e svenuto per 2d10 round (`finestra`) e muore se nessuno gli
+    # fascia le ferite (il potere `fasciare`) o lo cura in quel tempo. Un incantatore che sopravvive perde gli
+    # incantesimi preparati (p. 189). Il 20 che rimette in piedi con un punto e l'1 che conta doppio sono dell'SRD, non
+    # del manuale: spenti. `cd` resta per chi non ha il salvezza nella scheda.
     a_zero: {pg: tiri_morte, png: morte}
-    tiri_morte: {cd: 10, successi: 1, fallimenti: 1, venti_rialza: false, uno_doppio: false}
+    tiri_morte: {cd: 10, successi: 1, fallimenti: 1, venti_rialza: false, uno_doppio: false, abilita: ts_morte, finestra: "2d10", perde_incantesimi: true}
   condizioni:
     - {id: sorpreso, nome: "Sorpreso", icona: "SO", effetti: [perde_turno, non_si_muove], testo: "Per un round non si muove e non attacca, ma si difende."}
     # −4 del manuale ai tiri e alla Classe d'Armatura: gli effetti del Motore valgono ±2 (il vantaggio del set).

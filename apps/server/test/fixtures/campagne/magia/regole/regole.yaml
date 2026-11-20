@@ -167,7 +167,7 @@ combattimento:
   danni:
     modello: pf
     a_zero: {pg: tiri_morte, png: morte}
-    tiri_morte: {cd: 10, successi: 1, fallimenti: 1, venti_rialza: false, uno_doppio: false}
+    tiri_morte: {cd: 10, successi: 1, fallimenti: 1, venti_rialza: false, uno_doppio: false, abilita: ts_morte, finestra: "2d10", perde_incantesimi: true}
   condizioni:
     - {id: sorpreso, nome: Sorpreso, icona: SO, effetti: [perde_turno, non_si_muove], testo: Perde il primo round.}
     - {id: addormentato, nome: Addormentato, icona: ZZ, effetti: [perde_turno, non_si_muove, fuori_combattimento, colpito_automaticamente], testo: Dorme; un colpo lo sveglia.}

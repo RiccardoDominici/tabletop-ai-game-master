@@ -44,7 +44,7 @@ describe('spells per day (Basic Fantasy pp. 7–8)', () => {
 
 describe('the level-1 and level-2 Cleric and Magic-User spells (pp. 15–41)', () => {
   it('every spell of the four lists is a power of the set (37: four are on both lists)', () => {
-    const p = set().poteri!;
+    const p = set().poteri!.filter((x) => x.tipo === 'incantesimo');
     expect(p).toHaveLength(37);
     const livelli = (id: string) => p.find((x) => x.id === id)?.livello;
     // p. 15–16: one entry per spell, with each class's level.
@@ -132,5 +132,13 @@ describe('saving throws by class and level (p. 61): Death Ray or Poison, Wands, 
     expect(tiro('pg_eliandro', 'ts_incantesimi')).toBe(13);
     // Zirrà saves as a level-3 fighter (11 12 14 15 16).
     expect(bersaglioSalvezza(s, schede.get('png_zirra')!, 'ts_incantesimi')).toMatchObject({ contro: 16, fonte: 'tabella' });
+  });
+});
+
+describe('death and dying (p. 188, optional «Save vs. Death»)', () => {
+  it('the PC’s own save vs. Death Ray, 2d10 rounds dying, prepared spells lost; binding wounds stabilises', () => {
+    const s = set();
+    expect(s.combattimento.danni.tiriMorte).toMatchObject({ abilita: 'ts_morte', finestra: { numero: 2, facce: 10, bonus: 0 }, perdeIncantesimi: true, successi: 1, fallimenti: 1, ventiRialza: false, unoDoppio: false });
+    expect(s.poteri!.find((p) => p.id === 'fasciare')).toMatchObject({ tipo: 'azione', effetti: [{ tipo: 'stabilizza' }] });
   });
 });

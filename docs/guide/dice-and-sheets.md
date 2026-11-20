@@ -145,6 +145,7 @@ Without a model (the default referee), the program starts from medium (or your r
 **At 0 HP.**
 - An NPC dies or is knocked out, according to its rule set (SRD: it dies).
 - A player's character falls «Privo di sensi» (Unconscious). With the SRD it makes a death saving throw at the start of each of its turns: DC 10; 3 successes and it is stable; 3 failures and it dies. A natural 20 brings it back to 1 HP; a natural 1 counts as two failures; damage taken at 0 HP counts as one failure.
+- With a manual's rule set the death rule is the manual's: in Basic Fantasy (`torre-mozza`) the character rolls its own saving throw against death; failed, it dies; made, it is unconscious and dying for 2d10 rounds, and the narrator says each round how many are left. Another character who binds its wounds («fascio le ferite di Livia») makes it stable at 0; healing above 0 saves it too; otherwise it dies when the rounds run out. A trap or a fall that drops a character to 0 outside a fight applies the same rule at once.
 - The Game Master can restore HP in the panel. A character back above 0 gets up.
 
 **Conditions** have mechanical effects. The SRD 5.2 conditions (for example Prone, Poisoned, Stunned) and the Dodge action change the rolls: disadvantage on attacks, attacks against them with advantage, failed saves, a lost turn, and so on. The Engine adds Unconscious at 0 HP. The Game Master adds or removes the others in the panel, and a condition with a duration ends at the start of the round when it expires.

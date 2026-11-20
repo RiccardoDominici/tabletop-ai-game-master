@@ -130,6 +130,15 @@ export class Risorse {
     if (i >= 0) lista.splice(i, 1);
   }
 
+  /** `chi` loses every prepared spell and slot left today (Basic Fantasy p. 189: a caster who survives 0 hit points). */
+  dimenticaIncantesimi(chi: string): boolean {
+    const m = this.contatori.get(chi);
+    const prima = (this.preparati.get(chi)?.length ?? 0) + [...(m ?? new Map<string, number>())].filter(([k, n]) => k.startsWith('slot_') && n > 0).length;
+    if (this.preparati.has(chi)) this.preparati.set(chi, []);
+    for (const k of [...(m?.keys() ?? [])]) if (k.startsWith('slot_')) m!.set(k, 0);
+    return prima > 0;
+  }
+
   /** The spells `chi` still has prepared today (vancian) or knows (slots). */
   incantesimiDi(chi: string): string[] {
     return this.s.magia?.preparazione === 'vanciana' ? [...(this.preparati.get(chi) ?? [])] : [...(this.schede.get(chi)?.incantesimi ?? [])];

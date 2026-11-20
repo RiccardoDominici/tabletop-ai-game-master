@@ -186,6 +186,8 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     mosse.push({ ...m, quando: str(o['quando']) ?? '', caratteristica: car ?? '', esiti: { successo: str(es['successo']) ?? '', parziale: str(es['parziale']), fallimento: str(es['fallimento']) ?? '' } });
   }
   const combattimento = leggiCombattimento(d['combattimento'], combattimentoPredefinito(tipo, false, [...idCar]), idCar, errori);
+  const ab = combattimento.danni.tiriMorte?.abilita;
+  if (ab && !abilita.some((a) => a.id === ab && a.salvezza)) errori.push(`combattimento.danni.tiri_morte.abilita: «${ab}» is not a save of the set (an ability with salvezza)`);
   const classiEPoteri = tabelleDiClasse(d, abilita, errori);
   const poteri = leggiPoteri(d['poteri'], { salvezze: new Set(abilita.filter((a) => a.salvezza).map((a) => a.id)), classi: classiEPoteri.classi?.length ? new Set(classiEPoteri.classi.map((c) => c.id)) : null, condizioni: new Set(combattimento.condizioni.map((c) => c.id)) }, errori);
   for (const a of abilita) if (a.ripiego && !abilita.some((x) => x.id === a.ripiego)) errori.push(`abilita.${a.id}.ripiego: «${a.ripiego}» non è un'abilità del set`);

@@ -83,6 +83,15 @@ export interface DipendenzeCombattimento {
    * die is read against each member's range, as the manual says (p. 50). Absent = 0 for everyone.
    */
   sorpresaMod?: (id: string) => number;
+  /**
+   * A PC's own save for the death rule (`tiri_morte.abilita`, Basic Fantasy p. 188): its number, its bonus and whether
+   * the save's naturals count. null = no such save on its sheet (the fixed `cd` then).
+   */
+  salvezzaMorte?: (id: string, abilita: string) => { contro: number; modificatore: number; naturali: boolean } | null;
+  /** A death save made with a dying window (`tiri_morte.finestra`): the window starts (prove/morte.ts); its fact. */
+  morente?: (id: string, fatti: string[]) => void;
+  /** Every PC is down: nobody can bind the dying ones, so their windows end now (prove/morte.ts). */
+  senzaSoccorso?: (fatti: string[]) => void;
   log: Logger;
 }
 
@@ -543,9 +552,13 @@ export class GestoreCombattimento {
     if (!p || p.esito !== 'in_gioco') return;
     const tm = this.d.regole.danni.tiriMorte;
     if (this.d.stato.aTerra(id) && p.tiriMorte && tm) {
-      // The dying PC's player rolls it (manual rolls); the DC is the rule's, public.
-      const dado = (this.d.dadiDelPg?.(id, { per: 'morte', etichetta: testo('prove.combattimento.etichetta_morte'), contro: tm.cd }) ?? this.d.dadi()).tira(20);
-      const riuscita = dado >= tm.cd;
+      // The PC's own save when the rule says so (Basic Fantasy: save vs. Death Ray), else the rule's fixed DC.
+      const sv = tm.abilita ? (this.d.salvezzaMorte?.(id, tm.abilita) ?? null) : null;
+      const contro = sv?.contro ?? tm.cd;
+      const mod = sv?.modificatore ?? 0;
+      // The dying PC's player rolls it (manual rolls); the number is the rule's, public.
+      const dado = (this.d.dadiDelPg?.(id, { per: 'morte', etichetta: testo('prove.combattimento.etichetta_morte'), contro, ...(mod ? { modificatore: mod } : {}) }) ?? this.d.dadi()).tira(20);
+      const riuscita = sv?.naturali && dado === 20 ? true : sv?.naturali && dado === 1 ? false : dado + mod >= contro;
       // Il 20 e l'1 naturali solo se il set li ha (SRD sì; Basic Fantasy no).
       const venti = dado === 20 && tm.ventiRialza;
       if (venti) {
@@ -555,7 +568,7 @@ export class GestoreCombattimento {
       } else if (dado === 1 && tm.unoDoppio) p.tiriMorte.fallimenti += 2;
       else if (riuscita) p.tiriMorte.successi += 1;
       else p.tiriMorte.fallimenti += 1;
-      tiri.push(this.cartaMorte(p, dado, riuscita, turno, tm));
+      tiri.push(this.cartaMorte(p, dado, riuscita, turno, tm, contro, mod));
       let esito: string;
       let comeVa: EsitoMorte = 'morente';
       if (venti) {
@@ -566,13 +579,22 @@ export class GestoreCombattimento {
         // The set's count, not «third»: Basic Fantasy dies at the first failure (run of 15 November).
         esito = testo('prove.combattimento.morte_morto', { n: tm.fallimenti });
         comeVa = 'morto';
+      } else if (p.tiriMorte && p.tiriMorte.successi >= tm.successi && tm.finestra && this.d.morente) {
+        // Alive, but dying: the window starts, and only binding or healing saves it (prove/morte.ts).
+        p.tiriMorte = null;
+        esito = testo('prove.combattimento.morte_finestra');
+        comeVa = 'morente';
+        fatti.push(testo('prove.combattimento.tiro_morte', { nome: p.nome, dado: dado + mod, cd: contro, esito }));
+        this.d.morente(id, fatti);
+        this.morte.push({ id: p.id, nome: p.nome, esito: comeVa });
+        return;
       } else if (p.tiriMorte && p.tiriMorte.successi >= tm.successi) {
         p.esito = 'stabile';
         p.tiriMorte = null;
         esito = testo('prove.combattimento.morte_stabile', { n: tm.successi });
         comeVa = 'stabile';
       } else esito = testo('prove.combattimento.morte_parziale', { esito: testo(riuscita ? 'prove.combattimento.morte_riuscito' : 'prove.combattimento.morte_fallito'), successi: p.tiriMorte!.successi, fallimenti: p.tiriMorte!.fallimenti });
-      fatti.push(testo('prove.combattimento.tiro_morte', { nome: p.nome, dado, cd: tm.cd, esito }));
+      fatti.push(testo('prove.combattimento.tiro_morte', { nome: p.nome, dado: dado + mod, cd: contro, esito }));
       this.morte.push({ id: p.id, nome: p.nome, esito: comeVa });
       return;
     }
@@ -580,8 +602,7 @@ export class GestoreCombattimento {
     if (perde && !this.d.stato.aTerra(id)) fatti.push(testo('prove.combattimento.salta_turno', { nome: p.nome, condizione: perde.toLowerCase() }));
   }
 
-  private cartaMorte(p: Partecipante, dado: number, riuscita: boolean, turno: number, tm: NonNullable<Combattimento['danni']['tiriMorte']>): TiroMostrato {
-    const cd = tm.cd;
+  private cartaMorte(p: Partecipante, dado: number, riuscita: boolean, turno: number, tm: NonNullable<Combattimento['danni']['tiriMorte']>, cd = tm.cd, mod = 0): TiroMostrato {
     return {
       id: this.d.nuovoIdTiro(),
       turno,
@@ -594,8 +615,8 @@ export class GestoreCombattimento {
       dado,
       vantaggio: null,
       motivo_vantaggio: null,
-      modificatore: 0,
-      totale: dado,
+      modificatore: mod,
+      totale: dado + mod,
       contro: { tipo: 'CD', valore: cd, descrizione: null },
       bersaglio: null,
       riuscita,
@@ -672,11 +693,17 @@ export class GestoreCombattimento {
    */
   private morteSenzaSoccorso(pg: Partecipante[], turno: number, fatti: string[], tiri: TiroMostrato[]): void {
     const morenti = pg.filter((p) => p.esito === 'in_gioco' && p.tiriMorte && this.d.stato.aTerra(p.id));
-    if (!morenti.length) return;
+    if (!morenti.length) {
+      // Only dying windows (Basic Fantasy), no saves left to roll: nobody can bind them now.
+      this.d.senzaSoccorso?.(fatti);
+      return;
+    }
     fatti.push(testo('prove.combattimento.morte_senza_soccorso'));
     for (const p of morenti) {
       for (let i = 0; i < 10 && p.esito === 'in_gioco' && p.tiriMorte && this.d.stato.aTerra(p.id); i++) this.inizioTurnoPg(p.id, turno, fatti, tiri);
     }
+    // A dying window (Basic Fantasy) cannot be saved by anyone now: it ends.
+    this.d.senzaSoccorso?.(fatti);
     this.d.log.info({ morenti: morenti.map((p) => ({ id: p.id, esito: p.esito, pf: this.d.stato.puntiFerita(p.id)?.attuali })) }, 'combattimento: every PC down, the death saves rolled to the end');
   }
 
@@ -701,6 +728,22 @@ export class GestoreCombattimento {
     fatti.push(testo('prove.combattimento.finito', { motivo }));
     this.s = null;
     this.ordineTirato = null;
+    return true;
+  }
+
+  /** The dying window ran out (prove/morte.ts): the PC dies, in the fight too. */
+  segnaMorto(id: string): void {
+    const p = this.part(id);
+    if (p && p.esito !== 'morto') this.esce(p, 'morto');
+    else if (!p) this.d.stato.segnaUscito(id, 'morto');
+  }
+
+  /** Bound (a power with `stabilizza`): stable at 0, no more death saves. False if it was not down in this fight. */
+  stabilizza(id: string): boolean {
+    const p = this.part(id);
+    if (!p || p.esito !== 'in_gioco' || !this.d.stato.aTerra(id)) return false;
+    p.tiriMorte = null;
+    p.esito = 'stabile';
     return true;
   }
 
