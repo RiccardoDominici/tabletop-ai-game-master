@@ -16,6 +16,8 @@ import { applicaDotazione, difesaDa, penalitaDi, penalitaIndossate, restrizioniV
 import type { Penalita } from '../regole/catalogo';
 import type { SchedaGenerica, SistemaRegole } from '../regole/tipi';
 import { chiaveMoneta, chiaveOggetto, type Risorse } from './risorse';
+import { fasciaDi, limitiDi, movimentoDi } from '../regole/carico';
+import { indossate } from '../regole/equipaggiamento';
 
 export type EsitoInventario = { ok: true; fatto: string } | { ok: false; fatto: string; motivo: 'senza_catalogo' | 'sconosciuto' | 'non_ha' | 'monete' | 'vietato' | 'non_indossabile' | 'senza_prezzo' };
 
@@ -89,42 +91,107 @@ export class Inventario {
     return (this.s.monete?.tagli ?? []).reduce((n, t) => n + (this.o.risorse.restanti(chi, chiaveMoneta(t.id)) ?? 0) * t.vale, 0);
   }
 
+  /**
+   * What `chi` carries weighs, in `carico.unita`: each catalog item by its pack's weight, a race's lighter armor
+   * (`carico.peso_armatura`), and the coins (`monete.peso`). Rounded to a hundredth.
+   */
+  peso(chi: string): number {
+    const sch = this.o.schede.get(chi);
+    const frazione = sch?.razza ? (this.s.carico?.pesoArmatura[sch.razza] ?? 1) : 1;
+    let p = 0;
+    for (const [id, n] of this.o.risorse.conPrefisso(chi, 'oggetto:')) {
+      const v = this.voce(id);
+      if (!v || n <= 0) continue;
+      p += ((v.peso * n) / v.confezione) * (v.tipo === 'armatura' ? frazione : 1);
+    }
+    const m = this.s.monete?.peso;
+    if (m) p += (this.monete(chi).reduce((x, c) => x + c.quante, 0) / m.quante) * m.peso;
+    return Math.round(p * 100) / 100;
+  }
+
+  /**
+   * The load and movement of `chi` now (M8): the weight, its band by the Strength score and race (`fascia` = the number
+   * of bands when overloaded), the limit of that band, and the movement rate by the worn armor. Null without `carico`.
+   */
+  carico(chi: string): { peso: number; fascia: number; nome: string; limite: number | null; movimento: number | null } | null {
+    const c = this.s.carico;
+    const sch = this.o.schede.get(chi);
+    if (!c || !sch) return null;
+    const limiti = limitiDi(c, sch.caratteristiche[c.caratteristica] ?? 0, sch.razza);
+    const peso = this.peso(chi);
+    const fascia = fasciaDi(limiti, peso);
+    const categoria = indossate(this.s, this.dotazione(chi)).armatura?.categoria ?? null;
+    return {
+      peso,
+      fascia,
+      nome: c.fasce[fascia]?.nome ?? testo('prove.inventario.sovraccarico'),
+      limite: limiti[fascia] ?? null,
+      movimento: this.s.movimento ? movimentoDi(this.s.movimento, categoria, fascia) : null,
+    };
+  }
+
+  /** The line a change adds when it moves the character to another load band or movement rate, or ''. */
+  private cambioDiCarico(chi: string, prima: ReturnType<Inventario['carico']>): string {
+    const dopo = this.carico(chi);
+    if (!prima || !dopo || (prima.fascia === dopo.fascia && prima.movimento === dopo.movimento)) return '';
+    this.o.log.info({ chi, peso: dopo.peso, fascia: dopo.nome, movimento: dopo.movimento }, 'load: band or movement changed');
+    return ` ${testo('prove.inventario.carico', { nome: this.o.nome(chi), fascia: dopo.nome.toLowerCase(), peso: dopo.peso, unita: this.s.carico!.unita, movimento: dopo.movimento ?? '—', unita_movimento: this.s.movimento?.unita ?? '' })}`;
+  }
+
   /** «12 mo, 5 ma» for the facts and the panel. */
   private scriviMonete(m: Record<string, number>): string {
     return (this.s.monete?.tagli ?? []).filter((t) => (m[t.id] ?? 0) > 0).map((t) => `${m[t.id]} ${t.id}`).join(', ');
   }
 
   /**
-   * `chi` pays `costo` (in the smallest coin) from its coins: smallest coins first, and the change comes back in the
-   * price coins (`monete.prezzi`), largest first. Nothing changes when it cannot pay.
+   * `chi` pays `costo` (in the smallest coin) from its coins, as a player at the counter would: among the ways that use
+   * the largest coins first (down to some coin, plus one more of it if something is still owed), the one that hands
+   * over and gets back the fewest coins; the change comes in the price coins (`monete.prezzi`), largest first. Nothing
+   * changes when it cannot pay.
    */
   paga(chi: string, costo: number): { ok: true; pagato: Record<string, number>; resto: Record<string, number> } | { ok: false } {
     const m = this.s.monete;
     if (!m || this.valore(chi) < costo) return { ok: false };
-    const pagato: Record<string, number> = {};
-    let manca = costo;
-    for (const t of [...m.tagli].sort((a, b) => a.vale - b.vale)) {
-      if (manca <= 0) break;
-      const ha = this.o.risorse.restanti(chi, chiaveMoneta(t.id)) ?? 0;
-      const k = Math.min(ha, Math.ceil(manca / t.vale));
-      if (k > 0) {
-        pagato[t.id] = k;
-        manca -= k * t.vale;
+    const ha = new Map(m.tagli.map((t) => [t.id, this.o.risorse.restanti(chi, chiaveMoneta(t.id)) ?? 0]));
+    const prezzi = m.tagli.filter((x) => m.prezzi.includes(x.id));
+    const resto = (n: number): Record<string, number> => {
+      const out: Record<string, number> = {};
+      for (const t of prezzi) {
+        const k = Math.floor(n / t.vale);
+        if (k > 0) {
+          out[t.id] = k;
+          n -= k * t.vale;
+        }
       }
-    }
-    // Paid too much with the last coin: the change comes back in the price coins, largest first.
-    for (const [id, k] of Object.entries(pagato)) this.o.risorse.aggiungi(chi, chiaveMoneta(id), -k);
-    const resto: Record<string, number> = {};
-    let r = -manca;
-    for (const t of m.tagli.filter((x) => m.prezzi.includes(x.id))) {
-      const k = Math.floor(r / t.vale);
-      if (k > 0) {
-        resto[t.id] = k;
-        r -= k * t.vale;
-        this.o.risorse.aggiungi(chi, chiaveMoneta(t.id), k);
+      return out;
+    };
+    let meglio: { pagato: Record<string, number>; resto: Record<string, number>; monete: number } | null = null;
+    // Candidate «down to coin i»: the coins from the largest to the i-th, greedily, then one more i-th if still owed.
+    for (let i = m.tagli.length - 1; i >= 0; i--) {
+      const pagato: Record<string, number> = {};
+      let manca = costo;
+      for (const t of m.tagli.slice(0, i + 1)) {
+        const k = Math.min(ha.get(t.id)!, Math.floor(manca / t.vale));
+        if (k > 0) {
+          pagato[t.id] = k;
+          manca -= k * t.vale;
+        }
       }
+      const ti = m.tagli[i]!;
+      if (manca > 0 && ha.get(ti.id)! > (pagato[ti.id] ?? 0)) {
+        pagato[ti.id] = (pagato[ti.id] ?? 0) + 1;
+        manca -= ti.vale;
+      }
+      if (manca > 0) continue;
+      const r = resto(-manca);
+      const n = Object.values(pagato).reduce((a, b) => a + b, 0) + Object.values(r).reduce((a, b) => a + b, 0);
+      if (!meglio || n < meglio.monete) meglio = { pagato, resto: r, monete: n };
     }
-    return { ok: true, pagato, resto };
+    // Always found: the smallest coin's candidate pays everything greedily (the total is enough).
+    if (!meglio) return { ok: false };
+    for (const [id, k] of Object.entries(meglio.pagato)) this.o.risorse.aggiungi(chi, chiaveMoneta(id), -k);
+    for (const [id, k] of Object.entries(meglio.resto)) this.o.risorse.aggiungi(chi, chiaveMoneta(id), k);
+    return { ok: true, pagato: meglio.pagato, resto: meglio.resto };
   }
 
   private voce(id: string): VoceCatalogo | null {
@@ -142,12 +209,13 @@ export class Inventario {
     if (!v) return { ok: false, fatto: testo('prove.inventario.sconosciuto', { oggetto: id }), motivo: 'sconosciuto' };
     const ha = this.o.risorse.restanti(chi, chiaveOggetto(id)) ?? 0;
     if (n < 0 && ha < 1) return { ok: false, fatto: testo('prove.inventario.non_ha', { nome: this.o.nome(chi), oggetto: v.nome }), motivo: 'non_ha' };
+    const prima = this.carico(chi);
     const dopo = this.o.risorse.aggiungi(chi, chiaveOggetto(id), n)!;
     // Gone from the pack: no longer worn.
     if (dopo === 0 && this.o.risorse.indossati(chi).has(id)) this.o.risorse.vesti(chi, id, false);
     this.rideriva(chi);
     this.o.log.info({ chi, oggetto: id, n, dopo }, 'inventory: item gained or lost');
-    return { ok: true, fatto: testo(n >= 0 ? 'prove.inventario.prende' : 'prove.inventario.perde', { nome: this.o.nome(chi), oggetti: this.quanteDi(v, Math.abs(n === 0 ? 1 : n)) }) };
+    return { ok: true, fatto: testo(n >= 0 ? 'prove.inventario.prende' : 'prove.inventario.perde', { nome: this.o.nome(chi), oggetti: this.quanteDi(v, Math.abs(n === 0 ? 1 : n)) }) + this.cambioDiCarico(chi, prima) };
   }
 
   /**
@@ -178,6 +246,7 @@ export class Inventario {
     if (!v) return { ok: false, fatto: testo('prove.inventario.sconosciuto', { oggetto: id }), motivo: 'sconosciuto' };
     const costo = prezzo ?? (v.costo === null ? null : Math.ceil((v.costo * n) / v.confezione));
     if (costo === null) return { ok: false, fatto: testo('prove.inventario.senza_prezzo', { oggetto: v.nome }), motivo: 'senza_prezzo' };
+    const prima = this.carico(chi);
     const p = this.paga(chi, costo);
     if (!p.ok) {
       this.o.log.info({ chi, oggetto: id, n, costo, ha: this.valore(chi) }, 'inventory: a purchase refused, not enough coins');
@@ -187,7 +256,7 @@ export class Inventario {
     this.rideriva(chi);
     const resto = Object.keys(p.resto).length ? testo('prove.inventario.resto', { resto: this.scriviMonete(p.resto) }) : '';
     this.o.log.info({ chi, oggetto: id, n, costo, pagato: p.pagato, resto: p.resto }, 'inventory: bought');
-    return { ok: true, fatto: testo('prove.inventario.compra', { nome: this.o.nome(chi), oggetti: this.quanteDi(v, n), costo: scriviCosto(m, costo), resto }) };
+    return { ok: true, fatto: testo('prove.inventario.compra', { nome: this.o.nome(chi), oggetti: this.quanteDi(v, n), costo: scriviCosto(m, costo), resto }) + this.cambioDiCarico(chi, prima) };
   }
 
   /** `chi` sells `n` of an item for `prezzo` (in the smallest coin; the catalog price when not given). */
@@ -228,11 +297,12 @@ export class Inventario {
     if ((this.o.risorse.restanti(chi, chiaveOggetto(id)) ?? 0) < 1) return { ok: false, fatto: testo('prove.inventario.non_ha', { nome: this.o.nome(chi), oggetto: v.nome }), motivo: 'non_ha' };
     if (indossato && penalitaDi(restrizioniViolate(this.s, sch, v)).vietato) return { ok: false, fatto: testo('prove.inventario.vietato', { nome: this.o.nome(chi), oggetto: v.nome }), motivo: 'vietato' };
     // One armor and one shield: wearing a new one takes off the other of its kind.
+    const prima = this.carico(chi);
     const stessoTipo = [...this.o.risorse.indossati(chi)].filter((x) => x !== id && this.voce(x)?.tipo === v.tipo);
     this.o.risorse.vesti(chi, id, indossato, indossato ? stessoTipo : []);
     this.rideriva(chi);
     const ca = sch.difesa ?? difesaDa(this.s, sch, this.dotazione(chi))?.valore ?? null;
     this.o.log.info({ chi, oggetto: id, indossato, tolti: indossato ? stessoTipo : [], ca }, 'inventory: armor put on or taken off');
-    return { ok: true, fatto: testo(indossato ? 'prove.inventario.indossa' : 'prove.inventario.toglie', { nome: this.o.nome(chi), oggetto: v.nome, ca: ca ?? '' }) };
+    return { ok: true, fatto: testo(indossato ? 'prove.inventario.indossa' : 'prove.inventario.toglie', { nome: this.o.nome(chi), oggetto: v.nome, ca: ca ?? '' }) + this.cambioDiCarico(chi, prima) };
   }
 }

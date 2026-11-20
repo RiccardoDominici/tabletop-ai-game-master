@@ -367,6 +367,8 @@ prove:
     vietato: "{nome} non può indossare {oggetto}: la sua classe o razza non lo permette."
     indossa: "{nome} indossa {oggetto}: Classe d'Armatura {ca}."
     toglie: "{nome} si toglie {oggetto}: Classe d'Armatura {ca}."
+    sovraccarico: "Sovraccarico"
+    carico: "{nome} ora ha un {fascia} ({peso} {unita}): si muove di {movimento} {unita_movimento} a round."
 
 regole:
   # «Chiedi una regola» (regole/chiedi.ts): il prompt di sistema è prompts/<lingua>/risponditore-regole.md.

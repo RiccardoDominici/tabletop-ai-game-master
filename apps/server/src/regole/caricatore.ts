@@ -28,6 +28,7 @@ import { leggiPoteri } from './poteri';
 import { leggiRazze } from './tratti';
 import { leggiMagia, leggiRisorse } from './risorse';
 import { leggiCatalogo, leggiMonete } from './catalogo';
+import { leggiCarico, leggiMovimento } from './carico';
 
 export const CARTELLA_REGOLE = 'regole';
 const TIPI: readonly TipoRisoluzione[] = ['d20_cd', '2d6_fasce', 'sotto_soglia'];
@@ -195,6 +196,13 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
   // The item catalog (M2): coins first, since prices are written in them.
   const monete = leggiMonete(d['monete'], errori);
   const catalogo = leggiCatalogo(d['catalogo'], monete, { caratteristiche: idCar, abilita: new Set(abilita.map((a) => a.id)), classi: classiEPoteri.classi?.length ? new Set(classiEPoteri.classi.map((c) => c.id)) : null, razze: classiEPoteri.razze?.length ? new Set(classiEPoteri.razze.map((x) => x.id)) : null }, errori);
+  // Load and movement (M8): the bands by Strength and race, the rates by armor category and band.
+  const carico = leggiCarico(d['carico'], idCar, errori);
+  const movimento = leggiMovimento(d['movimento'], carico?.fasce.length ?? null, errori);
+  if (movimento && catalogo) {
+    const categorie = new Set(catalogo.voci.flatMap((v) => (v.tipo === 'armatura' ? [v.categoria] : [])));
+    for (const r of movimento.righe) if (r.armatura !== 'nessuna' && !categorie.has(r.armatura)) errori.push(`movimento.righe: «${r.armatura}» is not a category of catalogo.armature (or nessuna)`);
+  }
   const fonte = ogg(d['fonte']) ?? {};
   const lic = ogg(d['licenza']) ?? {};
   if (typeof lic['libera'] !== 'boolean') errori.push('licenza.libera: true o false (un set da un manuale non libero resta fuori dal repository)');
@@ -244,6 +252,8 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     magia: leggiMagia(d['magia'], errori),
     ...(monete ? { monete } : {}),
     ...(catalogo ? { catalogo } : {}),
+    ...(carico ? { carico } : {}),
+    ...(movimento ? { movimento } : {}),
   };
 }
 

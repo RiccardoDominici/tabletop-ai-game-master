@@ -354,6 +354,8 @@ prove:
     vietato: "{nome} cannot wear {oggetto}: their class or race does not allow it."
     indossa: "{nome} puts on {oggetto}: Armor Class {ca}."
     toglie: "{nome} takes off {oggetto}: Armor Class {ca}."
+    sovraccarico: "Overloaded"
+    carico: "{nome} now has a {fascia} ({peso} {unita}): moves {movimento} {unita_movimento} a round."
 
 regole:
   domanda:

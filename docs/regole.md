@@ -242,6 +242,19 @@ catalogo:                                   # optional [V]: the item catalog (me
     # penalita (closed list): attacco (to hit with that weapon), vietato (no attack line, cannot be worn; the validator
     # rejects a sheet that starts with it), senza_incantesimi (worn: no spell), senza_abilita (worn: those abilities are
     # refused), perde_incantesimi (an attack with it empties the day's spells)
+carico:                                     # optional [V]: load bands (mechanism M8; regole/carico.ts; Basic Fantasy p. 42)
+  unita: libbre                             # the unit of the catalog's weights
+  caratteristica: forza                     # its score (the sheet's value, not its bonus) picks the row
+  fasce: [{id: leggero, nome: "Carico leggero"}, {id: pesante, nome: "Carico pesante"}]   # beyond the last: overloaded
+  limiti: [{da: 3, valori: [25, 60]}, {da: 9, valori: [60, 150]}]   # [V] rows from the lowest score, one limit per band
+  per_razza: {halfling: [{da: 3, valori: [20, 40]}]}                 # a race's own rows
+  peso_armatura: {halfling: 0.25}           # a race's armor weighs this fraction
+movimento:                                  # optional [V]: movement per round by the worn armor's category and the band
+  unita: metri
+  per_turno: 3                              # exploring, a turn covers this many times the round's rate
+  righe:                                    # [V] `nessuna` = no armor; one rate per band of carico.fasce; overloaded = 0
+    - {armatura: nessuna, valori: [12, 9]}
+    - {armatura: metallo, valori: [6, 3]}
 ```
 
 **The catalog in play** (regole/equipaggiamento.ts). A sheet that lists `equipaggiamento` gets its Armor Class and its
@@ -267,7 +280,13 @@ are counters of the Engine state (`oggetto:<id>`, `moneta:<id>`, the worn armor)
   it fail and lose the spell (`perso`, Basic Fantasy p. 187); `senza_abilita` refuses a check of those abilities and
   turns a special attack (the sneak attack) into an ordinary one; `perde_incantesimi` empties the day's spells when the
   weapon is used (the cleric's atonement quest is the Game Master's story).
-- **Buying** pays with change: the smallest coins first, the change in `monete.prezzi`, largest first; a pack's price is
+- **Load** (prove/inventario.ts `peso`, `carico`): the weight of every catalog item carried (a pack's weight divided by
+  `confezione`; a race's armor by `peso_armatura`) and of the coins (`monete.peso`), its band by the Strength score and
+  race, and the movement by the worn armor's category; a change that moves the character to another band or rate says
+  so in its fact («Aldo ora ha un carico pesante (53.26 libbre): si muove di 3 metri a round»). The Engine tracks no
+  positions: the movement is shown on the panel and the phone, told to the narrator, and used by travel (below).
+- **Buying** pays like a player at the counter: the largest coins that do not overpay, then one more coin if something
+  is still owed, whichever way hands over and gets back the fewest coins; the change in `monete.prezzi`, largest first; a pack's price is
   divided by `confezione` (three torches of a pack of six cost half its price, rounded up). A purchase that cannot be
   paid changes nothing and only the panel hears it. **Selling** gives the catalog price unless the Game Master types one.
 

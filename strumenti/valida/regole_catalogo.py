@@ -14,7 +14,7 @@ import re
 from .esito import Esito
 
 RE_ID = re.compile(r"^[a-z0-9_]+$")
-RE_COSTO = re.compile(r"^\s*(\d+(?:[.,]\d+)?)\s*([a-z_]+)\s*$")
+RE_COSTO = re.compile(r"^\s*(\d+(?:[.,]\d+)?\s*[a-z_]+\s*)+$")
 RE_DADI = re.compile(r"^(\d*)d(\d+)([+-]\d+)?$")
 SEZIONI = {"armi": "arma", "armature": "armatura", "scudi": "scudo", "munizioni": "munizione", "attrezzatura": "attrezzo"}
 PENALITA = ("attacco", "vietato", "senza_incantesimi", "senza_abilita", "perde_incantesimi")
@@ -80,9 +80,9 @@ def _costo(v, monete: dict[str, int], d: str, e: Esito, dove: str) -> None:
         if not monete:
             _err(e, dove, f"{d}.costo: un prezzo vuole le monete del set")
         return
-    m = RE_COSTO.match(v) if isinstance(v, str) else None
-    if not m or m.group(2) not in monete:
-        _err(e, dove, f"{d}.costo: un numero nella moneta base o «15 ma» con una moneta di monete")
+    parti = re.findall(r"(\d+(?:[.,]\d+)?)\s*([a-z_]+)", v) if isinstance(v, str) and RE_COSTO.match(v) else []
+    if not parti or any(t not in monete for _, t in parti):
+        _err(e, dove, f"{d}.costo: un numero nella moneta base o «15 ma» (anche «2 mo 5 ma») con monete del set")
 
 
 def _limiti(v, fasce: int | None, d: str, e: Esito, dove: str) -> None:
@@ -281,3 +281,59 @@ def controlla_scheda(s: dict, dove: str, r: dict, voci: dict[str, dict], e: Esit
         a = (_ogg(at) or {}).get("arma")
         if a is not None and (voci.get(a) or {}).get("_tipo") != "arma":
             e.errore("REGOLE.scheda", dove, f"attacchi[{i}].arma: «{a}» non è un'arma del catalogo del set")
+
+
+def _righe_carico(v, n: int, d: str, e: Esito, dove: str) -> None:
+    if not isinstance(v, list) or not v:
+        _err(e, dove, f"{d}: righe {{da: un punteggio, valori: [un limite per fascia]}}, dal punteggio più basso")
+        return
+    prima = None
+    for i, x in enumerate(v, start=1):
+        o = _ogg(x) or {}
+        val = o.get("valori")
+        if not (_numero(o.get("da")) and isinstance(val, list) and len(val) == n and all(_numero(y) and y > 0 for y in val)
+                and all(val[k] > val[k - 1] for k in range(1, len(val)))):
+            _err(e, dove, f"{d}[{i}]: {{da: un punteggio, valori: {n} limiti crescenti, uno per fascia}}")
+            continue
+        if prima is not None and o["da"] <= prima:
+            _err(e, dove, f"{d}[{i}]: «da» cresce riga dopo riga")
+        prima = o["da"]
+
+
+def carico_del_set(r: dict, car: set[str], razze: set[str], voci: dict[str, dict], e: Esito, dove: str) -> None:
+    """`carico` and `movimento` (docs/regole.md §2, «Carico e movimento»; regole/carico.ts)."""
+    c = r.get("carico")
+    bande = None
+    if c is not None:
+        o = _ogg(c) or {}
+        fasce = [f for f in o.get("fasce") or [] if isinstance(f, dict) and isinstance(f.get("id"), str)]
+        if not (fasce and isinstance(o.get("unita"), str) and isinstance(o.get("caratteristica"), str)):
+            _err(e, dove, "carico: {unita, caratteristica, fasce: [{id, nome}], limiti, per_razza, peso_armatura}")
+        else:
+            bande = len(fasce)
+            if o["caratteristica"] not in car:
+                _err(e, dove, f"carico.caratteristica: «{o['caratteristica']}» non è una caratteristica del set")
+            _righe_carico(o.get("limiti"), bande, "carico.limiti", e, dove)
+            for rz, l in (_ogg(o.get("per_razza")) or {}).items():
+                if razze and rz not in razze:
+                    _err(e, dove, f"carico.per_razza: «{rz}» non è una razza del set")
+                _righe_carico(l, bande, f"carico.per_razza.{rz}", e, dove)
+            for rz, f in (_ogg(o.get("peso_armatura")) or {}).items():
+                if not (_numero(f) and f > 0):
+                    _err(e, dove, f"carico.peso_armatura.{rz}: una frazione come 0.25")
+    m = r.get("movimento")
+    if m is None:
+        return
+    o = _ogg(m) or {}
+    if not (isinstance(o.get("unita"), str) and isinstance(o.get("righe"), list) and o["righe"]):
+        _err(e, dove, "movimento: {unita, per_turno, righe: [{armatura, valori}]}")
+        return
+    categorie = {v.get("categoria") for v in voci.values() if v.get("_tipo") == "armatura"}
+    for i, x in enumerate(o["righe"], start=1):
+        rr = _ogg(x) or {}
+        val = rr.get("valori")
+        if not (isinstance(rr.get("armatura"), str) and isinstance(val, list) and all(_numero(y) and y >= 0 for y in val)
+                and (bande is None or len(val) == bande)):
+            _err(e, dove, f"movimento.righe[{i}]: {{armatura, valori: {bande or 'n'} movimenti, uno per fascia di carico}}")
+        elif rr["armatura"] != "nessuna" and voci and rr["armatura"] not in categorie:
+            _err(e, dove, f"movimento.righe[{i}].armatura: «{rr['armatura']}» non è una categoria di catalogo.armature (o nessuna)")

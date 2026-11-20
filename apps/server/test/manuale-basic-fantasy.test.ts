@@ -13,6 +13,10 @@ import { bersaglioSalvezza, rigaAlLivello } from '../src/regole/salvezze';
 import { caricaSchedeGeneriche, trattiDi } from '../src/regole/schede';
 import { bonusTratti } from '../src/regole/tratti';
 import type { SistemaRegole } from '../src/regole/tipi';
+import { limitiDi } from '../src/regole/carico';
+import { Risorse } from '../src/prove/risorse';
+import { Inventario } from '../src/prove/inventario';
+import { loggerMuto } from '../src/logger';
 
 const BF = path.join(import.meta.dirname, '..', '..', '..', 'campagne', 'torre-mozza');
 
@@ -209,5 +213,40 @@ describe('the item catalog (pp. 10–12): coins, weapons, ranges, armor, gear', 
     expect(vista('pg_eliandro')).toEqual(['pugnale|1d4|mischia|false', 'pugnale_lanciato|1d4|distanza|true']);
     expect(schede.get('pg_livia')!.attacchi[1]!.munizioni).toEqual(['freccia_arco_corto', 'freccia_arco_corto_argento']);
     for (const p of ['pg_livia', 'pg_fulco', 'pg_nespola', 'pg_eliandro']) expect(schede.get(p)!.avvisi).toEqual([]);
+  });
+});
+
+describe('carrying capacity and movement (p. 42)', () => {
+  it('light and heavy loads by Strength, the halfling’s own table and lighter armor; movement in metres (feet × 0.3)', () => {
+    const s = set();
+    const c = s.carico!;
+    expect(limitiDi(c, 3, 'umano')).toEqual([25, 60]);
+    expect(limitiDi(c, 12, 'nano')).toEqual([60, 150]);
+    expect(limitiDi(c, 17, 'elfo')).toEqual([70, 180]);
+    expect(limitiDi(c, 18, 'umano')).toEqual([80, 195]);
+    expect(limitiDi(c, 5, 'halfling')).toEqual([30, 60]);
+    expect(limitiDi(c, 14, 'halfling')).toEqual([55, 110]);
+    expect(c.pesoArmatura).toEqual({ halfling: 0.25 });
+    // 40'/30' no armor, 30'/20' leather, 20'/10' metal.
+    expect(s.movimento!.righe).toEqual([
+      { armatura: 'nessuna', valori: [12, 9] },
+      { armatura: 'cuoio', valori: [9, 6] },
+      { armatura: 'metallo', valori: [6, 3] },
+    ]);
+    expect(s.movimento!.perTurno).toBe(3);
+  });
+  it('the four PCs: what they carry, their band and their movement', () => {
+    const s = set();
+    const schede = caricaSchedeGeneriche(s, caricaCampagna(BF));
+    const risorse = new Risorse(s, schede);
+    const inv = new Inventario({ sistema: s, schede, risorse, nome: (id) => id, log: loggerMuto() });
+    const vista = (id: string) => {
+      const c = inv.carico(id)!;
+      return [c.peso, c.nome, c.movimento];
+    };
+    expect(vista('pg_livia')).toEqual([58.05, 'Carico leggero', 6]);
+    expect(vista('pg_fulco')).toEqual([60.45, 'Carico leggero', 6]);
+    expect(vista('pg_nespola')).toEqual([19.9, 'Carico leggero', 9]);
+    expect(vista('pg_eliandro')).toEqual([22.35, 'Carico leggero', 12]);
   });
 });

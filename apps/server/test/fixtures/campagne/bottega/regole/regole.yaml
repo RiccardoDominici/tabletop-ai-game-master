@@ -135,6 +135,26 @@ catalogo:
     - {classe: ladro, cosa: armatura, ammessi_categorie: [leggera], penalita: {senza_abilita: [scassinare, furtivo]}}
     - {razza: piccolo, cosa: arma, vietati_taglie: [G], penalita: {vietato: true}}
 
+# Load bands by Strength (rows from the lowest score), the small folk's own, and their lighter armor.
+carico:
+  unita: libbre
+  caratteristica: forza
+  fasce: [{id: leggero, nome: Carico leggero}, {id: pesante, nome: Carico pesante}]
+  limiti:
+    - {da: 3, valori: [20, 50]}
+    - {da: 9, valori: [40, 100]}
+    - {da: 13, valori: [50, 120]}
+  per_razza:
+    piccolo: [{da: 3, valori: [15, 30]}, {da: 9, valori: [30, 70]}]
+  peso_armatura: {piccolo: 0.5}
+movimento:
+  unita: metri
+  per_turno: 3
+  righe:
+    - {armatura: nessuna, valori: [12, 9]}
+    - {armatura: leggera, valori: [9, 6]}
+    - {armatura: pesante, valori: [6, 3]}
+
 poteri:
   - id: scintilla
     nome: Scintilla

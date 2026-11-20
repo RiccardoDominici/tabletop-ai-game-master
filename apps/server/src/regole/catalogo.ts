@@ -202,13 +202,14 @@ export function leggiCosto(v: unknown, monete: Monete | null, dove: string, erro
     }
     return Math.round(v * base.vale);
   }
-  const m = typeof v === 'string' ? /^\s*(\d+(?:[.,]\d+)?)\s*([a-z_]+)\s*$/.exec(v) : null;
-  const taglio = m ? monete?.tagli.find((t) => t.id === m[2]) : undefined;
-  if (!m || !taglio) {
-    errori.push(`${dove}: a price is a number in ${monete?.base ?? 'the base coin'} or «15 ${monete?.tagli.at(-1)?.id ?? 'mr'}» with a coin of monete`);
+  // «15 ma», or several coins «2 mo 5 ma» (what scriviCosto writes).
+  const parti = typeof v === 'string' && /^\s*(\d+(?:[.,]\d+)?\s*[a-z_]+\s*)+$/.test(v) ? [...v.matchAll(/(\d+(?:[.,]\d+)?)\s*([a-z_]+)/g)] : null;
+  const tagli = parti?.map((m) => monete?.tagli.find((t) => t.id === m[2]));
+  if (!parti?.length || !tagli || tagli.some((t) => !t)) {
+    errori.push(`${dove}: a price is a number in ${monete?.base ?? 'the base coin'} or «15 ${monete?.tagli.at(-1)?.id ?? 'mr'}» with coins of monete`);
     return null;
   }
-  return Math.round(Number(m[1]!.replace(',', '.')) * taglio.vale);
+  return parti.reduce((n, m, i) => n + Math.round(Number(m[1]!.replace(',', '.')) * tagli[i]!.vale), 0);
 }
 
 export function leggiMonete(v: unknown, errori: string[]): Monete | null {

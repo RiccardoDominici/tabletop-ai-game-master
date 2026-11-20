@@ -490,6 +490,7 @@ def controlla(c: Campagna, e: Esito) -> None:
 
     razze = regole_classi.razze_del_set(r, abi, set(colonne), e, dove)
     catalogo = regole_catalogo.catalogo_del_set(r, car, abi, set(classi), set(razze), None, e, dove)
+    regole_catalogo.carico_del_set(r, car, set(razze), catalogo, e, dove)
 
     def per_scheda(s: dict, d: str) -> None:
         regole_classi.controlla_scheda(s, d, classi, col_abil, tabelle, e, razze, abi, set(colonne))

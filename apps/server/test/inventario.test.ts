@@ -53,14 +53,18 @@ const monete = (m: MotoreProve, id: string) => Object.fromEntries(m.inventario!.
 const quante = (m: MotoreProve, id: string, oggetto: string) => m.inventario!.oggetti(id).find((x) => x.id === oggetto)?.quante ?? 0;
 
 describe('money: buying with change, a purchase refused, coins found and paid', () => {
-  it('a lantern for 6 gold: the change comes back in the price coins; the fact waits for the narrator', () => {
+  it('a lantern for 6 gold paid in gold; a rope with only gold and copper left takes a gold coin and gives change', () => {
     const m = motore([10]);
     expect(monete(m, 'pg_aldo')).toEqual({ mo: 20, ma: 5 });
     const r = m.inventarioDelMaster({ tipo: 'inventario', id: 'pg_aldo', cosa: 'compra', oggetto: 'lanterna' })!;
-    expect(r).toMatchObject({ ok: true, fatto: 'Aldo compra Lanterna per 6 mo (resto: 5 ma).' });
-    // Smallest coins first (5 silver), then gold: 6 gold more than covers it, so 5 silver come back.
+    expect(r).toMatchObject({ ok: true, fatto: 'Aldo compra Lanterna per 6 mo.' });
     expect(monete(m, 'pg_aldo')).toEqual({ mo: 14, ma: 5 });
     expect(quante(m, 'pg_aldo', 'lanterna')).toBe(1);
+    // Bice: 8 gold, 3 silver, 10 copper. A flask of oil (1 silver) with a silver coin; then a backpack the merchant sells
+    // for 2 gold 5 silver: with 2 silver left, she hands over 3 gold and gets 5 silver back (fewest coins).
+    expect(m.inventarioDelMaster({ tipo: 'inventario', id: 'pg_bice', cosa: 'compra', oggetto: 'olio' })!.fatto).toBe('Bice compra Fiasca d\'olio per 1 ma.');
+    expect(m.inventarioDelMaster({ tipo: 'inventario', id: 'pg_bice', cosa: 'compra', oggetto: 'zaino', prezzo: '2 mo 5 ma' })!.fatto).toBe('Bice compra Zaino per 2 mo 5 ma (resto: 5 ma).');
+    expect(monete(m, 'pg_bice')).toEqual({ mo: 5, ma: 7, mr: 10 });
   });
 
   it('a purchase it cannot pay is refused and changes nothing', () => {
@@ -92,7 +96,7 @@ describe('armor swap: the AC every reader sees', () => {
     const m = motore({ 20: [3, 15], 100: [10] });
     expect(m.vistaInventario('pg_ciro')!.difesa).toBe(14);
     expect(m.inventarioDelMaster({ tipo: 'inventario', id: 'pg_ciro', cosa: 'oggetto', oggetto: 'maglia' })!.fatto).toBe('Ciro prende Cotta di maglia.');
-    expect(m.inventarioDelMaster({ tipo: 'inventario', id: 'pg_ciro', cosa: 'indossa', oggetto: 'maglia' })!.fatto).toBe("Ciro indossa Cotta di maglia: Classe d'Armatura 16.");
+    expect(m.inventarioDelMaster({ tipo: 'inventario', id: 'pg_ciro', cosa: 'indossa', oggetto: 'maglia' })!.fatto).toMatch(/^Ciro indossa Cotta di maglia: Classe d'Armatura 16\. Ciro ora ha un carico leggero .*: si muove di 6 metri a round\.$/);
     // Only one armor: the padded jerkin came off.
     expect(m.inventario!.oggetti('pg_ciro').filter((x) => x.indossato).map((x) => x.id)).toEqual(['maglia']);
     // A trap's attack reads the same AC: the save fails (d20 3), the needle's d20 15 + 0 against 16 misses; against the
@@ -208,5 +212,24 @@ describe('the snapshot and the dry run', () => {
     expect(quante(m, 'pg_aldo', 'freccia')).toBe(12);
     m.completa(d);
     expect(quante(m, 'pg_aldo', 'freccia')).toBe(11);
+  });
+});
+
+describe('load and movement (the set’s carico and movimento)', () => {
+  it('the weight of the gear and the coins; the band by Strength; the movement by the worn armor', () => {
+    const m = motore([10]);
+    // Chain mail 30, shield 4, sword 3, bow 2, 12 arrows 1.2, 3 torches of a pack of five 0.6, backpack 2, 25 coins 0.5.
+    expect(m.vistaInventario('pg_aldo')!.carico).toEqual({ peso: 43.3, unita: 'libbre', fascia: 'Carico leggero', limite: 50, movimento: 6, unita_movimento: 'metri' });
+    // The small folk's own rows, and their armor weighs half.
+    expect(m.vistaInventario('pg_ciro')!.carico).toMatchObject({ peso: 7.24, fascia: 'Carico leggero', limite: 30, movimento: 9 });
+  });
+
+  it('a heavy load slows: the fact of the purchase says the new band and movement; overloaded, no movement', () => {
+    const m = motore([10]);
+    expect(m.inventarioDelMaster({ tipo: 'inventario', id: 'pg_aldo', cosa: 'compra', oggetto: 'corda', quante: 2 })!.fatto).toBe('Aldo compra 2 × Corda per 2 mo. Aldo ora ha un carico pesante (53.26 libbre): si muove di 3 metri a round.');
+    // Taking the chain mail off: lighter and no armor, so faster.
+    expect(m.inventarioDelMaster({ tipo: 'inventario', id: 'pg_aldo', cosa: 'togli', oggetto: 'maglia' })!.fatto).toBe("Aldo si toglie Cotta di maglia: Classe d'Armatura 12. Aldo ora ha un carico pesante (53.26 libbre): si muove di 9 metri a round.");
+    m.inventarioDelMaster({ tipo: 'inventario', id: 'pg_bice', cosa: 'oggetto', oggetto: 'corda', quante: 11 });
+    expect(m.vistaInventario('pg_bice')!.carico).toMatchObject({ fascia: 'Sovraccarico', limite: null, movimento: 0 });
   });
 });

@@ -16,6 +16,7 @@ import type { Potere } from './poteri';
 import type { Magia, Risorsa } from './risorse';
 import type { Razza, Tratto } from './tratti';
 import type { Catalogo, Monete } from './catalogo';
+import type { RegolaCarico, RegolaMovimento } from './carico';
 
 export interface Voce {
   id: string;
@@ -172,6 +173,10 @@ export interface SistemaRegole {
   monete?: Monete | null;
   /** Weapons, armor, shields, ammunition and gear with their restrictions (regole.yaml → catalogo; regole/catalogo.ts). */
   catalogo?: Catalogo | null;
+  /** Load bands by Strength and race (regole.yaml → carico; regole/carico.ts). Absent = no load rules. */
+  carico?: RegolaCarico | null;
+  /** Movement by worn armor and load band (regole.yaml → movimento; regole/carico.ts). */
+  movimento?: RegolaMovimento | null;
 }
 
 /** Un passo del manuale (regole/estratti/*.md), per l'arbitro e per «Chiedi una regola». */

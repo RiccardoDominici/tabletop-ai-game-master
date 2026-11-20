@@ -1068,6 +1068,7 @@ export class MotoreProve {
       if (slot) return [{ id: chiave, nome: testo('prove.scorta.slot', { livello: slot[1]! }), restanti }];
       return [{ id: chiave, nome: (s.risorse ?? []).find((r) => r.id === chiave)?.nome ?? chiave, restanti }];
     });
+    const carico = inv?.carico(id) ?? null;
     return {
       difesa: sch.difesa,
       difesa_da: dif?.da ?? null,
@@ -1075,6 +1076,7 @@ export class MotoreProve {
       oggetti: inv?.oggetti(id) ?? [],
       monete: inv?.monete(id) ?? [],
       contatori,
+      ...(carico ? { carico: { peso: carico.peso, unita: s.carico!.unita, fascia: carico.nome, limite: carico.limite, movimento: carico.movimento, unita_movimento: s.movimento?.unita ?? null } } : {}),
     };
   }
 

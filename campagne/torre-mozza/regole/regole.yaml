@@ -853,6 +853,41 @@ catalogo:
     - {razza: nano, cosa: arma, vietati: [spadone, arma_in_asta, arco_lungo], penalita: {vietato: true}, pagina: 5}
     - {razza: halfling, cosa: arma, vietati_taglie: [L], penalita: {vietato: true}, pagina: 6}
 
+# Carico (p. 42): leggero e pesante per punteggio di Forza; gli halfling hanno la loro tabella e la loro armatura pesa
+# un quarto. Il peso delle monete è nel catalogo (monete.peso). Oltre il pesante non ci si muove.
+carico:
+  unita: libbre
+  caratteristica: forza
+  fasce: [{id: leggero, nome: "Carico leggero"}, {id: pesante, nome: "Carico pesante"}]
+  limiti:                                   # Nano, elfo, umano (p. 42)
+    - {da: 3, valori: [25, 60]}
+    - {da: 4, valori: [35, 90]}
+    - {da: 6, valori: [50, 120]}
+    - {da: 9, valori: [60, 150]}
+    - {da: 13, valori: [65, 165]}
+    - {da: 16, valori: [70, 180]}
+    - {da: 18, valori: [80, 195]}
+  per_razza:
+    halfling:                               # Halfling (p. 42)
+      - {da: 3, valori: [20, 40]}
+      - {da: 4, valori: [30, 60]}
+      - {da: 6, valori: [40, 80]}
+      - {da: 9, valori: [50, 100]}
+      - {da: 13, valori: [55, 110]}
+      - {da: 16, valori: [60, 120]}
+      - {da: 18, valori: [65, 130]}
+  peso_armatura: {halfling: 0.25}
+# Movimento per round (p. 42), in metri come le gittate (piedi × 0,3: 40' = 12 m): senza armatura 40'/30', di cuoio
+# 30'/20', di metallo 20'/10'. Esplorando, un turno copre tre volte il movimento del round. Le armature magiche (che
+# usano la riga migliore) non ci sono ancora.
+movimento:
+  unita: metri
+  per_turno: 3
+  righe:
+    - {armatura: nessuna, valori: [12, 9]}
+    - {armatura: cuoio, valori: [9, 6]}
+    - {armatura: metallo, valori: [6, 3]}
+
 danni:
   nome: "Punti ferita"
   a_zero: "A zero punti ferita un personaggio muore; con la regola facoltativa del manuale un PG tira un salvezza contro la morte e, se riesce, resta svenuto finché qualcuno non gli fascia le ferite"
