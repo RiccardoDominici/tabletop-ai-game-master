@@ -8,6 +8,9 @@ livello: principale
 ruolo: "carbonaio del bosco sotto la torre; il sospettato del paese; testimone reticente"
 fronte: fronte_torre
 scheda:
+  # Gente comune: livello 0; umanoide per gli incantesimi che toccano solo le persone (charme, blocca persone).
+  tipo: umanoide
+  dadi_vita: 0
   # Gente comune (Normal Man, p. 53), forte di braccia: bonus d'attacco +0, accetta con la Forza.
   # Punteggi scelti per il bonus che il PNG deve avere: la tabella del set (regole/regole.yaml) lo ricava.
   caratteristiche: {forza: 13, intelligenza: 10, saggezza: 13, destrezza: 10, costituzione: 13, carisma: 7}

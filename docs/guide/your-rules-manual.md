@@ -107,6 +107,7 @@ The campaign `campagne/torre-mozza` («La chiave della Torre Mozza», a one-shot
 - `campagne/torre-mozza/regole/regole.yaml`: the structure, with comments on how each rule of the manual was translated (the ability table, percentile and «x in 6» rolls, natural 20 and 1 on attacks);
 - `campagne/torre-mozza/regole/riassunto.md` and `estratti/`: what the players read and the passages for «Chiedi una regola».
 - the magic-user's spells are counted: Eliandro prepares *magic missile* (`dardo_incantato`, a power of the set) in his one first-level slot of the day; cast once, it is refused until the party rests («Riposo: Una notte di sonno» in the panel). Nespola's sneak attack is once per opponent per fight, with double damage.
+- every level-1 and level-2 cleric and magic-user spell of the manual is a power of the set (37): eight with their effects as data (*sleep*, *charm person*, *shield*, *magic missile*, *cure light wounds*, *bless*, *hold person*, *charm animal*), the others marked `descrittivo`: casting one spends its slot, and the narrator tells what it does from the manual. To give a character a different spell, write its id in the sheet's `incantesimi`.
 
 The manual itself is not in the repository: it would go in `manuali/basic-fantasy-rpg-r142.pdf`. To play the campaign you do not need it:
 

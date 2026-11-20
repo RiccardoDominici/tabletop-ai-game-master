@@ -8,6 +8,9 @@ livello: principale
 ruolo: "guerriera goblin, capa della banda della Torre Mozza; la cattiva"
 fronte: fronte_torre
 scheda:
+  # Goblin guerriera, 3−3 dadi vita: per il sonno conta 3 (p. 54); umanoide per gli incantesimi che toccano solo le persone (charme, blocca persone).
+  tipo: umanoide
+  dadi_vita: 3
   # Goblin, guerriera (p. 104): Classe d'Armatura 14 (cuoio e scudo), dadi vita 3-3, quindi bonus d'attacco +3
   # e 3d8−3 punti ferita (qui 12). Salva come guerriero di livello 3 (11, 12, 14, 15, 16). Morale 7.
   # Il manuale non dà caratteristiche ai mostri: valgono tutte zero.

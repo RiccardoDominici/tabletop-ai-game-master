@@ -26,7 +26,7 @@ Regole ricavate da Basic Fantasy RPG, quarta edizione (Chris Gonnerman, CC BY-SA
 
 ## Magia
 
-- Il mago di primo livello lancia **un incantesimo al giorno**. Dardo incantato colpisce sempre e fa 1d6+1.
+- Il mago di primo livello lancia **un incantesimo al giorno**: quello che ha preparato, e il programma lo conta. Torna dopo una notte di sonno. Dardo incantato colpisce sempre e fa 1d6+1.
 - Il chierico di primo livello non lancia incantesimi, ma può **scacciare i non morti**.
 
 ## Parlare con i PNG

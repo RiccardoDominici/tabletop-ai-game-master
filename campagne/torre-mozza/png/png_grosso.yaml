@@ -7,6 +7,9 @@ livello: comparsa
 ruolo: "hobgoblin, guardaspalle di Zirrà; un ostacolo che si può comprare con il cibo"
 fronte: fronte_torre
 scheda:
+  # Hobgoblin, un dado vita; umanoide per gli incantesimi che toccano solo le persone (charme, blocca persone).
+  tipo: umanoide
+  dadi_vita: 1
   # Hobgoblin (p. 113): Classe d'Armatura 14 (pelli e scudo di legno), un dado vita, quindi bonus d'attacco +1 e
   # 1d8 punti ferita (qui 7). Un'arma 1d8. Salva come guerriero di livello 1 (12, 13, 14, 15, 17). Morale 8.
   # Punteggi scelti per il bonus che il PNG deve avere: la tabella del set (regole/regole.yaml) lo ricava.

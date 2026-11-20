@@ -12,6 +12,9 @@ livello: comparsa
 ruolo: "pastorello, figlio di Berta Benni; alla torre con i goblin, con una corda ai polsi"
 fronte: fronte_torre
 scheda:
+  # Gente comune: livello 0; umanoide per gli incantesimi che toccano solo le persone (charme, blocca persone).
+  tipo: umanoide
+  dadi_vita: 0
   # Gente comune (Normal Man, p. 53): bonus d'attacco +0, 1d4 punti ferita. Non combatte.
   caratteristiche: {forza: 10, intelligenza: 10, saggezza: 10, destrezza: 13, costituzione: 10, carisma: 10}
   abilita: {mischia: 0}

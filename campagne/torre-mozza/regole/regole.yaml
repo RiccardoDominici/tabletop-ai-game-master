@@ -190,29 +190,396 @@ classi:
 # riposo successivo (Basic Fantasy, alla vecchia maniera).
 magia: {preparazione: vanciana}
 
-# Poteri: gli incantesimi come effetti tipati (docs/regole.md §2). Il Motore spende il posto del giorno, sceglie i
-# bersagli, fa tirare a ciascuno il suo salvezza e applica gli effetti.
+# Poteri: gli incantesimi di primo e secondo livello del chierico e del mago (p. 15–41) come effetti tipati
+# (docs/regole.md §2). Il Motore spende il posto del giorno, sceglie i bersagli, fa tirare a ciascuno il suo salvezza e
+# applica gli effetti; quelli segnati `descrittivo` spendono il posto e li racconta il narratore, dal manuale. Le
+# varianti inverse (*) non ci sono: il loro effetto lo racconta il narratore.
 poteri:
-  # Dardo incantato (p. 29): colpisce sempre un bersaglio visibile, 1d6+1, nessun salvezza; un dardo in più ogni tre
-  # livelli oltre il primo (2 al 4°, 3 al 7°, 4 al 10°, 5 dal 13°).
+  # Cure Light Wounds (Cleric 1, p. 20): touch, heals 1d6+1 hp, instantaneous. Reverse (cause light wounds, 1d6+1 dmg, needs attack roll) not included.
+  - id: cura_ferite_leggere
+    nome: "Cura ferite leggere"
+    tipo: incantesimo
+    livello: {chierico: 1}
+    bersaglio: uno
+    parole: ["cura ferite leggere", "curo"]
+    effetti: [{tipo: cura, dadi: "1d6+1"}]
+    pagina: 20
+
+  # Detect Evil (Cleric 1, Magic-User 2, p. 21): range 60', 1 round/level. Detects evil creatures and enchanted items (only overwhelming evil). Reverse: detect good.
+  - id: individuare_il_male
+    nome: "Individuare il male"
+    tipo: incantesimo
+    livello: {chierico: 1, mago: 2}
+    bersaglio: se_stesso
+    parole: ["individuo il male", "rilevo il male"]
+    descrittivo: true
+    pagina: 21
+
+  # Detect Magic (Cleric 1, Magic-User 1, p. 21): range 60', 2 turns. Enchanted objects and creatures glow for the caster only; invisible ones show as fog (attack at -2).
+  - id: individuare_il_magico
+    nome: "Individuare il magico"
+    tipo: incantesimo
+    livello: {chierico: 1, mago: 1}
+    bersaglio: se_stesso
+    parole: ["individuo il magico", "individuo la magia"]
+    descrittivo: true
+    pagina: 21
+
+  # Light (Cleric 1, Magic-User 1, p. 27): range 120', 6 turns+1/level. Torchlight over a 30' radius plus 20' of dim light. Reverse: darkness. Can blind (save vs Death Ray).
+  - id: luce
+    nome: "Luce"
+    tipo: incantesimo
+    livello: {chierico: 1, mago: 1}
+    bersaglio: uno
+    parole: ["luce magica", "incantesimo di luce"]
+    descrittivo: true
+    pagina: 27
+
+  # Protection from Evil (Cleric 1, Magic-User 1, p. 32): touch, 1 turn/level. +2 AC and +2 saves vs evil; blocks charm, control and possession; summoned evil creatures cannot touch the subject. Reverse (protection from good) not modelled.
+  - id: protezione_dal_male
+    nome: "Protezione dal male"
+    tipo: incantesimo
+    livello: {chierico: 1, mago: 1}
+    bersaglio: uno
+    parole: ["protezione dal male", "proteggo dal male"]
+    descrittivo: true
+    pagina: 32
+
+  # Purify Food and Water (Cleric 1, p. 32): range 10', instantaneous. About 2 lb of food or drink per caster level; neutralizes poison and spoilage, does not protect against future decay.
+  - id: purificare_cibo_e_acqua
+    nome: "Purificare cibo e acqua"
+    tipo: incantesimo
+    livello: {chierico: 1}
+    bersaglio: uno
+    parole: ["purifico", "purifico cibo e acqua"]
+    descrittivo: true
+    pagina: 32
+
+  # Remove Fear (Cleric 1, p. 35): touch (120' for cause fear), instantaneous (2 turns). New save vs Spells with +1 per caster level. Reverse (cause fear): 120', flees 2 turns on failed save, 6+ HD immune.
+  - id: rimuovere_paura
+    nome: "Rimuovere paura"
+    tipo: incantesimo
+    livello: {chierico: 1}
+    bersaglio: uno
+    parole: ["rimuovo la paura", "scaccio la paura"]
+    descrittivo: true
+    pagina: 35
+
+  # Resist Cold (Cleric 1, p. 35): touch, 1 round/level. Immune to normal cold; +3 on saves vs magical cold (e.g. ice storm), half damage on a successful save.
+  - id: resistere_al_freddo
+    nome: "Resistere al freddo"
+    tipo: incantesimo
+    livello: {chierico: 1}
+    bersaglio: uno
+    parole: ["resisto al freddo", "protetto dal freddo"]
+    descrittivo: true
+    pagina: 35
+
+  # Bless (Cleric 2, p. 17): 50' radius, 1 minute/level (modelled as 6 rounds per level). +1 on attack rolls, morale checks and saves vs magical fear (+2 from 7th level). Bane (reverse) and the morale and fear-save parts not modelled.
+  - id: benedizione
+    nome: "Benedizione"
+    tipo: incantesimo
+    livello: {chierico: 2}
+    bersaglio: alleati
+    parole: ["benedico", "benedizione"]
+    effetti: [{tipo: bonus, a: attacchi, valore: 1, durata: {round_per_livello: 6}}]
+    pagina: 17
+
+  # Charm Animal (Cleric 2, p. 18): range 60', level+1d4 rounds. Charms 1 hit die of animals per caster level; the caster chooses which animals in a mixed group are affected first. No save for normal or giant animals; fantastic creatures (GM decides) save vs Spells.
+  # No save for normal or giant animals (the GM decides for fantastic ones): no `salvezza` here. One animal: the budget of
+  # 1 hit die per caster level is not modelled.
+  - id: charme_animali
+    nome: "Charme degli animali"
+    tipo: incantesimo
+    livello: {chierico: 2}
+    bersaglio: uno
+    solo_tipi: [animale]
+    parole: ["charmo l'animale", "ammalio l'animale"]
+    effetti: [{tipo: condizione, condizione: affascinato, durata: {round: "1d4", round_per_livello: 1}}]
+    pagina: 18
+
+  # Find Traps (Cleric 2, p. 22): range 30', 3 turns. Traps glow faintly greenish-blue; natural hazards (quicksand, sinkholes) not detected; does not reveal how to disarm.
+  - id: trovare_trappole
+    nome: "Trovare trappole"
+    tipo: incantesimo
+    livello: {chierico: 2}
+    bersaglio: se_stesso
+    parole: ["trovo le trappole", "cerco trappole"]
+    descrittivo: true
+    pagina: 22
+
+  # Hold Person (Cleric 2, p. 25): range 180', 2d8 turns. Paralyzes living humanoids (not undead, not larger than ogres); save vs Spells. Single target: save at -2. Group: 1d4 creatures affected (not modelled).
+  - id: blocca_persone
+    nome: "Blocca persone"
+    tipo: incantesimo
+    livello: {chierico: 2, mago: 3}
+    bersaglio: uno
+    solo_tipi: [umanoide]
+    salvezza: {abilita: ts_incantesimi, esito: annulla, modificatore: -2}
+    parole: ["blocca persone", "paralizzo"]
+    effetti: [{tipo: condizione, condizione: paralizzato, durata: {turni: "2d8"}}]
+    pagina: 25
+
+  # Resist Fire (Cleric 2, p. 35): touch, 1 round/level. Immune to normal heat or fire; +3 on saves vs magical fire (e.g. fireball), half damage on a successful save.
+  - id: resistere_al_fuoco
+    nome: "Resistere al fuoco"
+    tipo: incantesimo
+    livello: {chierico: 2}
+    bersaglio: uno
+    parole: ["resisto al fuoco", "protetto dal fuoco"]
+    descrittivo: true
+    pagina: 35
+
+  # Silence 15' Radius (Cleric 2, p. 36): range 360', 2 rounds/level. Sphere of 15' radius where no sound passes; blocks spellcasting. Unwilling target or holder of a targeted item saves vs Spells.
+  - id: silenzio
+    nome: "Silenzio nel raggio di 15'"
+    tipo: incantesimo
+    livello: {chierico: 2}
+    bersaglio: uno
+    parole: ["silenzio magico", "incantesimo di silenzio"]
+    descrittivo: true
+    pagina: 36
+
+  # Speak with Animals (Cleric 2, p. 36): range special (animal in sight and able to hear), 1 turn/4 levels. Speak with any normal or giant animal, not magical or monstrous ones; the caster may switch animal once per round; reaction roll needed.
+  - id: parlare_con_animali
+    nome: "Parlare con gli animali"
+    tipo: incantesimo
+    livello: {chierico: 2}
+    bersaglio: se_stesso
+    parole: ["parlo con l'animale", "chiedo all'animale"]
+    descrittivo: true
+    pagina: 36
+
+  # Spiritual Hammer (Cleric 2, p. 37): range 30', 1 round/level. Magic warhammer attacks once per round with the caster's attack bonus; 1d6 +1 per 3 caster levels (max +5). Disappears if sight is lost or it leaves range.
+  - id: martello_spirituale
+    nome: "Martello spirituale"
+    tipo: incantesimo
+    livello: {chierico: 2}
+    bersaglio: nemici
+    parole: ["martello spirituale", "colpisco col martello"]
+    descrittivo: true
+    pagina: 37
+
+  # Charm Person (Magic-User 1, p. 18): range 30', humanoid of 4 HD or less. Save vs Spells negates (+5 if hostilities have started). Re-saves daily, weekly or monthly by Intelligence; the manual's re-saves are approximated as «until the next rest».
+  - id: charme
+    nome: "Charme"
+    tipo: incantesimo
+    livello: {mago: 1}
+    bersaglio: uno
+    solo_tipi: [umanoide]
+    dadi_vita_max: 4
+    salvezza: {abilita: ts_incantesimi, esito: annulla}
+    parole: ["charme", "charmo"]
+    effetti: [{tipo: condizione, condizione: affascinato, durata: riposo}]
+    pagina: 18
+
+  # Floating Disc (Magic-User 1, p. 23): range 0, 5 turns+1/level. Invisible platform about 3 ft across, carries up to 500 lb, follows the caster within 10'; dispelled beyond 10'.
+  - id: disco_fluttuante
+    nome: "Disco fluttuante"
+    tipo: incantesimo
+    livello: {mago: 1}
+    bersaglio: se_stesso
+    parole: ["disco fluttuante", "creo un disco"]
+    descrittivo: true
+    pagina: 23
+
+  # Hold Portal (Magic-User 1, p. 25): range 100'+10'/level, 1 round/level. Holds a non-magical door, gate, window or shutter as if locked. Opened early only by knock, dispel magic, or by destroying it.
+  - id: porta_sigillata
+    nome: "Porta sigillata"
+    tipo: incantesimo
+    livello: {mago: 1}
+    bersaglio: uno
+    parole: ["sigillo la porta", "blocco il portale"]
+    descrittivo: true
+    pagina: 25
+
+  # Magic Missile (Magic-User 1, p. 29): range 100'+10'/level. Unerring 1d6+1 per missile, no save. One extra missile every 3 caster levels beyond 1st (2 at 4th, 3 at 7th, 4 at 10th), maximum 5 from 13th level.
   - id: dardo_incantato
     nome: "Dardo incantato"
     tipo: incantesimo
     livello: {mago: 1}
     bersaglio: uno
     ostile: true
-    parole: [dardo incantato, dardi incantati, dardo magico]
+    parole: ["dardo incantato", "dardi incantati", "dardo magico"]
     effetti: [{tipo: danno, dadi: "1d6+1", colpi: {ogni_livelli: 3, massimo: 5}}]
     pagina: 29
-  # Leggere il magico (p. 34): legge le scritte magiche; si prepara anche senza il libro. Effetto da raccontare.
+
+  # Magic Mouth (Magic-User 1, p. 29): range 30'. Illusory mouth on a non-living object speaks a message of up to 3 words per caster level, once, when triggered by sight or sound. Cannot activate magic items with command words.
+  - id: bocca_magica
+    nome: "Bocca magica"
+    tipo: incantesimo
+    livello: {mago: 1}
+    bersaglio: uno
+    parole: ["creo una bocca", "bocca magica"]
+    descrittivo: true
+    pagina: 29
+
+  # Read Languages (Magic-User 1, p. 34): range 0. Mode 1: any written work for 1 turn/level; mode 2: one book for 3 hours/level; mode 3: one non-magical scroll, permanent. Does not work on magical text (see Read Magic).
+  - id: leggere_linguaggi
+    nome: "Leggere linguaggi"
+    tipo: incantesimo
+    livello: {mago: 1}
+    bersaglio: se_stesso
+    parole: ["leggere linguaggi", "leggo la lingua sconosciuta"]
+    descrittivo: true
+    pagina: 34
+
+  # Read Magic (Magic-User 1, p. 34): range 0, permanent. Reads magical text such as spellbooks and spell scrolls; a cursed text generally triggers its curse. Known from the start, prepared without the spellbook.
   - id: leggere_il_magico
     nome: "Leggere il magico"
     tipo: incantesimo
     livello: {mago: 1}
     bersaglio: se_stesso
-    parole: [leggere il magico, leggo il magico]
     descrittivo: true
+    parole: ["leggo il magico", "leggo il libro magico"]
     pagina: 34
+
+  # Shield (Magic-User 1, p. 36): self, 5 rounds+1/level. Invisible force shield: +3 AC vs melee, +6 vs missiles, blocks magic missiles from all directions. The AC bonus does not apply to attacks from behind the caster (not modelled).
+  - id: scudo
+    nome: "Scudo"
+    tipo: incantesimo
+    livello: {mago: 1}
+    bersaglio: se_stesso
+    parole: ["scudo magico", "evoco lo scudo"]
+    effetti:
+      - {tipo: bonus, a: difesa, valore: 3, contro: mischia, durata: {round: 5, round_per_livello: 1}}
+      - {tipo: bonus, a: difesa, valore: 6, contro: distanza, durata: {round: 5, round_per_livello: 1}}
+      - {tipo: immunita, a: [dardo_incantato], durata: {round: 5, round_per_livello: 1}}
+    pagina: 36
+
+  # Sleep (Magic-User 1, p. 36): range 90', 5 rounds/level, 30' radius around the chosen point. Up to 3 HD of creatures, or one 4 HD creature; 5+ HD unaffected. Save vs Spells. Attacked victims wake; unconscious, undead and constructs are immune.
+  - id: sonno
+    nome: "Sonno"
+    tipo: incantesimo
+    livello: {mago: 1}
+    bersaglio: nemici
+    dadi_vita_max: 3
+    oppure_uno_fino_a: 4
+    immuni: [non_morto, costrutto]
+    salvezza: {abilita: ts_incantesimi, esito: annulla}
+    parole: ["addormento", "sonno"]
+    effetti: [{tipo: condizione, condizione: addormentato, durata: {round_per_livello: 5}, finisce_se_ferito: true}]
+    pagina: 36
+
+  # Ventriloquism (Magic-User 1, p. 39): range 60', 1 turn/level. Voice appears to come from another location in range, changeable each round; can be paused and resumed within the duration.
+  - id: ventriloquio
+    nome: "Ventriloquio"
+    tipo: incantesimo
+    livello: {mago: 1}
+    bersaglio: uno
+    parole: ["parlo da lontano", "ventriloquio"]
+    descrittivo: true
+    pagina: 39
+
+  # Continual Light (Magic-User 2, p. 19; the manual also lists Cleric 3): range 360', 1 year/level. Bright light 30' radius, dim to 60'. Reverse: continual darkness. A creature targeted by the blinding version saves vs Death Ray; on a failed save, -4 on its attack rolls.
+  - id: luce_perenne
+    nome: "Luce perenne"
+    tipo: incantesimo
+    livello: {chierico: 3, mago: 2}
+    bersaglio: uno
+    parole: ["luce perenne", "creo una luce"]
+    descrittivo: true
+    pagina: 19
+
+  # Detect Invisible (Magic-User 2, p. 21): range 60', 1 turn/level. Invisible creatures, characters and objects in range appear as bright transparent outlines.
+  - id: individuare_invisibile
+    nome: "Individuare invisibile"
+    tipo: incantesimo
+    livello: {mago: 2}
+    bersaglio: se_stesso
+    parole: ["vedo l'invisibile", "individuo l'invisibile"]
+    descrittivo: true
+    pagina: 21
+
+  # Invisibility (Magic-User 2, p. 26): touch, duration special (at most 24 hours). Target and worn or carried items become invisible; ends at once if the target attacks or casts a spell. Target may end it at will. Caster can be the target.
+  - id: invisibilita
+    nome: "Invisibilità"
+    tipo: incantesimo
+    livello: {mago: 2}
+    bersaglio: uno
+    parole: ["divento invisibile", "invisibilità"]
+    descrittivo: true
+    pagina: 26
+
+  # Knock (Magic-User 2, p. 27): range 30', duration special. Undoes one means of securing a door, chest or shackle per casting; negates hold portal; deactivates wizard lock for 1 turn. Cannot raise a portcullis.
+  - id: apertura
+    nome: "Apertura"
+    tipo: incantesimo
+    livello: {mago: 2}
+    bersaglio: uno
+    parole: ["incantesimo di apertura", "apertura magica"]
+    descrittivo: true
+    pagina: 27
+
+  # Levitate (Magic-User 2, p. 27): touch, 1 turn/level. Rises or falls up to 20' per round, moved mentally. Unwilling target: attack roll to touch plus save vs Spells. Attacking while levitating: -1 cumulative per round, up to -5.
+  - id: levitazione
+    nome: "Levitazione"
+    tipo: incantesimo
+    livello: {mago: 2}
+    bersaglio: uno
+    parole: ["levito", "levitazione"]
+    descrittivo: true
+    pagina: 27
+
+  # Locate Object (Magic-User 2, p. 28; the manual also lists Cleric 3): range 360', 1 round/level. Points to the nearest matching object in range; unique objects need first-hand knowledge; never locates creatures. Lead or gold thinner than foil blocks it.
+  - id: localizza_oggetto
+    nome: "Localizza oggetto"
+    tipo: incantesimo
+    livello: {chierico: 3, mago: 2}
+    bersaglio: se_stesso
+    parole: ["localizzo l'oggetto", "localizzare oggetti"]
+    descrittivo: true
+    pagina: 28
+
+  # Mind Reading (Magic-User 2, p. 30; "sometimes incorrectly called ESP"): range 60', 1 turn/level. Hears surface thoughts after one turn of concentration. Rock over 2 inches or thin lead or gold blocks it; undead, mindless creatures and constructs are immune.
+  - id: lettura_del_pensiero
+    nome: "Lettura del pensiero"
+    tipo: incantesimo
+    livello: {mago: 2}
+    bersaglio: se_stesso
+    parole: ["leggo i pensieri", "ascolto i pensieri"]
+    descrittivo: true
+    pagina: 30
+
+  # Mirror Image (Magic-User 2, p. 30): self, 1 turn/level. 1d4 images plus 1 per 3 caster levels (max 8). Attacks and attack spells aimed at the caster hit a figment instead.
+  - id: immagine_speculare
+    nome: "Immagine speculare"
+    tipo: incantesimo
+    livello: {mago: 2}
+    bersaglio: se_stesso
+    parole: ["creo immagini", "immagine speculare"]
+    descrittivo: true
+    pagina: 30
+
+  # Phantasmal Force (Magic-User 2, p. 31): range 180', concentration. Visual illusion up to 20'x20'x20', AC 11, vanishes when hit. Creatures "killed" by it wake after 2d8 rounds. More images than the caster's level grant viewers a save vs Spells to disbelieve.
+  - id: forza_fantasmatica
+    nome: "Forza fantasmatica"
+    tipo: incantesimo
+    livello: {mago: 2}
+    bersaglio: nemici
+    parole: ["creo un'illusione", "forza fantasmatica"]
+    descrittivo: true
+    pagina: 31
+
+  # Web (Magic-User 2, p. 40): range 10' per level, 2 turns/level. Up to 8,000 cubic feet of sticky webbing; failed save vs Death Ray traps, success halves movement. Fire burns a 10' cube per round, 2d4 to creatures inside.
+  - id: ragnatela
+    nome: "Ragnatela"
+    tipo: incantesimo
+    livello: {mago: 2}
+    bersaglio: nemici
+    parole: ["creo una ragnatela", "ragnatela"]
+    descrittivo: true
+    pagina: 40
+
+  # Wizard Lock (Magic-User 2, p. 41): range 20', permanent. Holds shut a door, gate, window or shutter of wood, metal or stone as if locked. Knock opens it without ending the spell; dispel magic ends it.
+  - id: serratura_magica
+    nome: "Serratura magica"
+    tipo: incantesimo
+    livello: {mago: 2}
+    bersaglio: uno
+    parole: ["chiudo a chiave", "serratura magica"]
+    descrittivo: true
+    pagina: 41
 
 # Cadute (p. 59): 1d6 ogni 10 piedi (3 metri), al massimo 20d6, arrotondando all'altezza più vicina (da 1–4 piedi
 # niente, da 5–14 piedi 1d6: in metri, da un metro e mezzo si prende 1d6). Le altezze delle scene sono in metri.
@@ -240,6 +607,9 @@ condizioni:
   - {id: accecato, nome: "Accecato", effetto: "−4 ai tiri per colpire e alla Classe d'Armatura, −2 all'iniziativa (p. 59)."}
   - {id: trattenuto, nome: "Trattenuto", effetto: "Afferrato in una lotta: non si muove, −4 alla Classe d'Armatura contro gli altri (p. 56)."}
   - {id: svenuto, nome: "Svenuto", effetto: "A terra senza sensi: non si muove, non combatte, non lancia incantesimi."}
+  - {id: addormentato, nome: "Addormentato", effetto: "Dorme per magia: si colpisce sempre, e un colpo lo sveglia (p. 36)."}
+  - {id: affascinato, nome: "Affascinato", effetto: "Vede in chi l'ha incantato un caro amico (p. 18)."}
+  - {id: paralizzato, nome: "Paralizzato", effetto: "Cosciente ma immobile: non si muove, non agisce, non parla (p. 25)."}
 
 sottosistemi:
   - id: incantesimi
@@ -300,6 +670,11 @@ combattimento:
     - {id: accecato, nome: "Accecato", icona: "AC", effetti: [svantaggio_attacchi, attacchi_contro_vantaggio], testo: "Colpisce peggio ed è più facile da colpire."}
     - {id: trattenuto, nome: "Trattenuto", icona: "TR", effetti: [non_si_muove, attacchi_contro_vantaggio], testo: "Afferrato: non si muove ed è più facile da colpire."}
     - {id: svenuto, nome: "Svenuto", icona: "SV", effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio], testo: "A terra senza sensi, finché qualcuno non gli fascia le ferite."}
+    # Le condizioni degli incantesimi (p. 18, 25, 36): chi dorme, è incantato o paralizzato conta come caduto per il
+    # morale (p. 57) e non agisce; chi dorme si colpisce sempre (p. 36).
+    - {id: addormentato, nome: "Addormentato", icona: "ZZ", effetti: [perde_turno, non_si_muove, fuori_combattimento, colpito_automaticamente], testo: "Dorme per magia: si colpisce sempre, e un colpo lo sveglia."}
+    - {id: affascinato, nome: "Affascinato", icona: "AF", effetti: [fuori_combattimento], testo: "Vede in chi l'ha incantato un caro amico e non lo combatte."}
+    - {id: paralizzato, nome: "Paralizzato", icona: "PA", effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio, fuori_combattimento], testo: "Cosciente ma immobile: non si muove, non agisce, non parla."}
   condizione_a_zero: svenuto
   # Sorpresa (p. 50): 1d6 per ogni parte che può essere sorpresa, con 1–2 perde il primo round. Il Motore la tira per la
   # parte attaccata quando lo scontro si apre con un attacco, per tutte e due quando lo apre il master.
