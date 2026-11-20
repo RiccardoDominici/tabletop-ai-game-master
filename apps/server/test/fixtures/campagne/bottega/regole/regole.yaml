@@ -74,7 +74,26 @@ razze:
     nome: Piccolo popolo
 magia: {preparazione: vanciana}
 riposo:
-  - {id: notte, nome: Una notte di sonno, cura: 1}
+  - {id: notte, nome: Una notte di sonno, cura: 1, durata: {ora: 8}}
+# The game clock: a round of ten seconds, a turn of ten minutes; exploring, a window is a turn; searching takes three.
+tempo:
+  unita:
+    - {id: round, nome: Round, plurale: round, secondi: 10}
+    - {id: turno, nome: Turno, plurale: turni, secondi: 600}
+    - {id: ora, nome: Ora, plurale: ore, secondi: 3600}
+    - {id: giorno, nome: Giorno, plurale: giorni, secondi: 86400}
+  round: round
+  per_finestra: {turno: 1}
+  azioni:
+    - {parole: [frugo, perquisisco], durata: {turno: 3}}
+  inizio: {ora: 18}
+viaggio:
+  unita: miglia
+  per_movimento: 2
+  ore_al_giorno: 8
+  terreni:
+    - {id: strada, nome: Strada, per: 1.5}
+    - {id: bosco, nome: Bosco, per: 0.5}
 parole_chiave:
   scassinare: [scassino, grimaldello]
 

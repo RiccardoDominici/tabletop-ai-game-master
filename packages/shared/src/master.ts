@@ -400,6 +400,12 @@ export type ComandoMaster =
    */
   | { tipo: 'inventario'; id: string; cosa: 'oggetto' | 'monete' | 'compra' | 'vendi' | 'indossa' | 'togli'; oggetto?: string; quante?: number; monete?: Record<string, number>; prezzo?: string }
   /**
+   * The game clock (docs/prove.md §11): time passes (`avanza`, `durata` in the set's units: {ora: 1}), a journey
+   * (`viaggio`: `distanza` in the set's unit and a `terreno` id), or a light lit or put out (`accendi`, `spegni`: `id` the
+   * character, `oggetto` a catalog light). Not during a fight, whose rounds are the clock.
+   */
+  | { tipo: 'tempo'; cosa: 'avanza' | 'viaggio' | 'accendi' | 'spegni'; durata?: Record<string, number>; distanza?: number; terreno?: string; id?: string; oggetto?: string }
+  /**
    * Manual rolls (docs/prove.md §8): the Game Master enters the dice for a player's open request (`valori`), or switches
    * it to the Engine's dice (`valori: null`); `id: '*'` switches every open request.
    */

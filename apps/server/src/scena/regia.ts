@@ -3907,6 +3907,16 @@ export class Regia {
     return { ok: true };
   }
 
+  /** The game clock from the panel (docs/prove.md §11): time passes, a journey, a light lit or put out. */
+  tempo(c: Parameters<MotoreProve['tempoDelMaster']>[0]): Esito {
+    const r = this.prove?.tempoDelMaster(c);
+    if (!r) return { ok: false, errore: testoFisso('regia.errori.tempo_non_valido') };
+    if (!r.ok) return { ok: false, errore: r.fatto || testoFisso('regia.errori.tempo_non_valido') };
+    this.rigaDiSistema(this.turno, r.fatto);
+    this.notifica();
+    return { ok: true };
+  }
+
   condizioneCombattimento(id: string, condizione: string, attiva: boolean): Esito {
     if (!this.prove?.condizione(id, condizione, attiva)) return { ok: false, errore: testoFisso('regia.errori.condizione_sconosciuta') };
     this.notifica();
@@ -4202,7 +4212,7 @@ export class Regia {
     // Mossa del mondo (nessuna azione): la narrazione resta nella finzione (narrazione/finzione.ts).
     const mossaDelMondo = r.azioni.length === 0;
     // Colpi, cadute e tiri contro la morte del turno: il Motore controlla che il tavolo li senta.
-    const dovuti = tiri ? fattiDovuti(tiri.tiri, [...(tiri.combattimento?.morte ?? []), ...(tiri.morte ?? [])], tiri.combattimento?.fuggiti ?? []) : [];
+    const dovuti = tiri ? fattiDovuti(tiri.tiri, [...(tiri.combattimento?.morte ?? []), ...(tiri.morte ?? [])], tiri.combattimento?.fuggiti ?? [], tiri.luci ?? []) : [];
     // Also on a turn without rolls: someone out of play may still be told acting (narrazione/guardia-fuori.ts).
     // The guard keeps per-call state (who already had a state line, the carried subject): each private reply gets one of
     // its own, so a reply that names the fallen NPC first does not use up the line the table must hear.

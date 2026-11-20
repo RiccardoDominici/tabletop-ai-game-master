@@ -33,6 +33,8 @@ export interface TipoRiposo {
   cura: { tipo: 'punti'; dadi: FormulaDadi } | { tipo: 'tutti' };
   /** The rest refreshes the resources that come back with rest (spell slots, uses per day). */
   ricarica: boolean;
+  /** How long it takes, in seconds of the game clock (`durata: {ora: 8}`, read with the set's `tempo`); null = no time. */
+  durata?: number | null;
 }
 
 type D = Record<string, unknown>;

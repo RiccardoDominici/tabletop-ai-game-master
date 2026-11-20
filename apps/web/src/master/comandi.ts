@@ -43,6 +43,7 @@ export const ZONA_COMANDO: Record<TipoComandoMaster, ZonaComando> = {
   riposo: 'combattimento',
   pericolo: 'combattimento',
   inventario: 'combattimento',
+  tempo: 'combattimento',
   tiro: 'tiri',
   chiedi_prova: 'tiri',
 };
@@ -79,6 +80,7 @@ export const ETICHETTA_COMANDO: Record<TipoComandoMaster, string> = tabella({
   riposo: 'master.cmd.riposo',
   pericolo: 'master.cmd.pericolo',
   inventario: 'master.cmd.inventario',
+  tempo: 'master.cmd.tempo',
   tiro: 'master.cmd.tiro',
   chiedi_prova: 'master.cmd.chiedi_prova',
 });

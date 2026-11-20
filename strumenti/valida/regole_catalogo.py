@@ -337,3 +337,69 @@ def carico_del_set(r: dict, car: set[str], razze: set[str], voci: dict[str, dict
             _err(e, dove, f"movimento.righe[{i}]: {{armatura, valori: {bande or 'n'} movimenti, uno per fascia di carico}}")
         elif rr["armatura"] != "nessuna" and voci and rr["armatura"] not in categorie:
             _err(e, dove, f"movimento.righe[{i}].armatura: «{rr['armatura']}» non è una categoria di catalogo.armature (o nessuna)")
+
+
+def tempo_del_set(r: dict, voci: dict[str, dict], e: Esito, dove: str) -> set[str] | None:
+    """`tempo` (docs/regole.md §2, «Tempo»; regole/tempo.ts) and the durations that use its units: the rests'
+    `durata` and the catalog's lights. Returns the unit ids, or None without `tempo`."""
+    t = r.get("tempo")
+    unita: dict[str, int] = {}
+    if t is not None:
+        o = _ogg(t) or {}
+        prima = 0
+        for i, x in enumerate(o.get("unita") or [], start=1):
+            u = _ogg(x) or {}
+            if not (isinstance(u.get("id"), str) and RE_ID.match(u["id"]) and _intero(u.get("secondi")) and u["secondi"] >= 1):
+                _err(e, dove, f"tempo.unita[{i}]: {{id, nome, plurale, secondi: un intero ≥ 1}}")
+                continue
+            if u["secondi"] <= prima:
+                _err(e, dove, f"tempo.unita[{i}]: dalla più piccola alla più grande")
+            prima = u["secondi"]
+            unita[u["id"]] = u["secondi"]
+        if not unita:
+            _err(e, dove, "tempo: {unita: [{id, nome, plurale, secondi}], round, per_finestra, azioni, inizio}")
+        if o.get("round") is not None and o["round"] not in unita:
+            _err(e, dove, f"tempo.round: «{o['round']}» non è un'unità di tempo.unita")
+        _durata(o.get("per_finestra"), unita, "tempo.per_finestra", e, dove)
+        for i, a in enumerate(o.get("azioni") or [], start=1):
+            a = _ogg(a) or {}
+            if not (isinstance(a.get("parole"), list) and a["parole"] and all(isinstance(p, str) for p in a["parole"])):
+                _err(e, dove, f"tempo.azioni[{i}]: {{parole: [parole dell'azione], durata: {{unità: quante}}}}")
+            _durata(a.get("durata"), unita, f"tempo.azioni[{i}].durata", e, dove, obbligatoria=True)
+    for i, x in enumerate(r.get("riposo") or [], start=1):
+        d = (_ogg(x) or {}).get("durata")
+        if d is None:
+            continue
+        if not unita:
+            _err(e, dove, f"riposo[{i}].durata: una durata vuole il tempo del set (tempo.unita)")
+        else:
+            _durata(d, unita, f"riposo[{i}].durata", e, dove, obbligatoria=True)
+    if unita:
+        for vid, v in voci.items():
+            u = (_ogg(v.get("luce")) or {}).get("unita")
+            if u is not None and u not in unita:
+                _err(e, dove, f"catalogo.{vid}.luce.unita: «{u}» non è un'unità di tempo.unita")
+    return set(unita) if t is not None else None
+
+
+def _durata(v, unita: dict[str, int], d: str, e: Esito, dove: str, obbligatoria: bool = False) -> None:
+    if v is None:
+        if obbligatoria:
+            _err(e, dove, f"{d}: una durata {{unità di tempo.unita: quante}}")
+        return
+    if not isinstance(v, dict) or not v or any(k not in unita or not _numero(n) or n < 0 for k, n in v.items()):
+        _err(e, dove, f"{d}: una durata {{unità di tempo.unita: quante}}, es. {{turno: 1}}")
+
+
+def viaggio_del_set(r: dict, e: Esito, dove: str) -> None:
+    """`viaggio` (Basic Fantasy p. 45; regole/tempo.ts): needs `tempo` and `movimento`."""
+    v = r.get("viaggio")
+    if v is None:
+        return
+    o = _ogg(v) or {}
+    terreni = o.get("terreni")
+    ok_t = isinstance(terreni, list) and terreni and all(isinstance(t, dict) and isinstance(t.get("id"), str) and _numero(t.get("per")) and t["per"] > 0 for t in terreni)
+    if not (isinstance(o.get("unita"), str) and _numero(o.get("per_movimento")) and o["per_movimento"] > 0 and _numero(o.get("ore_al_giorno")) and ok_t):
+        _err(e, dove, "viaggio: {unita, per_movimento, ore_al_giorno, terreni: [{id, nome, per}]}")
+    if r.get("tempo") is None or r.get("movimento") is None:
+        _err(e, dove, "viaggio: il viaggio vuole il tempo e il movimento del set")

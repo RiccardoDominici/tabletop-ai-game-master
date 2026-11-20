@@ -69,6 +69,7 @@ export const master = {
   'master.cmd.riposo': 'Rest',
   'master.cmd.pericolo': 'Hazard',
   'master.cmd.inventario': 'Gear',
+  'master.cmd.tempo': 'Time',
   'master.cmd.condizione': 'Condition',
   'master.cmd.tiro': 'Roll',
   'master.tiri.tutti': 'every open roll',

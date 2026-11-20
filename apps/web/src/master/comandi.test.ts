@@ -34,6 +34,7 @@ const UNO_PER_TIPO: Record<TipoComandoMaster, ComandoMaster> = {
   riposo: { tipo: 'riposo', riposo: 'notte' },
   pericolo: { tipo: 'pericolo', id: 'pg_anna', cosa: 'caduta', valore: 20 },
   inventario: { tipo: 'inventario', id: 'pg_anna', cosa: 'compra', oggetto: 'torcia', quante: 2 },
+  tempo: { tipo: 'tempo', cosa: 'avanza', durata: { ora: 1 } },
   tiro: { tipo: 'tiro', id: 'r_a3', valori: [14] },
   chiedi_prova: { tipo: 'chiedi_prova', id_pg: 'pg_anna', cosa: 'abilita:percezione', difficolta: null },
 };

@@ -691,8 +691,33 @@ cadute: {dadi: "1d6", ogni: 3, unita: "metri", arrotonda: vicino, massimo: 20}
 # Riposo (p. 59): un punto ferita per ogni giorno con il sonno normale; chi sta a letto tutto il giorno ne recupera uno
 # in più ogni sera. Il master lo dà dal pannello (docs/prove.md §10).
 riposo:
-  - {id: notte, nome: "Una notte di sonno", cura: 1}
-  - {id: a_letto, nome: "Un giorno di riposo a letto", cura: 2}
+  - {id: notte, nome: "Una notte di sonno", cura: 1, durata: {ora: 8}}
+  - {id: a_letto, nome: "Un giorno di riposo a letto", cura: 2, durata: {giorno: 1}}
+
+# Tempo di gioco (p. 42): un turno è circa dieci minuti, un round dieci secondi (sessanta round fanno un turno).
+# Esplorando, ogni giro di azioni del tavolo è un turno (il movimento e le ricerche si contano a turni, p. 42–44; le
+# abilità del ladro chiedono un turno, p. 8); in combattimento ogni round è un round. Le torce bruciano 1d4+4 turni, la
+# lanterna una fiasca d'olio in 18+1d6 (p. 12: catalogo, `luce`). La notte di sonno dura otto ore (sei di sonno, p. 59,
+# più la veglia: scelta del set).
+tempo:
+  unita:
+    - {id: round, nome: "Round", plurale: "round", secondi: 10}
+    - {id: turno, nome: "Turno", plurale: "turni", secondi: 600}
+    - {id: ora, nome: "Ora", plurale: "ore", secondi: 3600}
+    - {id: giorno, nome: "Giorno", plurale: "giorni", secondi: 86400}
+  round: round
+  per_finestra: {turno: 1}
+# Viaggio (p. 45): miglia al giorno = 0,6 × il movimento d'incontro in piedi (40' → 24 miglia), cioè 2 per ogni metro del
+# movimento in metri del set; un giorno di viaggio è di otto ore; il gruppo va al passo del più lento; il terreno moltiplica.
+viaggio:
+  unita: miglia
+  per_movimento: 2
+  ore_al_giorno: 8
+  terreni:
+    - {id: giungla_montagna_palude, nome: "Giungla, montagna o palude", per: 0.333}
+    - {id: deserto_bosco_colline, nome: "Deserto, bosco o colline", per: 0.667}
+    - {id: pianura_sentiero, nome: "Pianura aperta o sentiero", per: 1}
+    - {id: strada, nome: "Strada lastricata", per: 1.333}
 
 # Monete (p. 10): 1 pp = 5 gp, 1 gp = 10 sp, 1 ep = 5 sp, 1 sp = 10 cp. Il valore è in rame (il taglio più piccolo vale 1).
 # Peso: una moneta pesa 1/20 di libbra, quindi 20 monete = 1 unità di carico (1 libbra).

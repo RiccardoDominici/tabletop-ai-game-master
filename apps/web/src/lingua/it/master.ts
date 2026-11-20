@@ -69,6 +69,7 @@ export const master = {
   'master.cmd.riposo': 'Riposo',
   'master.cmd.pericolo': 'Pericolo',
   'master.cmd.inventario': 'Equipaggiamento',
+  'master.cmd.tempo': 'Tempo',
   'master.cmd.condizione': 'Condizione',
   'master.cmd.tiro': 'Tiro',
   'master.tiri.tutti': 'tutti i tiri aperti',

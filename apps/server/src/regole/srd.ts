@@ -60,8 +60,21 @@ export function sistemaSrd(): SistemaRegole {
     paroleChiave: {},
     // SRD 5.2, «Falling»: 1d6 for every 10 feet fallen, to a maximum of 20d6; «Long Rest»: every lost hit point back.
     cadute: { dadi: { numero: 1, facce: 6, bonus: 0 }, ogni: 10, unita: srd.piedi, arrotonda: 'giu', massimo: 20 },
-    riposo: [{ id: 'lungo', nome: srd.riposo_lungo, cura: { tipo: 'tutti' }, ricarica: true }],
+    // SRD 5.2, «Long Rest»: at least 8 hours. The long rest takes them on the game clock.
+    riposo: [{ id: 'lungo', nome: srd.riposo_lungo, cura: { tipo: 'tutti' }, ricarica: true, durata: 8 * 3600 }],
+    // SRD 5.2: a round is 6 seconds. The SRD gives no exploration turn, so a closed window outside a fight is one round,
+    // as before the clock; only a rest or the Game Master moves it further.
+    tempo: { unita: unitaSrd(srd.tempo ?? {}), round: 'round', perFinestra: 6, azioni: [], inizio: 0 },
   };
+}
+
+/** The SRD's time units with their names in the content language («name|plural» in prove.yaml → srd.tempo). */
+function unitaSrd(nomi: Record<string, string>): NonNullable<SistemaRegole['tempo']>['unita'] {
+  const u = (id: string, secondi: number) => {
+    const [nome, plurale] = (nomi[id] ?? id).split('|');
+    return { id, nome: nome ?? id, plurale: plurale ?? nome ?? id, secondi };
+  };
+  return [u('round', 6), u('minuto', 60), u('ora', 3600), u('giorno', 86400)];
 }
 
 /** regole.yaml dell'SRD 5.2, com'è nel codice (per una campagna che vuole il file esplicito). */

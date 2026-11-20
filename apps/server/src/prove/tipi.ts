@@ -145,4 +145,6 @@ export interface EsitoTurnoProve {
    * or a fall and its save, a death when a dying window ran out. Owed facts, like the fight's (prove/fatti-dovuti.ts).
    */
   morte?: Array<{ id: string; nome: string; esito: EsitoMorte }>;
+  /** Lights that went out (prove/tempo.ts), by their bearer: owed facts (prove/fatti-dovuti.ts). */
+  luci?: Array<{ id: string; nome: string }>;
 }

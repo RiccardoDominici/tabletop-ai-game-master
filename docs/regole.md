@@ -197,8 +197,24 @@ cadute: {dadi: "1d6", ogni: 10, unita: "piedi", arrotonda: vicino, massimo: 20} 
   # (1–4 feet nothing, 5–14 feet 1d6), `giu` counts full steps only (SRD 5.2); at most `massimo` steps. Without it a fall
   # deals nothing (logged).
 riposo:                                     # optional [V]: the kinds of rest the Game Master gives from the panel
-  - {id: notte, nome: "Una notte di sonno", cura: 1}        # cura: a whole number, a formula rolled for each, or tutti
+  - {id: notte, nome: "Una notte di sonno", cura: 1, durata: {ora: 8}}   # cura: a whole number, a formula rolled for each, or tutti
   - {id: a_letto, nome: "Un giorno a letto", cura: 2, ricarica: true}   # ricarica (default true): resources come back
+                                            # durata [V]: what it takes on the game clock (units of `tempo`)
+tempo:                                      # optional [V]: the game clock (regole/tempo.ts, prove/tempo.ts; Basic Fantasy p. 42)
+  unita:                                    # [V] from the smallest; `secondi` its length
+    - {id: round, nome: "Round", plurale: "round", secondi: 10}
+    - {id: turno, nome: "Turno", plurale: "turni", secondi: 600}
+    - {id: ora, nome: "Ora", plurale: "ore", secondi: 3600}
+  round: round                              # [V] the unit of a fight's round
+  per_finestra: {turno: 1}                  # a closed window outside a fight (exploring); a scene may say its own
+                                            #   (`scena.yaml → tempo_per_finestra: {round: 6}`, a talk in a tavern)
+  azioni: [{parole: [perquisisco, frugo], durata: {turno: 3}}]   # optional: actions that take longer, by their words
+  inizio: {ora: 18}                         # optional: the time of day the session starts at (day 1)
+viaggio:                                    # optional [V]: overland travel (Basic Fantasy p. 45); needs tempo and movimento
+  unita: miglia
+  per_movimento: 2                          # a day's distance per unit of the round's movement (12 m → 24 miles)
+  ore_al_giorno: 8
+  terreni: [{id: strada, nome: "Strada lastricata", per: 1.333}, {id: montagna, nome: "Montagna", per: 0.333}]
 monete:                                     # optional [V]: the manual's coins (regole/catalogo.ts; Basic Fantasy p. 10)
   base: mo                                  # the coin a price is written in when it names none
   prezzi: [mo, ma, mr]                      # optional: the coins prices are written in and change is given in
@@ -308,8 +324,9 @@ scene check's `effetti_se_fallisce`, by the Game Master's hazards and by the set
 - {tipo: monete, monete: {mo: 20}}                                     # coins found (negative: paid, with change)
 ```
 
-Durations: `istantanea`, `{round: N | "XdY", round_per_livello: k}`, `{turni: …}` (game turns: the Engine has no game
-clock, so they last the scene), `scena`, `riposo`, `permanente`. A scene check (`scena.yaml → prove`, both the SRD's
+Durations: `istantanea`, `{round: N | "XdY", round_per_livello: k}`, a unit of the set's clock (`{turno: "2d8"}`; the
+old `{turni: …}` is the unit `turno`; turned into rounds when given; without a clock that has the unit, the scene),
+`scena`, `riposo`, `permanente`. Rounds tick on the game clock (prove/tempo.ts, docs/prove.md §11). A scene check (`scena.yaml → prove`, both the SRD's
 and a manual's) can add `nome` (the hazard's name on the card) and `effetti_se_fallisce` (applied to the PC who fails).
 
 For combat, the sheets of non-SRD sets can have `attacchi[].distanza: true` (projectile phase) and, for NPCs, `morale` (2–12).
@@ -404,8 +421,8 @@ The `significato` of bands and grades replaces it. With the SRD 5.2 the rule sta
 
 - **Skill and validator**: done. The text is extracted with `strumenti/regole/estrai.py`; the Preparer skill writes the set at step 1b; the `[V]` checks sit in the `REGOLE` class (`strumenti/valida/regole_set.py`). For the SRD, simply do not write `regole/`.
 - **Requires with a non-SRD set**: `richiede.prova` is not yet checked against the set's ids by the validator.
-- **Rules-engine work R1 (20 November) leaves open**: durations in rounds outside a fight tick once per closed window
-  of the table, an interim rule until the game clock (package R2) exists; the SRD 5.2 has its falls and long rest as
+- **Rules-engine work R1 (20 November) leaves open** (the interim tick of R1, one round per closed window, is replaced
+  by the game clock of R2, docs/prove.md §11): the SRD 5.2 has its falls and long rest as
   data but no spells or slots yet; monster specials (poison riders, breath, paralysis on a hit) can use the typed
   effects but are not data of any set; carrying HP and resources from one session to the next (`tra_sessioni.py`) is
   not done; subdual damage is not modelled; spells of levels 3–6 of Basic Fantasy are not data yet.

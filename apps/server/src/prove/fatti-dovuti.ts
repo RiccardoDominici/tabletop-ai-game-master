@@ -22,8 +22,9 @@ import { paroleMancato } from '../narrazione/guardia-esiti';
 
 /** L'esito di un tiro contro la morte (prove/combattimento.ts). */
 export type EsitoMorte = 'morto' | 'stabile' | 'rialzato' | 'morente';
-export type TipoFattoDovuto = 'colpito' | 'a_terra' | 'fuggito' | EsitoMorte;
-export const TIPI_FATTO_DOVUTO: readonly TipoFattoDovuto[] = ['morto', 'fuggito', 'rialzato', 'stabile', 'morente', 'a_terra', 'colpito'];
+export type TipoFattoDovuto = 'colpito' | 'a_terra' | 'fuggito' | 'buio' | EsitoMorte;
+/** From the gravest: one fact per creature, the gravest of its turn. `buio`: its light went out (prove/tempo.ts). */
+export const TIPI_FATTO_DOVUTO: readonly TipoFattoDovuto[] = ['morto', 'fuggito', 'rialzato', 'stabile', 'morente', 'a_terra', 'colpito', 'buio'];
 
 export interface FattoDovuto {
   tipo: TipoFattoDovuto;
@@ -47,6 +48,8 @@ export function fattiDovuti(
   tiri: readonly TiroMostrato[],
   morte: ReadonlyArray<{ id: string; nome: string; esito: EsitoMorte }> = [],
   fuggiti: ReadonlyArray<{ id: string; nome: string }> = [],
+  /** Lights that went out this turn, by their bearer (prove/tempo.ts). */
+  luci: ReadonlyArray<{ id: string; nome: string }> = [],
 ): FattoDovuto[] {
   const per = new Map<string, FattoDovuto>();
   const grado = (t: TipoFattoDovuto): number => TIPI_FATTO_DOVUTO.indexOf(t);
@@ -68,6 +71,7 @@ export function fattiDovuti(
   for (const t of tiri) if (!t.privata && t.automatico && !t.bersaglio && t.a_terra && !t.cura) metti({ tipo: 'a_terra', id: t.chi, nome: t.nome });
   for (const m of morte) metti({ tipo: m.esito, id: m.id, nome: m.nome });
   for (const f of fuggiti) metti({ tipo: 'fuggito', id: f.id, nome: f.nome });
+  for (const l of luci) metti({ tipo: 'buio', id: l.id, nome: l.nome });
   // `da` serve solo quando la creatura colpita ha anche colpito qualcuno in questo turno.
   return [...per.values()].map((f) => (f.tipo === 'colpito' && attaccanti.has(f.id) ? f : { tipo: f.tipo, id: f.id, nome: f.nome }));
 }

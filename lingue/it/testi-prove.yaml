@@ -319,6 +319,7 @@ prove:
     rialzato: "{nome} riapre gli occhi."
     morto: "{nome} muore."
     fuggito: "{nome} fugge."
+    buio: "La luce di {nome} si spegne."
   # Engine lines that replace a narrator sentence contradicting the cards (narrazione/guardia-esiti.ts).
   guardia:
     manca: "{chi} manca {bersaglio}."
@@ -369,6 +370,25 @@ prove:
     toglie: "{nome} si toglie {oggetto}: Classe d'Armatura {ca}."
     sovraccarico: "Sovraccarico"
     carico: "{nome} ora ha un {fascia} ({peso} {unita}): si muove di {movimento} {unita_movimento} a round."
+  # The game clock and the lights (prove/tempo.ts, prove/luci.ts; docs/prove.md §11).
+  tempo:
+    ora: "giorno {giorno}, {ora}"
+    spenta: "Si spegne la luce di {nome} ({oggetto})."
+    in_combattimento: "Durante uno scontro il tempo passa coi round: prima terminalo."
+    senza_tempo: "Questo set di regole non ha un orologio di gioco (tempo.unita)."
+    passa: "Passano {quanto}: è {ora}."
+  viaggio:
+    non_valido: "Viaggio non valido: il set ha bisogno di viaggio e movimento, e servono una distanza e un terreno del set."
+    fermo: "{nome} porta troppo peso per muoversi: il gruppo non parte."
+    fatto: "Il viaggio di {distanza} {unita} ({terreno}) dura {quanto}: {al_giorno} {unita} al giorno, al passo di {nome} ({movimento} {unita_movimento} a round)."
+  luci:
+    non_fa_luce: "{oggetto} non fa luce."
+    gia_accesa: "{nome} ha già la {oggetto} accesa."
+    senza_combustibile: "{nome} non può accendere la {oggetto}: le manca {cosa}."
+    senza_tempo: "{oggetto}: il set non ha l'unità di tempo della sua durata."
+    accende: "{nome} accende: {oggetto}."
+    spegne: "{nome} spegne: {oggetto}."
+    non_accesa: "{nome} non ha {oggetto} accesa."
 
 regole:
   # «Chiedi una regola» (regole/chiedi.ts): il prompt di sistema è prompts/<lingua>/risponditore-regole.md.

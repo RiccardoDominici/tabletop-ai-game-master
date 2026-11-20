@@ -250,3 +250,21 @@ describe('carrying capacity and movement (p. 42)', () => {
     expect(vista('pg_eliandro')).toEqual([22.35, 'Carico leggero', 12]);
   });
 });
+
+describe('time, light and travel (pp. 42, 45)', () => {
+  it('a turn is ten minutes, a round ten seconds (60 to a turn); exploring a window is a turn; a night eight hours', () => {
+    const s = set();
+    const u = Object.fromEntries(s.tempo!.unita.map((x) => [x.id, x.secondi]));
+    expect(u['turno']! / u['round']!).toBe(60);
+    expect(u['turno']).toBe(600);
+    expect(s.tempo!.round).toBe('round');
+    expect(s.tempo!.perFinestra).toBe(600);
+    expect(s.riposo!.find((r) => r.id === 'notte')!.durata).toBe(8 * 3600);
+  });
+  it('travel: 0.6 × the movement in feet a day (40\' → 24 miles), here 2 per metre; terrain ×1/3, ×2/3, ×1, ×1 1/3', () => {
+    const s = set();
+    expect(12 * s.viaggio!.perMovimento).toBe(24);
+    expect(s.viaggio!.oreAlGiorno).toBe(8);
+    expect(s.viaggio!.terreni.map((t) => t.per)).toEqual([0.333, 0.667, 1, 1.333]);
+  });
+});

@@ -18,10 +18,10 @@
  *     - {tipo: oggetto, oggetto: corda, quante: 1}                               # a catalog item found (−1: lost)
  *     - {tipo: monete, monete: {mo: 20}}                                         # coins found (negative: paid)
  *
- * Durations: `istantanea` (default for damage and healing), `{round: N | "XdY", round_per_livello: k}`, `{turni: …}`
- * (game turns of ten minutes: the Engine has no game clock, docs/regole-audit P4-01, so they last the scene), `scena`
- * (until the scene changes), `riposo` (until the next rest) or `permanente` (until the Game Master removes it). Rounds
- * tick at each round of a fight and, outside one, at each closed window of the table (docs/regole.md §2).
+ * Durations: `istantanea` (default for damage and healing), `{round: N | "XdY", round_per_livello: k}`, a unit of the
+ * set's clock (`{turno: "2d8"}`; `{turni: …}` is the unit `turno`; without that unit it lasts the scene), `scena` (until
+ * the scene changes), `riposo` (until the next rest) or `permanente` (until the Game Master removes it). Rounds tick on
+ * the game clock (prove/tempo.ts): each round of a fight, and what each closed window outside one costs.
  */
 import { leggiFormula, type FormulaDadi } from '../campagna/regole-srd';
 
@@ -34,6 +34,8 @@ export interface Scala {
 export type Durata =
   | { tipo: 'istantanea' }
   | { tipo: 'round'; dadi: FormulaDadi; perLivello: number }
+  /** In units of the set's clock (`{turno: "2d8"}`; the old `{turni: …}` is the unit `turno`): turned into rounds when given. */
+  | { tipo: 'tempo'; unita: string; dadi: FormulaDadi }
   | { tipo: 'scena' }
   | { tipo: 'riposo' }
   | { tipo: 'permanente' };
@@ -83,7 +85,18 @@ export function leggiDurata(v: unknown, dove: string, errori: string[], predefin
   if (v === undefined || v === null) return predefinita;
   if (v === 'istantanea' || v === 'scena' || v === 'riposo' || v === 'permanente') return { tipo: v };
   const o = ogg(v);
-  if (o && o['turni'] !== undefined) return { tipo: 'scena' };
+  // A duration in a unit of the set's clock: {turni: 3} (the unit `turno`) or {<unit id>: amount}. Without a clock that
+  // has the unit, the Engine lets it last the scene (prove/attivi.ts).
+  const unita = o ? Object.keys(o).filter((k) => k !== 'round' && k !== 'round_per_livello') : [];
+  if (o && unita.length === 1 && o['round'] === undefined && o['round_per_livello'] === undefined) {
+    const k = unita[0]!;
+    const dadi = leggiFormula(o[k]);
+    if (!dadi || !ID.test(k)) {
+      errori.push(`${dove}.${k}: an amount, a number or a formula like 2d8`);
+      return predefinita;
+    }
+    return { tipo: 'tempo', unita: k === 'turni' ? 'turno' : k, dadi };
+  }
   if (o && (o['round'] !== undefined || o['round_per_livello'] !== undefined)) {
     const dadi = o['round'] === undefined ? { numero: 0, facce: 0, bonus: 0 } : leggiFormula(o['round']);
     const perLivello = o['round_per_livello'] === undefined ? 0 : intero(o['round_per_livello']);

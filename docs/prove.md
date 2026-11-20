@@ -802,3 +802,32 @@ https://www.dndbeyond.com/srd, licensed under the Creative Commons Attribution 4
   the panel. The typed effects `oggetto` and `monete` do the same from a power or a scene check. `vistaInventario(id)`
   is what the panel and the PC's own phone show (`ScortaScheda`: AC and what gives it, attack lines, items, coins, the
   counters of spell slots, resources and power items). Tests: test/inventario.test.ts, test/catalogo.test.ts.
+
+## 11. The game clock, light and travel (20 November, rules-engine package R2)
+
+The audit's P4-01 found no game time at all: nothing that lasts turns could run (light, potions, searches, wandering
+monsters), and R1 ticked its round durations once per closed window as a stopgap. Now the Engine has a clock
+(prove/tempo.ts) with the units of the set's `tempo` (docs/regole.md §2), in the snapshot like the rest of the state.
+
+- **What moves it.** Each new round of a fight is one round. Each closed window outside a fight costs the scene's
+  `tempo_per_finestra` or the set's `per_finestra` (Basic Fantasy: a turn, ten minutes, the pace of exploring), or more
+  when an action has the words of one of `tempo.azioni`; while a PC is dying a window is one round (the table acts in
+  the moment), so binding a friend in the next window still comes in time. A rest takes its `durata` (a night: eight
+  hours), after the healing. The Game Master moves it from the panel (command `tempo`: `avanza` by a duration, or a
+  `viaggio`). A set without `tempo` keeps the old rule (a window is one round) and the panel shows no clock.
+- **What runs on it.** The timed effects (prove/attivi.ts) and the dying window (prove/morte.ts) tick by the whole
+  rounds that went by; a duration in turns or hours (hold person's 2d8 turns) is turned into rounds when it is given.
+- **Light.** A catalog item with `luce` is lit by an action's words («accendo una torcia»: the language pack's
+  `parole.accendere` and a word of the item's name, read by code; `spegnere` to put it out) or from the panel: a torch is
+  spent, a lantern spends a flask of its `consuma` (refused without one). Its burning time is rolled by the Engine's dice
+  (a Game Master roll: the panel shows the time left, the phone only that it is lit) and counted on the clock; when it is
+  up the light goes out with a fact, and the table must hear it (an owed fact of type `buio`, prove/fatti-dovuti.ts). A
+  light put out is lost; one left burning through a rest burns down.
+- **Travel** (Basic Fantasy p. 45; the set's `viaggio`): a distance and a terrain; the day's distance is the slowest PC
+  at the table's movement now (by load and armor, docs/regole.md §2 «Carico») × `per_movimento` × the terrain; the clock
+  moves by the whole days and the hours of the last travel day. An overloaded PC keeps the group from setting off.
+- **Not yet**: wandering monster checks every few turns (P8-01), rations and water per day (P4-22), forced march, getting
+  lost; light does not yet blind those without it (a scene's darkness state).
+
+Tests: test/tempo.test.ts (fixture bottega), test/manuale-basic-fantasy.test.ts (the Basic Fantasy numbers).
+

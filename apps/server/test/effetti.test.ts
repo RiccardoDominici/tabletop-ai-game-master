@@ -64,7 +64,8 @@ describe('typed effects: the closed list as data', () => {
     expect(e.map((x) => x.tipo)).toEqual(['danno', 'cura', 'caduta', 'attacco', 'condizione', 'bonus', 'immunita', 'stabilizza', 'morte']);
     expect(e[4]).toMatchObject({ durata: { tipo: 'round', perLivello: 5 }, finisceSeFerito: true });
     // Game turns of ten minutes: no game clock, so they last the scene.
-    expect(leggiEffetto({ tipo: 'condizione', condizione: 'paralizzato', durata: { turni: '2d8' } }, 'y', [])).toMatchObject({ durata: { tipo: 'scena' } });
+    // A duration in turns is in the unit `turno` of the set's clock (prove/attivi.ts turns it into rounds).
+    expect(leggiEffetto({ tipo: 'condizione', condizione: 'paralizzato', durata: { turni: '2d8' } }, 'y', [])).toMatchObject({ durata: { tipo: 'tempo', unita: 'turno', dadi: { numero: 2, facce: 8 } } });
     leggiEffetti([{ tipo: 'teletrasporto' }, { tipo: 'danno', dadi: 'tanti' }, { tipo: 'bonus', a: 'fortuna', valore: 0 }], 'z', errori);
     expect(errori.join(' | ')).toMatch(/z\[1\]: tipo one of danno/);
     expect(errori.join(' | ')).toMatch(/z\[2\]\.dadi: a dice formula/);
@@ -214,7 +215,9 @@ describe('a failed scene check’s hazard, a rest, the Game Master’s hazard', 
 
   it('the SRD set has the same rules as data: its falling table and the long rest', () => {
     const srd = sistemaSrd();
-    expect(srd.riposo).toEqual([{ id: 'lungo', nome: 'Riposo lungo', cura: { tipo: 'tutti' }, ricarica: true }]);
+    // The long rest takes 8 hours on the game clock; a round is 6 seconds (SRD 5.2).
+    expect(srd.riposo).toEqual([{ id: 'lungo', nome: 'Riposo lungo', cura: { tipo: 'tutti' }, ricarica: true, durata: 28800 }]);
+    expect(srd.tempo!.unita.find((u) => u.id === 'round')!.secondi).toBe(6);
     expect(srd.cadute).toMatchObject({ ogni: 10, arrotonda: 'giu', massimo: 20 });
   });
 });

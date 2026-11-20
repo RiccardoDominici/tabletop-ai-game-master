@@ -4,9 +4,10 @@
  * fight's own conditions, so a sleeping guard stays asleep when the fight ends and a charmed one stays charmed for the
  * scene; the fight reads them as its own (prove/combattimento.ts, `condizioniEsterne`).
  *
- * Durations: rounds tick at each new round of a fight and, outside one, at each closed window of the table (the Engine
- * has no game clock: docs/regole-audit P4-01); `scena` ends at the scene change, `riposo` at the next rest, `permanente`
- * only when the Game Master removes it. A condition with `finisce_se_ferito` ends when its bearer takes damage (sleep).
+ * Durations: rounds tick on the game clock (prove/tempo.ts): each new round of a fight, and what each closed window
+ * outside one costs (a turn exploring = 60 rounds in Basic Fantasy); a duration in turns or hours is turned into rounds
+ * when it is given; `scena` ends at the scene change, `riposo` at the next rest, `permanente` only when the Game Master
+ * removes it. A condition with `finisce_se_ferito` ends when its bearer takes damage (sleep).
  * Saved in the session snapshot.
  */
 import { testo } from '../lingua';
@@ -46,6 +47,8 @@ export interface OpzioniAttivi {
   nome: (id: string) => string;
   /** The bearer is immune to that condition by its sheet or race (regole/tratti.ts); absent = never. */
   immuneDiScheda?: (id: string, cosa: string) => boolean;
+  /** How many rounds one of a clock unit is (the set's `tempo`: a turn is 60 rounds); null = no such unit (scene-long). */
+  roundPerUnita?: (unita: string) => number | null;
 }
 
 export class Attivi {
@@ -58,10 +61,17 @@ export class Attivi {
   }
 
   /** How many rounds a duration lasts at a caster level (rolled now), or its kind. */
-  private static durata(d: Durata, livello: number, dadi: FonteDadi): { fine: EffettoAttivo['fine']; restanti: number | null } {
+  private durata(d: Durata, livello: number, dadi: FonteDadi): { fine: EffettoAttivo['fine']; restanti: number | null } {
     if (d.tipo === 'round') {
       const base = d.dadi.numero ? tiraDanno(dadi, d.dadi, 0, false).totale : d.dadi.bonus;
       return { fine: 'round', restanti: Math.max(1, base + d.perLivello * Math.max(1, livello)) };
+    }
+    // In units of the game clock (hold person: 2d8 turns): rounds by the set's `tempo`; without that unit, the scene.
+    if (d.tipo === 'tempo') {
+      const per = this.o.roundPerUnita?.(d.unita) ?? null;
+      if (per === null) return { fine: 'scena', restanti: null };
+      const n = d.dadi.numero ? tiraDanno(dadi, d.dadi, 0, false).totale : d.dadi.bonus;
+      return { fine: 'round', restanti: Math.max(1, Math.round(n * per)) };
     }
     return { fine: d.tipo === 'istantanea' ? 'round' : d.tipo, restanti: d.tipo === 'istantanea' ? 1 : null };
   }
@@ -71,7 +81,7 @@ export class Attivi {
    * says so). A new copy of the same condition from the same source replaces the old one.
    */
   aggiungi(id: string, e: Extract<EffettoTipato, { tipo: 'condizione' | 'bonus' | 'immunita' }>, fonte: string, livello: number, dadi: FonteDadi): string | null {
-    const { fine, restanti } = Attivi.durata(e.durata, livello, dadi);
+    const { fine, restanti } = this.durata(e.durata, livello, dadi);
     const quanto = restanti !== null ? testo('prove.attivi.per_round', { n: restanti }) : testo(`prove.attivi.fino_${fine}`);
     if (e.tipo === 'condizione') {
       if (this.immune(id, e.condizione) || this.o.immuneDiScheda?.(id, e.condizione)) return testo('prove.attivi.immune', { nome: this.o.nome(id), cosa: this.o.nomeCondizione(e.condizione).toLowerCase() });
@@ -131,9 +141,10 @@ export class Attivi {
     return out;
   }
 
-  /** A round went by (a fight's new round, or a closed window outside one): what ran out. */
-  passaRound(): Scaduto[] {
-    for (const l of this.m.values()) for (const x of l) if (x.fine === 'round' && x.restanti !== null) x.restanti -= 1;
+  /** `n` rounds went by on the game clock (a fight's new round, what a closed window outside one cost): what ran out. */
+  passaRound(n = 1): Scaduto[] {
+    if (n <= 0) return [];
+    for (const l of this.m.values()) for (const x of l) if (x.fine === 'round' && x.restanti !== null) x.restanti -= n;
     return this.finisci((x) => x.fine === 'round' && (x.restanti ?? 0) <= 0);
   }
 

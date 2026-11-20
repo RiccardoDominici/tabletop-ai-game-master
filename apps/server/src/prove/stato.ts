@@ -9,6 +9,7 @@ import type { StatoCombattimentoSalvato } from './combattimento';
 import type { StatoRisorseSalvato } from './risorse';
 import type { StatoAttiviSalvato } from './attivi';
 import type { StatoMorentiSalvato } from './morte';
+import type { StatoTempoSalvato } from './tempo';
 
 export interface StatoProveSalvato {
   seme: string;
@@ -32,6 +33,8 @@ export interface StatoProveSalvato {
   attivi?: StatoAttiviSalvato;
   /** PCs in a dying window of the death rule (prove/morte.ts). */
   morenti?: StatoMorentiSalvato;
+  /** The game clock and the lights burning (prove/tempo.ts). Absent in older snapshots: the clock starts again. */
+  tempo?: StatoTempoSalvato;
 }
 
 /** Fuori gioco oltre ai PF: morto (finché il master non lo cura), fuggito (finché la scena non cambia). */

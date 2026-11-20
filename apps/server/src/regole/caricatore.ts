@@ -29,6 +29,7 @@ import { leggiRazze } from './tratti';
 import { leggiMagia, leggiRisorse } from './risorse';
 import { leggiCatalogo, leggiMonete } from './catalogo';
 import { leggiCarico, leggiMovimento } from './carico';
+import { leggiTempo, leggiViaggio, secondiDi } from './tempo';
 
 export const CARTELLA_REGOLE = 'regole';
 const TIPI: readonly TipoRisoluzione[] = ['d20_cd', '2d6_fasce', 'sotto_soglia'];
@@ -203,6 +204,19 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     const categorie = new Set(catalogo.voci.flatMap((v) => (v.tipo === 'armatura' ? [v.categoria] : [])));
     for (const r of movimento.righe) if (r.armatura !== 'nessuna' && !categorie.has(r.armatura)) errori.push(`movimento.righe: «${r.armatura}» is not a category of catalogo.armature (or nessuna)`);
   }
+  // Game time (P4-01): the units, and what a rest takes on the clock (`riposo[].durata`).
+  const tempo = leggiTempo(d['tempo'], errori);
+  const viaggio = leggiViaggio(d['viaggio'], errori);
+  if (viaggio && (!tempo || !movimento)) errori.push('viaggio: travel needs the set\'s tempo and movimento');
+  const riposo = leggiRiposo(d['riposo'], errori);
+  for (const [i, x] of (Array.isArray(d['riposo']) ? d['riposo'] : []).entries()) {
+    const durata = ogg(x)?.['durata'];
+    const r = riposo.find((y) => y.id === ogg(x)?.['id']);
+    if (durata === undefined || !r) continue;
+    if (!tempo) errori.push(`riposo[${i + 1}].durata: a duration needs the set's tempo`);
+    else r.durata = secondiDi(tempo.unita, durata, `riposo[${i + 1}].durata`, errori);
+  }
+  if (tempo && catalogo) for (const v of catalogo.voci) if (v.tipo === 'attrezzo' && v.luce && !tempo.unita.some((u) => u.id === v.luce!.unita)) errori.push(`catalogo.${v.id}.luce.unita: «${v.luce.unita}» is not a unit of tempo.unita`);
   const fonte = ogg(d['fonte']) ?? {};
   const lic = ogg(d['licenza']) ?? {};
   if (typeof lic['libera'] !== 'boolean') errori.push('licenza.libera: true o false (un set da un manuale non libero resta fuori dal repository)');
@@ -246,7 +260,7 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     modificatori: leggiModificatori(d['modificatori'], new Set(abilita.map((a) => a.id)), errori),
     poteri,
     cadute: leggiCadute(d['cadute'], errori),
-    riposo: leggiRiposo(d['riposo'], errori),
+    riposo,
     ...classiEPoteri,
     risorse: leggiRisorse(d['risorse'], errori),
     magia: leggiMagia(d['magia'], errori),
@@ -254,6 +268,8 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     ...(catalogo ? { catalogo } : {}),
     ...(carico ? { carico } : {}),
     ...(movimento ? { movimento } : {}),
+    ...(tempo ? { tempo } : {}),
+    ...(viaggio ? { viaggio } : {}),
   };
 }
 

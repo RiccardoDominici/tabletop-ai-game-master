@@ -177,6 +177,8 @@ srd:
   # SRD 5.2 rest and falls (regole/srd.ts): a long rest restores every hit point; 1d6 per full 10 feet fallen, at most 20d6.
   riposo_lungo: "Riposo lungo"
   piedi: piedi
+  # SRD 5.2 time units (a round is 6 seconds; a long rest 8 hours): «name|plural» (regole/srd.ts).
+  tempo: {round: "round|round", minuto: "minuto|minuti", ora: "ora|ore", giorno: "giorno|giorni"}
   danni:
     nome: Punti ferita
     a_zero: Il PNG è fuori combattimento; il PG perde i sensi e fa i tiri salvezza contro la morte.
@@ -189,6 +191,9 @@ srd:
 parole:
   # Number words for a distance, «word=value» («a venti metri»): the range band of a shot (prove/gittate.ts). Digits always work.
   numeri: ["uno=1", "due=2", "tre=3", "quattro=4", "cinque=5", "sei=6", "sette=7", "otto=8", "nove=9", "dieci=10", "quindici=15", "venti=20", "venticinque=25", "trenta=30", "quaranta=40", "cinquanta=50", "sessanta=60", "settanta=70", "ottanta=80", "novanta=90", "cento=100", "duecento=200"]
+  # Light sources lit or put out by an action («accendo la torcia»: prove/luci.ts).
+  accendere: [accendo, accendiamo, accende, accendere, accendi]
+  spegnere: [spengo, spegniamo, spegne, spegnere, spegni]
   # Abilità SRD, nell'ordine in cui si provano: le più specifiche prima (la prima che trova vince).
   abilita:
     storia: [ricordo, cerco di ricordar, mi ricordo, mi viene in mente, leggend, si racconta, stemma, casata, cronac, decifr, iscrizion]

@@ -399,6 +399,21 @@ export class ControlliMaster {
         if (!esito.ok) return rifiuto(esito.errore);
         return { esito, dettagli: dettaglio('inventario', { id, cosa, oggetto: oggetto ?? JSON.stringify(monete) }), dati: comando };
       }
+      case 'tempo': {
+        // The game clock (docs/prove.md §11): time passes, a journey, a light lit or put out; checked by the Engine.
+        const cosa = ['avanza', 'viaggio', 'accendi', 'spegni'].includes(c.cosa) ? c.cosa : null;
+        const durata = c.durata && typeof c.durata === 'object' && Object.entries(c.durata).every(([k, n]) => /^[a-z0-9_]{1,32}$/.test(k) && typeof n === 'number' && n > 0 && n <= 10000) ? c.durata : null;
+        const id = typeof c.id === 'string' && ID_VALIDO.test(c.id) ? c.id : null;
+        const oggetto = typeof c.oggetto === 'string' && /^[a-z0-9_]{1,64}$/.test(c.oggetto) ? c.oggetto : null;
+        const terreno = typeof c.terreno === 'string' && /^[a-z0-9_]{1,64}$/.test(c.terreno) ? c.terreno : null;
+        const distanza = typeof c.distanza === 'number' && c.distanza > 0 && c.distanza <= 100000 ? c.distanza : null;
+        const comando =
+          cosa === 'avanza' && durata ? { cosa, durata } : cosa === 'viaggio' && terreno && distanza ? { cosa, distanza, terreno } : (cosa === 'accendi' || cosa === 'spegni') && id && oggetto ? { cosa, id, oggetto } : null;
+        if (!comando) return rifiutoDi('tempo_non_valido');
+        const esito = regia.tempo(comando);
+        if (!esito.ok) return rifiuto(esito.errore);
+        return { esito, dettagli: dettaglio('tempo', { cosa: comando.cosa }), dati: { ...comando } };
+      }
       case 'effetto': {
         const id = typeof c.id === 'string' && ID_VALIDO.test(c.id) ? c.id : '';
         if (!this.o.audio?.effetti().includes(id)) return rifiutoDi('effetto_sconosciuto', dettaglio('effetto_sconosciuto', { effetto: id.slice(0, 64) }));

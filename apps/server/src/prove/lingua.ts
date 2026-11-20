@@ -36,7 +36,7 @@ export interface NomiProve {
 /** Il file prove.yaml di un pacchetto. */
 export interface PacchettoProve {
   nomi: NomiProve;
-  srd: { danni: { nome: string; a_zero: string }; sociale: string; attribuzione: string; riposo_lungo: string; piedi: string };
+  srd: { danni: { nome: string; a_zero: string }; sociale: string; attribuzione: string; riposo_lungo: string; piedi: string; tempo?: Record<string, string> };
   parole: {
     abilita: Record<string, string[]>;
     attacco: string[];
@@ -72,6 +72,9 @@ export interface PacchettoProve {
     abilita_se_difficile?: Record<string, string[]>;
     /** Number words a player may say for a distance («a venti metri»), as «word=value» (prove/gittate.ts). */
     numeri?: string[];
+    /** Words that light or put out a light source in an action («accendo la torcia», prove/luci.ts). */
+    accendere?: string[];
+    spegnere?: string[];
   };
 }
 

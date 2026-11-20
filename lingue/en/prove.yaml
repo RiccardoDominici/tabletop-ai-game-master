@@ -168,6 +168,8 @@ srd:
   # SRD 5.2 rest and falls (regole/srd.ts): a long rest restores every hit point; 1d6 per full 10 feet fallen, at most 20d6.
   riposo_lungo: "Long rest"
   piedi: feet
+  # SRD 5.2 time units (a round is 6 seconds; a long rest 8 hours): «name|plural» (regole/srd.ts).
+  tempo: {round: "round|rounds", minuto: "minute|minutes", ora: "hour|hours", giorno: "day|days"}
   danni:
     nome: Hit Points
     a_zero: The NPC is out of the fight; the PC falls unconscious and makes Death Saving Throws.
@@ -181,6 +183,9 @@ srd:
 parole:
   # Number words for a distance, «word=value» («at twenty yards»): the range band of a shot (prove/gittate.ts). Digits always work.
   numeri: ["one=1", "two=2", "three=3", "four=4", "five=5", "six=6", "seven=7", "eight=8", "nine=9", "ten=10", "fifteen=15", "twenty=20", "thirty=30", "forty=40", "fifty=50", "sixty=60", "seventy=70", "eighty=80", "ninety=90", "hundred=100"]
+  # Light sources lit or put out by an action («I light a torch»: prove/luci.ts).
+  accendere: [light, lights, kindle]
+  spegnere: [put out, douse, snuff, extinguish]
   # SRD skills, in the order they are tried: the most specific first (the first that matches wins).
   abilita:
     storia: [i remember, 'try(ing)? to remember', 'do i (know|remember)', what do i know, recall, legend, 'lore\b', coat of arms, heraldr, 'crest\b', 'noble (house|family)', chronicl, histor, deciph, inscription]

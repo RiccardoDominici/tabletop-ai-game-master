@@ -306,6 +306,7 @@ prove:
     rialzato: "{nome}'s eyes open again."
     morto: "{nome} dies."
     fuggito: "{nome} flees."
+    buio: "{nome}'s light goes out."
   # Engine lines that replace a narrator sentence contradicting the cards (narrazione/guardia-esiti.ts).
   guardia:
     manca: "{chi} misses {bersaglio}."
@@ -356,6 +357,25 @@ prove:
     toglie: "{nome} takes off {oggetto}: Armor Class {ca}."
     sovraccarico: "Overloaded"
     carico: "{nome} now has a {fascia} ({peso} {unita}): moves {movimento} {unita_movimento} a round."
+  # The game clock and the lights (prove/tempo.ts, prove/luci.ts; docs/prove.md §11).
+  tempo:
+    ora: "day {giorno}, {ora}"
+    spenta: "{nome}'s light goes out ({oggetto})."
+    in_combattimento: "During a fight time passes in rounds: end it first."
+    senza_tempo: "This rule set has no game clock (tempo.unita)."
+    passa: "{quanto} pass: it is {ora}."
+  viaggio:
+    non_valido: "Invalid journey: the set needs viaggio and movimento, and a distance and one of its terrains."
+    fermo: "{nome} is too loaded to move: the group does not set off."
+    fatto: "The journey of {distanza} {unita} ({terreno}) takes {quanto}: {al_giorno} {unita} a day, at {nome}'s pace ({movimento} {unita_movimento} a round)."
+  luci:
+    non_fa_luce: "{oggetto} gives no light."
+    gia_accesa: "{nome} already has the {oggetto} lit."
+    senza_combustibile: "{nome} cannot light the {oggetto}: no {cosa}."
+    senza_tempo: "{oggetto}: the set has no time unit for its duration."
+    accende: "{nome} lights: {oggetto}."
+    spegne: "{nome} puts out: {oggetto}."
+    non_accesa: "{nome} has no {oggetto} lit."
 
 regole:
   domanda:

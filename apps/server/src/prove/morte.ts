@@ -2,8 +2,8 @@
  * The dying window of a rule set's death rule (docs/combattimento.md §3.3; docs/regole.md §2, `tiri_morte.finestra`):
  * Basic Fantasy's optional «Save vs. Death» (p. 188) keeps a PC who makes its save alive and unconscious for 2d10
  * rounds, and it dies unless someone binds its wounds or heals it in that time. This module counts those rounds for
- * every dying PC, in and out of a fight: they tick at each new round of a fight and at each closed window outside one
- * (no game clock yet: the interim rule of prove/attivi.ts). Each tick is a fact for the narrator, so a countdown that can
+ * every dying PC, in and out of a fight: they tick on the game clock (prove/tempo.ts), each new round of a fight and,
+ * outside one, one round per closed window while someone is dying (the table acts in the moment). Each tick is a fact for the narrator, so a countdown that can
  * kill a PC is never silent. Saved in the session snapshot.
  */
 import { testo } from '../lingua';
@@ -30,17 +30,18 @@ export class Morenti {
     return this.m.delete(id);
   }
 
-  /** A round went by: who dies now, and who is still dying with how many rounds left. */
-  passaRound(): { morti: string[]; ancora: Array<[string, number]> } {
+  /** `k` rounds went by on the game clock: who dies now, and who is still dying with how many rounds left. */
+  passaRound(k = 1): { morti: string[]; ancora: Array<[string, number]> } {
     const morti: string[] = [];
     const ancora: Array<[string, number]> = [];
+    if (k <= 0) return { morti, ancora };
     for (const [id, n] of this.m) {
-      if (n - 1 <= 0) {
+      if (n - k <= 0) {
         morti.push(id);
         this.m.delete(id);
       } else {
-        this.m.set(id, n - 1);
-        ancora.push([id, n - 1]);
+        this.m.set(id, n - k);
+        ancora.push([id, n - k]);
       }
     }
     return { morti, ancora };

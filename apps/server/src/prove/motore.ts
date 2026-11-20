@@ -12,7 +12,7 @@
  * copione, test) le azioni restano senza decisione e lo dice il log.
  */
 import { nomiDeiPng } from '../repertorio/pertinenza';
-import { pngInterpellati, soloParlato } from './parole-testo';
+import { pngInterpellati, senzaParlato, soloParlato } from './parole-testo';
 import type { TiroMostrato } from '@tabletop-ai-gm/shared';
 import type { Campagna, DatiYaml } from '../campagna/tipi';
 import type { Orologio } from '../turni/orologio';
@@ -54,6 +54,10 @@ import { applicaEffetti, type ContestoEffetti } from './effetti';
 import { riposa } from './riposo';
 import { Risorse } from './risorse';
 import { Inventario } from './inventario';
+import { TempoDiGioco } from './tempo';
+import { accendi as accendiLuce, luceDellAzione, spegni as spegniLuce, type ContestoLuci } from './luci';
+import { secondiDi } from '../regole/tempo';
+import { voce } from '../regole/catalogo';
 import { Attivi } from './attivi';
 import { Morenti } from './morte';
 import type { EsitoMorte } from './fatti-dovuti';
@@ -205,6 +209,10 @@ export class MotoreProve {
   private readonly schedeVive: ReadonlyMap<string, SchedaGenerica> | null;
   /** What each character carries and wears, and its coins (prove/inventario.ts). Null without a catalog or coins. */
   readonly inventario: Inventario | null;
+  /** The game clock (prove/tempo.ts): the set's `tempo`, or one round per window without it. */
+  readonly tempo: TempoDiGioco;
+  /** Lights that went out since the last resolved turn: owed facts the table must hear (prove/fatti-dovuti.ts). */
+  private luciSpente: Array<{ id: string; nome: string }> = [];
 
   constructor(private readonly o: OpzioniMotoreProve) {
     this.gregari = new Map((o.gregari ?? []).map((g) => [g.id, g]));
@@ -213,7 +221,18 @@ export class MotoreProve {
     this.risorse = this.generico ? new Risorse(this.generico.regole.sistema, this.generico.schede) : null;
     const sist = this.generico?.regole.sistema;
     this.inventario = this.generico && this.risorse && (sist?.catalogo || sist?.monete) ? new Inventario({ sistema: sist, schede: this.generico.schede, risorse: this.risorse, nome: (id) => this.nomeDi(this.o.contesto(), id), log: o.log.child({ modulo: 'inventario' }) }) : null;
-    this.attivi = new Attivi({ nome: (id) => this.nomeDi(this.o.contesto(), id), nomeCondizione: (id) => this.regoleCombattimento().condizioni.find((c) => c.id === id)?.nome ?? id, immuneDiScheda: (id, cosa) => this.immuneDiScheda(id, cosa) });
+    this.tempo = new TempoDiGioco(this.sistema.tempo ?? null, { nome: (id) => this.nomeDi(this.o.contesto(), id), nomeOggetto: (id) => voce(this.sistema.catalogo, id)?.nome ?? id, log: o.log.child({ modulo: 'tempo' }) });
+    this.attivi = new Attivi({
+      nome: (id) => this.nomeDi(this.o.contesto(), id),
+      nomeCondizione: (id) => this.regoleCombattimento().condizioni.find((c) => c.id === id)?.nome ?? id,
+      immuneDiScheda: (id, cosa) => this.immuneDiScheda(id, cosa),
+      // A duration in turns or hours: how many rounds of the set's clock it is (none without `tempo`: the scene).
+      roundPerUnita: (u) => {
+        const t = this.sistema.tempo;
+        const sec = t?.unita.find((x) => x.id === u)?.secondi;
+        return t && sec ? sec / this.tempo.secondiRound : null;
+      },
+    });
     this.dadi = o.dadi ?? this.nuoviDadi(o.seme);
     this.combattimento = new GestoreCombattimento({
       regole: this.regoleCombattimento(),
@@ -234,11 +253,8 @@ export class MotoreProve {
       // The timed effects' conditions count in the fight; they tick at each new round (prove/attivi.ts).
       condizioniEsterne: (id) => this.attivi.condizioni(id),
       sorpresaMod: (id) => this.trattiDi(id).reduce((n, t) => (t.tipo === 'sorpresa' ? n + t.modificatore : n), 0),
-      nuovoRound: (fatti) => {
-        const f = Attivi.fatto(this.attivi.passaRound(), (id) => this.nomeDi(this.o.contesto(), id));
-        if (f) fatti.push(f);
-        fatti.push(...this.passaRoundMorenti());
-      },
+      // A new round of the fight is one round on the game clock: timed effects, the dying and the lights tick.
+      nuovoRound: (fatti) => fatti.push(...this.passaTempo(this.tempo.secondiRound, 'round')),
       salvezzaMorte: (id, abilita) => this.salvezzaMorte(id, abilita),
       morente: (id, fatti) => this.iniziaMorente(id, fatti),
       senzaSoccorso: (fatti) => {
@@ -741,10 +757,14 @@ export class MotoreProve {
     const c = this.o.contesto();
     this.tavolo = tavolo;
     try {
-      // Outside a fight a closed window is a round for the timed effects and the dying (no game clock yet): they tick
-      // before the actions, so binding a dying friend in this window still comes in time.
-      const finiti = this.combattimento.attivo ? [] : [Attivi.fatto(this.attivi.passaRound(), (id) => this.nomeDi(c, id)), ...this.passaRoundMorenti()].filter((x): x is string => !!x);
+      // Outside a fight a closed window costs game time (prove/tempo.ts): the set's `per_finestra`, longer actions by
+      // their words, one round while someone is dying. It passes before the actions, so binding a dying friend in this
+      // window still comes in time; the timed effects, the dying and the lights tick on it.
+      const finiti = this.combattimento.attivo ? [] : this.passaTempo(this.costoFinestra(azioni, c), 'finestra');
+      // A light lit or put out by the action's words («accendo la torcia»): before the resolver, so it burns from now.
+      const luci = this.luciDalleAzioni(azioni);
       const r = this.passaRisolutore(turno, c, azioni, decisioni, { dadiDeiPg: tavolo });
+      if (luci.length) r.fatti.unshift(...luci);
       if (finiti.length) r.fatti.unshift(...finiti);
       // What the Game Master applied from the panel since the last turn (a rest, a hazard) comes first for the narrator.
       if (this.fattiInSospeso.length) {
@@ -768,6 +788,11 @@ export class MotoreProve {
       if (this.morteFuori.length) {
         r.morte = this.morteFuori;
         this.morteFuori = [];
+      }
+      // A light that went out (a torch burned down): owed, so the table hears it is dark.
+      if (this.luciSpente.length) {
+        r.luci = this.luciSpente;
+        this.luciSpente = [];
       }
       this.intestazione = comb.intestazione;
       this.stato.registraTiri(r.tiri);
@@ -891,8 +916,126 @@ export class MotoreProve {
   }
 
   /** A round of the dying windows: who dies (in the fight too), who is still dying. Facts for the narrator. */
-  private passaRoundMorenti(): string[] {
-    const t = this.morenti.passaRound();
+  /**
+   * Game time passes (prove/tempo.ts): the clock moves, the timed effects and the dying tick by the whole rounds that
+   * went by, and the lights whose time is up go out. Returns the facts for the narrator.
+   */
+  private passaTempo(secondi: number, causa: string): string[] {
+    const { round, spente } = this.tempo.avanza(secondi, causa);
+    const c = this.o.contesto();
+    const fatti: string[] = [];
+    const f = Attivi.fatto(this.attivi.passaRound(round), (id) => this.nomeDi(c, id));
+    if (f) fatti.push(f);
+    fatti.push(...this.passaRoundMorenti(round));
+    if (spente.length) {
+      fatti.push(...this.tempo.fattiSpente(spente));
+      this.luciSpente.push(...spente.map((l) => ({ id: l.chi, nome: this.nomeDi(c, l.chi) })));
+    }
+    return fatti;
+  }
+
+  /**
+   * What a closed window outside a fight costs on the clock: one round while a PC is dying (the table acts in the
+   * moment); otherwise the scene's `tempo_per_finestra` or the set's `per_finestra`, or longer when an action has the
+   * words of one of the set's `tempo.azioni` (searching a room takes a turn).
+   */
+  private costoFinestra(azioni: readonly AzionePerProve[], c: ContestoProve): number {
+    const t = this.tempo.regola;
+    if (this.morenti.tutti().length) return this.tempo.secondiRound;
+    const errori: string[] = [];
+    const daScena = c.campagna.scena.dati['tempo_per_finestra'];
+    const base = daScena !== undefined ? (secondiDi(t.unita, daScena, 'scena.tempo_per_finestra', errori) ?? t.perFinestra) : t.perFinestra;
+    if (errori.length) this.o.log.warn({ errori }, 'time: the scene\'s tempo_per_finestra is malformed, the set\'s applies');
+    const testi = azioni.map((a) => normalizza(senzaParlato(a.testo)));
+    const lunghe = t.azioni.filter((x) => testi.some((w) => x.parole.some((p) => w.includes(normalizza(p))))).map((x) => x.secondi);
+    return Math.max(base, ...lunghe);
+  }
+
+  /** The lights the window's actions light or put out by their words (prove/luci.ts). Their facts. */
+  private luciDalleAzioni(azioni: readonly AzionePerProve[]): string[] {
+    const ctx = this.contestoLuci();
+    if (!ctx) return [];
+    return azioni.flatMap((a) => {
+      const l = luceDellAzione(ctx, a.autore, a.testo);
+      if (!l) return [];
+      const e = l.cosa === 'accendi' ? accendiLuce(ctx, a.autore, l.oggetto) : spegniLuce(ctx, a.autore, l.oggetto);
+      return e.fatto ? [e.fatto] : [];
+    });
+  }
+
+  private contestoLuci(): ContestoLuci | null {
+    const g = this.generico;
+    if (!g || !this.risorse || !this.inventario) return null;
+    return { sistema: g.regole.sistema, risorse: this.risorse, inventario: this.inventario, tempo: this.tempo, dadi: this.dadi, nome: (id) => this.nomeDi(this.o.contesto(), id), log: this.o.log.child({ modulo: 'luci' }) };
+  }
+
+  /**
+   * The game clock for the Game Master's panel (docs/prove.md §11): the day and time, and every light burning with the
+   * time it has left (a Game Master roll: the phones see only that it is lit). Null when the set has no clock.
+   */
+  vistaTempo(): { ora: string; trascorso: string | null; luci: Array<{ chi: string; oggetto: string; nome: string; restante: string }> } | null {
+    if (!this.tempo.mostrato) return null;
+    return {
+      ora: this.tempo.testoOra(),
+      trascorso: this.tempo.trascorsi > 0 ? this.tempo.durata(this.tempo.trascorsi) : null,
+      luci: this.tempo.tutteLeLuci().map((l) => ({ chi: l.chi, oggetto: l.oggetto, nome: voce(this.sistema.catalogo, l.oggetto)?.nome ?? l.oggetto, restante: this.tempo.durata(l.restanti) })),
+    };
+  }
+
+  /**
+   * The Game Master lights or puts out a light (docs/prove.md §11), or lets time pass (`avanza`: {unit: amount} of the
+   * set's clock; never during a fight, whose rounds are the clock). Facts to the transcript and the narrator next turn.
+   */
+  tempoDelMaster(c: { cosa: 'accendi' | 'spegni'; id: string; oggetto: string } | { cosa: 'avanza'; durata: Record<string, number> } | { cosa: 'viaggio'; distanza: number; terreno: string }): { ok: boolean; fatto: string } | null {
+    if (!this.attivo) return null;
+    let e: { ok: boolean; fatto: string };
+    if (c.cosa === 'viaggio') {
+      if (this.combattimento.attivo) return { ok: false, fatto: testo('prove.tempo.in_combattimento') };
+      const v = this.viaggio(c.distanza, c.terreno);
+      if (!v.ok) return v;
+      e = { ok: true, fatto: [v.fatto, ...this.passaTempo(v.secondi, 'viaggio')].join(' ') };
+    } else if (c.cosa === 'avanza') {
+      if (this.combattimento.attivo) return { ok: false, fatto: testo('prove.tempo.in_combattimento') };
+      const errori: string[] = [];
+      const secondi = secondiDi(this.tempo.regola.unita, c.durata, 'durata', errori);
+      if (secondi === null || !this.tempo.mostrato) return { ok: false, fatto: errori.join('; ') || testo('prove.tempo.senza_tempo') };
+      const fatti = this.passaTempo(secondi, 'master');
+      e = { ok: true, fatto: [testo('prove.tempo.passa', { quanto: this.tempo.durata(secondi), ora: this.tempo.testoOra() }), ...fatti].join(' ') };
+    } else {
+      const ctx = this.contestoLuci();
+      if (!ctx) return null;
+      e = c.cosa === 'accendi' ? accendiLuce(ctx, c.id, c.oggetto) : spegniLuce(ctx, c.id, c.oggetto);
+    }
+    if (e.ok) this.fattiInSospeso.push(e.fatto);
+    this.o.log.info({ ...c, ok: e.ok }, 'time: the Game Master moves the clock or a light');
+    return e;
+  }
+
+  /**
+   * A journey (Basic Fantasy p. 45): the group's slowest movement now (the PCs at the table, by their load and armor),
+   * times the set's `per_movimento` and the terrain's factor, gives the distance of a travel day; the clock moves by the
+   * whole days and the hours of the last one. Refused without the set's `viaggio`, or when someone cannot move.
+   */
+  private viaggio(distanza: number, terreno: string): { ok: true; fatto: string; secondi: number } | { ok: false; fatto: string } {
+    const s = this.sistema;
+    const t = s.viaggio?.terreni.find((x) => x.id === terreno);
+    const c = this.o.contesto();
+    if (!s.viaggio || !this.inventario || !t || !(distanza > 0)) return { ok: false, fatto: testo('prove.viaggio.non_valido') };
+    const chi = c.pgAlTavolo.filter((id) => this.inventario!.carico(id) && this.stato.fuoriGioco(id) !== 'morto');
+    const lento = chi.map((id) => ({ id, mv: this.inventario!.carico(id)!.movimento ?? 0 })).sort((a, b) => a.mv - b.mv)[0];
+    if (!lento) return { ok: false, fatto: testo('prove.viaggio.non_valido') };
+    if (lento.mv <= 0) return { ok: false, fatto: testo('prove.viaggio.fermo', { nome: this.nomeDi(c, lento.id) }) };
+    const alGiorno = lento.mv * s.viaggio.perMovimento * t.per;
+    const giorni = distanza / alGiorno;
+    const interi = Math.floor(giorni);
+    const secondi = Math.round(interi * 86400 + (giorni - interi) * s.viaggio.oreAlGiorno * 3600);
+    this.o.log.info({ distanza, terreno, lento: lento.id, movimento: lento.mv, al_giorno: alGiorno, giorni }, 'travel: the journey by the slowest member');
+    const quanto = this.tempo.durata(secondi);
+    return { ok: true, secondi, fatto: testo('prove.viaggio.fatto', { distanza, unita: s.viaggio.unita, terreno: t.nome.toLowerCase(), quanto, al_giorno: Math.round(alGiorno * 10) / 10, nome: this.nomeDi(c, lento.id), movimento: lento.mv, unita_movimento: s.movimento?.unita ?? '' }) };
+  }
+
+  private passaRoundMorenti(k = 1): string[] {
+    const t = this.morenti.passaRound(k);
     for (const id of t.morti) {
       this.combattimento.segnaMorto(id);
       this.morteFuori.push({ id, nome: this.nomeDi(this.o.contesto(), id), esito: 'morto' });
@@ -1021,7 +1164,9 @@ export class MotoreProve {
     // A rest that refreshes: spell slots, prepared spells and the resources that come back with rest (prove/risorse.ts).
     const ricaricati = r.ricarica && this.risorse ? this.risorse.ricarica('riposo') : [];
     const finiti = Attivi.fatto(this.attivi.riposo(), (x) => this.nomeDi(c, x));
-    const fatto = [e.fatto, ricaricati.length ? testo('prove.riposo.ricarica') : '', finiti ?? ''].filter(Boolean).join(' ');
+    // The rest takes its time on the clock (a night: eight hours): lights left burning burn down meanwhile.
+    const tempo = r.durata ? this.passaTempo(r.durata, 'riposo') : [];
+    const fatto = [e.fatto, ricaricati.length ? testo('prove.riposo.ricarica') : '', finiti ?? '', ...tempo].filter(Boolean).join(' ');
     if (ricaricati.length) this.o.log.info({ riposo: r.id }, 'rest: resources and spells refreshed');
     this.fattiInSospeso.push(fatto);
     return { ok: true, fatto };
@@ -1394,7 +1539,7 @@ export class MotoreProve {
   // ------------------------------------------------------------------ sessione
 
   esporta(): StatoProveSalvato {
-    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta() };
+    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta(), tempo: this.tempo.esporta() };
   }
 
   importa(s: StatoProveSalvato): void {
@@ -1406,6 +1551,7 @@ export class MotoreProve {
     this.inventario?.rideriva();
     this.attivi.importa(s.attivi);
     this.morenti.importa(s.morenti);
+    this.tempo.importa(s.tempo);
     if (!this.o.dadi && s.seme && /^[0-9a-f]{8,128}$/i.test(s.seme)) this.dadi = this.nuoviDadi(s.seme, s.contatore ?? 0);
     const ultimo = s.recenti?.at(-1)?.turno;
     this.ultimoTurno = ultimo !== undefined ? { turno: ultimo, tiri: (s.recenti ?? []).filter((t) => t.turno === ultimo) } : null;
@@ -1422,6 +1568,8 @@ export class MotoreProve {
     this.inventario?.rideriva();
     this.attivi.azzera();
     this.morenti.azzera();
+    this.tempo.azzera();
+    this.luciSpente = [];
     this.intestazione = null;
     this.cache.clear();
     this.ultimi.clear();
