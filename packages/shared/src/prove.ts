@@ -89,6 +89,16 @@ export interface TiroMostrato {
    * nothing is rolled to hit, only damage. The card shows «automatico: 1d6 = 7 danni», not «7 contro soglia 0».
    */
   automatico?: boolean;
+  /**
+   * A healing roll (a spell, a potion, a rest: docs/regole.md §2, typed effects): `danno` holds the hit points healed,
+   * and the card says «cura» instead of «danni».
+   */
+  cura?: boolean;
+  /**
+   * A roll the Game Master's side makes and the table does not see (an NPC's save against a PC's spell, docs/prove.md
+   * §9): only the Game Master panel lists it. Absent = shown as always.
+   */
+  nascosta?: boolean;
   /** Tiro di un'azione privata: solo sul telefono del suo giocatore. */
   privata: boolean;
   /** Prova contrapposta tra due PG: il tiro dell'altro. */

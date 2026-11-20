@@ -32,6 +32,7 @@ import { attacco, combinaVantaggi, contesa, prova, type EsitoAttacco } from './r
 import type { StatoProve } from './stato';
 import type { DecisioneProva, EsitoAzioneProve, EsitoTurnoProve } from './tipi';
 import { conEffetto, fontiAttacco, type CondizioniDi } from './condizioni';
+import { applicaEffetti, type ContestoEffetti } from './effetti';
 import {
   dannoMostrato,
   etichettaProva,
@@ -93,6 +94,8 @@ export interface OpzioniRisolutore {
    * or absent = the Engine's dice, as always. NPC rolls never pass here.
    */
   dadiDeiPg?: DadiDeiPg | null;
+  /** The Engine's typed effects (prove/effetti.ts): a failed scene check's `effetti_se_fallisce`. Absent = not applied. */
+  effetti?: ContestoEffetti;
   log: Logger;
 }
 
@@ -330,6 +333,12 @@ export function risolviTurno(o: OpzioniRisolutore): Omit<EsitoTurnoProve, 'attes
     let f = fattoTiro(t, null);
     if (autoFallita) f += testo('prove.fatto.fallisce_da_solo', { condizione: autoFallita.toLowerCase() });
     if (ps?.se_fallisce && !e.riuscita) f += testo('prove.fatto.prezzo', { prezzo: ps.se_fallisce });
+    // The hazard of the scene check hits the PC who failed it: a fall, a trap's damage (typed effects).
+    if (!e.riuscita && ps?.effetti.length && o.effetti) {
+      const x = applicaEffetti({ effetti: ps.effetti, bersaglio: a.autore, autore: null, fonte: ps.nome ?? t.etichetta, livello: 1, privata: a.privata }, o.effetti);
+      for (const c of x.tiri) aggiungi(c);
+      if (x.fatti.length) f += ` ${x.fatti.join(' ')}`;
+    }
     // Che cosa NON succede: la prova della scena, o l'azione stessa (la carta e la storia d'accordo, D2).
     // Non per un indizio essenziale: lo trova comunque, con un prezzo.
     if (!e.riuscita && !ps?.essenziale) f += fattoNonOttiene(ps?.quando ?? a.testo, a.privata ? a.autore : null);

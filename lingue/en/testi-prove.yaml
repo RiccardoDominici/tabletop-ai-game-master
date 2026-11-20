@@ -86,6 +86,26 @@ prove:
     attacco_automatico: "attack with {arma} on {bersaglio} ({regola}) → HITS, {danno}."
     attacco_set: "attack with {arma} on {bersaglio}: {regola} → {esito}."
     attacco_set_colpito: "attack with {arma} on {bersaglio}: {regola} → {esito}, {danno}."
+  # Typed effects (prove/effetti.ts): damage, healing, falls, traps, poison and binding outside an attack.
+  effetti:
+    dimezzato: " (halved by the saving throw)"
+    danno: "{fonte}: {nome} takes {danno}{meta}; {nome} {stato}."
+    svegliato: "The blow jolts {nome}: no longer {condizione}."
+    cura: "{fonte}: {nome} recovers {n} {danni}; {nome} {stato}."
+    cura_morto: "{nome} is dead: {fonte} does not bring them back."
+    caduta_lieve: "{nome} falls {altezza}: too little to get hurt."
+    fonte_caduta: "{fonte} (a fall of {altezza})"
+    regola_attacco: "d20 {bonus} against AC {ca}: {totale}"
+    attacco_mancato: "{fonte} attacks {nome} ({regola}) → MISSES."
+    attacco_colpito: "{fonte} attacks {nome} ({regola}) → HITS."
+    morte: "{nome} dies: {fonte}."
+    stabilizzato: "{fonte}: {nome} is bandaged and stable at zero hit points; no fighting or spellcasting until above zero."
+    non_serve_stabilizzare: "{fonte}: {nome} is not dying, there is no need."
+  # A rest from the Game Master panel (prove/riposo.ts).
+  riposo:
+    fatto: "Rest ({riposo}): {elenco}."
+    pg: "{nome} recovers {n} {danni} ({attuali} of {massimi})"
+    nessuno: "nobody recovers hit points"
   motivo:
     annullati: "advantage and disadvantage cancel out"
     aiuta: "{nome} helps"

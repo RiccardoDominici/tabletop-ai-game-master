@@ -92,6 +92,26 @@ prove:
     attacco_automatico: "attacco con {arma} a {bersaglio} ({regola}) → COLPISCE, {danno}."
     attacco_set: "attacco con {arma} a {bersaglio}: {regola} → {esito}."
     attacco_set_colpito: "attacco con {arma} a {bersaglio}: {regola} → {esito}, {danno}."
+  # Typed effects (prove/effetti.ts): damage, healing, falls, traps, poison and binding outside an attack.
+  effetti:
+    dimezzato: " (dimezzati dal tiro salvezza)"
+    danno: "{fonte}: {nome} prende {danno}{meta}; {nome} {stato}."
+    svegliato: "Il colpo scuote {nome}: non è più {condizione}."
+    cura: "{fonte}: {nome} recupera {n} {danni}; {nome} {stato}."
+    cura_morto: "{nome} è morto: {fonte} non lo riporta in vita."
+    caduta_lieve: "{nome} cade da {altezza}: troppo poco per farsi male."
+    fonte_caduta: "{fonte} (caduta da {altezza})"
+    regola_attacco: "d20 {bonus} contro CA {ca}: {totale}"
+    attacco_mancato: "{fonte} attacca {nome} ({regola}) → MANCA."
+    attacco_colpito: "{fonte} attacca {nome} ({regola}) → COLPISCE."
+    morte: "{nome} muore: {fonte}."
+    stabilizzato: "{fonte}: {nome} è fasciato e stabile a zero punti ferita; non combatte né lancia incantesimi finché non torna sopra zero."
+    non_serve_stabilizzare: "{fonte}: {nome} non sta morendo, non serve."
+  # A rest from the Game Master panel (prove/riposo.ts).
+  riposo:
+    fatto: "Riposo ({riposo}): {elenco}."
+    pg: "{nome} recupera {n} {danni} ({attuali} su {massimi})"
+    nessuno: "nessuno recupera punti ferita"
   # Il perché di un vantaggio o di uno svantaggio, sulla carta.
   motivo:
     annullati: "vantaggio e svantaggio si annullano"

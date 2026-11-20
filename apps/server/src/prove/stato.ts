@@ -21,6 +21,8 @@ export interface StatoProveSalvato {
   combattimento_chiesto?: boolean;
   /** Chi è morto o fuggito (oltre ai PF): resta vero anche a scontro finito. */
   fuori?: Array<[string, Uscito]>;
+  /** Facts of the Game Master's rest or hazards not yet told by the narrator (prove/motore.ts). */
+  fatti_in_sospeso?: string[];
 }
 
 /** Fuori gioco oltre ai PF: morto (finché il master non lo cura), fuggito (finché la scena non cambia). */
@@ -122,6 +124,15 @@ export class StatoProve {
     // Il master che ridà PF a un morto lo riporta in vita: è la sua decisione.
     if (this.usciti.get(id) === 'morto' && this.pf.get(id)! > 0) this.usciti.delete(id);
     return this.puntiFerita(id);
+  }
+
+  /**
+   * Healing by a rule (a spell, a potion, a rest: prove/effetti.ts, prove/riposo.ts): up to the maximum, but never on a
+   * dead character. Only the Game Master's own command (`cura`, `impostaPf`) brings one back. null = no sheet, or dead.
+   */
+  curaRegola(id: string, n: number): PuntiFerita | null {
+    if (this.usciti.get(id) === 'morto') return null;
+    return this.cura(id, n);
   }
 
   /** Il prossimo id di carta («t1», «t2»…). */

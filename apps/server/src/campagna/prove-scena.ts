@@ -15,6 +15,7 @@
  * Un indizio essenziale non sta mai dietro un tiro (F3): una prova che lo cita è un avviso, e il
  * narratore lo dà comunque, con un prezzo, anche se il tiro fallisce.
  */
+import { leggiEffetti, type EffettoTipato } from '../regole/effetti';
 import { indiziCampagna } from './indizi';
 import { comeAbilita, comeCaratteristica, type Abilita, type Caratteristica } from './regole-srd';
 import type { Campagna, DatiYaml, ScenaCaricata } from './tipi';
@@ -37,6 +38,10 @@ export interface ProvaScena {
   se_fallisce: string | null;
   /** Parole che la chiamano (arbitro a regole), oltre al `quando`. */
   parole: string[];
+  /** The hazard's name on the card and in the fact («Fossa coperta»); null = the check's own label. */
+  nome: string | null;
+  /** Typed effects applied to the PC who fails (`effetti_se_fallisce`: a fall, a trap's damage; regole/effetti.ts). */
+  effetti: EffettoTipato[];
 }
 
 function leggiProva(d: DatiYaml, scena: string, essenziali: Set<string>, avvisa: (m: string) => void): ProvaScena | null {
@@ -75,7 +80,17 @@ function leggiProva(d: DatiYaml, scena: string, essenziali: Set<string>, avvisa:
     essenziale,
     se_fallisce: typeof d['se_fallisce'] === 'string' ? d['se_fallisce'] : null,
     parole: Array.isArray(d['parole']) ? d['parole'].filter((p): p is string => typeof p === 'string') : [],
+    nome: typeof d['nome'] === 'string' && d['nome'].trim() ? d['nome'].trim() : null,
+    effetti: effettiSeFallisce(d, dove, avvisa),
   };
+}
+
+/** `effetti_se_fallisce` of a scene check (regole/effetti.ts); a malformed one is reported and dropped. */
+export function effettiSeFallisce(d: DatiYaml, dove: string, avvisa: (m: string) => void = () => {}): EffettoTipato[] {
+  const errori: string[] = [];
+  const effetti = leggiEffetti(d['effetti_se_fallisce'], `${dove}.effetti_se_fallisce`, errori);
+  for (const e of errori) avvisa(e);
+  return effetti;
 }
 
 /** Le prove di una scena (vuoto se non ne ha). */

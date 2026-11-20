@@ -75,6 +75,9 @@ regia:
     nessun_combattimento: "No combat in progress."
     pf_non_validi: "Invalid HP, or the character has no sheet."
     condizione_sconosciuta: "Unknown condition, or no combat in progress."
+    riposo_in_combattimento: "No resting during a fight: end it first."
+    riposo_sconosciuto: "This rule set has no rest of that kind."
+    pericolo_non_valido: "Invalid hazard: it needs a character with a sheet and damage like 2d6, or a height."
   # Automatic audio cues in the panel's event list ({origine}: "line <id>" or the cue's own origin).
   audio:
     origine_battuta: "line {id}"
@@ -276,6 +279,8 @@ master:
     umore_non_valido: "Invalid mood."
     pf_non_validi: "Invalid character or HP."
     condizione_non_valida: "Invalid condition."
+    riposo_non_valido: "Invalid rest."
+    pericolo_non_valido: "Invalid hazard: character, kind (danno, cura, caduta) and value."
     tiro_non_valido: "Invalid roll."
     prova_non_valida: "Invalid check, difficulty or character (it needs a PC with a sheet)."
     tiro_nessuna: "No roll is waiting with this name."
@@ -286,6 +291,11 @@ master:
     effetto_sconosciuto: "Unknown effect."
     senza_proiettore: "No projector with sound on."
   # Details of an event in the panel's list (master/comandi.ts → SezioneEventi).
+  # Default names of a hazard the Game Master applies from the panel (command `pericolo`, docs/prove.md §10).
+  pericolo:
+    danno: "Damage"
+    cura: "Healing"
+    caduta: "Fall"
   dettagli:
     rifiutato: "rejected: {dettagli}"
     luogo_sconosciuto: "unknown place “{luogo}”"
@@ -329,6 +339,8 @@ master:
     combattimento_terminato: "combat ended by the Game Master"
     pf: "{id}: HP {valore}"
     condizione_messa: "{id}: {condizione} applied"
+    riposo: "rest: {riposo}"
+    pericolo: "{id}: {cosa} {valore} ({fonte})"
     condizione_tolta: "{id}: {condizione} removed"
     tiro_inserito: "{id}: dice {valori} entered by the Game Master"
     tiro_automatico: "{id}: the Engine rolls"

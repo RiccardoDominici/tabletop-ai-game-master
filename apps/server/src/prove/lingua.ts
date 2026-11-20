@@ -36,7 +36,7 @@ export interface NomiProve {
 /** Il file prove.yaml di un pacchetto. */
 export interface PacchettoProve {
   nomi: NomiProve;
-  srd: { danni: { nome: string; a_zero: string }; sociale: string; attribuzione: string };
+  srd: { danni: { nome: string; a_zero: string }; sociale: string; attribuzione: string; riposo_lungo: string; piedi: string };
   parole: {
     abilita: Record<string, string[]>;
     attacco: string[];

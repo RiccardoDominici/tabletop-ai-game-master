@@ -43,6 +43,9 @@ import {
 import type { AzioneRisolvibile } from './risolutore';
 import { conEffetto, fontiAttacco, type CondizioniDi } from './condizioni';
 import { modificatoriDellAttacco } from './modificatori';
+import { applicaEffetti, type ContestoEffetti } from './effetti';
+import { effettiSeFallisce } from '../campagna/prove-scena';
+import type { EffettoTipato } from '../regole/effetti';
 
 /** Una prova scritta nei dati della scena, col vocabolario del set (scena → prove). */
 export interface ProvaScenaRegole {
@@ -54,6 +57,10 @@ export interface ProvaScenaRegole {
   difficolta: string | null;
   se_fallisce: string | null;
   parole: string[];
+  /** The hazard's name on the card and in the fact; null = the check's own label. */
+  nome: string | null;
+  /** Typed effects applied to the PC who fails (`effetti_se_fallisce`, regole/effetti.ts). */
+  effetti: EffettoTipato[];
 }
 
 /** Le prove della scena per un set non SRD: id del set, difficoltà per id (non la CD dell'SRD). */
@@ -64,7 +71,7 @@ export function proveScenaRegole(s: SistemaRegole, c: Campagna): ProvaScenaRegol
     const d = g as DatiYaml;
     if (typeof d?.['id'] !== 'string') return [];
     const pick = (k: string, ammessi: Array<{ id: string }>): string | null => (typeof d[k] === 'string' && ammessi.some((x) => x.id === d[k]) ? (d[k] as string) : null);
-    return [{ id: d['id'], quando: typeof d['quando'] === 'string' ? d['quando'] : '', caratteristica: pick('caratteristica', s.caratteristiche), abilita: pick('abilita', s.abilita), mossa: pick('mossa', s.mosse), difficolta: pick('difficolta', s.difficolta), se_fallisce: typeof d['se_fallisce'] === 'string' ? d['se_fallisce'] : null, parole: Array.isArray(d['parole']) ? (d['parole'] as unknown[]).filter((p): p is string => typeof p === 'string') : [] }];
+    return [{ id: d['id'], quando: typeof d['quando'] === 'string' ? d['quando'] : '', caratteristica: pick('caratteristica', s.caratteristiche), abilita: pick('abilita', s.abilita), mossa: pick('mossa', s.mosse), difficolta: pick('difficolta', s.difficolta), se_fallisce: typeof d['se_fallisce'] === 'string' ? d['se_fallisce'] : null, parole: Array.isArray(d['parole']) ? (d['parole'] as unknown[]).filter((p): p is string => typeof p === 'string') : [], nome: typeof d['nome'] === 'string' && d['nome'].trim() ? d['nome'].trim() : null, effetti: effettiSeFallisce(d, `prove[${d['id']}]`) }];
   });
 }
 
@@ -93,6 +100,8 @@ export interface OpzioniRisolutoreRegole {
    * its hit. Null or absent = the Engine's dice, as always. NPC rolls never pass here.
    */
   dadiDeiPg?: DadiDeiPg | null;
+  /** The Engine's typed effects (prove/effetti.ts): a failed scene check's `effetti_se_fallisce`. Absent = not applied. */
+  effetti?: ContestoEffetti;
   log: Logger;
 }
 
@@ -200,6 +209,12 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
           fatto += testo('prove.fatto.esito_mossa', { mossa: cosa.mossa.nome, esito: esitoMossa });
         }
         if (!e.riuscita && ps?.se_fallisce) fatto += testo('prove.fatto.prezzo', { prezzo: ps.se_fallisce });
+        // The hazard of the scene check hits the PC who failed it: a fall, a trap's damage (typed effects).
+        if (!e.riuscita && ps?.effetti.length && o.effetti) {
+          const x = applicaEffetti({ effetti: ps.effetti, bersaglio: a.autore, autore: null, fonte: ps.nome ?? cosa.etichetta, livello: 1, privata: a.privata }, o.effetti);
+          for (const t of x.tiri) aggiungi(t);
+          if (x.fatti.length) fatto += ` ${x.fatti.join(' ')}`;
+        }
         // Che cosa NON succede (la carta e la storia d'accordo, D2); una mossa ha già il suo esito scritto.
         if (!e.riuscita && !cosa.mossa) fatto += fattoNonOttiene(ps?.quando ?? a.testo, a.privata ? a.autore : null);
       }

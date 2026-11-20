@@ -60,6 +60,8 @@ const TIPI: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>([
   'combattimento_termina',
   'pf',
   'condizione',
+  'riposo',
+  'pericolo',
   'tiro',
   'chiedi_prova',
 ]);
@@ -363,6 +365,25 @@ export class ControlliMaster {
         const esito = regia.condizioneCombattimento(id, cond, c.attiva);
         if (!esito.ok) return rifiuto(esito.errore);
         return { esito, dettagli: dettaglio(c.attiva ? 'condizione_messa' : 'condizione_tolta', { id, condizione: cond }), dati: { id, condizione: cond, attiva: c.attiva } };
+      }
+      case 'riposo': {
+        // A rest for the party (docs/prove.md §10): the set's healing and refresh.
+        const riposo = typeof c.riposo === 'string' && ID_VALIDO.test(c.riposo) ? c.riposo : null;
+        if (!riposo) return rifiutoDi('riposo_non_valido');
+        const esito = regia.riposo(riposo);
+        if (!esito.ok) return rifiuto(esito.errore);
+        return { esito, dettagli: dettaglio('riposo', { riposo }), dati: { riposo } };
+      }
+      case 'pericolo': {
+        // A hazard on a character (docs/prove.md §10): damage or healing by a formula, or a fall of a height.
+        const id = typeof c.id === 'string' && ID_VALIDO.test(c.id) ? c.id : null;
+        const cosa = c.cosa === 'danno' || c.cosa === 'cura' || c.cosa === 'caduta' ? c.cosa : null;
+        const valore = cosa === 'caduta' ? (typeof c.valore === 'number' && c.valore >= 0 && c.valore <= 10000 ? c.valore : null) : typeof c.valore === 'string' && /^[0-9dD+\- ]{1,20}$/.test(c.valore) ? c.valore : typeof c.valore === 'number' && Number.isInteger(c.valore) && c.valore >= 0 && c.valore <= 999 ? c.valore : null;
+        const fonte = typeof c.fonte === 'string' && c.fonte.trim() ? c.fonte.trim().slice(0, 60) : testo(`master.pericolo.${cosa ?? 'danno'}`);
+        if (!id || !cosa || valore === null) return rifiutoDi('pericolo_non_valido');
+        const esito = regia.pericolo(id, cosa, valore, fonte);
+        if (!esito.ok) return rifiuto(esito.errore);
+        return { esito, dettagli: dettaglio('pericolo', { id, cosa, valore: String(valore), fonte }), dati: { id, cosa, valore, fonte } };
       }
       case 'effetto': {
         const id = typeof c.id === 'string' && ID_VALIDO.test(c.id) ? c.id : '';

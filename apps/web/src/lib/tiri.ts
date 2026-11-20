@@ -229,9 +229,10 @@ export function contoTiro(tiro: Pick<TiroMostrato, 'dado' | 'modificatore' | 'to
  * An automatic attack (it always hits, only damage is rolled): «automatico: 1d6+1 = 7 danni». Null for any other card.
  * Before, the card read «Dardo incantato 7 contro soglia 0».
  */
-export function testoAutomatico(tiro: Pick<TiroMostrato, 'automatico' | 'danno'>): string | null {
+export function testoAutomatico(tiro: Pick<TiroMostrato, 'automatico' | 'danno' | 'cura'>): string | null {
   if (!tiro.automatico || !tiro.danno) return null;
-  return t('comune.tiri.automatico', { formula: tiro.danno.formula, totale: tiro.danno.totale });
+  // A healing card (a spell, a potion): the same count, said as hit points recovered.
+  return t(tiro.cura ? 'comune.tiri.cura' : 'comune.tiri.automatico', { formula: tiro.danno.formula, totale: tiro.danno.totale });
 }
 
 /** Una frase intera per i lettori di schermo e i log: «Arianna, Persuasione (Carisma): 17 + 5 = 22 contro CD 15. Riuscita.» */

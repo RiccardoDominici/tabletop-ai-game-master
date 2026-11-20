@@ -716,5 +716,34 @@ nobody at the table rolls for it, the Engine rolls; the model never picks the re
   test/mondo-domande.test.ts (reading, once per session, saved, the NPC check through the SRD and a manual's set,
   the cached context, the whole server with and without sheets).
 
+## 10. Hit points from every source: typed effects, falls, rest (20 November)
+
+Riccardo: «Il sistema di punti ferita, slot incantesimi, armi, peso… devi prendere il manuale e analizzare ogni singola
+regola.» The rule audit (docs/regole-audit/basic-fantasy-gioco.md, gap 1) found that hit points changed only through an
+attack between two sheets and the Game Master's `pf`: traps, falls, potions, healing spells and rest changed nothing.
+Now every source goes through one Engine path, prove/effetti.ts, with the typed effects of docs/regole.md §2.
+
+- **Typed effects** (regole/effetti.ts reads them, prove/effetti.ts applies them): `danno`, `cura`, `caduta`, `attacco`
+  (a trap that attacks like a monster: d20 + its bonus against the victim's AC), `condizione`, `bonus`, `immunita`,
+  `stabilizza`, `morte` (save or die). Damage and healing scale with the caster's level (`dadi_per_livello`,
+  `bonus_per_livello`, `colpi`). Each damage or healing roll gets a card like an attack's: an automatic one with the
+  dice («automatico: 2d6 = 7 danni»; healing «cura: 1d6+1 = 5 punti ferita», card field `cura: true`), and a fact for
+  the narrator. A hazard's card is the victim's and has no target, so it never opens a fight; a power aimed at an NPC
+  is its author's attack card, which does. Healing never brings back the dead (`StatoProve.curaRegola`): only the Game
+  Master's `pf` does, as before. A character healed from 0 gets back on its feet in the fight (`dopoCura`).
+- **A failed scene check's hazard.** A scene check can carry `nome` (the hazard's name on the card) and
+  `effetti_se_fallisce` (typed effects): the PC who fails it takes them, through the same path, in both resolvers (the
+  SRD's and the manual's). torre-mozza's pit, `p_fossa_salvezza`, is a fall of 2 metres by the set's table.
+- **Falls** follow the set's `cadute` table (Basic Fantasy p. 59: 1d6 per 10 feet to the nearest step, at most 20d6;
+  the SRD 5.2: 1d6 per full 10 feet, at most 20d6, in regole/srd.ts). A fall too short to hurt says so.
+- **Rest and hazards from the panel** (Game Master commands `riposo` and `pericolo`, `MotoreProve.riposo` and
+  `effettoDelMaster`). A rest applies the set's `riposo` kind to every character with a sheet who is not dead (a number,
+  a formula rolled for each, or all), never during a fight; a hazard applies damage, healing or a fall to one
+  character. The panel lists the set's kinds of rest (`CombattimentoMaster.riposi`). Their facts go to the transcript
+  at once and to the narrator first in the next resolved turn (`fatti_in_sospeso`, kept in the snapshot).
+- Tests: test/effetti.test.ts (the closed list, the scaling, both falling tables, damage halved by a save, healing that
+  never revives, a trap's attack, save-or-die, a failed scene check's fall, a rest, the Game Master's hazard, the SRD's
+  data), strumenti/test_valida_effetti.py (the validator's mirror).
+
 Credits: this work includes material from the System Reference Document 5.2 («SRD 5.2») by Wizards of the Coast LLC,
 https://www.dndbeyond.com/srd, licensed under the Creative Commons Attribution 4.0 International License.

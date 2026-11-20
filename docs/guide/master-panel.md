@@ -177,6 +177,8 @@ Shown only when the campaign has dice and character sheets (see [Dice and sheets
 - **Termina combattimento** (End combat): the first click asks for confirmation, the button turns red and reads «Conferma: termina combattimento» (Confirm: end combat). The second click ends the fight.
 - **HP**: each sheet, player's characters and NPCs, shows its current and maximum HP. Type a number from 0 to 999 in the box and press **Imposta** (Set), or Enter. The number is the new value, not a change: it replaces the current HP.
 - **Conditions**: during the fight, each combatant lists its active conditions with their icon. Click one to remove it. To add one, choose it in the «Condizione…» (Condition…) list and press **Aggiungi** (Add).
+- **Riposo** (Rest): outside a fight, one button per kind of rest of the campaign's rule set, «Riposo: Una notte di sonno» (Rest: one night's sleep), «Riposo: Riposo lungo» (the SRD's long rest). A click heals every character with a sheet by the manual's rule (Basic Fantasy: 1 hit point a night, 2 for a day in bed; the SRD: all of them), never the dead. The transcript gets the line at once, and the narrator tells it in the next turn.
+- **Pericolo** (Hazard): in each sheet, choose **Danno** (Damage), **Cura** (Healing) or **Caduta** (Fall), type a dice formula («2d6», «1d8+1») or a number (for a fall, the height in the unit of the rule set's falling table: metres or feet), and press **Applica** (Apply). The program rolls the dice, changes the hit points, shows the card on the projector, and the narrator tells it in the next turn. Use it for a trap, a rock slide or a potion the scene did not write down: what the scene writes (a pit behind a failed check) happens by itself.
 
 ### Rolls
 

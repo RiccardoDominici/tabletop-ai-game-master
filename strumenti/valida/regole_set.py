@@ -18,6 +18,7 @@ import yaml
 from .carica import Campagna
 from .esito import Esito
 from . import regole_combattimento
+from .regole_effetti import controlla_cadute, controlla_effetti, controlla_riposo
 from .regole_repertorio import blocchi_richiede
 from .lingua import generiche_in
 from .regole_schede import TIPI_PROVA_RICHIEDE, _id_attacchi, _prove_della_campagna, dadi_attivi
@@ -409,12 +410,23 @@ def _richiede_prova_set(c: Campagna, e: Esito, car: set[str], abi: set[str], mos
                 e.avviso("REGOLE.richiede_prova", dove, "richiede.prova in una campagna senza dadi: la battuta non uscirà mai")
 
 
-def _prove_di_scena(c: Campagna, e: Esito, car: set[str], abi: set[str], mosse: set[str], diff: set[str]) -> None:
+def condizioni_del_set(r: dict) -> set[str]:
+    """The ids of the set's conditions (combattimento.condizioni): typed effects may only give these."""
+    comb = _ogg(r.get("combattimento")) or {}
+    return {o["id"] for o in comb.get("condizioni") or [] if isinstance(o, dict) and isinstance(o.get("id"), str)}
+
+
+def _prove_di_scena(c: Campagna, e: Esito, car: set[str], abi: set[str], mosse: set[str], diff: set[str],
+                    condizioni: set[str] | None = None) -> None:
     """Le prove della scena (scena.yaml → prove) usano id del set: mossa, abilità, caratteristica, difficoltà."""
     for nome, s in c.scene:
         for i, p in enumerate(s.get("prove") or [], start=1):
             o = _ogg(p) or {}
             dove = f"{nome} prove[{i}]"
+            # The hazard of a failed check (a fall, a trap's damage): typed effects of the closed list.
+            controlla_effetti(o.get("effetti_se_fallisce"), f"{dove}.effetti_se_fallisce", e, "REGOLE.prove", condizioni)
+            if "nome" in o and not (isinstance(o["nome"], str) and o["nome"].strip()):
+                _err(e, "prove", dove, "nome: il nome del pericolo, un testo")
             if gen := generiche_in(o.get("parole"), c.lingua):
                 _generiche(e, dove, "parole", gen)
             if o.get("mossa") is not None and o["mossa"] not in mosse:
@@ -462,6 +474,8 @@ def controlla(c: Campagna, e: Esito) -> None:
         if gen := generiche_in(voci, c.lingua):
             _generiche(e, dove, f"parole_chiave.{k}", gen)
     _schede(c, e, car, abi, dadi_attivi(c), tabella_modificatori(r), soglie_abilita(r))
-    _prove_di_scena(c, e, car, abi, mosse, diff)
+    _prove_di_scena(c, e, car, abi, mosse, diff, condizioni_del_set(r))
+    controlla_cadute(r, e, dove)
+    controlla_riposo(r, e, dove)
     _richiede_prova_set(c, e, car, abi, mosse)
     _file_del_set(c, e, c.cartella / "regole")

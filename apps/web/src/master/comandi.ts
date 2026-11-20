@@ -40,6 +40,8 @@ export const ZONA_COMANDO: Record<TipoComandoMaster, ZonaComando> = {
   combattimento_termina: 'combattimento',
   pf: 'combattimento',
   condizione: 'combattimento',
+  riposo: 'combattimento',
+  pericolo: 'combattimento',
   tiro: 'tiri',
   chiedi_prova: 'tiri',
 };
@@ -73,6 +75,8 @@ export const ETICHETTA_COMANDO: Record<TipoComandoMaster, string> = tabella({
   combattimento_termina: 'master.cmd.combattimento_termina',
   pf: 'master.cmd.pf',
   condizione: 'master.cmd.condizione',
+  riposo: 'master.cmd.riposo',
+  pericolo: 'master.cmd.pericolo',
   tiro: 'master.cmd.tiro',
   chiedi_prova: 'master.cmd.chiedi_prova',
 });
@@ -114,6 +118,9 @@ export function chiaveComando(comando: ComandoMaster): string {
       return `condizione:${comando.id}:${comando.condizione}`;
     case 'tiro':
       return `tiro:${comando.id}`;
+    case 'pericolo':
+      // One hazard at a time on a character.
+      return `pericolo:${comando.id}`;
     case 'chiedi_prova':
       return 'chiedi_prova';
     case 'atteggiamento':
@@ -165,6 +172,10 @@ export function descriviComando(comando: ComandoMaster): string {
       return `${nome} ${comando.id === '*' ? t('master.tiri.tutti') : comando.id}: ${comando.valori ? comando.valori.join(', ') : t('master.tiri.motore')}`;
     case 'chiedi_prova':
       return `${nome} ${comando.id_pg}: ${comando.cosa}`;
+    case 'riposo':
+      return `${nome}: ${comando.riposo}`;
+    case 'pericolo':
+      return `${nome} ${comando.id}: ${comando.cosa} ${comando.valore}`;
     default:
       return nome;
   }

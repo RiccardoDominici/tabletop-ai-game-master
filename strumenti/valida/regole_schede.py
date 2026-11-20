@@ -20,13 +20,14 @@ from .lingua import generiche_in
 from . import srd
 from .carica import Campagna
 from .esito import Esito
+from .regole_effetti import controlla_effetti
 from .regole_repertorio import blocchi_richiede
 from .testo import n_parole
 
 CHIAVI_PG = {"caratteristiche", "competenze", "maestrie", "tiri_salvezza", "armatura", "ca", "pf", "attacchi"}
 CHIAVI_PNG = CHIAVI_PG | {"gs", "livello", "influenza"}
 CHIAVI_ATTACCO = {"nome", "caratteristica", "danno", "tipo_danno", "distanza", "competente", "bonus"}
-CHIAVI_PROVA = {"id", "quando", "abilita", "caratteristica", "salvezza", "cd", "indizio", "se_fallisce"}
+CHIAVI_PROVA = {"id", "quando", "abilita", "caratteristica", "salvezza", "cd", "indizio", "se_fallisce", "nome", "effetti_se_fallisce"}
 # Modificatori scritti a mano: il codice li calcola (docs/prove.md §2).
 MODIFICATORI = {"modificatore", "modificatori", "mod", "bonus_competenza", "bonus_di_competenza", "competenza",
                 "passiva", "passive", "percezione_passiva", "tiro_colpire", "tiro_per_colpire", "bonus_attacco",
@@ -365,6 +366,8 @@ def _prove_scena(c: Campagna, e: Esito, nome: str, s: dict, doppie: set[str]) ->
                 e.errore("SCHEDA.prove", dove, f"l'indizio {ind} è essenziale: non sta dietro un tiro (F3). Lo dà la scena, con un prezzo (se_fallisce)")
         if "se_fallisce" in p and not isinstance(p["se_fallisce"], str):
             e.errore("SCHEDA.prove", dove, "se_fallisce è un testo")
+        # The hazard of a failed check (docs/regole.md §2, typed effects): a fall, a trap's damage.
+        controlla_effetti(p.get("effetti_se_fallisce"), f"{dove}.effetti_se_fallisce", e, "SCHEDA.prove", None)
 
 
 def _richiede_prova(c: Campagna, e: Esito, dadi: bool, prove_ids: set[str]) -> None:

@@ -76,6 +76,9 @@ regia:
     nessun_combattimento: "Nessun combattimento in corso."
     pf_non_validi: "PF non validi o personaggio senza scheda."
     condizione_sconosciuta: "Condizione sconosciuta, o nessun combattimento in corso."
+    riposo_in_combattimento: "Durante uno scontro non si riposa: prima terminalo."
+    riposo_sconosciuto: "Questo set di regole non ha quel tipo di riposo."
+    pericolo_non_valido: "Pericolo non valido: serve un personaggio con la scheda e un danno come 2d6, o un'altezza."
   # Segnali audio automatici nell'elenco degli eventi del pannello ({origine}: «battuta <id>» o quella del segnale).
   audio:
     origine_battuta: "battuta {id}"
@@ -277,6 +280,8 @@ master:
     umore_non_valido: "Umore non valido."
     pf_non_validi: "Personaggio o PF non validi."
     condizione_non_valida: "Condizione non valida."
+    riposo_non_valido: "Riposo non valido."
+    pericolo_non_valido: "Pericolo non valido: personaggio, cosa (danno, cura, caduta) e valore."
     tiro_non_valido: "Tiro non valido."
     prova_non_valida: "Prova, difficoltà o personaggio non validi (serve un PG con la scheda)."
     tiro_nessuna: "Nessun tiro in attesa con questo nome."
@@ -287,6 +292,11 @@ master:
     effetto_sconosciuto: "Effetto sconosciuto."
     senza_proiettore: "Nessun proiettore con l’audio acceso."
   # Dettagli di un evento nell'elenco del pannello (master/comandi.ts → SezioneEventi).
+  # Default names of a hazard the Game Master applies from the panel (command `pericolo`, docs/prove.md §10).
+  pericolo:
+    danno: "Danno"
+    cura: "Cura"
+    caduta: "Caduta"
   dettagli:
     rifiutato: "rifiutato: {dettagli}"
     luogo_sconosciuto: "luogo sconosciuto «{luogo}»"
@@ -330,6 +340,8 @@ master:
     combattimento_terminato: "combattimento terminato dal master"
     pf: "{id}: PF {valore}"
     condizione_messa: "{id}: {condizione} messa"
+    riposo: "riposo: {riposo}"
+    pericolo: "{id}: {cosa} {valore} ({fonte})"
     condizione_tolta: "{id}: {condizione} tolta"
     tiro_inserito: "{id}: dadi {valori} inseriti dal master"
     tiro_automatico: "{id}: tira il Motore"

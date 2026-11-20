@@ -46,6 +46,11 @@ import { valoreCaratteristica } from '../regole/schede';
 import { comeCaratteristica } from '../campagna/regole-srd';
 import { modCaratteristica } from '../campagna/schede';
 import type { CombattimentoMaster, CombattimentoPubblico, RichiestaTiroMaster } from '@tabletop-ai-gm/shared';
+import { applicaEffetti, type ContestoEffetti } from './effetti';
+import { riposa } from './riposo';
+import { sistemaSrd } from '../regole/srd';
+import { leggiEffetto } from '../regole/effetti';
+import type { SistemaRegole } from '../regole/tipi';
 
 /** Decisione dell'arbitro: SRD 5.2, o col vocabolario del set del manuale. */
 type Decisione = DecisioneProva | DecisioneRegole;
@@ -166,6 +171,11 @@ export class MotoreProve {
   private tavolo: DadiDeiPg | null = null;
   /** The scenes' minions by id (C5). */
   private readonly gregari: ReadonlyMap<string, Gregario>;
+  /**
+   * Facts of what the Game Master applied from the panel between two turns (a rest, a trap, a fall: docs/prove.md §10):
+   * the narrator hears them in the next resolved turn, first. Kept in the snapshot.
+   */
+  private fattiInSospeso: string[] = [];
 
   constructor(private readonly o: OpzioniMotoreProve) {
     this.gregari = new Map((o.gregari ?? []).map((g) => [g.id, g]));
@@ -665,6 +675,11 @@ export class MotoreProve {
     this.tavolo = tavolo;
     try {
       const r = this.passaRisolutore(turno, c, azioni, decisioni, { dadiDeiPg: tavolo });
+      // What the Game Master applied from the panel since the last turn (a rest, a hazard) comes first for the narrator.
+      if (this.fattiInSospeso.length) {
+        r.fatti.unshift(...this.fattiInSospeso);
+        this.fattiInSospeso = [];
+      }
       // Combattimento: si entra con un attacco; poi i turni dei PNG e i tiri contro la morte fino al prossimo PG.
       const attacchi = r.tiri.filter((t) => t.tipo === 'attacco' && t.bersaglio).map((t) => ({ chi: t.chi, bersaglio: t.bersaglio!.id }));
       // Each PC's last target: an attack with no target named goes there (bersaglioImplicito).
@@ -732,6 +747,7 @@ export class MotoreProve {
       conIndizi: this.o.conIndizi,
       condizioni: (id) => this.combattimento.condizioniDi(id),
       turni: { regole: this.regoleCombattimento().iniziativa.tipo !== 'nessuna', inCorso: this.combattimento.aTurni },
+      effetti: this.contestoEffetti(turno, c),
       log: this.o.log.child({ turno }),
     };
   }
@@ -748,8 +764,76 @@ export class MotoreProve {
       esiste: (id) => c.campagna.pg.some((p) => p.id === id) || c.campagna.png.some((p) => p.id === id) || this.gregari.has(id),
       condizioni: (id) => this.combattimento.condizioniDi(id),
       turni: { regole: this.regoleCombattimento().iniziativa.tipo !== 'nessuna', inCorso: this.combattimento.aTurni },
+      effetti: this.contestoEffetti(turno, c),
       log: this.o.log.child({ turno }),
     };
+  }
+
+  /** The rule set in use: the campaign's, or the SRD 5.2 of the code (its falls, its rest). */
+  private get sistema(): SistemaRegole {
+    return this.o.regole?.regole.sistema ?? sistemaSrd();
+  }
+
+  /**
+   * What the typed effects need (prove/effetti.ts): the state, the Engine's dice, the set's falling table and words for
+   * hit points, the sheets' Armor Class, and the fight's hook when someone gets back above zero.
+   */
+  private contestoEffetti(turno: number, c: ContestoProve): ContestoEffetti {
+    const s = this.sistema;
+    const g = this.generico;
+    return {
+      turno,
+      stato: this.stato,
+      dadi: this.dadi,
+      nome: (id) => this.nomeDi(c, id),
+      cadute: s.cadute ?? null,
+      danni: s.danni,
+      difesa: (id) => (g ? (g.schede.get(id)?.difesa ?? null) : (this.o.schede.get(id)?.ca ?? null)),
+      dopoCura: (id) => this.combattimento.dopoCura(id),
+      log: this.o.log.child({ turno, modulo: 'effetti' }),
+    };
+  }
+
+  // ------------------------------------------------------------------ the Game Master's rest and hazards (docs/prove.md §10)
+
+  /** The kinds of rest of the set, for the panel (`riposo` of regole.yaml; the SRD's long rest). */
+  tipiDiRiposo(): Array<{ id: string; nome: string }> {
+    return (this.sistema.riposo ?? []).map((r) => ({ id: r.id, nome: r.nome }));
+  }
+
+  /**
+   * The Game Master gives the party a rest (a night's sleep, the SRD's long rest): the set's healing for every character
+   * with a sheet who is not dead. Refused during a fight or for an unknown kind. The fact goes to the transcript (the
+   * return) and to the narrator in the next turn.
+   */
+  riposo(id: string): { ok: true; fatto: string } | { ok: false; motivo: 'senza_dadi' | 'combattimento' | 'sconosciuto' } {
+    if (!this.attivo) return { ok: false, motivo: 'senza_dadi' };
+    if (this.combattimento.attivo) return { ok: false, motivo: 'combattimento' };
+    const r = (this.sistema.riposo ?? []).find((x) => x.id === id);
+    if (!r) return { ok: false, motivo: 'sconosciuto' };
+    const c = this.o.contesto();
+    const ids = [...(this.generico ? this.generico.schede.keys() : this.o.schede.keys())];
+    const e = riposa(r, ids, { stato: this.stato, dadi: this.dadi, nome: (x) => this.nomeDi(c, x), danni: this.sistema.danni.nome, dopoCura: (x) => this.combattimento.dopoCura(x), log: this.o.log.child({ modulo: 'riposo' }) });
+    this.fattiInSospeso.push(e.fatto);
+    return { ok: true, fatto: e.fatto };
+  }
+
+  /**
+   * The Game Master applies a hazard to a character from the panel (docs/prove.md §10): damage («2d6»), healing, or a
+   * fall of a height by the set's table. The cards join the last turn's (projector and phones); the facts go to the
+   * transcript (the return) and to the narrator in the next turn. Null = no dice, no sheet, or a malformed effect.
+   */
+  effettoDelMaster(id: string, cosa: 'danno' | 'cura' | 'caduta', valore: string | number, fonte: string, turno: number): { fatti: string[] } | null {
+    if (!this.attivo || !this.stato.puntiFerita(id)) return null;
+    const errori: string[] = [];
+    const e = leggiEffetto(cosa === 'caduta' ? { tipo: 'caduta', altezza: valore } : { tipo: cosa, dadi: valore }, 'master', errori);
+    if (!e || errori.length) return null;
+    const c = this.o.contesto();
+    const x = applicaEffetti({ effetti: [e], bersaglio: id, autore: null, fonte, livello: 1 }, this.contestoEffetti(turno, c));
+    for (const t of x.tiri) this.aggiungiCartaDelMaster(t);
+    this.fattiInSospeso.push(...x.fatti);
+    this.o.log.info({ id, cosa, valore, fonte, fatti: x.fatti }, 'effects: applied by the Game Master');
+    return { fatti: x.fatti };
   }
 
   /** Le regole di combattimento del set (SRD 5.2 se la campagna non ne ha un altro). */
@@ -834,6 +918,7 @@ export class MotoreProve {
         return pf ? [{ id, nome: c.nome(id), di_png: id.startsWith('png_'), pf }] : [];
       }),
       condizioni: this.regoleCombattimento().condizioni.map((x) => ({ id: x.id, nome: x.nome, icona: x.icona, testo: x.testo })),
+      ...(this.tipiDiRiposo().length ? { riposi: this.tipiDiRiposo() } : {}),
     };
   }
 
@@ -1002,13 +1087,14 @@ export class MotoreProve {
   // ------------------------------------------------------------------ sessione
 
   esporta(): StatoProveSalvato {
-    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}) };
+    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}) };
   }
 
   importa(s: StatoProveSalvato): void {
     this.stato.importa(s);
     this.combattimento.importa(s.combattimento ?? null);
     this.scontroChiesto = s.combattimento_chiesto === true;
+    this.fattiInSospeso = Array.isArray(s.fatti_in_sospeso) ? s.fatti_in_sospeso.filter((x): x is string => typeof x === 'string') : [];
     if (!this.o.dadi && s.seme && /^[0-9a-f]{8,128}$/i.test(s.seme)) this.dadi = this.nuoviDadi(s.seme, s.contatore ?? 0);
     const ultimo = s.recenti?.at(-1)?.turno;
     this.ultimoTurno = ultimo !== undefined ? { turno: ultimo, tiri: (s.recenti ?? []).filter((t) => t.turno === ultimo) } : null;
@@ -1020,6 +1106,7 @@ export class MotoreProve {
     this.stato.azzeraPf();
     this.combattimento.importa(null);
     this.scontroChiesto = false;
+    this.fattiInSospeso = [];
     this.intestazione = null;
     this.cache.clear();
     this.ultimi.clear();

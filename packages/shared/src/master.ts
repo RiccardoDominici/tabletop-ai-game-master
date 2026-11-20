@@ -259,6 +259,8 @@ export interface CombattimentoMaster {
   chiesto?: boolean;
   schede: Array<{ id: string; nome: string; di_png: boolean; pf: { attuali: number; massimi: number } }>;
   condizioni: Array<{ id: string; nome: string; icona: string; testo: string }>;
+  /** The kinds of rest of the rule set (docs/prove.md §10): the panel's «Riposo» buttons. Absent or empty = none. */
+  riposi?: Array<{ id: string; nome: string }>;
 }
 
 /** Un PNG nel pannello: se è in scena, e se il master l'ha deciso a mano (altrimenti dice la scena). */
@@ -383,6 +385,13 @@ export type ComandoMaster =
   | { tipo: 'pf'; id: string; valore: number }
   /** Mette o toglie una condizione a un combattente (solo durante lo scontro). */
   | { tipo: 'condizione'; id: string; condizione: string; attiva: boolean }
+  /** A rest for the party (docs/prove.md §10): `riposo` is an id of `CombattimentoMaster.riposi`. Not during a fight. */
+  | { tipo: 'riposo'; riposo: string }
+  /**
+   * A hazard the Game Master applies to a character (docs/prove.md §10): damage or healing by a formula («2d6»), or a
+   * fall of `valore` in the unit of the set's falling table; `fonte` names it on the card («Frana»).
+   */
+  | { tipo: 'pericolo'; id: string; cosa: 'danno' | 'cura' | 'caduta'; valore: string | number; fonte?: string }
   /**
    * Manual rolls (docs/prove.md §8): the Game Master enters the dice for a player's open request (`valori`), or switches
    * it to the Engine's dice (`valori: null`); `id: '*'` switches every open request.

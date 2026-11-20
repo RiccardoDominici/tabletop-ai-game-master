@@ -3,6 +3,8 @@
  * chiede una seconda conferma), round, fase e chi deve agire; per ogni scheda (PG e PNG) i punti
  * ferita da impostare a mano («Imposta» manda il valore assoluto, come il server) e, durante lo
  * scontro, le condizioni attive con «Aggiungi» e la rimozione con un clic.
+ * Also: one rest button per rest kind of the rule set (only outside a fight), and in every sheet a hazard control
+ * (damage, healing or fall, by formula or number) applied to that character, with or without a fight.
  * Senza spoiler non c'è nulla da nascondere: i PF dei PNG si vedono normalmente (il master li gestisce).
  * La sezione non compare se lo stato non ha il blocco `combattimento` (niente dadi, niente scheda).
  */
@@ -14,12 +16,14 @@ import { useConferma } from './useConferma';
 import { Riquadro, Vuoto } from './Riquadro';
 import { Chip } from './Chip';
 import { classePulsante } from './stili';
+import { valorePericolo } from './pericolo';
 import { t } from '../lingua';
 
 export function SezioneCombattimento({ stato }: { stato: StatoMaster }) {
   const [daConfermare, clicTermina] = useConferma(() => void inviaComando({ tipo: 'combattimento_termina' }));
   const inCorsoInizia = useInCorso('combattimento_inizia');
   const inCorsoTermina = useInCorso('combattimento_termina');
+  const inCorsoRiposo = useInCorso('riposo');
 
   const cmb = stato.combattimento;
   if (!cmb) return null;
@@ -28,6 +32,7 @@ export function SezioneCombattimento({ stato }: { stato: StatoMaster }) {
   // Manual rolls: a fight asked from the panel starts at the next closed window (the players roll initiative there);
   // until then «Termina combattimento» cancels it.
   const chiesto = !attivo && cmb.chiesto === true;
+  const riposi = cmb.riposi ?? [];
 
   const nomi = new Map<string, string>((vivo?.combattenti ?? []).map((c) => [c.id, c.nome]));
   const turno = (vivo?.turno_di ?? []).map((id) => nomi.get(id) ?? id).join(', ');
@@ -68,6 +73,23 @@ export function SezioneCombattimento({ stato }: { stato: StatoMaster }) {
           {' · '}
           {t('master.combattimento.tocca_a')} <span className="font-semibold text-pergamena">{turno || t('master.combattimento.nessuno')}</span>
         </p>
+      )}
+
+      {!attivo && !chiesto && riposi.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {riposi.map((r) => (
+            <button
+              key={r.id}
+              type="button"
+              data-testid={`master-riposo-${r.id}`}
+              disabled={inCorsoRiposo}
+              onClick={() => void inviaComando({ tipo: 'riposo', riposo: r.id })}
+              className={classePulsante('normale', 'piccolo')}
+            >
+              {t('master.combattimento.riposo', { nome: r.nome })}
+            </button>
+          ))}
+        </div>
       )}
 
       {cmb.schede.length === 0 ? (
@@ -129,6 +151,9 @@ function RigaScheda({ id, nome, diPng, attuali, massimi, condizioniAttive, catal
   const [testoPf, setTestoPf] = useState('');
   const [condizione, setCondizione] = useState('');
   const inCorsoPf = useInCorso(`pf:${id}`);
+  const [cosaPericolo, setCosaPericolo] = useState<'danno' | 'cura' | 'caduta'>('danno');
+  const [testoPericolo, setTestoPericolo] = useState('');
+  const inCorsoPericolo = useInCorso(`pericolo:${id}`);
 
   const valore = Number(testoPf);
   const pfValido = testoPf.trim() !== '' && Number.isInteger(valore) && valore >= 0 && valore <= 999;
@@ -137,6 +162,14 @@ function RigaScheda({ id, nome, diPng, attuali, massimi, condizioniAttive, catal
     if (!pfValido) return;
     void inviaComando({ tipo: 'pf', id, valore });
     setTestoPf('');
+  };
+
+  // The hazard value is computed by valorePericolo (null = invalid, the button stays off); it is not the HP number above.
+  const valorePericoloCalcolato = valorePericolo(cosaPericolo, testoPericolo);
+  const applicaPericolo = () => {
+    if (valorePericoloCalcolato === null) return;
+    void inviaComando({ tipo: 'pericolo', id, cosa: cosaPericolo, valore: valorePericoloCalcolato });
+    setTestoPericolo('');
   };
 
   const aggiungi = () => {
@@ -227,6 +260,47 @@ function RigaScheda({ id, nome, diPng, attuali, massimi, condizioniAttive, catal
           )}
         </div>
       )}
+
+      <div className="flex flex-wrap items-center gap-1.5">
+        <label className="sr-only" htmlFor={`pericolo-cosa-${id}`}>
+          {t('master.combattimento.pericolo_per', { nome })}
+        </label>
+        <select
+          id={`pericolo-cosa-${id}`}
+          data-testid={`master-scheda-${id}-pericolo-cosa`}
+          value={cosaPericolo}
+          onChange={(e) => setCosaPericolo(e.target.value as 'danno' | 'cura' | 'caduta')}
+          className="rounded-md border border-bordo-chiaro bg-notte px-2 py-1 text-sm text-pergamena"
+        >
+          <option value="danno">{t('master.combattimento.pericolo_danno')}</option>
+          <option value="cura">{t('master.combattimento.pericolo_cura')}</option>
+          <option value="caduta">{t('master.combattimento.pericolo_caduta')}</option>
+        </select>
+        <label className="sr-only" htmlFor={`pericolo-valore-${id}`}>
+          {t('master.combattimento.pericolo_per', { nome })}
+        </label>
+        <input
+          id={`pericolo-valore-${id}`}
+          data-testid={`master-scheda-${id}-pericolo-valore`}
+          type="text"
+          value={testoPericolo}
+          placeholder={t('master.combattimento.pericolo_valore')}
+          onChange={(e) => setTestoPericolo(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') applicaPericolo();
+          }}
+          className="w-28 rounded-md border border-bordo-chiaro bg-notte px-2 py-1 text-sm text-pergamena"
+        />
+        <button
+          type="button"
+          data-testid={`master-scheda-${id}-pericolo-applica`}
+          disabled={valorePericoloCalcolato === null || inCorsoPericolo}
+          onClick={applicaPericolo}
+          className={classePulsante('normale', 'piccolo')}
+        >
+          {t('master.combattimento.applica')}
+        </button>
+      </div>
     </div>
   );
 }

@@ -9,6 +9,7 @@
 import type { TipoRisoluzione } from '@tabletop-ai-gm/shared';
 import type { FormulaDadi } from '../campagna/regole-srd';
 import type { Combattimento } from './combattimento';
+import type { RegolaCadute, TipoRiposo } from './salute';
 
 export interface Voce {
   id: string;
@@ -133,6 +134,10 @@ export interface SistemaRegole {
   paroleChiave: Record<string, string[]>;
   /** Situational attack modifiers the set declares (absent or empty = none: the SRD, most sets). */
   modificatori?: Modificatore[];
+  /** Falling damage by the manual's table (regole.yaml → cadute; regole/salute.ts). Absent = none. */
+  cadute?: RegolaCadute | null;
+  /** The kinds of rest and what they heal and refresh (regole.yaml → riposo; regole/salute.ts). Absent = none. */
+  riposo?: TipoRiposo[];
 }
 
 /** Un passo del manuale (regole/estratti/*.md), per l'arbitro e per «Chiedi una regola». */

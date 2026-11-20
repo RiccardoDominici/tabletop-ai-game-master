@@ -149,7 +149,34 @@ combattimento:                              # optional: without it, the full SRD
   condizione_a_zero: privo_di_sensi         # [V] among the conditions, or null
   fine: {morale: true}                      # B/X morale: 2d6 against the NPCs' scheda.morale
   sorpresa: {dado: 6, fino_a: 2, condizione: sorpreso}   # [V] B/X surprise: 1d6 per side, 1–2 loses round 1 (a set's condition)
+cadute: {dadi: "1d6", ogni: 10, unita: "piedi", arrotonda: vicino, massimo: 20}   # optional [V]: falling damage
+  # (Basic Fantasy p. 59): `dadi` per step of `ogni` (in `unita`, said on the card); `vicino` rounds to the nearest step
+  # (1–4 feet nothing, 5–14 feet 1d6), `giu` counts full steps only (SRD 5.2); at most `massimo` steps. Without it a fall
+  # deals nothing (logged).
+riposo:                                     # optional [V]: the kinds of rest the Game Master gives from the panel
+  - {id: notte, nome: "Una notte di sonno", cura: 1}        # cura: a whole number, a formula rolled for each, or tutti
+  - {id: a_letto, nome: "Un giorno a letto", cura: 2, ricarica: true}   # ricarica (default true): resources come back
 ```
+
+**Typed effects** (regole/effetti.ts; prove/effetti.ts applies them, docs/prove.md §10). A closed list, used by a
+scene check's `effetti_se_fallisce`, by the Game Master's hazards and by the set's powers:
+
+```yaml
+- {tipo: danno, dadi: "1d6+1", colpi: {ogni_livelli: 3, massimo: 5}}   # [V] colpi: one more roll every n caster levels
+- {tipo: danno, dadi: "1d6", dadi_per_livello: {massimo: 10}, tipo_danno: fuoco}   # dice × caster level, capped
+- {tipo: cura, dadi: "2d6", bonus_per_livello: {ogni_livelli: 1}}      # +1 per caster level
+- {tipo: caduta, altezza: 3}                                           # in the unit of `cadute`
+- {tipo: attacco, bonus: 1, dadi: "1d6+1"}                             # a trap: d20 + bonus against the victim's AC
+- {tipo: condizione, condizione: addormentato, durata: {round_per_livello: 5}, finisce_se_ferito: true}   # a set condition [V]
+- {tipo: bonus, a: difesa | attacchi | salvezze | danni, valore: 3, contro: tutti | mischia | distanza, durata: {round: 5}}
+- {tipo: immunita, a: [dardo_incantato], durata: scena}                # powers or conditions the target ignores
+- {tipo: stabilizza}                                                   # a dying PC is stable at 0
+- {tipo: morte}                                                        # save or die
+```
+
+Durations: `istantanea`, `{round: N | "XdY", round_per_livello: k}`, `{turni: …}` (game turns: the Engine has no game
+clock, so they last the scene), `scena`, `riposo`, `permanente`. A scene check (`scena.yaml → prove`, both the SRD's
+and a manual's) can add `nome` (the hazard's name on the card) and `effetti_se_fallisce` (applied to the PC who fails).
 
 For combat, the sheets of non-SRD sets can have `attacchi[].distanza: true` (projectile phase) and, for NPCs, `morale` (2–12).
 
@@ -224,5 +251,5 @@ The `significato` of bands and grades replaces it. With the SRD 5.2 the rule sta
 
 - **Skill and validator**: done. The text is extracted with `strumenti/regole/estrai.py`; the Preparer skill writes the set at step 1b; the `[V]` checks sit in the `REGOLE` class (`strumenti/valida/regole_set.py`). For the SRD, simply do not write `regole/`.
 - **Requires with a non-SRD set**: `richiede.prova` is not yet checked against the set's ids by the validator.
-- **Conditions and subsystems** are text only; the Engine does not yet apply them (in docs/da-fare.md).
+- **Subsystems** (`sottosistemi`) are text only. Conditions apply in the fight (docs/combattimento.md); damage, healing, falls and rest outside an attack are typed effects (above).
 - **Opposed checks and saving throws** in a non-SRD set become normal checks.

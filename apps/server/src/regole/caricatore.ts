@@ -22,6 +22,7 @@ import { ID_SRD, estrattiSrd, riassuntoSrd, sistemaSrd } from './srd';
 import type { Difficolta, Fascia, Mossa, RegoleCampagna, SistemaRegole, Voce } from './tipi';
 import { combattimentoPredefinito, leggiCombattimento } from './combattimento';
 import { leggiModificatori } from './modificatori';
+import { leggiCadute, leggiRiposo } from './salute';
 
 export const CARTELLA_REGOLE = 'regole';
 const TIPI: readonly TipoRisoluzione[] = ['d20_cd', '2d6_fasce', 'sotto_soglia'];
@@ -220,6 +221,8 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     combattimento: leggiCombattimento(d['combattimento'], combattimentoPredefinito(tipo, false, [...idCar]), idCar, errori),
     paroleChiave: leggiParoleChiave(d['parole_chiave'], new Set([...idCar, ...abilita.map((a) => a.id), ...mosse.map((m) => m.id)]), errori),
     modificatori: leggiModificatori(d['modificatori'], new Set(abilita.map((a) => a.id)), errori),
+    cadute: leggiCadute(d['cadute'], errori),
+    riposo: leggiRiposo(d['riposo'], errori),
   };
 }
 

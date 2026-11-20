@@ -58,6 +58,9 @@ export function sistemaSrd(): SistemaRegole {
     combattimento: combattimentoSrd(),
     // L'SRD ha la sua tabella per lingua (lingue/<codice>/prove.yaml, parole.abilita: prove/parole-chiave.ts).
     paroleChiave: {},
+    // SRD 5.2, «Falling»: 1d6 for every 10 feet fallen, to a maximum of 20d6; «Long Rest»: every lost hit point back.
+    cadute: { dadi: { numero: 1, facce: 6, bonus: 0 }, ogni: 10, unita: srd.piedi, arrotonda: 'giu', massimo: 20 },
+    riposo: [{ id: 'lungo', nome: srd.riposo_lungo, cura: { tipo: 'tutti' }, ricarica: true }],
   };
 }
 

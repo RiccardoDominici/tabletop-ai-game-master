@@ -3871,6 +3871,26 @@ export class Regia {
     return { ok: true };
   }
 
+  /** Panel: a rest for the party (docs/prove.md §10). The fact goes to the transcript now and to the narrator next turn. */
+  riposo(id: string): Esito {
+    const r = this.prove?.riposo(id);
+    if (!r) return { ok: false, errore: testoFisso('regia.errori.senza_dadi') };
+    if (!r.ok) return { ok: false, errore: testoFisso(r.motivo === 'combattimento' ? 'regia.errori.riposo_in_combattimento' : r.motivo === 'senza_dadi' ? 'regia.errori.senza_dadi' : 'regia.errori.riposo_sconosciuto') };
+    this.rigaDiSistema(this.turno, r.fatto);
+    this.o.log.info({ turno: this.turno, riposo: id }, 'rest: given from the panel');
+    this.notifica();
+    return { ok: true };
+  }
+
+  /** Panel: a hazard on a character (damage, healing, a fall; docs/prove.md §10). */
+  pericolo(id: string, cosa: 'danno' | 'cura' | 'caduta', valore: string | number, fonte: string): Esito {
+    const r = this.prove?.effettoDelMaster(id, cosa, valore, fonte, this.turno);
+    if (!r) return { ok: false, errore: testoFisso('regia.errori.pericolo_non_valido') };
+    this.rigaDiSistema(this.turno, r.fatti.join(' '));
+    this.notifica();
+    return { ok: true };
+  }
+
   condizioneCombattimento(id: string, condizione: string, attiva: boolean): Esito {
     if (!this.prove?.condizione(id, condizione, attiva)) return { ok: false, errore: testoFisso('regia.errori.condizione_sconosciuta') };
     this.notifica();

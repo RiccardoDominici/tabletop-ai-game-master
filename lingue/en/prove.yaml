@@ -165,6 +165,9 @@ nomi:
         quante: one per round (e.g. an Opportunity Attack)
 
 srd:
+  # SRD 5.2 rest and falls (regole/srd.ts): a long rest restores every hit point; 1d6 per full 10 feet fallen, at most 20d6.
+  riposo_lungo: "Long rest"
+  piedi: feet
   danni:
     nome: Hit Points
     a_zero: The NPC is out of the fight; the PC falls unconscious and makes Death Saving Throws.

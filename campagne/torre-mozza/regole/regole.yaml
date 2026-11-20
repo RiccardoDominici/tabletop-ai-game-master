@@ -129,6 +129,16 @@ attacchi:
   danno_critico: normale
   danno_minimo: 1
 
+# Cadute (p. 59): 1d6 ogni 10 piedi (3 metri), al massimo 20d6, arrotondando all'altezza più vicina (da 1–4 piedi
+# niente, da 5–14 piedi 1d6: in metri, da un metro e mezzo si prende 1d6). Le altezze delle scene sono in metri.
+cadute: {dadi: "1d6", ogni: 3, unita: "metri", arrotonda: vicino, massimo: 20}
+
+# Riposo (p. 59): un punto ferita per ogni giorno con il sonno normale; chi sta a letto tutto il giorno ne recupera uno
+# in più ogni sera. Il master lo dà dal pannello (docs/prove.md §10).
+riposo:
+  - {id: notte, nome: "Una notte di sonno", cura: 1}
+  - {id: a_letto, nome: "Un giorno di riposo a letto", cura: 2}
+
 danni:
   nome: "Punti ferita"
   a_zero: "A zero punti ferita un personaggio muore; con la regola facoltativa del manuale un PG tira un salvezza contro la morte e, se riesce, resta svenuto finché qualcuno non gli fascia le ferite"
