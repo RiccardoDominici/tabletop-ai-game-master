@@ -66,3 +66,13 @@ describe('--voce-vera', () => {
     expect(leggiOpzioni([copione, 'B', '--voce-vera', '--partita-vera'], { TAGM_PORTA: '4610', TAGM_VOCE_URL: voce })).toMatchObject({ voceVera: true, voceUrl: null });
   });
 });
+
+describe('--cartella: a fixture campaign outside campagne/', () => {
+  it('the folder (relative to the repository) gives the campaign; one without campagna.yaml is an error', () => {
+    const o = leggiOpzioni([copione, 'A', '--cartella', 'apps/server/test/fixtures/campagne/magia'], env);
+    expect(o.campagna).toBe('magia');
+    expect(o.cartella).toMatch(/apps\/server\/test\/fixtures\/campagne\/magia$/);
+    expect(leggiOpzioni([copione, 'A'], env).cartella).toBeNull();
+    expect(() => leggiOpzioni([copione, 'A', '--cartella', 'docs'], env)).toThrow(/--cartella/);
+  });
+});

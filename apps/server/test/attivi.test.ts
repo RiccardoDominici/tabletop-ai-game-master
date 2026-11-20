@@ -115,7 +115,7 @@ describe('sleep, charm and shield through the Engine', () => {
     const r = await m.risolvi(1, [azione('pg_ilaria', 'Lancio amicizia sul brigante')]);
     expect(r.fatti[0]).toMatch(/Brigante è affascinato fino alla fine della scena/);
     const s2 = await m.risolvi(2, [azione('pg_ilaria', 'Lancio amicizia sullo scheletro')]);
-    expect(s2.fatti[0]).toMatch(/Amicizia non ha effetto su Lo scheletro incatenato/);
+    expect(s2.fatti[0]).toMatch(/Amicizia non ha effetto su Scheletro/);
     expect(m.fineScena()).toBe("Finiscono: affascinato di Brigante.");
     expect(m.attivi.condizioni('png_brigante')).toEqual([]);
   });

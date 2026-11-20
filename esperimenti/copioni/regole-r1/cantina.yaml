@@ -1,0 +1,32 @@
+# Live check of the rules-engine work R1 (docs/prove.md §10) on the invented fixture
+# apps/server/test/fixtures/campagne/magia: a magic-user casts until her slots run out, a cleric heals, an NPC saves
+# against sleep, a trap and a fall deal damage, the Game Master's hazard and rest, and the rest gives the spells back.
+#   TAGM_PORTA=4970 TAGM_SEME_DADI=<hex> npx tsx apps/server/src/esperimenti/esegui.ts \
+#     esperimenti/copioni/regole-r1/cantina.yaml A --cartella apps/server/test/fixtures/campagne/magia \
+#     --finto --tiri automatico --uscita regole-r1
+pg: [pg_ilaria, pg_bruno, pg_sara]
+turni:
+  # Sleep on the bandits: each target within the limit rolls its own save (hidden, the Game Master's side); the boss is
+  # too strong, the skeleton immune. No damage: no fight yet.
+  - - {pg: pg_ilaria, azione: "Lancio sonno sui briganti"}
+  # The second prepared spell: a damage spell on the boss opens the fight.
+  - - {pg: pg_ilaria, azione: "Lancio il dardo arcano contro il capo"}
+  # Both prepared copies are gone: refused with a clear line, nothing spent.
+  - - {pg: pg_ilaria, azione: "Lancio ancora il dardo arcano contro il capo"}
+  - - {pg: pg_sara, azione: "Tiro con l'arco corto al capo"}
+  - - {pg: pg_bruno, azione: "Uso cura ferite su Ilaria"}
+  - - {pg: pg_sara, azione: "Tiro ancora con l'arco corto al capo"}
+  # Two arrows on the sheet: the third shot is refused.
+  - - {pg: pg_sara, azione: "Tiro con l'arco corto allo scheletro"}
+  # The Game Master ends the fight; then the corridor's covered pit (a fall by the set's table) and the dart trap.
+  - - {master: {tipo: combattimento_termina}}
+    - {pg: pg_sara, azione: "Attraverso il corridoio di assi"}
+  - - {pg: pg_bruno, azione: "Apro la porta chiusa in fondo al corridoio, giro la maniglia"}
+  # A hazard from the panel: a fall through a trapdoor; whoever is dying gets bound (the power «fasciare», anyone).
+  - - {master: {tipo: pericolo, id: pg_bruno, cosa: caduta, valore: 10, fonte: "Botola"}}
+    - {pg: pg_bruno, azione: "Fascio le ferite di Sara"}
+  # A night's sleep from the panel: hit points and the spells come back; the magic missile can be cast again.
+  - - {master: {tipo: riposo, riposo: notte}}
+    - {pg: pg_ilaria, azione: "Lancio il dardo arcano contro lo scheletro"}
+  # The second prepared spell of the new day: the bandit, awake again, rolls his own save once more.
+  - - {pg: pg_ilaria, azione: "Lancio sonno sui briganti"}

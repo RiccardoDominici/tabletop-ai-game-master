@@ -9,6 +9,13 @@ import type { Passo } from '../src/esperimenti/copione';
 const az = (pg: string, azione: string): Passo => ({ tipo: 'azione', pg, azione, privata: false });
 
 describe('AlimentatoreCopione', () => {
+  it('a Game Master command of the script turn comes with its scene changes, before the actions', () => {
+    const f = new AlimentatoreCopione([[{ tipo: 'master', comando: { tipo: 'riposo', riposo: 'notte' } }, az('pg_a', 'lancio il dardo')]]);
+    const p = f.prossimo(null);
+    expect(p.master).toEqual([{ tipo: 'riposo', riposo: 'notte' }]);
+    expect(p.azioni.map((a) => a.azione)).toEqual(['lancio il dardo']);
+  });
+
   it('out of combat: one script turn per window, scene changes first', () => {
     const f = new AlimentatoreCopione([[{ tipo: 'scena', scena: 'scena_b' }, az('pg_a', 'uno'), az('pg_b', 'due')], [az('pg_a', 'tre')]]);
     const p1 = f.prossimo(null);

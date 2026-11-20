@@ -104,6 +104,8 @@ function avviaServer(o: OpzioniEsperimento, token: string): void {
       ...process.env,
       TAGM_PORTA: String(o.porta),
       TAGM_CAMPAGNA: o.campagna,
+      // A fixture campaign outside campagne/ (--cartella): the server reads it from there.
+      ...(o.cartella ? { TAGM_CARTELLA_CAMPAGNA: o.cartella } : {}),
       TAGM_MODO: o.modo,
       TAGM_FINESTRA_TUTTI: '1',
       // Ogni chiamata dello sceneggiatore usa l'abbonamento di Riccardo: solo se la prova lo chiede.
@@ -215,6 +217,12 @@ async function giocaCopione(
       // L'apertura della nuova scena alza versione_scena: così non si scambia per buona un'istantanea vecchia.
       stato = await attendiStato(schermo, (s) => s.fase === 'finestra' && s.finestra.aperta && s.versione_scena > v0 && s.turno >= t0, 240_000, `finestra dopo la scena ${scena} (turno ${n} del copione)`);
     }
+    // The Game Master's commands of the script turn (a rest, a hazard: `{master: {...}}`), as the panel sends them.
+    for (const comando of passo.master) {
+      const e = await master.comando(comando);
+      console.log(`[${etichetta}] turno ${n} (server ${stato.turno}): master ${comando.tipo} → ${e.ok ? 'ok' : `rifiutato: ${e.errore}`}`);
+      if (!e.ok) throw new Error(`turno ${n}: comando del master ${comando.tipo} rifiutato: ${e.errore}`);
+    }
     turnoServer = stato.turno;
     if (diTurno) {
       rinviate += passo.inAttesa.length;
@@ -312,7 +320,7 @@ function elencoBattute(repertorio: Repertorio | null): string[] {
 async function main(): Promise<void> {
   const o = leggiOpzioni(process.argv.slice(2), process.env);
   const { etichetta, modo } = o;
-  const campagna: Campagna = caricaCampagna(path.join(RADICE_REPO, 'campagne', o.campagna));
+  const campagna: Campagna = caricaCampagna(o.cartella ?? path.join(RADICE_REPO, 'campagne', o.campagna));
   const copioneIntero = caricaCopione(o.fileCopione);
   // Prova breve (--turni n): solo i primi n turni del copione.
   const copione: Copione = o.turniMax ? { ...copioneIntero, turni: copioneIntero.turni.slice(0, o.turniMax) } : copioneIntero;

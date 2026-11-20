@@ -1,7 +1,7 @@
 /**
  * Argomenti e ambiente di un esperimento (esegui.ts): copione, modalità, campagna, porta.
  *
- *   esegui.ts <copione> <A|B|B2> [--campagna <id>] [--uscita <cartella>] [--turni n] [--pausa-s s] [--sceneggiatore]
+ *   esegui.ts <copione> <A|B|B2> [--campagna <id> | --cartella <path>] [--uscita <cartella>] [--turni n] [--pausa-s s] [--sceneggiatore]
  *             [--ore h] [--chiudi] [--tiri manuale|automatico] [--seme-giocatori <hex>] [--voce-vera] [--finto] [--lascia-server] [--partita-vera]
  *             --voce-vera su una porta di prova richiede TAGM_VOCE_URL (un servizio Qwen a parte, mai la 4611)
  * --sceneggiatore accende lo sceneggiatore (Claude Code: ogni chiamata usa l'abbonamento); di base è spento.
@@ -34,6 +34,11 @@ export interface OpzioniEsperimento {
   modo: ModoEsperimento;
   /** Cartella della campagna sotto campagne/ (default prova-f0, come le prime prove). */
   campagna: string;
+  /**
+   * `--cartella <path>`: a campaign folder outside campagne/ (an invented test fixture, apps/server/test/fixtures/…),
+   * relative to the repository root; the server gets it as TAGM_CARTELLA_CAMPAGNA. null = campagne/<campagna>.
+   */
+  cartella: string | null;
   porta: number;
   url: string;
   /** Dove il server di questa porta scrive i suoi JSONL (stessa regola di scripts/avvio.sh). */
@@ -106,7 +111,7 @@ export function urlVoceDiProva(porta: number, urlTesto: string | undefined): str
 export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsperimento {
   // Chi chiama con un ambiente qualsiasi (test, altri strumenti) ottiene lo stesso mapping del server.
   allineaVariabiliLegacy(env);
-  const conValore = new Set(['--campagna', '--uscita', '--turni', '--pausa-s', '--ore', '--tiri', '--seme-giocatori']);
+  const conValore = new Set(['--campagna', '--cartella', '--uscita', '--turni', '--pausa-s', '--ore', '--tiri', '--seme-giocatori']);
   const posizionali: string[] = [];
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i]!;
@@ -118,7 +123,10 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
   const modo: ModoEsperimento | null = etichettaModo === 'B' || etichettaModo === 'B2' ? 'repertorio' : etichettaModo === 'A' ? 'improvvisa' : null;
   if (!copione || !modo || !etichettaModo) throw new ErroreArgomenti('uso: esegui.ts <copione> <A|B|B2> [--campagna <id>] [--uscita <cartella>] [--turni n] [--pausa-s s] [--sceneggiatore] [--ore h] [--chiudi] [--tiri manuale|automatico] [--seme-giocatori <hex>] [--voce-vera] [--finto] [--lascia-server]');
 
-  const campagna = valoreOpzione(argv, '--campagna') ?? CAMPAGNA_DEFAULT;
+  const cartellaTesto = valoreOpzione(argv, '--cartella');
+  const cartella = cartellaTesto === null ? null : path.resolve(RADICE_REPO, cartellaTesto);
+  if (cartella && (!cartella.startsWith(RADICE_REPO) || !fs.existsSync(path.join(cartella, 'campagna.yaml')))) throw new ErroreArgomenti(`--cartella: nessuna campagna.yaml in ${cartellaTesto} (una cartella dentro il repository)`);
+  const campagna = cartella ? path.basename(cartella) : (valoreOpzione(argv, '--campagna') ?? CAMPAGNA_DEFAULT);
   const uscita = valoreOpzione(argv, '--uscita');
   const turni = valoreOpzione(argv, '--turni');
   const turniMax = turni === null ? null : Number(turni);
@@ -134,7 +142,7 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
   const semeGiocatori = valoreOpzione(argv, '--seme-giocatori');
   if (semeGiocatori !== null && !/^[0-9a-f]{8,128}$/i.test(semeGiocatori)) throw new ErroreArgomenti('--seme-giocatori vuole un esadecimale di 8–128 cifre');
   if (uscita !== null && (path.isAbsolute(uscita) || uscita.split(/[\\/]/).includes('..'))) throw new ErroreArgomenti('--uscita è una cartella dentro esperimenti/risultati');
-  if (!/^[a-z0-9][a-z0-9_-]*$/i.test(campagna) || !fs.existsSync(path.join(RADICE_REPO, 'campagne', campagna))) {
+  if (!/^[a-z0-9][a-z0-9_-]*$/i.test(campagna) || (!cartella && !fs.existsSync(path.join(RADICE_REPO, 'campagne', campagna)))) {
     throw new ErroreArgomenti(`campagna inesistente: campagne/${campagna}`);
   }
 
@@ -166,6 +174,7 @@ export function leggiOpzioni(argv: string[], env: NodeJS.ProcessEnv): OpzioniEsp
     etichettaModo,
     modo,
     campagna,
+    cartella,
     porta,
     url,
     cartellaLog: porta === PORTA_PARTITA ? CARTELLA_LOG : path.join(CARTELLA_LOG, `porta-${porta}`),

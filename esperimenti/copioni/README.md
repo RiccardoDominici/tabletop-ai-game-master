@@ -7,6 +7,9 @@ Confine rispettato: letti solo `prova-f0/pg.yaml` (ogni PG agisce solo sulle pro
 - `turni:` una lista di turni, e ogni turno una lista di azioni `{pg, azione}`, con `privata: true` per un'azione
   scritta come privata dal telefono (le battute senza `richiede.privata` non le rispondono);
 - un cambio di scena dentro il copione è un elemento `{scena: <id>}` in un turno: vale da lì in poi.
+- a Game Master command is an element `{master: {tipo: …}}` at the head of a turn (before its actions), sent as the
+  panel sends it (`riposo`, `pericolo`, `combattimento_termina`…); with `--cartella <path>` the script runs on a test
+  fixture outside `campagne/` (`regole-r1/cantina.yaml` on `apps/server/test/fixtures/campagne/magia`).
 - In turn-based combat the harness sends only the actions of the PCs on turn (`StatoTavolo.combattimento.turno_di`,
   `apps/server/src/esperimenti/alimentatore.ts`): the other actions of the same script turn wait for that PC's own
   turn, in script order, so a script turn can take several windows. When no PC on turn has a queued action the next

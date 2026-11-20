@@ -201,6 +201,18 @@ TAGM_PORTA=4922 TAGM_ARBITRO=regole TAGM_SEME_DADI=a1b2c3d4e5f60718293a4b5c6d7e8
 In turn-based combat the harness sends only the actions of the PCs on turn; the others wait for their own turn
 (`esperimenti/copioni/README.md`).
 
+A script turn can start with a Game Master command, sent as the panel sends it before the turn's actions
+(`- {master: {tipo: riposo, riposo: notte}}`, `- {master: {tipo: pericolo, id: pg_bruno, cosa: caduta, valore: 10}}`,
+`- {master: {tipo: combattimento_termina}}`). To run a script on an invented test fixture instead of a campaign of
+`campagne/`, give its folder with `--cartella` (the server reads it through `TAGM_CARTELLA_CAMPAGNA`); the rules-engine
+check of 20 November runs this way:
+
+```
+TAGM_PORTA=4970 TAGM_SEME_DADI=0123456789abcdef npx tsx apps/server/src/esperimenti/esegui.ts \
+  esperimenti/copioni/regole-r1/cantina.yaml A --cartella apps/server/test/fixtures/campagne/magia \
+  --finto --tiri automatico --uscita regole-r1
+```
+
 ### Examples
 
 ```

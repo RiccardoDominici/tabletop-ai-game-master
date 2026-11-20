@@ -64,15 +64,15 @@ describe('outside a fight: a trap drops a PC to 0', () => {
     const m = motore({ 20: [15], 10: [2, 1], 6: [3] });
     m.stato.danneggia('pg_ilaria', 2);
     const fatti = m.effettoDelMaster('pg_ilaria', 'danno', 5, 'Frana', 1)!.fatti.join(' ');
-    expect(fatti).toMatch(/Ilaria è a terra fuori da uno scontro: tiro salvezza contro la morte 15 contro 13 → riuscito: è vivo ma svenuto, e sta morendo/);
-    expect(fatti).toMatch(/Ilaria ha 3 round perché qualcuno gli fasci le ferite/);
+    expect(fatti).toMatch(/Ilaria è a terra fuori da uno scontro: tiro salvezza contro la morte 15 contro 13 → riuscito: resta in vita, senza sensi, e sta morendo/);
+    expect(fatti).toMatch(/Ilaria ha 3 round: se in quel tempo le sue ferite non vengono fasciate o curate, muore/);
     // A caster who survives 0 loses its prepared spells (Basic Fantasy p. 189).
     expect(fatti).toMatch(/Ilaria perde gli incantesimi preparati/);
     expect(m.morenti.restanti('pg_ilaria')).toBe(3);
     // The next window: one round goes by (a fact), then Bruno binds her wounds.
     const r = await m.risolvi(2, [azione('pg_bruno', 'Fascio le ferite di Ilaria')]);
     expect(r.fatti.join(' ')).toMatch(/Ilaria sta morendo: restano 2 round/);
-    expect(r.fatti.join(' ')).toMatch(/Fasciare le ferite: Ilaria è fasciato e stabile a zero punti ferita/);
+    expect(r.fatti.join(' ')).toMatch(/Fasciare le ferite: le ferite di Ilaria sono fasciate, è stabile a zero punti ferita/);
     expect(m.morenti.restanti('pg_ilaria')).toBeNull();
     expect(m.stato.fuoriGioco('pg_ilaria')).toBe('a_terra');
   });
@@ -83,12 +83,25 @@ describe('outside a fight: a trap drops a PC to 0', () => {
     expect(m.morenti.restanti('pg_ilaria')).toBe(2);
     await m.risolvi(2, []);
     const r = await m.risolvi(3, []);
-    expect(r.fatti.join(' ')).toMatch(/Ilaria muore: nessuno gli ha fasciato le ferite in tempo/);
+    expect(r.fatti.join(' ')).toMatch(/Ilaria muore: nessuno ha fasciato le sue ferite in tempo/);
     expect(m.stato.fuoriGioco('pg_ilaria')).toBe('morto');
     // Sara: 3 + Constitution 0 + folletto +2 against guerriero 1 morte 12: failed, dead.
     const f = m.effettoDelMaster('pg_sara', 'danno', 9, 'Frana', 4)!.fatti.join(' ');
     expect(f).toMatch(/Sara è a terra fuori da uno scontro: tiro salvezza contro la morte 5 contro 12 → fallimenti 1 su 1: è MORTO/);
     expect(m.stato.fuoriGioco('pg_sara')).toBe('morto');
+  });
+
+  it('a rest or the Game Master’s HP above 0 end the dying window too (found in the live check: the rest healed, the countdown went on)', () => {
+    const m = motore({ 20: [15], 10: [5, 5], 6: [4] });
+    m.effettoDelMaster('pg_ilaria', 'danno', 5, 'Frana', 1);
+    expect(m.morenti.restanti('pg_ilaria')).toBe(10);
+    expect(m.riposo('notte')).toMatchObject({ ok: true });
+    expect(m.stato.puntiFerita('pg_ilaria')!.attuali).toBe(1);
+    expect(m.morenti.restanti('pg_ilaria')).toBeNull();
+    m.effettoDelMaster('pg_bruno', 'danno', 10, 'Frana', 2);
+    expect(m.morenti.restanti('pg_bruno')).toBe(10);
+    m.impostaPf('pg_bruno', 3);
+    expect(m.morenti.restanti('pg_bruno')).toBeNull();
   });
 
   it('healing above 0 ends the dying window', async () => {
@@ -124,7 +137,7 @@ describe('in a fight', () => {
     const cand = [{ id: 'pg_a', lato: 'pg' as const, mod: 0 }, { id: 'png_x', lato: 'png' as const, mod: 5 }];
     const r = g.dopoAzioni({ turno: 1, attacchi: [{ chi: 'png_x', bersaglio: 'pg_a' }], autori: [], candidati: () => cand });
     const f = r.fatti.join(' ');
-    expect(f).toMatch(/tiro salvezza contro la morte 11 contro CD 9 → riuscito: è vivo ma svenuto, e sta morendo/);
+    expect(f).toMatch(/tiro salvezza contro la morte 11 contro CD 9 → riuscito: resta in vita, senza sensi, e sta morendo/);
     expect(morenti).toEqual(['pg_a']);
     expect(r.morte).toEqual([{ id: 'pg_a', nome: 'pg_a', esito: 'morente' }]);
   });

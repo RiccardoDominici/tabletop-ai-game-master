@@ -14,9 +14,14 @@
  */
 import fs from 'node:fs';
 import YAML from 'yaml';
+import type { ComandoMaster } from '@tabletop-ai-gm/shared';
 import type { Campagna } from '../campagna/tipi';
 
-export type Passo = { tipo: 'azione'; pg: string; azione: string; privata: boolean } | { tipo: 'scena'; scena: string };
+/**
+ * A script step: a PC's action, a scene change, or a Game Master command as the panel sends it (`{master: {tipo:
+ * riposo, riposo: notte}}`, `{master: {tipo: pericolo, …}}`), made before the turn's actions.
+ */
+export type Passo = { tipo: 'azione'; pg: string; azione: string; privata: boolean } | { tipo: 'scena'; scena: string } | { tipo: 'master'; comando: ComandoMaster };
 
 export interface Copione {
   pg: string[];
@@ -31,10 +36,12 @@ function passo(voce: unknown, turno: number): Passo {
   if (!voce || typeof voce !== 'object') throw new ErroreCopione(`turno ${turno}: voce non valida (${JSON.stringify(voce)})`);
   const v = voce as Record<string, unknown>;
   if (typeof v['scena'] === 'string' && v['azione'] === undefined) return { tipo: 'scena', scena: v['scena'] };
+  const m = v['master'];
+  if (m && typeof m === 'object' && typeof (m as Record<string, unknown>)['tipo'] === 'string') return { tipo: 'master', comando: m as ComandoMaster };
   if (typeof v['pg'] === 'string' && typeof v['azione'] === 'string') {
     return { tipo: 'azione', pg: v['pg'], azione: v['azione'], privata: v['privata'] === true };
   }
-  throw new ErroreCopione(`turno ${turno}: ogni voce è {pg, azione[, privata]} oppure {scena} (${JSON.stringify(voce)})`);
+  throw new ErroreCopione(`turno ${turno}: ogni voce è {pg, azione[, privata]}, {scena} oppure {master: {tipo, …}} (${JSON.stringify(voce)})`);
 }
 
 export function caricaCopione(file: string): Copione {
@@ -60,6 +67,10 @@ export function controllaCopione(c: Copione, campagna: Campagna): string[] {
     const visti = new Set<string>();
     let azioniViste = false;
     for (const p of turno) {
+      if (p.tipo === 'master') {
+        if (azioniViste) errori.push(`turno ${n}: il comando del master va in testa al turno, prima delle azioni`);
+        continue;
+      }
       if (p.tipo === 'scena') {
         if (!scene.has(p.scena)) errori.push(`turno ${n}: scena ${p.scena} inesistente`);
         // Il cambio di scena annulla le azioni vive: in mezzo al turno cancellerebbe quelle già mandate.

@@ -141,8 +141,8 @@ prove:
     sempre_colpito: " (hit anyway: {condizione})"
   # The dying window of a death rule (prove/morte.ts).
   morte:
-    inizia: "{nome} has {n} rounds for someone to bind their wounds or heal them: then they die."
-    ancora: "{nome} is dying: {n} rounds left to bind their wounds or heal them."
+    inizia: "{nome} has {n} rounds: unless their wounds are bound or healed in that time, they die."
+    ancora: "{nome} is dying: {n} rounds left to bind or heal their wounds."
     morto: "{nome} dies: nobody bound their wounds in time."
     senza_soccorso: "Nobody is standing to bind the wounds: whoever was dying dies."
     incantesimi_persi: "{nome} loses their prepared spells (they went down to zero hit points)."
@@ -243,7 +243,7 @@ prove:
     morte_senza_soccorso: "Nobody is standing to help them: the death saves decide now."
     morte_morto: "failures {n} of {n}: DEAD"
     morte_stabile: "successes {n} of {n}: stable, still unconscious"
-    morte_finestra: "made: alive but unconscious, and dying"
+    morte_finestra: "made: alive, unconscious, and dying"
     morte_parziale: "{esito} (successes {successi}, failures {fallimenti})"
     morte_riuscito: "success"
     morte_fallito: "failure"

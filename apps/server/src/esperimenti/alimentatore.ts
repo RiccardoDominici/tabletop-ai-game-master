@@ -12,6 +12,7 @@
  *
  * Pure: no sockets, no server. esegui.ts asks it what to send for each window it sees.
  */
+import type { ComandoMaster } from '@tabletop-ai-gm/shared';
 import type { Passo } from './copione';
 
 type PassoAzione = Extract<Passo, { tipo: 'azione' }>;
@@ -20,6 +21,8 @@ type PassoAzione = Extract<Passo, { tipo: 'azione' }>;
 export interface PassoFinestra {
   /** Scene changes of the script turn just loaded, to make before sending the actions (empty most of the time). */
   scene: string[];
+  /** Game Master commands of the script turn just loaded (a rest, a hazard), sent after the scene changes. */
+  master: ComandoMaster[];
   /** Actions to send now, one per PC at most. */
   azioni: PassoAzione[];
   /** The last script turn loaded so far (1-based; 0 = none yet). */
@@ -55,12 +58,13 @@ export class AlimentatoreCopione {
     return this.prossimoTurno;
   }
 
-  private carica(scene: string[]): boolean {
+  private carica(scene: string[], master: ComandoMaster[] = []): boolean {
     const turno = this.turni[this.prossimoTurno];
     if (!turno) return false;
     this.prossimoTurno += 1;
     for (const p of turno) {
       if (p.tipo === 'scena') scene.push(p.scena);
+      else if (p.tipo === 'master') master.push(p.comando);
       else {
         const c = this.code.get(p.pg) ?? [];
         c.push(p);
@@ -80,6 +84,7 @@ export class AlimentatoreCopione {
    */
   prossimo(diTurno: readonly string[] | null, morti: ReadonlySet<string> = new Set()): PassoFinestra {
     const scene: string[] = [];
+    const master: ComandoMaster[] = [];
     // A dead PC never comes on turn again: its queued actions would wait forever (run of 15 November, a PC killed in
     // round one kept «waiting for their turn» to the end of the script).
     let scartate = 0;
@@ -90,10 +95,10 @@ export class AlimentatoreCopione {
     const turni = diTurno?.length ? diTurno : null;
     if (turni) {
       // Load script turns until one of the PCs on turn has something to do (or the script is over).
-      while (!turni.some((pg) => this.haInCoda(pg)) && this.carica(scene)) {
+      while (!turni.some((pg) => this.haInCoda(pg)) && this.carica(scene, master)) {
         /* keep loading */
       }
-    } else if (this.inCoda() === 0) this.carica(scene);
+    } else if (this.inCoda() === 0) this.carica(scene, master);
     const chi = turni ?? [...this.code.keys()];
     const azioni: PassoAzione[] = [];
     for (const pg of chi) {
@@ -102,6 +107,6 @@ export class AlimentatoreCopione {
     }
     const inAttesa = turni ? [...this.code].filter(([pg, c]) => c.length && !turni.includes(pg)).map(([pg]) => pg) : [];
     const passano = turni ? turni.filter((pg) => !azioni.some((a) => a.pg === pg)) : [];
-    return { scene, azioni, turnoCopione: this.prossimoTurno, inAttesa, passano, scartate };
+    return { scene, master, azioni, turnoCopione: this.prossimoTurno, inAttesa, passano, scartate };
   }
 }

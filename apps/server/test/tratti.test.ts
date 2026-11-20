@@ -109,6 +109,6 @@ describe('the traits in play', () => {
     const fatto = m.attivi.aggiungi('pg_sara', leggiEffetto({ tipo: 'condizione', condizione: 'addormentato', durata: { round: 3 } }, 'x', []) as never, 'Prova', 1, { seme: 'x', contatore: 0, tira: () => 1 });
     expect(fatto).toMatch(/Sara è addormentato per 3 round/);
     // paralizzato is not a condition of the fixture's set: the race's immunity is read by id, the name stays the id.
-    expect(m.attivi.aggiungi('pg_sara', { tipo: 'condizione', condizione: 'paralizzato', durata: { tipo: 'scena' }, finisceSeFerito: false }, 'Prova', 1, { seme: 'x', contatore: 0, tira: () => 1 })).toMatch(/Sara non ne è toccato: è immune a paralizzato/);
+    expect(m.attivi.aggiungi('pg_sara', { tipo: 'condizione', condizione: 'paralizzato', durata: { tipo: 'scena' }, finisceSeFerito: false }, 'Prova', 1, { seme: 'x', contatore: 0, tira: () => 1 })).toMatch(/Nessun effetto su Sara: è immune a paralizzato/);
   });
 });

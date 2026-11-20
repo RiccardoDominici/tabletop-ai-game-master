@@ -119,8 +119,8 @@ describe('casting through the Engine (rules arbiter): spent, refused when gone, 
     const r = await m.risolvi(1, [azione('pg_ilaria', 'Lancio sonno sui briganti')]);
     const f = r.fatti.join(' ');
     expect(f).toMatch(/Ilaria usa Sonno/);
-    expect(f).toMatch(/Sonno non ha effetto su Lo scheletro incatenato/);
-    expect(f).toMatch(/Il capo dei briganti è troppo potente per Sonno/);
+    expect(f).toMatch(/Sonno non ha effetto su Scheletro/);
+    expect(f).toMatch(/Brando è troppo potente per Sonno/);
     expect(f).toMatch(/Brigante resiste a Sonno \(tiro salvezza riuscito\)/);
     const salvezza = r.tiri.find((t) => t.tipo === 'salvezza')!;
     expect(salvezza).toMatchObject({ chi: 'png_brigante', nascosta: true, contro: { valore: 15 } });

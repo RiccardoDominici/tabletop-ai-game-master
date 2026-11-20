@@ -979,7 +979,12 @@ export class MotoreProve {
     if (!r) return { ok: false, motivo: 'sconosciuto' };
     const c = this.o.contesto();
     const ids = [...(this.generico ? this.generico.schede.keys() : this.o.schede.keys())];
-    const e = riposa(r, ids, { stato: this.stato, dadi: this.dadi, nome: (x) => this.nomeDi(c, x), danni: this.sistema.danni.nome, dopoCura: (x) => this.combattimento.dopoCura(x), log: this.o.log.child({ modulo: 'riposo' }) });
+    // Back above 0 by the rest: on its feet, and no longer dying (prove/morte.ts).
+    const rialzato = (x: string): void => {
+      this.combattimento.dopoCura(x);
+      this.morenti.ferma(x);
+    };
+    const e = riposa(r, ids, { stato: this.stato, dadi: this.dadi, nome: (x) => this.nomeDi(c, x), danni: this.sistema.danni.nome, dopoCura: rialzato, log: this.o.log.child({ modulo: 'riposo' }) });
     // A rest that refreshes: spell slots, prepared spells and the resources that come back with rest (prove/risorse.ts).
     const ricaricati = r.ricarica && this.risorse ? this.risorse.ricarica('riposo') : [];
     const finiti = Attivi.fatto(this.attivi.riposo(), (x) => this.nomeDi(c, x));
@@ -1220,7 +1225,11 @@ export class MotoreProve {
     const v = Math.max(0, Math.min(p.massimi, valore));
     if (v > p.attuali) this.stato.cura(id, v - p.attuali);
     else if (v < p.attuali) this.stato.danneggia(id, p.attuali - v);
-    if (v > 0) this.combattimento.dopoCura(id);
+    if (v > 0) {
+      this.combattimento.dopoCura(id);
+      // The Game Master's healing above 0 ends a dying window too.
+      this.morenti.ferma(id);
+    }
     return true;
   }
 

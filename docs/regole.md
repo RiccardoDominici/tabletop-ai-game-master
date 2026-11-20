@@ -306,5 +306,10 @@ The `significato` of bands and grades replaces it. With the SRD 5.2 the rule sta
 
 - **Skill and validator**: done. The text is extracted with `strumenti/regole/estrai.py`; the Preparer skill writes the set at step 1b; the `[V]` checks sit in the `REGOLE` class (`strumenti/valida/regole_set.py`). For the SRD, simply do not write `regole/`.
 - **Requires with a non-SRD set**: `richiede.prova` is not yet checked against the set's ids by the validator.
+- **Rules-engine work R1 (20 November) leaves open**: durations in rounds outside a fight tick once per closed window
+  of the table, an interim rule until the game clock (package R2) exists; the SRD 5.2 has its falls and long rest as
+  data but no spells or slots yet; monster specials (poison riders, breath, paralysis on a hit) can use the typed
+  effects but are not data of any set; carrying HP and resources from one session to the next (`tra_sessioni.py`) is
+  not done; subdual damage is not modelled; spells of levels 3–6 of Basic Fantasy are not data yet.
 - **Subsystems** (`sottosistemi`) are text only. Conditions apply in the fight (docs/combattimento.md); damage, healing, falls and rest outside an attack are typed effects (above).
 - **Opposed checks** in a non-SRD set become normal checks. Saving throws are pinned to their own number (above), and a target rolls its own save against a PC's power (`salvezzaDelBersaglio`, the Game Master's side for an NPC).
