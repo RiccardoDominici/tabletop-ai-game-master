@@ -34,6 +34,7 @@ four PCs were checked by hand in this audit against the tables (section «Answer
 | `narrated` | the rule exists only as text (`riassunto.md`, `estratti/`, `pg.yaml → cosa_sai_fare`, set `sottosistemi`) or in the Game Master's hands; no number changes by itself |
 | `absent` | the rule is not in the set, the sheets or the code |
 | `desc` | descriptive text, nothing to implement (not counted in the summary) |
+| `ptr` | a pointer to another row that holds the rule (not counted) |
 
 A gap marked **WRONG** is worse than a missing rule: the game gives a result the manual contradicts.
 
@@ -82,19 +83,20 @@ damage, heal, snapshot). `tR` = `apps/server/test/regole.test.ts` (114 card AC; 
 
 ## Summary
 
-155 rules with a status (8 descriptive rows not counted). Counted with `awk` on the `status` column after writing.
+152 rules with a status (8 descriptive rows and 3 pointer rows not counted). Counted with `awk` on the `status` column after writing.
 
 | status | Parts 1-3 (`C-`) | other Parts (`X-`, [overlap]) | total |
 |---|---|---|---|
 | `impl+test` (implemented and tested) | 18 | 3 | **21** |
 | `impl` (implemented, untested) | 0 | 0 | **0** |
 | `sheet` (sheet data only) | 20 | 3 | **23** |
-| `narrated` (text or the GM's hand only) | 13 | 1 | **14** |
-| `absent` | 84 | 13 | **97** |
-| total | 135 | 20 | **155** |
+| `narrated` (text or the GM's hand only) | 12 | 1 | **13** |
+| `absent` | 82 | 13 | **95** |
+| total | 132 | 20 | **152** |
 
-13 rows are marked **WRONG** (the game contradicts the manual, not just omits it): C-CRE-11, C-HP-05, C-RACE-20,
-C-CLS-11, C-CLS-18, C-CLS-19, C-THF-04, C-THF-06, C-THF-08, C-THF-09, C-THF-10, C-SP-01, X-SV-03.
+12 rows are marked **WRONG** (the game contradicts the manual, not just omits it): C-CRE-11, C-RACE-20, C-CLS-11, C-CLS-18, C-CLS-19, C-THF-04, C-THF-06, C-THF-08, C-THF-09, C-THF-10, C-SP-01, X-SV-03. They are six distinct
+problems: spells not counted; saves off the table's target; the GM's secret thief rolls made public; no situational %
+on thief rolls; sneak attack repeatable; halfling +1 initiative missing.
 
 What is implemented is the **roll itself**: d20 + bonus against a target or AC, the naturals, the score → bonus table,
 d100 and «x in 6» thresholds, STR/DEX to the attack by weapon kind, minimum damage 1, range ±, initiative 1d6 + DEX,
@@ -124,7 +126,8 @@ The sheets are right for torre-mozza's four level-1 PCs only because the Prepare
    or class requirements, no HP roll, no starting money, no purchases; pregenerated sheets are never checked against the
    manual (`specie` and `classe` are free strings). → M7 (+ M1, M2).
 8. **Healing exists only in the GM's hand** (C-HP-01, C-SP-09, C-SP-19, C-HP-05): HP fall by attacks and rise only
-   when the GM types them on the panel; no cure spell or potion effect, and a new session starts everyone at full HP.
+   when the GM types them on the panel; no cure spell or potion effect, and a new session starts everyone at full HP
+   (the manual implies wounds carry over).
    (Natural rest, 1 HP a night, is the play half's row.) → M4, M3.
 9. **No equipment model** (C-EQ-*, C-WPN-*, C-ARM-01, X-ENC-01/02): AC, weapon dice and STR damage are typed by hand
    on each sheet; no catalog, prices, money, weight, encumbrance, movement, light duration, or class/race weapon and
@@ -156,7 +159,7 @@ them on the phone. They change only through: an attack's damage (RR:319; the SRD
 GM's panel (`pf` command, GM → MO:932-940), and the SRD's natural 20 on a death save (CB:531, off in Basic Fantasy).
 Not through: cure spells or potions (C-SP-09, C-SP-19), natural rest (1 HP a night, set `sottosistemi guarigione`, text
 only), falls, traps, fireballs or any other non-attack damage (no damage path outside attacks), nor between sessions
-(ST:55-59 starts each session at full HP; `strumenti/tra_sessioni.py` does not carry them).
+(ST:55-59 starts each session at full HP; `strumenti/tra_sessioni.py` does not carry them; the manual implies they carry).
 
 **(3) Are spell slots tracked and consumed?** No. There is no counter of spells, slots or uses per day anywhere in the
 Engine, the state or the snapshot. The only spell in play, magic missile, is a sheet attack with `automatico: true`
@@ -239,7 +242,7 @@ magic missing (C-ABI-07); sneak attack double damage written as 2d6 (C-THF-10).
 | C-HP-02 | Hit Points and Hit Dice, p. 4 | at 0 HP the character may be dead (optional rules p. 188) | mech | set `combattimento.danni.a_zero: {pg: tiri_morte, png: morte}`; CB:519-531 | tCB:303, L6, L6b | impl+test | the death-save target is one number (10) for all; the play half's row |
 | C-HP-03 | Hit Points and Hit Dice, p. 4 | each level: roll another hit die + CON (minimum 1), add it to the maximum | mech | none (no levels) | none | absent | M1 |
 | C-HP-04 | Hit Points and Hit Dice, p. 4 | after 9th level a fixed number of HP per level, without CON | mech | none | none | absent | M1 |
-| C-HP-05 | How to Create p. 3, HP p. 4 | wounds and every statistic persist through play («use a pencil»): a session starts with the HP the last one ended with | mech | ST:55-59 resets every sheet to full HP when the session's state is built; only the snapshot of the same session resumes them (ST:141-151); `strumenti/tra_sessioni.py` carries clocks and NPC knowledge, not HP | none | absent | **WRONG** for a campaign of several sessions → M3 (resources carried between sessions) |
+| C-HP-05 | How to Create p. 3, HP p. 4 (implied) | implied, not stated: statistics change in play («use a pencil») and healing restores the current total, so a session starts with the HP the last one ended with | mech | ST:55-59 resets every sheet to full HP when the session's state is built; only the snapshot of the same session resumes them (ST:141-151); `strumenti/tra_sessioni.py` carries clocks and NPC knowledge, not HP | none | absent | matters for a campaign of several sessions → M3 (resources carried between sessions) |
 | C-LANG-01 | Languages, p. 4 | everyone knows the native language; non-humans know their own and Common; INT 13+ adds languages equal to the INT bonus (Orc, Goblin…, GM's choice); slots may stay open; exotic or dead languages at the GM's choice | mech | none (a PC's languages can appear only in `cosa_sai_fare`) | none | absent | M7 (languages on the sheet); reading a text in a language then gates on the sheet |
 
 ### Character Races (p. 5-6)
@@ -282,7 +285,7 @@ magic missing (C-ABI-07); sneak attack double damage written as 2d6 (C-THF-10).
 | C-CLS-02 | Cleric, p. 7 | hit dice 1d6 a level to 9d6 at 9th, then +1 HP a level (9d6+1 … 9d6+11 at 20th) | mech | level 1: sheet `pf` (Fulco: 6 + CON 1 = 7, the maximum by brief choice); beyond: none | none | sheet | M1 |
 | C-CLS-03 | Cleric, p. 7 | spells per day by level (spell levels 1-6): 1st none; 2nd 1; 3rd 2; 4th 2/1; 5th 2/2; 6th 2/2/1; 7th 3/2/2; 8th 3/2/2/1; 9th 3/3/2/2; 10th 3/3/2/2/1; 11th 4/3/3/2/2; 12th 4/4/3/2/2/1; 13th 4/4/3/3/2/2; 14th 4/4/4/3/2/2; 15th 4/4/4/3/3/2; 16th 5/4/4/3/3/2; 17th 5/5/4/3/3/2; 18th 5/5/4/4/3/3; 19th 6/5/4/4/3/3; 20th 6/5/5/4/3/3 | mech | set `sottosistemi incantesimi` (text: «solo dal secondo livello»), `riassunto.md`; `sottosistemi` is loaded (`regole/caricatore.ts:215`) but no code reads it | none | narrated | M1, M3 |
 | C-CLS-04 | Cleric, p. 7, 187 | any armor; only blunt weapons (warhammer, mace, maul, club, quarterstaff, sling); an edged weapon costs spells and Turning until an atonement quest (X-OPT-04) | mech | none | none | absent | M2 |
-| C-CLS-05 | Cleric, p. 7 | Turn the Undead (table and procedure: X-TU-01, X-TU-02) | mech | see X-TU | — | narrated | M1, M4 |
+| C-CLS-05 | Cleric, p. 7 | Turn the Undead (table and procedure: X-TU-01, X-TU-02) | mech | see X-TU-01 | — | ptr | — |
 | C-CLS-06 | Fighter, p. 7 | XP per level: 0; 2,000; 4,000; 8,000; 16,000; 32,000; 64,000; 120,000; 240,000; 360,000; then +120,000 a level to 1,560,000 at 20th | mech | none | none | absent | M1 |
 | C-CLS-07 | Fighter, p. 7 | hit dice 1d8 a level to 9d8, then +2 HP a level (9d8+2 … 9d8+22) | mech | level 1: sheet `pf` (Livia: 8 + 1 = 9); beyond: none | none | sheet | M1 |
 | C-CLS-08 | Fighter, p. 7 | any armor, any weapon | mech | nothing to enforce (no restriction exists for anyone) | — | desc | — |
@@ -314,7 +317,7 @@ magic missing (C-ABI-07); sneak attack double damage written as 2d6 (C-THF-10).
 |---|---|---|---|---|---|---|---|
 | C-EQ-01 | Money, p. 10 | 1 pp = 5 gp; 1 gp = 10 sp; 1 ep = 5 sp; 1 sp = 10 cp | mech | none (no money anywhere) | none | absent | M3 (purse), M2 |
 | C-EQ-02 | Money, p. 10 | a coin weighs 1/20 lb; ten coins fill a cubic inch | mech | none | none | absent | M8 |
-| C-EQ-03 | Money, p. 10 | first-level characters start with 3d6 × 10 gp, or what the GM chooses | mech | none (same as C-CRE-04) | none | absent | M7 |
+| C-EQ-03 | Money, p. 10 | first-level characters start with 3d6 × 10 gp, or what the GM chooses | mech | see C-CRE-04 | — | ptr | — |
 | C-EQ-04 | Equipment, p. 10 | price and weight list (lb; * = ten weigh 1 lb; ** = not counted): backpack 4 gp *; belt pouch 1 gp *; bit and bridle 15 sp, 3; candles ×12 1 gp *; chalk 2 gp *; cloak 2 gp, 1; common outfit 4 gp, 1; glass bottle 1 gp *; grappling hook 2 gp, 4; holy symbol 25 gp *; holy water 10 gp *; horseshoes 1 gp, 10; ink 8 gp, ½; iron spikes ×12 1 gp, 1; ladder 10 ft 1 gp, 20; lantern 5 gp, 2; bullseye lantern 14 gp, 3; hooded lantern 8 gp, 2; manacles 6 gp, 4; map or scroll case 1 gp, ½; small metal mirror 7 gp *; oil flask 1 gp, 1; padlock 12 gp, 1; paper sheet 1 gp **; 10' pole 1 gp, 10; quill 1 sp **; quill knife 1 gp *; quiver or bolt case 1 gp, 1; dry rations one week 10 gp, 14; hemp rope 50 ft 1 gp, 5; silk rope 50 ft 10 gp, 2; large sack 1 gp *; small sack 5 sp *; pack saddle 5 gp, 15; riding saddle 10 gp, 35; saddlebags 4 gp, 7; spellbook 25 gp, 1; large tent 25 gp, 20; small tent 5 gp, 10; thieves' tools 25 gp, 1; tinderbox 3 gp, 1; torches ×6 1 gp, 1; whetstone 1 gp, 1; whistle 1 gp **; waterskin 1 gp, 2; winter blanket 1 gp, 3 | mech | none: the only objects are a scene's `elementi_interattivi` with an `ogg_` id and their holder (`scena/oggetti.ts`), with no price, weight or effect; what a PC carries is pg text | none | absent | M2 |
 | C-EQ-05 | Explanation of Equipment, p. 12 | containers: backpack 40 lb or 3 cu ft (halfling's 30 lb, 1½ cu ft, same price); large sack 40 lb, 4 cu ft; small sack 20 lb, 2 cu ft; saddlebags 10 lb, 1 cu ft; quiver or bolt case 20 missiles, matched to the ammunition's length; scroll case 10 sheets or one scroll of up to 7 spells | mech | none | none | absent | M8, M2 |
 | C-EQ-06 | Explanation of Equipment, p. 12 | light: candle 5' radius (+5' dim), 3 turns per inch; lantern 30' (+20' dim), a flask of oil in 18+1d6 turns; hooded lantern can be hidden; bullseye lantern a 30' × 30' cone (+20' dim); torch 30' (+20' dim), 1d4+4 turns, sets flammables alight | mech | none (light is the play half's p. 43 row) | none | absent | M3 (consumable with a duration), M2 |
@@ -346,7 +349,7 @@ magic missing (C-ABI-07); sneak attack double damage written as 2d6 (C-THF-10).
 
 | id | § and page | rule | kind | where today | tested | status | gap → mechanism |
 |---|---|---|---|---|---|---|---|
-| C-SPL-01 | Spells, p. 15 | the spells per day of each level come from the class tables (C-CLS-03, C-CLS-11) | mech | none (no counter) | none | absent | M3, M1 |
+| C-SPL-01 | Spells, p. 15 | the spells per day of each level come from the class tables (C-CLS-03, C-CLS-11) | mech | see C-CLS-03, C-CLS-11 | — | ptr | — |
 | C-SPL-02 | Spells, p. 15 | each morning a caster prepares spells to replace those cast; prepared but uncast spells persist day to day; a prepared spell may be dismissed to prepare another of its level | proc | none | none | absent | M3 |
 | C-SPL-03 | Spells, p. 15 | casting needs one free hand and the ability to speak: bound and gagged, no spells | mech | none (no condition forbids casting; the set's `svenuto` says so only as text) | none | absent | M4 (a condition effect «cannot cast») |
 | C-SPL-04 | Spells, p. 15 | in combat casting takes the time of an attack | proc | set `combattimento.azioni` (text: «uno, oppure un incantesimo, una pozione, una corsa») | none | narrated | M4 (a cast is an action in the fight's order) |
@@ -390,7 +393,7 @@ magic missing (C-ABI-07); sneak attack double damage written as 2d6 (C-THF-10).
 | X-AB-02 | How to Attack, p. 53 **[overlap]** | d20 + AB + STR (melee) or DEX (missile) + situational ≥ the target's AC hits; a natural 1 always misses; a natural 20 always hits if the target can be hit at all | mech | set `risoluzione: {critico: 20, disastro: 1}`; RI:59-61; RR:334-378 against the sheet's `difesa` | tRM:65, tR:139, L6b | impl+test | «can be hit at all» is absent (C-WPN-03) |
 | X-SV-01 | Saving Throw Tables, p. 61 **[overlap]** | Cleric (Death/Poison, Wands, Paralysis/Petrify, Dragon Breath, Spells): 1: 11 12 14 16 15; 2-3: 10 11 13 15 14; 4-5: 9 10 13 15 14; 6-7: 9 10 12 14 13; 8-9: 8 9 12 14 13; 10-11: 8 9 11 13 12; 12-13: 7 8 11 13 12; 14-15: 7 8 10 12 11; 16-17: 6 7 10 12 11; 18-19: 6 7 9 11 10; 20: 5 6 9 11 10 | mech | level 1: sheet `ts_*` = 17 − number + race (Fulco correct) | none on the values | sheet | M1, M5 |
 | X-SV-02 | Saving Throw Tables, p. 61 **[overlap]** | Fighter: NM: 13 14 15 16 18; 1: 12 13 14 15 17; 2-3: 11 12 14 15 16; 4-5: 11 11 13 14 15; 6-7: 10 11 12 14 15; 8-9: 9 10 12 13 14; 10-11: 9 9 11 12 13; 12-13: 8 9 10 12 13; 14-15: 7 8 10 11 12; 16-17: 7 7 9 10 11; 18-19: 6 7 8 10 11; 20: 5 6 8 9 10. Magic-User: 1: 13 14 13 16 15; 2-3: 13 14 13 15 14; 4-5: 12 13 12 15 13; 6-7: 12 12 11 14 13; 8-9: 11 11 10 14 12; 10-11: 11 10 9 13 11; 12-13: 10 10 9 13 11; 14-15: 10 9 8 12 10; 16-17: 9 8 7 12 9; 18-19: 9 7 6 11 9; 20: 8 6 5 11 8. Thief: 1: 13 14 13 16 15; 2-3: 12 14 12 15 14; 4-5: 11 13 12 14 13; 6-7: 11 13 11 13 13; 8-9: 10 12 11 12 12; 10-11: 9 12 10 11 11; 12-13: 9 10 10 10 11; 14-15: 8 10 9 9 10; 16-17: 7 9 9 8 9; 18-19: 7 9 8 7 9; 20: 6 8 8 6 8 | mech | level 1: sheet `ts_*` (Livia, Eliandro, Nespola correct) | none on the values | sheet | M1, M5 |
-| X-SV-03 | Saving Throws, p. 60-61 **[overlap]** | a save succeeds on d20 ≥ the table's number (natural 20 always, natural 1 never, as attacks); the GM gives no difficulty | mech | the naturals: set `critici: attacchi_e_salvezze`, `salvezza: true` on the five saves; RI:61. The target: the check's difficulty, which nothing pins to `normale` (17): the rules arbiter moves any ability, saves included, by signal words (CL), the model arbiter may pick any difficulty (AR), and the arbiter's ±2 advantage applies (RR:191) | tRM:88 (naturals) | impl+test | **WRONG**: a save can be rolled against 13, 19 or 21, or ±2, and then departs from the table → M5 |
+| X-SV-03 | Saving Throws, p. 60-61 **[overlap]** | a save succeeds on d20 ≥ the table's number (natural 20 always, natural 1 never, as attacks); the GM gives no difficulty | mech | the naturals: set `critici: attacchi_e_salvezze`, `salvezza: true` on the five saves; RI:61. The target is the check's difficulty, and nothing in code pins a save to `normale` (17): the rules arbiter (deterministic) moves any ability, saves included, one rung by signal words in the action or the scene (CL:270-293, e.g. «al buio» → difficile 19); the model arbiter is only steered by text (its prompt lists every difficulty «nel dubbio normale», `lingue/it/testi-prove.yaml` `arbitro_regole.prova`, and `riassunto.md` says saves are against 17), while its schema accepts any (AR); the arbiter's ±2 advantage applies too (RR:191) | tRM:88 (naturals) | impl+test | **WRONG** whenever a save lands off 17 or gets ±2 (certain on the rules-arbiter path with a signal word; possible with the model) → M5 |
 | X-SV-04 | Saving Throws, p. 60 **[overlap]** | a monster or NPC saves with its own table (fighter-like by HD), against a PC's spell, breath, poison | mech | none: the Engine rolls checks only for the PC who acts (RR:251-279 uses the author's sheet) | none | absent | M5 (target-side saves) |
 | X-TU-01 | Clerics vs. Undead Table, p. 57 **[overlap]** | d20 needed by cleric level against Skeleton (1 HD), Zombie (2), Ghoul (3), Wight (4), Wraith (5), Mummy (6), Spectre (7), Vampire (8), Ghost (9+) — 1: 13 17 19 No…; 2: 11 15 18 20; 3: 9 13 17 19; 4: 7 11 15 18 20; 5: 5 9 13 17 19; 6: 3 7 11 15 18 20; 7: 2 5 9 13 17 19; 8: T 3 7 11 15 18 20; 9: T 2 5 9 13 17 19; 10: T T 3 7 11 15 18 20; 11: D T 2 5 9 13 17 19; 12: D T T 3 7 11 15 18 20; 13: D D T 2 5 9 13 17 19; 14: D D T T 3 7 11 15 18; 15: D D D T 2 5 9 13 17; 16: D D D T T 3 7 11 15; 17: D D D D T 2 5 9 13; 18: D D D D T T 3 7 11; 19: D D D D D T 2 5 9; 20: D D D D D T T 3 7 (T = turned automatically, D = damaged); the HD row is for undead not on the table | mech | set `sottosistemi scacciare` (text with the level-1 numbers 13/17/19), `riassunto.md`; no code reads `sottosistemi` | none | narrated | M1, M4 |
 | X-TU-02 | Turning the Undead, p. 57-58 **[overlap]** | the player always rolls 1d20 and tells the GM; on a success 2d6 HD are affected (at least one creature), weakest type first with the same roll and the same 2d6; a failure forbids another try for one turn (a partial one counts as failed); turned undead flee and stay away 2d4 turns; D: 1d8 damage per cleric level, rolled once for all | mech | none | none | absent | M4 (a typed effect with HD budget), M3 (the one-turn lockout) |
