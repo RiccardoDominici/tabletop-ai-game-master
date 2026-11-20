@@ -123,7 +123,9 @@ combattimento:
      healing above 0 ends the window, and when it runs out the PC dies. A caster who survives loses its prepared spells.
      With every PC down nobody can bind them: the dying die (`senzaSoccorso`). A PC dropped to 0 outside a fight (a
      trap, a fall) gets the set's rule at once: dead, or the single save rolled now; a rule of several saves (the SRD's
-     three) leaves it down for the Game Master;
+     three) leaves it down for the Game Master. The fall to 0, the save's outcome (dying, stable, dead), the binding and
+     a death by the window are owed facts like the fight's (prove/fatti-dovuti.ts, `EsitoTurnoProve.morte`): the table
+     hears them even when the narration leaves them out;
    - otherwise out of play or dead.
    - The Game Master may restore HP: whoever goes back above 0 gets up.
    - A PC already out of play when the window closes (0 HP, dead) does not act, even if the player writes: the

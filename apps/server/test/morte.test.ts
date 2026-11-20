@@ -9,6 +9,7 @@ import { describe, expect, it } from 'vitest';
 import { caricaCampagna } from '../src/campagna/caricatore';
 import { loggerMuto } from '../src/logger';
 import { GestoreCombattimento } from '../src/prove/combattimento';
+import { fattiDovuti } from '../src/prove/fatti-dovuti';
 import type { FonteDadi } from '../src/prove/dadi';
 import { MotoreProve } from '../src/prove/motore';
 import { StatoProve } from '../src/prove/stato';
@@ -102,6 +103,19 @@ describe('outside a fight: a trap drops a PC to 0', () => {
     expect(m.morenti.restanti('pg_bruno')).toBe(10);
     m.impostaPf('pg_bruno', 3);
     expect(m.morenti.restanti('pg_bruno')).toBeNull();
+  });
+
+  it('the table must hear it: the fall to 0, the save and the death by the window are owed facts of the turn', async () => {
+    const m = motore({ 20: [15], 10: [1, 1], 6: [3] });
+    m.effettoDelMaster('pg_ilaria', 'danno', 5, 'Frana', 1);
+    const t1 = await m.risolvi(2, []);
+    // The fall's card (the victim's, no target, at 0) and the save made: «a terra», then «morente».
+    expect(fattiDovuti(t1.tiri, t1.morte ?? []).map((f) => [f.id, f.tipo])).toEqual([['pg_ilaria', 'morente']]);
+    const t2 = await m.risolvi(3, []);
+    expect(t2.morte).toEqual([{ id: 'pg_ilaria', nome: 'Ilaria', esito: 'morto' }]);
+    expect(fattiDovuti(t2.tiri, t2.morte ?? []).map((f) => [f.id, f.tipo])).toEqual([['pg_ilaria', 'morto']]);
+    // A hazard's card that drops its victim to 0 is owed by itself (prove/fatti-dovuti.ts).
+    expect(fattiDovuti([{ chi: 'pg_x', nome: 'X', tipo: 'attacco', automatico: true, bersaglio: null, a_terra: true, privata: false, riuscita: true } as never]).map((f) => f.tipo)).toEqual(['a_terra']);
   });
 
   it('healing above 0 ends the dying window', async () => {

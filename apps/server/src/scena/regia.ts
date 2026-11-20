@@ -4053,7 +4053,7 @@ export class Regia {
     const scontroPrima = this.prove?.inCombattimento ?? false;
     const tiri = this.prove?.attivo && (r.azioni.length || this.prove.inCombattimento || giocate.decisioni) ? await this.tiriDelTurno(r, giocate) : null;
     // For the stall: did this turn roll anything at the table (a PC's check or attack is something new)?
-    this.carteDelTurno = { turno: r.turno, n: tiri?.tiri.filter((t) => !t.privata && !t.del_master).length ?? 0 };
+    this.carteDelTurno = { turno: r.turno, n: tiri?.tiri.filter((t) => !t.privata && !t.del_master && !t.nascosta).length ?? 0 };
     // Who fought and who fled in this visit: the actor of an attack or a flight the narration does not name.
     const ingresso = this.mondo.visita.ingresso;
     if (this.storiaVisita.ingresso !== ingresso) this.storiaVisita = { ingresso, carte: [], fughe: [] };
@@ -4188,7 +4188,7 @@ export class Regia {
     // Mossa del mondo (nessuna azione): la narrazione resta nella finzione (narrazione/finzione.ts).
     const mossaDelMondo = r.azioni.length === 0;
     // Colpi, cadute e tiri contro la morte del turno: il Motore controlla che il tavolo li senta.
-    const dovuti = tiri ? fattiDovuti(tiri.tiri, tiri.combattimento?.morte ?? [], tiri.combattimento?.fuggiti ?? []) : [];
+    const dovuti = tiri ? fattiDovuti(tiri.tiri, [...(tiri.combattimento?.morte ?? []), ...(tiri.morte ?? [])], tiri.combattimento?.fuggiti ?? []) : [];
     // Also on a turn without rolls: someone out of play may still be told acting (narrazione/guardia-fuori.ts).
     // The guard keeps per-call state (who already had a state line, the carried subject): each private reply gets one of
     // its own, so a reply that names the fallen NPC first does not use up the line the table must hear.

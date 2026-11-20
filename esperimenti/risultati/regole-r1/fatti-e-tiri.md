@@ -1,7 +1,7 @@
 # Facts the narrator received, and the Game Master's hidden rolls
 
-From logs/porta-4970/server.jsonl of this run (records `prove: tiri del turno` and `saves: a target rolls its own
-save`, after the run's start). What the table heard and saw, with the cards on the projector, is in tavolo.md.
+From logs/porta-4970/server.jsonl of this run (records `prove: tiri del turno` and `saves: a target rolls its own save`, after the
+run's start), plus any line of the manual-rolls checks. What the table heard and saw is in tavolo.md.
 
 - *Game Master's side, a hidden card*: png_brigante rolls `ts_magia`: d20 [4] + 0 against 15 (from the tabella) → failed
 
@@ -65,3 +65,5 @@ save`, after the run's start). What the table heard and saw, with the cards on t
 ## Turn 12
 
 - [1] Ilaria: Ilaria usa Sonno (incantesimo di 1° livello: gliene restano 0 di quel livello per oggi). Sonno non ha effetto su Scheletro. Brando è troppo potente per Sonno: nessun effetto. Brigante è addormentato per 10 round.
+
+Manual-roll warnings (a player roll not asked, card dice differing from those entered): none

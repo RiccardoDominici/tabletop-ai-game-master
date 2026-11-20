@@ -165,7 +165,9 @@ the work of the Preparatore, and the form of the fields is in `riferimenti/schem
 
 - **Non-SRD set** (with `manuale:`): the characteristics, skills, moves and difficulties of the sheets and of the
   checks are those of the set, not the six of D&D. The form is in `docs/regole.md` §2 («Schede di PG e PNG per un
-  set non SRD» — sheets of PCs and NPCs for a non-SRD set).
+  set non SRD» — sheets of PCs and NPCs for a non-SRD set). With class tables in the set, a sheet names its `classe`,
+  `livello` and `razza` and writes no save bonus; a caster lists its prepared `incantesimi` (no more copies of a level
+  than the class gives that day: the validator checks it); a monster gives `salva_come`, `dadi_vita` and `tipo`.
 
 **Check**: `--solo SCHEDA` with no errors (with a non-SRD set, `--solo REGOLE`). Sheets are not written from
 memory: the validator redoes them.
@@ -242,13 +244,35 @@ here only the order.
    - **Numbers as the manual has them** (`docs/regole.md` §2), instead of converting them: a score → bonus table
      (`modificatore: {tipo: tabella, tabella: [{da, mod}]}`, the sheets write the score); percentile or «x in 6»
      skills (`abilita[].soglia: {dado: 100 | 6, predefinita}`, the sheet writes the percentage or the x); a weapon that
-     always hits (`attacchi[].automatico: true` on the sheet); natural 20/1 on a d20 (`risoluzione.critico`,
-     `disastro`, `critici: attacchi | attacchi_e_salvezze | tutti`, the saving throws marked `abilita[].salvezza: true`), critical and minimum damage (`attacchi.danno_critico`, `danno_minimo`); the death-save
+     always hits but is not a spell (`attacchi[].automatico: true` on the sheet); natural 20/1 on a d20 (`risoluzione.critico`,
+     `disastro`, `critici: attacchi | attacchi_e_salvezze | tutti`, the saving throws marked `abilita[].salvezza`), critical and minimum damage (`attacchi.danno_critico`, `danno_minimo`); the death-save
      extras of the SRD only if the manual has them (`tiri_morte.venti_rialza`, `uno_doppio`); initiative re-rolled
      every round (`ogni_round`), ties acting at the same moment (`pari: simultanei`, when the manual says equal
      numbers act together); the manual's situational attack bonuses (from behind, charge, range) as `modificatori`,
      each with the words of a PC's action that make it apply, `attacchi: tutti | mischia | distanza`, the weapons it
      needs (`armi`), the abilities it does not combine with (`non_con`) and `danno: doppio` if the manual doubles it. The SRD values apply where the set says nothing.
+   - **Classes, saves and races as the manual's tables** (`docs/regole.md` §2): the save categories
+     (`tiri_salvezza.colonne`) and each class's rows by level (`classi[].tiri_salvezza`, every row of the manual, one
+     value per column; a «normal man» row is level 0), the save abilities pointing at their column
+     (`abilita[].salvezza: <colonna>`, with the characteristic the manual adds to some saves: poison + Constitution…),
+     the spells per day (`classi[].incantesimi_al_giorno`) and how they are prepared (`magia: {preparazione:
+     vanciana | slot}`), the races and classes' traits that change a roll (`razze[].tratti`, `classi[].tratti`: a
+     bonus to initiative, to an ability, to some saves, an immunity, a smaller surprise range). Never hand-sum a save
+     or a race bonus into a sheet: the sheet names `classe`, `livello`, `razza` (a monster `salva_come`), and the
+     validator warns (strict: error) when a sheet writes its own bonus for a save its class table gives.
+   - **Spells, potions and class actions as powers** (`poteri`): each with its class levels (`livello: {mago: 1}`),
+     who it reaches (`bersaglio`, `dadi_vita_max`, `solo_tipi`, `immuni`), the target's save (`salvezza: {abilita,
+     esito: annulla | dimezza}`) and its typed effects from the closed list (damage, healing, a condition with a
+     duration, a bonus, an immunity, `stabilizza`, `morte`); what the list cannot say is `descrittivo: true` (the slot
+     is spent, the narrator tells it). A spell is never a sheet weapon: the Engine counts it only as a power. Words
+     in `parole` must be specific to the power («dardo incantato»), never common verbs («apro», «leggo»). The PC's
+     sheet lists its prepared spells (`incantesimi`), items (`oggetti`) and counters (`risorse`: arrows with
+     `attacchi[].consuma`); NPC sheets give `dadi_vita` and `tipo` for the powers that read them.
+   - **Death, rest and hazards**: the manual's death rule (`tiri_morte.abilita`, `finestra`, `perde_incantesimi`), a
+     binding-wounds action (`tipo: azione`, `effetti: [{tipo: stabilizza}]`) if the manual has one, the falling table
+     (`cadute`), the kinds of rest (`riposo`), and a scene check's hazard (`effetti_se_fallisce`: a fall, a trap's
+     attack or damage). An attack ability the manual limits (the sneak attack: `danno: doppio`,
+     `una_volta_per_bersaglio`, `ripiego`) keeps the weapon's own die on the sheet: the Engine doubles it.
    - **Keywords** (`parole_chiave`, the `parole` of scene checks and of excerpts with `per:`): specific words, not
      places, body parts or common objects («porta», «passaggio», «spalla»), which the validator refuses.
 3. Write `campagne/<id>/regole/`: `regole.yaml` (with `fonte.titolo`, `licenza` and the section `combattimento:`,

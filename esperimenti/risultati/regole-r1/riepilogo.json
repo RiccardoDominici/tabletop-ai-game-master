@@ -4,24 +4,17 @@
   "modo": "improvvisa",
   "porta": 4970,
   "narratore_finto": true,
-  "sessione": "2026-11-20T14:54:08.217Z",
+  "sessione": "2026-11-20T15:20:49.368Z",
   "nota_ambiente": null,
   "codice": {
-    "commit": "8b126e065a1ed8c068a18172fa65bf1813ae5ae7",
+    "commit": "e509555b310591d903aee098a37e92ac4b629b88",
     "modificati": [
-      "M apps/server/src/esperimenti/alimentatore.ts",
-      "M apps/server/src/esperimenti/argomenti.ts",
-      "M apps/server/src/esperimenti/copione.ts",
       "M apps/server/src/esperimenti/esegui.ts",
+      "M apps/server/src/prove/fatti-dovuti.ts",
       "M apps/server/src/prove/motore.ts",
-      "M apps/server/test/alimentatore-copione.test.ts",
-      "M apps/server/test/attivi.test.ts",
-      "M apps/server/test/esperimenti-argomenti.test.ts",
-      "M apps/server/test/fixtures/campagne/magia/png/png_capo.yaml",
-      "M apps/server/test/fixtures/campagne/magia/png/png_scheletro.yaml",
-      "M apps/server/test/morte.test.ts",
-      "M apps/server/test/poteri.test.ts",
-      "M apps/server/test/tratti.test.ts"
+      "M apps/server/src/prove/tipi.ts",
+      "M apps/server/src/scena/regia.ts",
+      "M apps/server/test/morte.test.ts"
     ],
     "radice": "/Users/riccardo/Developer/cantastorie"
   },
@@ -122,8 +115,8 @@
   "voce": "mock",
   "latenze": {
     "finestra_ms": {
-      "mediana": 14.5,
-      "peggiore": 23,
+      "mediana": 12.5,
+      "peggiore": 19,
       "n": 12
     },
     "voce_sveglia": {
@@ -133,47 +126,47 @@
     },
     "llm_primo_token": {
       "mediana": 513.5,
-      "peggiore": 536,
+      "peggiore": 534,
       "n": 12
     },
     "llm_prima_frase": {
-      "mediana": 1405,
-      "peggiore": 1423,
+      "mediana": 1398.5,
+      "peggiore": 1422,
       "n": 12
     },
     "voce_richiesta": {
-      "mediana": 1405,
-      "peggiore": 1423,
+      "mediana": 1398.5,
+      "peggiore": 1422,
       "n": 12
     },
     "voce_primo_audio": {
-      "mediana": 2057.5,
-      "peggiore": 2076,
+      "mediana": 2051.5,
+      "peggiore": 2074,
       "n": 12
     },
     "schermo_inizio_audio": {
-      "mediana": 2210.5,
-      "peggiore": 2230,
+      "mediana": 2203.5,
+      "peggiore": 2226,
       "n": 12
     },
     "llm_fine": {
-      "mediana": 1568,
-      "peggiore": 1586,
+      "mediana": 1560.5,
+      "peggiore": 1585,
       "n": 12
     },
     "audio_fine": {
-      "mediana": 3868,
-      "peggiore": 13325,
+      "mediana": 5405,
+      "peggiore": 13286,
       "n": 12
     }
   },
   "buchi": {
-    "totale": 12,
+    "totale": 13,
     "in_frase": 0,
-    "tra_frasi": 12,
-    "silenzio_ms": 4321,
+    "tra_frasi": 13,
+    "silenzio_ms": 5311,
     "per_turno": [
-      5,
+      4,
       2,
       1,
       0,
@@ -181,8 +174,8 @@
       1,
       0,
       0,
-      0,
-      0,
+      1,
+      1,
       2,
       0
     ]
@@ -236,10 +229,10 @@
       "frasi": 6,
       "pezzi": 54,
       "secondi": 10.466666666666663,
-      "buchi": 5,
+      "buchi": 4,
       "buchi_in_frase": 0,
-      "buchi_tra_frasi": 5,
-      "silenzio_ms": 1275
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 1258
     },
     {
       "turno": 2,
@@ -249,7 +242,7 @@
       "buchi": 2,
       "buchi_in_frase": 0,
       "buchi_tra_frasi": 2,
-      "silenzio_ms": 777
+      "silenzio_ms": 774
     },
     {
       "turno": 3,
@@ -259,7 +252,7 @@
       "buchi": 1,
       "buchi_in_frase": 0,
       "buchi_tra_frasi": 1,
-      "silenzio_ms": 506
+      "silenzio_ms": 504
     },
     {
       "turno": 4,
@@ -279,7 +272,7 @@
       "buchi": 1,
       "buchi_in_frase": 0,
       "buchi_tra_frasi": 1,
-      "silenzio_ms": 507
+      "silenzio_ms": 505
     },
     {
       "turno": 6,
@@ -289,7 +282,7 @@
       "buchi": 1,
       "buchi_in_frase": 0,
       "buchi_tra_frasi": 1,
-      "silenzio_ms": 507
+      "silenzio_ms": 504
     },
     {
       "turno": 7,
@@ -313,23 +306,23 @@
     },
     {
       "turno": 9,
-      "frasi": 1,
-      "pezzi": 4,
-      "secondi": 0.6666666666666667,
-      "buchi": 0,
+      "frasi": 2,
+      "pezzi": 19,
+      "secondi": 3.5333333333333345,
+      "buchi": 1,
       "buchi_in_frase": 0,
-      "buchi_tra_frasi": 0,
-      "silenzio_ms": 0
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 506
     },
     {
       "turno": 10,
-      "frasi": 1,
-      "pezzi": 4,
-      "secondi": 0.6666666666666667,
-      "buchi": 0,
+      "frasi": 2,
+      "pezzi": 17,
+      "secondi": 3.133333333333334,
+      "buchi": 1,
       "buchi_in_frase": 0,
-      "buchi_tra_frasi": 0,
-      "silenzio_ms": 0
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 507
     },
     {
       "turno": 11,
@@ -339,7 +332,7 @@
       "buchi": 2,
       "buchi_in_frase": 0,
       "buchi_tra_frasi": 2,
-      "silenzio_ms": 749
+      "silenzio_ms": 753
     },
     {
       "turno": 12,

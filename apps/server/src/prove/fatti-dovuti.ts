@@ -64,6 +64,8 @@ export function fattiDovuti(
     if (t.a_terra) metti({ tipo: 'a_terra', id: b.id, nome: b.nome });
     else metti({ tipo: 'colpito', id: b.id, nome: b.nome, da: [{ id: t.chi, nome: t.nome }] });
   }
+  // A hazard's card (a trap, a fall: prove/effetti.ts) is its victim's, with no target: a fall to 0 is owed too.
+  for (const t of tiri) if (!t.privata && t.automatico && !t.bersaglio && t.a_terra && !t.cura) metti({ tipo: 'a_terra', id: t.chi, nome: t.nome });
   for (const m of morte) metti({ tipo: m.esito, id: m.id, nome: m.nome });
   for (const f of fuggiti) metti({ tipo: 'fuggito', id: f.id, nome: f.nome });
   // `da` serve solo quando la creatura colpita ha anche colpito qualcuno in questo turno.

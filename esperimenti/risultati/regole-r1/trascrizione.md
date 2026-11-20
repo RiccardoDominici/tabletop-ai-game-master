@@ -1,6 +1,6 @@
 # Trascrizione cantina-A-finto
 
-Campagna: magia · modalità: improvvisa · sessione 2026-11-20T14:54:08.217Z · PG: pg_ilaria, pg_bruno, pg_sara
+Campagna: magia · modalità: improvvisa · sessione 2026-11-20T15:20:49.368Z · PG: pg_ilaria, pg_bruno, pg_sara
 
 Tutte le righe sono improvvisate dal modello.
 
@@ -29,7 +29,7 @@ Narratore:
 ```
 
 - righe pre-scritte 0, improvvisate 3, [usa] rifiutati 0; azioni senza risposta 1/1, riparazioni 0, conferme del Motore 0; invito: ["pg_ilaria","pg_bruno"]; anomalie: 0
-- primo audio dalla chiusura della finestra: 1585 ms; buchi 5 (in frase 0, tra frasi 5, silenzio 1275 ms); costo $0
+- primo audio dalla chiusura della finestra: 1567 ms; buchi 4 (in frase 0, tra frasi 4, silenzio 1258 ms); costo $0
 
 ## Turno 2 — evento violazione
 
@@ -60,7 +60,7 @@ Narratore:
 ```
 
 - righe pre-scritte 0, improvvisate 1, [usa] rifiutati 0; azioni senza risposta 1/1, riparazioni 0, conferme del Motore 0; invito: ["pg_ilaria","pg_bruno"]; anomalie: 5
-- primo audio dalla chiusura della finestra: 2221 ms; buchi 2 (in frase 0, tra frasi 2, silenzio 777 ms); costo $0
+- primo audio dalla chiusura della finestra: 2214 ms; buchi 2 (in frase 0, tra frasi 2, silenzio 774 ms); costo $0
 
 ## Turno 3 — evento violazione
 
@@ -91,7 +91,7 @@ Narratore:
 ```
 
 - righe pre-scritte 0, improvvisate 1, [usa] rifiutati 0; azioni senza risposta 1/1, riparazioni 0, conferme del Motore 0; invito: ["pg_ilaria","pg_bruno"]; anomalie: 5
-- primo audio dalla chiusura della finestra: 2224 ms; buchi 1 (in frase 0, tra frasi 1, silenzio 506 ms); costo $0
+- primo audio dalla chiusura della finestra: 2216 ms; buchi 1 (in frase 0, tra frasi 1, silenzio 504 ms); costo $0
 
 ## Turno 4 — evento violazione
 
@@ -120,7 +120,7 @@ Narratore:
 ```
 
 - righe pre-scritte 0, improvvisate 1, [usa] rifiutati 0; azioni senza risposta 1/1, riparazioni 0, conferme del Motore 0; invito: ["pg_ilaria","pg_bruno"]; anomalie: 5
-- primo audio dalla chiusura della finestra: 2189 ms; buchi 0 (in frase 0, tra frasi 0, silenzio 0 ms); costo $0
+- primo audio dalla chiusura della finestra: 2187 ms; buchi 0 (in frase 0, tra frasi 0, silenzio 0 ms); costo $0
 
 ## Turno 5 — evento violazione
 
@@ -149,7 +149,7 @@ Narratore:
 ```
 
 - righe pre-scritte 0, improvvisate 1, [usa] rifiutati 0; azioni senza risposta 1/1, riparazioni 0, conferme del Motore 0; invito: ["pg_ilaria","pg_bruno"]; anomalie: 5
-- primo audio dalla chiusura della finestra: 2230 ms; buchi 1 (in frase 0, tra frasi 1, silenzio 507 ms); costo $0
+- primo audio dalla chiusura della finestra: 2226 ms; buchi 1 (in frase 0, tra frasi 1, silenzio 505 ms); costo $0
 
 ## Turno 6 — evento violazione
 
@@ -180,7 +180,7 @@ Narratore:
 ```
 
 - righe pre-scritte 0, improvvisate 1, [usa] rifiutati 0; azioni senza risposta 1/1, riparazioni 0, conferme del Motore 0; invito: ["pg_ilaria","pg_bruno"]; anomalie: 5
-- primo audio dalla chiusura della finestra: 2215 ms; buchi 1 (in frase 0, tra frasi 1, silenzio 507 ms); costo $0
+- primo audio dalla chiusura della finestra: 2203 ms; buchi 1 (in frase 0, tra frasi 1, silenzio 504 ms); costo $0
 
 ## Turno 7 — evento violazione
 
@@ -209,7 +209,7 @@ Narratore:
 ```
 
 - righe pre-scritte 0, improvvisate 1, [usa] rifiutati 0; azioni senza risposta 1/1, riparazioni 0, conferme del Motore 0; invito: ["pg_ilaria","pg_bruno"]; anomalie: 5
-- primo audio dalla chiusura della finestra: 2183 ms; buchi 0 (in frase 0, tra frasi 0, silenzio 0 ms); costo $0
+- primo audio dalla chiusura della finestra: 2169 ms; buchi 0 (in frase 0, tra frasi 0, silenzio 0 ms); costo $0
 
 ## Turno 8 — evento violazione
 
@@ -238,7 +238,9 @@ Narratore:
 ```
 
 - righe pre-scritte 0, improvvisate 1, [usa] rifiutati 0; azioni senza risposta 1/1, riparazioni 0, conferme del Motore 0; invito: ["pg_ilaria","pg_bruno"]; anomalie: 5
-- primo audio dalla chiusura della finestra: 2207 ms; buchi 0 (in frase 0, tra frasi 0, silenzio 0 ms); costo $0
+- primo audio dalla chiusura della finestra: 2200 ms; buchi 0 (in frase 0, tra frasi 0, silenzio 0 ms); costo $0
+
+## Turno 9 — evento violazione
 
 ## Turno 9 — evento violazione
 
@@ -267,7 +269,9 @@ Narratore:
 ```
 
 - righe pre-scritte 0, improvvisate 1, [usa] rifiutati 0; azioni senza risposta 1/1, riparazioni 0, conferme del Motore 0; invito: ["pg_ilaria","pg_bruno"]; anomalie: 5
-- primo audio dalla chiusura della finestra: 2207 ms; buchi 0 (in frase 0, tra frasi 0, silenzio 0 ms); costo $0
+- primo audio dalla chiusura della finestra: 2210 ms; buchi 1 (in frase 0, tra frasi 1, silenzio 506 ms); costo $0
+
+## Turno 10 — evento violazione
 
 ## Turno 10 — evento violazione
 
@@ -296,7 +300,7 @@ Narratore:
 ```
 
 - righe pre-scritte 0, improvvisate 1, [usa] rifiutati 0; azioni senza risposta 1/1, riparazioni 0, conferme del Motore 0; invito: ["pg_ilaria","pg_bruno"]; anomalie: 5
-- primo audio dalla chiusura della finestra: 2214 ms; buchi 0 (in frase 0, tra frasi 0, silenzio 0 ms); costo $0
+- primo audio dalla chiusura della finestra: 2183 ms; buchi 1 (in frase 0, tra frasi 1, silenzio 507 ms); costo $0
 
 ## Turno 11 — evento violazione
 
@@ -327,7 +331,7 @@ Narratore:
 ```
 
 - righe pre-scritte 0, improvvisate 1, [usa] rifiutati 0; azioni senza risposta 1/1, riparazioni 0, conferme del Motore 0; invito: ["pg_ilaria","pg_bruno"]; anomalie: 5
-- primo audio dalla chiusura della finestra: 2216 ms; buchi 2 (in frase 0, tra frasi 2, silenzio 749 ms); costo $0
+- primo audio dalla chiusura della finestra: 2204 ms; buchi 2 (in frase 0, tra frasi 2, silenzio 753 ms); costo $0
 
 ## Turno 12 — evento violazione
 
@@ -356,4 +360,4 @@ Narratore:
 ```
 
 - righe pre-scritte 0, improvvisate 1, [usa] rifiutati 0; azioni senza risposta 1/1, riparazioni 0, conferme del Motore 0; invito: ["pg_ilaria","pg_bruno"]; anomalie: 5
-- primo audio dalla chiusura della finestra: 2205 ms; buchi 0 (in frase 0, tra frasi 0, silenzio 0 ms); costo $0
+- primo audio dalla chiusura della finestra: 2209 ms; buchi 0 (in frase 0, tra frasi 0, silenzio 0 ms); costo $0

@@ -25,8 +25,10 @@ turni:
   # A hazard from the panel: a fall through a trapdoor; whoever is dying gets bound (the power «fasciare», anyone).
   - - {master: {tipo: pericolo, id: pg_bruno, cosa: caduta, valore: 10, fonte: "Botola"}}
     - {pg: pg_bruno, azione: "Fascio le ferite di Sara"}
-  # A night's sleep from the panel: hit points and the spells come back; the magic missile can be cast again.
-  - - {master: {tipo: riposo, riposo: notte}}
+  # A night's sleep from the panel (after ending any fight the dice reopened): hit points and the spells come back; the
+  # magic missile can be cast again.
+  - - {master: {tipo: combattimento_termina}}
+    - {master: {tipo: riposo, riposo: notte}}
     - {pg: pg_ilaria, azione: "Lancio il dardo arcano contro lo scheletro"}
   # The second prepared spell of the new day: the bandit, awake again, rolls his own save once more.
   - - {pg: pg_ilaria, azione: "Lancio sonno sui briganti"}

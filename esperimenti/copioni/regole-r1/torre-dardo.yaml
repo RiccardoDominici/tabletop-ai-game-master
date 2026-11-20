@@ -1,0 +1,12 @@
+# Live check of R1 on torre-mozza (Basic Fantasy), manual rolls: the magic missile from Eliandro's one slot, then
+# refused; Nespola's sneak attack once on Zirrà, then an ordinary attack; the halfling's +1 initiative in the order.
+#   TAGM_PORTA=4972 TAGM_SEME_DADI=<hex> npx tsx apps/server/src/esperimenti/esegui.ts esperimenti/copioni/regole-r1/torre-dardo.yaml \
+#     A --campagna torre-mozza --finto --tiri manuale --seme-giocatori <hex> --uscita regole-r1/torre-mozza-manuale
+scena: scena_torre
+pg: [pg_eliandro, pg_nespola, pg_livia, pg_fulco]
+turni:
+  - - {pg: pg_eliandro, azione: "Lancio il dardo incantato contro Zirrà"}
+  - - {pg: pg_nespola, azione: "Colpisco Zirrà con la spada corta alle spalle"}
+  - - {pg: pg_eliandro, azione: "Lancio un altro dardo incantato contro Zirrà"}
+  - - {pg: pg_nespola, azione: "Colpisco ancora Zirrà con la spada corta alle spalle"}
+  - - {pg: pg_livia, azione: "Colpisco Zirrà con la spada lunga"}

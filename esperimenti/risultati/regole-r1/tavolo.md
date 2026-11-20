@@ -86,6 +86,8 @@ Ciò che i giocatori hanno sentito e visto, nell’ordine: le righe dette ad alt
 
 **Sara** (giocatore): Attraverso il corridoio di assi
 
+**Narratore:** Sara resta a terra, tra la vita e la morte.
+
 **Narratore:** Cosa fate?
 
 *Carte dei dadi sul proiettore:* Sara: Salvezza contro la morte con la Destrezza (Destrezza) 4, fallita · Sara: Fossa coperta (caduta da 20 piedi) 9 contro soglia 0, riuscita · Sara: Tiro salvezza contro la morte 13, riuscita
@@ -95,6 +97,8 @@ Ciò che i giocatori hanno sentito e visto, nell’ordine: le righe dette ad alt
 *Sullo schermo: Botola (caduta da 10 piedi): Bruno prende 6 danni; Bruno ha 4 punti ferita su 10.*
 
 **Bruno** (giocatore): Fascio le ferite di Sara
+
+**Narratore:** Sara respira ancora, ma non si muove.
 
 **Narratore:** Cosa fate?
 

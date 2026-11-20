@@ -221,7 +221,9 @@ async function giocaCopione(
     for (const comando of passo.master) {
       const e = await master.comando(comando);
       console.log(`[${etichetta}] turno ${n} (server ${stato.turno}): master ${comando.tipo} → ${e.ok ? 'ok' : `rifiutato: ${e.errore}`}`);
-      if (!e.ok) throw new Error(`turno ${n}: comando del master ${comando.tipo} rifiutato: ${e.errore}`);
+      // Ending a fight that is already over is harmless (the script cannot know when the dice ended it); any other
+      // refused command stops the run.
+      if (!e.ok && comando.tipo !== 'combattimento_termina') throw new Error(`turno ${n}: comando del master ${comando.tipo} rifiutato: ${e.errore}`);
     }
     turnoServer = stato.turno;
     if (diTurno) {

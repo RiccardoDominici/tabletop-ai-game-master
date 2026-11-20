@@ -5,6 +5,7 @@
 import type { TiroMostrato } from '@tabletop-ai-gm/shared';
 import type { Abilita, Caratteristica, Difficolta } from '../campagna/regole-srd';
 import type { EsitoCombattimento } from './combattimento';
+import type { EsitoMorte } from './fatti-dovuti';
 
 /**
  * Che cosa serve per risolvere un'azione.
@@ -139,4 +140,9 @@ export interface EsitoTurnoProve {
   combattimento: EsitoCombattimento | null;
   /** Hostile powers a PC used on NPCs this turn (prove/poteri.ts): like attacks, they open the fight. */
   ostili?: Array<{ chi: string; bersaglio: string }>;
+  /**
+   * Outcomes of the death rule outside the fight's own steps this turn (prove/morte.ts): a PC dropped to 0 by a trap
+   * or a fall and its save, a death when a dying window ran out. Owed facts, like the fight's (prove/fatti-dovuti.ts).
+   */
+  morte?: Array<{ id: string; nome: string; esito: EsitoMorte }>;
 }

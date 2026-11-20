@@ -327,7 +327,10 @@ code in `strumenti/valida/regole_schede.py`, tables in `srd.py`).
 - `campagna.yaml` → `gregari`: stat lines of nameless foes by type, `[{tipo: goblin, nome: "goblin", parole: [goblin,
   sentinella], scheda: {…an NPC sheet of the set…}}]`; `scena.yaml` / `scene/*.yaml` → `gregari: [{tipo, quanti}]`
   (1–20, default 1). [V SCHEDA.gregari; warning SCHEDA.nemici_senza_statistiche when a scene names one without them]
-- `scena.yaml` and `scene/*.yaml` → `prove`: a list of `{id: p_…, quando, abilita | caratteristica | salvezza, cd, indizio?, se_fallisce?}`.
+- `scena.yaml` and `scene/*.yaml` → `prove`: a list of `{id: p_…, quando, abilita | caratteristica | salvezza, cd, indizio?, se_fallisce?, nome?, effetti_se_fallisce?}`.
+  `effetti_se_fallisce` (typed effects, `docs/regole.md` §2) hits the PC who fails: a pit is `[{tipo: caduta, altezza: 3}]`
+  in the unit of the set's `cadute`, a dart trap `[{tipo: attacco, bonus: 1, dadi: "1d4"}]`; `nome` names the hazard on
+  the card («Fossa coperta»).
   The `quando` opens with the PC's action («un PG apre…»): the rules arbiter matches that word (or one of `parole`) as
   the intent, never shared nouns alone.
 - `scena.yaml` and `scene/*.yaml` → `domande`: world questions (shape in the scene sheet above). The odds (`tiro`) work
