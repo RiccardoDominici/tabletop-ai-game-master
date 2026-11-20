@@ -1,0 +1,73 @@
+situazione_comune: Siete entrati nella bottega del mercante con le vostre monete, prima di scendere in cantina.
+personaggi:
+- id: pg_aldo
+  nome: Aldo
+  pronomi: lui
+  specie: umano
+  classe: guerriero
+  livello: 1
+  aspetto: Un uomo robusto con una cotta di maglia e uno scudo rotondo.
+  concetto: Guerriero di bottega che paga sempre in contanti.
+  aggancio: Il mercante gli deve uno sconto.
+  cosa_sai_fare:
+  - combatti con la spada e con l'arco
+  scheda:
+    caratteristiche: {forza: 15, destrezza: 13, costituzione: 12, intelligenza: 10}
+    classe: guerriero
+    livello: 1
+    razza: umano
+    abilita: {mischia: 1, distanza: 1}
+    pf: 9
+    # AC 16 from the gear: cotta di maglia 14, scudo +1, Destrezza +1.
+    equipaggiamento:
+    - maglia
+    - scudo
+    - spada
+    - arco
+    - {id: freccia, quante: 12}
+    - {id: torcia, quante: 3}
+    - zaino
+    monete: {mo: 20, ma: 5}
+- id: pg_bice
+  nome: Bice
+  pronomi: lei
+  specie: umana
+  classe: maga
+  livello: 1
+  aspetto: Una giovane donna con un mantello verde e un pugnale alla cintura.
+  concetto: Maga che conta le monete con le dita.
+  aggancio: Cerca una lanterna per la cantina.
+  cosa_sai_fare:
+  - lanci scintilla una volta al giorno
+  scheda:
+    caratteristiche: {forza: 8, destrezza: 9, costituzione: 10, intelligenza: 16}
+    classe: mago
+    livello: 1
+    razza: umano
+    abilita: {mischia: 1, distanza: 1}
+    pf: 4
+    incantesimi: [scintilla]
+    equipaggiamento: [pugnale, {id: giubba, indossato: false}]
+    monete: {mo: 8, ma: 3, mr: 10}
+- id: pg_ciro
+  nome: Ciro
+  pronomi: lui
+  specie: del piccolo popolo
+  classe: ladro
+  livello: 1
+  aspetto: Un uomo piccolo e svelto con una giubba imbottita e una fionda.
+  concetto: Ladro del piccolo popolo che apre ogni lucchetto.
+  aggancio: Vuole vedere che cosa nasconde la cantina.
+  cosa_sai_fare:
+  - scassini e colpisci alle spalle
+  scheda:
+    caratteristiche: {forza: 10, destrezza: 17, costituzione: 12, intelligenza: 12}
+    classe: ladro
+    livello: 1
+    razza: piccolo
+    abilita: {mischia: 1, distanza: 1, furtivo: 3, scassinare: 30}
+    pf: 5
+    equipaggiamento: [giubba, pugnale, fionda, {id: sasso, quante: 10}]
+    attacchi:
+    - {nome: Pugnale alle spalle, arma: pugnale, abilita: furtivo}
+    monete: {ma: 12}

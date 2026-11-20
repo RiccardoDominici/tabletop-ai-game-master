@@ -1,0 +1,36 @@
+id: png_guardia
+nome: Guardia di pietra
+pronuncia: Guàrdia di piètra
+alias: [guardia, statua]
+livello: minore
+ruolo: guardiano della cantina
+aspetto:
+  lettura: Una statua di pietra che cammina, con una mazza di granito.
+  invarianti: [pietra, mazza]
+personalita:
+  superficie: [muta]
+  sotto_pressione: [implacabile]
+  contraddizione: Custodisce un passaggio che nessuno ricorda.
+desiderio: Tenere chiusa la cantina.
+voce:
+  tts: {voce_id: vincent}
+  registro: voi
+  stile: Nessuna parola.
+  battuta_campione: …
+sa: [f_cantina]
+non_sa: []
+atteggiamento_pg:
+  pg_aldo: {stato: ostile, perche: intruso, vuole: che se ne vada}
+  pg_bice: {stato: ostile, perche: intrusa, vuole: che se ne vada}
+  pg_ciro: {stato: ostile, perche: intruso, vuole: che se ne vada}
+scheda:
+  # A monster with no catalog gear: its typed AC and attack stay as written, even in a set with a catalog.
+  caratteristiche: {forza: 16, destrezza: 8, costituzione: 16, intelligenza: 3}
+  dadi_vita: 4
+  tipo: costrutto
+  salva_come: {classe: guerriero, livello: 4}
+  pf: 20
+  difesa: 15
+  morale: 12
+  attacchi:
+  - {nome: Mazza di granito, danno: "1d8+2", abilita: mischia}

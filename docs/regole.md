@@ -199,7 +199,58 @@ cadute: {dadi: "1d6", ogni: 10, unita: "piedi", arrotonda: vicino, massimo: 20} 
 riposo:                                     # optional [V]: the kinds of rest the Game Master gives from the panel
   - {id: notte, nome: "Una notte di sonno", cura: 1}        # cura: a whole number, a formula rolled for each, or tutti
   - {id: a_letto, nome: "Un giorno a letto", cura: 2, ricarica: true}   # ricarica (default true): resources come back
+monete:                                     # optional [V]: the manual's coins (regole/catalogo.ts; Basic Fantasy p. 10)
+  base: mo                                  # the coin a price is written in when it names none
+  prezzi: [mo, ma, mr]                      # optional: the coins prices are written in and change is given in
+  peso: {quante: 20, peso: 1}               # optional: 20 coins weigh 1 unit of carico.unita
+  tagli:                                    # [V] worth in the smallest coin (whose vale is 1)
+    - {id: mp, nome: "Monete di platino", vale: 500}
+    - {id: mo, nome: "Monete d'oro", vale: 100}
+    - {id: mr, nome: "Monete di rame", vale: 1}
+catalogo:                                   # optional [V]: the item catalog (mechanism M2; regole/catalogo.ts)
+  difesa: {senza_armatura: 11, caratteristica: destrezza}   # AC with no armor, and the characteristic that adds to it
+  abilita: {mischia: mischia, distanza: distanza}           # the set's attack abilities for melee and missile lines
+  danno_caratteristica: forza               # its bonus adds to melee and thrown damage (and to `forza_al_danno` missiles)
+  gittate:                                  # range bands, nearest first (Basic Fantasy p. 11)
+    unita: metri
+    parole_unita: [metri, metro, m]         # a distance the player says («a 20 metri») picks the band
+    fasce:
+      - {id: corta, nome: "Gittata corta", bonus: 1, parole: [da vicino]}   # parole: say the band without a number
+      - {id: media, nome: "Gittata media", bonus: 0}
+      - {id: lunga, nome: "Gittata lunga", bonus: -2, parole: [da lontano]}
+    predefinita: media                      # the band when the player says neither
+  armi:                                     # [V] costo: a number in `base` or «15 ma»; peso and costo of a pack of `confezione`
+    - {id: spada_lunga, nome: "Spada lunga", danno: "1d8", taglia: M, peso: 4, costo: "10 mo", proprieta: [taglio]}
+    - {id: pugnale, nome: "Pugnale", danno: "1d4", taglia: S, peso: 1, costo: "2 mo", lancio: {gittate: [3, 6, 9], nome: "Pugnale lanciato"}}
+    - {id: lancia, nome: "Lancia", danno: "1d6", a_due_mani: {danno: "1d8", nome: "Lancia a due mani"}, lancio: {gittate: [3, 6, 9]}}
+    - {id: arco_corto, nome: "Arco corto", danno: "1d6", mani: 2, gittate: [15, 30, 45], munizioni: [freccia]}   # [V] one limit per band
+    - {id: balestra_leggera, nome: "Balestra leggera", danno: "1d6", gittate: [18, 36, 54], munizioni: [quadrello], ricarica: 2}
+    - {id: fionda, nome: "Fionda", danno: "1d4", gittate: [9, 18, 27], munizioni: [proiettile], forza_al_danno: true}
+  armature: [{id: cotta_di_maglia, nome: "Cotta di maglia", ca: 15, categoria: metallo, peso: 40, costo: "60 mo"}]   # max_caratteristica: SRD
+  scudi: [{id: scudo, nome: "Scudo", bonus: 1, peso: 5, costo: "7 mo"}]
+  munizioni: [{id: freccia, nome: "Frecce", peso: 0.1, costo: "1 ma"}]
+  attrezzatura:
+    - {id: zaino, nome: "Zaino", peso: 0.1, costo: "4 mo", capienza: 40}
+    - {id: torcia, nome: "Torcia", peso: 1, confezione: 6, costo: "1 mo", luce: {raggio: 9, fioca: 6, durata: "1d4+4", unita: turno}}
+    - {id: lanterna, nome: "Lanterna", peso: 2, costo: "5 mo", luce: {raggio: 9, fioca: 6, durata: "1d6+18", unita: turno, consuma: olio}}
+  restrizioni:                              # [V] by class or race: what it may use, and the penalty otherwise
+    - {classe: mago, cosa: arma, ammessi: [pugnale, bastone], penalita: {attacco: -5}}
+    - {classe: mago, cosa: armatura, ammessi: [], penalita: {senza_incantesimi: true}}
+    - {classe: ladro, cosa: armatura, ammessi_categorie: [cuoio], penalita: {senza_abilita: [scassinare, alle_spalle]}}
+    - {classe: chierico, cosa: arma, ammessi_proprieta: [contundente], penalita: {perde_incantesimi: true}}
+    - {razza: halfling, cosa: arma, vietati_taglie: [L], penalita: {vietato: true}}
+    # penalita (closed list): attacco (to hit with that weapon), vietato (no attack line, cannot be worn; the validator
+    # rejects a sheet that starts with it), senza_incantesimi (worn: no spell), senza_abilita (worn: those abilities are
+    # refused), perde_incantesimi (an attack with it empties the day's spells)
 ```
+
+**The catalog in play** (regole/equipaggiamento.ts). A sheet that lists `equipaggiamento` gets its Armor Class and its
+attack lines from the catalog, recomputed whenever the gear changes: the worn armor's `ca` (or `senza_armatura`) + the
+`difesa.caratteristica` bonus (capped by `max_caratteristica`) + the worn shield; one line per carried weapon (melee with
+`abilita.mischia` and the damage characteristic; a two-handed line; a missile line with `abilita.distanza`, the bands,
+the ammunition and the rate of fire; a thrown line), in the order the sheet lists them, then the sheet's own lines. A
+sheet without `equipaggiamento` (a monster, a set without a catalog) keeps its typed `difesa` and `attacchi`; one that
+types both gets a warning, and the gear's numbers stand.
 
 **Typed effects** (regole/effetti.ts; prove/effetti.ts applies them, docs/prove.md §10). A closed list, used by a
 scene check's `effetti_se_fallisce`, by the Game Master's hazards and by the set's powers:
@@ -244,7 +295,14 @@ scheda:
   tipo: umanoide                                # optional: creature types, read by a power's immuni / solo_tipi
   immune: [sonno]                               # optional: powers or conditions it ignores
   dadi_vita: 3                                  # optional [V]: hit dice, for powers limited by them
+  equipaggiamento:                              # optional [V]: catalog ids carried; the first armor and shield are worn
+    - cotta_di_maglia                           #   (unless {id, indossato: false}); AC and attack lines come from them
+    - spada_lunga
+    - {id: freccia, quante: 20}
+  monete: {mo: 12, ma: 5}                       # optional [V]: coins by the set's coin ids
   attacchi: [{nome: "Spada", danno: "1d8", caratteristica: vigore}]   # or abilita: combattere
+                                                # with equipaggiamento: only the special lines, e.g.
+                                                # {nome: "Spada corta alle spalle", arma: spada_corta, abilita: alle_spalle}
                                                 # automatico: true = the weapon always hits, only the damage
                                                 # consuma: frecce = each attack spends one; refused at 0 [V]
 ```

@@ -20,6 +20,7 @@ from .esito import Esito
 from . import regole_combattimento
 from . import regole_classi
 from . import regole_poteri
+from . import regole_catalogo
 from .regole_effetti import controlla_cadute, controlla_effetti, controlla_riposo
 from .regole_repertorio import blocchi_richiede
 from .lingua import generiche_in
@@ -488,10 +489,12 @@ def controlla(c: Campagna, e: Esito) -> None:
     regole_poteri.abilita_d_attacco(r, e, dove)
 
     razze = regole_classi.razze_del_set(r, abi, set(colonne), e, dove)
+    catalogo = regole_catalogo.catalogo_del_set(r, car, abi, set(classi), set(razze), None, e, dove)
 
     def per_scheda(s: dict, d: str) -> None:
         regole_classi.controlla_scheda(s, d, classi, col_abil, tabelle, e, razze, abi, set(colonne))
         regole_poteri.controlla_scheda(s, d, r, poteri, risorse, e)
+        regole_catalogo.controlla_scheda(s, d, r, catalogo, e)
     _schede(c, e, car, abi, dadi_attivi(c), tabella_modificatori(r), soglie_abilita(r), per_scheda=per_scheda)
     _prove_di_scena(c, e, car, abi, mosse, diff, condizioni_del_set(r))
     controlla_cadute(r, e, dove)

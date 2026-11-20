@@ -15,6 +15,7 @@ import type { Classe } from './classi';
 import type { Potere } from './poteri';
 import type { Magia, Risorsa } from './risorse';
 import type { Razza, Tratto } from './tratti';
+import type { Catalogo, Monete } from './catalogo';
 
 export interface Voce {
   id: string;
@@ -167,6 +168,10 @@ export interface SistemaRegole {
   magia?: Magia | null;
   /** The races and their traits (regole.yaml → razze; regole/tratti.ts). */
   razze?: Razza[];
+  /** The manual's coins (regole.yaml → monete; regole/catalogo.ts). Absent = no money rules. */
+  monete?: Monete | null;
+  /** Weapons, armor, shields, ammunition and gear with their restrictions (regole.yaml → catalogo; regole/catalogo.ts). */
+  catalogo?: Catalogo | null;
 }
 
 /** Un passo del manuale (regole/estratti/*.md), per l'arbitro e per «Chiedi una regola». */
@@ -205,7 +210,29 @@ export interface SchedaGenerica {
   /** Attacchi automatici: riduce il danno subito. */
   armatura: number;
   /** `automatico`: quest'arma colpisce sempre, si tira solo il danno (il dardo incantato). */
-  attacchi: Array<{ id: string; nome: string; danno: FormulaDadi; caratteristica: string | null; abilita: string | null; tipo_danno: string | null; distanza: boolean; automatico?: boolean; consuma?: string }>;
+  attacchi: Array<{
+    id: string;
+    nome: string;
+    danno: FormulaDadi;
+    caratteristica: string | null;
+    abilita: string | null;
+    tipo_danno: string | null;
+    distanza: boolean;
+    automatico?: boolean;
+    consuma?: string;
+    /** The catalog weapon the line comes from (regole/equipaggiamento.ts), or that a sheet's own line names (`arma:`). */
+    arma?: string;
+    /** Range band limits, one per `catalogo.gittate.fasce` (a missile or thrown line of a catalog weapon). */
+    gittate?: number[];
+    /** Catalog ammunition ids the line shoots: each shot spends one of the first the bearer has (prove/inventario.ts). */
+    munizioni?: string[];
+    /** Rate of fire: one shot every this many rounds of a fight (a crossbow). */
+    ricarica?: number;
+    /** A class or race restriction's attack penalty with this weapon (a magic-user's sword: −5). */
+    penalita?: number;
+    /** Attacking with it empties the bearer's spells of the day (a cleric's edged weapon). */
+    perdeIncantesimi?: boolean;
+  }>;
   /** Starting counters of the set's resources (`scheda.risorse`: arrows, coins). */
   risorse?: Record<string, number>;
   /** Spells prepared (`vanciana`: each copy one cast) or known (`slot`), ids of the set's powers. */
@@ -229,5 +256,16 @@ export interface SchedaGenerica {
   razza?: string | null;
   /** A monster saves as a class and level (`scheda.salva_come: {classe, livello}`, Basic Fantasy «Save As»). */
   salvaCome?: { classe: string; livello: number } | null;
+  /**
+   * Catalog gear the sheet starts with (`scheda.equipaggiamento`, M2): id, how many, worn (armor and shield). With it the
+   * Engine derives `difesa` and `attacchi` (regole/equipaggiamento.ts); without it the sheet's own numbers stand.
+   */
+  equipaggiamento?: Array<{ id: string; quante: number; indossato: boolean }>;
+  /** Coins by the set's coin ids (`scheda.monete: {mo: 12}`). */
+  monete?: Record<string, number>;
+  /** The sheet's own attack lines (special attacks, natural weapons), kept to re-derive the lines when the gear changes. */
+  attacchiPropri?: SchedaGenerica['attacchi'];
+  /** The AC the sheet writes by hand (kept when gear gives none). */
+  difesaScritta?: number | null;
   avvisi: string[];
 }

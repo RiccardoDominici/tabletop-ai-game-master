@@ -1,0 +1,36 @@
+id: scena_bottega
+nodo: n_bottega
+nome: La bottega del mercante
+descrizione: Una bottega stretta con le armi appese al muro e una botola che scende in una cantina buia. Un mercante sta al banco; in fondo alla cantina una guardia di pietra fa la ronda.
+domanda_drammatica: Il gruppo troverà il passaggio in cantina prima che la bottega chiuda?
+intensita: 2
+sensi:
+- Odore di cuoio e di olio.
+- Il cigolio della botola.
+- Il buio fresco della cantina.
+elementi_interattivi:
+- cosa: le armi appese
+  dove: dietro il banco
+  azioni: si comprano
+- cosa: la botola
+  dove: in fondo alla bottega
+  azioni: scende in cantina, dove serve una luce
+png_presenti:
+- png_mercante
+- png_guardia
+orologi_attivi:
+- o_chiusura
+indizi:
+- id: i_passaggio
+  conclusione: r_passaggio
+  tipo: oggetto
+  nodo: n_bottega
+  essenziale: false
+  tiro: nessuno
+  modi: 1
+  come_si_trova: In fondo alla cantina i mattoni sono più chiari.
+mossa_morbida_pronta: Il mercante tamburella sul banco.
+apertura: Il mercante vi guarda da dietro il banco, la botola della cantina è aperta. Che fate?
+musica:
+  tag: tensione
+taglio: Si chiude quando il gruppo trova il passaggio o la bottega chiude.

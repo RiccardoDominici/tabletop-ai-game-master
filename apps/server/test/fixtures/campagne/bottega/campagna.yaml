@@ -1,0 +1,24 @@
+# Invented fixture for the rules-engine work R2 (docs/regole.md §2: the item catalog, inventory and coins, load and
+# movement, the game clock and light): a merchant's shop and the cellar under it. Generic: no campaign's content.
+id: bottega
+canone:
+- id: f_bottega
+  noto_ai_pg: true
+  testo: La bottega del mercante vende armi, armature e torce; sotto c'è una cantina buia.
+- id: f_cantina
+  noto_ai_pg: false
+  testo: In fondo alla cantina c'è un passaggio murato.
+orologi:
+- id: o_chiusura
+  nome: La bottega chiude
+  segmenti: 4
+  segno_almeno_ogni: 3
+  pieni_all_inizio: 0
+  segni:
+  - Il mercante conta le monete.
+  - Il mercante spegne una lampada.
+  - Il mercante prende le chiavi.
+  - Il mercante chiude la porta.
+  al_completo: La bottega chiude.
+sessione:
+  riassunto_iniziale: Siete entrati nella bottega del mercante prima di scendere in cantina.

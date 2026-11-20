@@ -27,6 +27,7 @@ import { leggiClassi, leggiColonneSalvezza } from './classi';
 import { leggiPoteri } from './poteri';
 import { leggiRazze } from './tratti';
 import { leggiMagia, leggiRisorse } from './risorse';
+import { leggiCatalogo, leggiMonete } from './catalogo';
 
 export const CARTELLA_REGOLE = 'regole';
 const TIPI: readonly TipoRisoluzione[] = ['d20_cd', '2d6_fasce', 'sotto_soglia'];
@@ -191,6 +192,9 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
   const classiEPoteri = tabelleDiClasse(d, abilita, errori);
   const poteri = leggiPoteri(d['poteri'], { salvezze: new Set(abilita.filter((a) => a.salvezza).map((a) => a.id)), classi: classiEPoteri.classi?.length ? new Set(classiEPoteri.classi.map((c) => c.id)) : null, condizioni: new Set(combattimento.condizioni.map((c) => c.id)) }, errori);
   for (const a of abilita) if (a.ripiego && !abilita.some((x) => x.id === a.ripiego)) errori.push(`abilita.${a.id}.ripiego: «${a.ripiego}» non è un'abilità del set`);
+  // The item catalog (M2): coins first, since prices are written in them.
+  const monete = leggiMonete(d['monete'], errori);
+  const catalogo = leggiCatalogo(d['catalogo'], monete, { caratteristiche: idCar, abilita: new Set(abilita.map((a) => a.id)), classi: classiEPoteri.classi?.length ? new Set(classiEPoteri.classi.map((c) => c.id)) : null, razze: classiEPoteri.razze?.length ? new Set(classiEPoteri.razze.map((x) => x.id)) : null }, errori);
   const fonte = ogg(d['fonte']) ?? {};
   const lic = ogg(d['licenza']) ?? {};
   if (typeof lic['libera'] !== 'boolean') errori.push('licenza.libera: true o false (un set da un manuale non libero resta fuori dal repository)');
@@ -238,6 +242,8 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     ...classiEPoteri,
     risorse: leggiRisorse(d['risorse'], errori),
     magia: leggiMagia(d['magia'], errori),
+    ...(monete ? { monete } : {}),
+    ...(catalogo ? { catalogo } : {}),
   };
 }
 

@@ -15,6 +15,8 @@ import { chiave, leggiFormula, modificatore } from '../campagna/regole-srd';
 import type { Campagna, DatiYaml } from '../campagna/tipi';
 import type { SchedaGenerica, SistemaRegole } from './tipi';
 import { leggiTratti, type Tratto } from './tratti';
+import { voce } from './catalogo';
+import { applicaDotazione, dotazioneIniziale } from './equipaggiamento';
 
 const ogg = (v: unknown): DatiYaml | null => (v !== null && typeof v === 'object' && !Array.isArray(v) ? (v as DatiYaml) : null);
 const intero = (v: unknown): number | null => (typeof v === 'number' && Number.isInteger(v) ? v : null);
@@ -47,17 +49,76 @@ export function leggiSchedaGenerica(s: SistemaRegole, id: string, nome: string, 
       avvisi.push(`${dove}.attacchi[${i + 1}]: senza nome, ignorato`);
       return [];
     }
+    // `arma:` a catalog weapon (M2): the line takes its damage, bands and ammunition from it (regole/equipaggiamento.ts).
+    const armaCat = typeof a['arma'] === 'string' ? a['arma'] : null;
+    if (armaCat && voce(s.catalogo, armaCat)?.tipo !== 'arma') avvisi.push(`${dove}.attacchi[${i + 1}].arma: «${armaCat}» non è un'arma del catalogo del set`);
     const danno = leggiFormula(a['danno']);
-    if (!danno) avvisi.push(`${dove}.attacchi[${i + 1}]: danno «${String(a['danno'])}» non è una formula come 1d6 (uso 1d4)`);
+    if (!danno && !armaCat) avvisi.push(`${dove}.attacchi[${i + 1}]: danno «${String(a['danno'])}» non è una formula come 1d6 (uso 1d4)`);
     const c = typeof a['caratteristica'] === 'string' && s.caratteristiche.some((x) => x.id === a['caratteristica']) ? (a['caratteristica'] as string) : null;
     const ab = typeof a['abilita'] === 'string' && s.abilita.some((x) => x.id === a['abilita']) ? (a['abilita'] as string) : null;
     if (a['automatico'] !== undefined && typeof a['automatico'] !== 'boolean') avvisi.push(`${dove}.attacchi[${i + 1}].automatico: true o false`);
     // `consuma`: a resource of the set each attack spends (ammunition); refused when it is at 0 (prove/risorse.ts).
     const consuma = typeof a['consuma'] === 'string' && (s.risorse ?? []).some((r) => r.id === a['consuma']) ? { consuma: a['consuma'] as string } : {};
     if (typeof a['consuma'] === 'string' && !('consuma' in consuma)) avvisi.push(`${dove}.attacchi[${i + 1}].consuma: «${a['consuma']}» non è una risorsa del set`);
-    return [{ id: chiave(n), nome: n, danno: danno ?? { numero: 1, facce: 4, bonus: 0 }, caratteristica: c, abilita: ab, tipo_danno: typeof a['tipo_danno'] === 'string' ? a['tipo_danno'] : null, distanza: a['distanza'] === true, ...(a['automatico'] === true ? { automatico: true } : {}), ...consuma }];
+    return [{ id: chiave(n), nome: n, danno: danno ?? { numero: 1, facce: 4, bonus: 0 }, caratteristica: c, abilita: ab, tipo_danno: typeof a['tipo_danno'] === 'string' ? a['tipo_danno'] : null, distanza: a['distanza'] === true, ...(a['automatico'] === true ? { automatico: true } : {}), ...consuma, ...(armaCat ? { arma: armaCat } : {}) }];
   });
-  return { id, nome, di_png, caratteristiche, abilita, pf_massimi: pf && pf > 0 ? pf : 1, difesa: intero(o['difesa']) ?? intero(o['ca']), armatura: intero(o['armatura']) ?? 0, attacchi, ...classeDellaScheda(s, o, dove, avvisi), ...risorseDellaScheda(s, o, dove, avvisi), avvisi };
+  const difesa = intero(o['difesa']) ?? intero(o['ca']);
+  const sch: SchedaGenerica = { id, nome, di_png, caratteristiche, abilita, pf_massimi: pf && pf > 0 ? pf : 1, difesa, armatura: intero(o['armatura']) ?? 0, attacchi, ...classeDellaScheda(s, o, dove, avvisi), ...risorseDellaScheda(s, o, dove, avvisi), ...equipaggiamentoDellaScheda(s, o, dove, avvisi), avvisi };
+  // Gear from the catalog: the AC and the attack lines come from it (the sheet's own lines stay after the weapons').
+  if (sch.equipaggiamento) {
+    sch.attacchiPropri = attacchi;
+    sch.difesaScritta = difesa;
+    const da = applicaDotazione(s, sch, dotazioneIniziale(sch));
+    if (difesa !== null && sch.difesa !== difesa) avvisi.push(`${dove}: difesa ${difesa} diversa da quella dell'equipaggiamento (${sch.difesa}, ${da}): vale quella dell'equipaggiamento`);
+  }
+  return sch;
+}
+
+/**
+ * The sheet's catalog gear and coins (`equipaggiamento`, `monete`; M2): ids of the set's catalog, how many, and whether an
+ * armor or shield is worn (the first of each kind is, unless `indossato: false`). Unknown ids are reported and dropped.
+ */
+function equipaggiamentoDellaScheda(s: SistemaRegole, o: DatiYaml, dove: string, avvisi: string[]): Pick<SchedaGenerica, 'equipaggiamento' | 'monete'> {
+  const out: Pick<SchedaGenerica, 'equipaggiamento' | 'monete'> = {};
+  if (o['equipaggiamento'] !== undefined) {
+    if (!s.catalogo) avvisi.push(`${dove}.equipaggiamento: il set ${s.id} non ha un catalogo`);
+    else if (!Array.isArray(o['equipaggiamento'])) avvisi.push(`${dove}.equipaggiamento: una lista di id del catalogo`);
+    else {
+      const lista: NonNullable<SchedaGenerica['equipaggiamento']> = [];
+      const vestiti = new Set<string>();
+      for (const [i, x] of o['equipaggiamento'].entries()) {
+        const e = typeof x === 'string' ? { id: x } : ogg(x);
+        const id = typeof e?.['id'] === 'string' ? e['id'] : null;
+        const v = id ? voce(s.catalogo, id) : null;
+        const quante = e?.['quante'] === undefined ? 1 : intero(e['quante']) && (e['quante'] as number) >= 0 ? (e['quante'] as number) : null;
+        if (!e || !id || !v || quante === null) {
+          avvisi.push(`${dove}.equipaggiamento[${i + 1}]: un id del catalogo del set${id && !v ? ` («${id}» non c'è)` : ''}, o {id, quante, indossato}`);
+          continue;
+        }
+        // Worn: an armor or a shield, the first of its kind unless the sheet says otherwise.
+        const indossabile = v.tipo === 'armatura' || v.tipo === 'scudo';
+        const indossato = indossabile && e['indossato'] !== false && !vestiti.has(v.tipo);
+        if (indossato) vestiti.add(v.tipo);
+        if (e['indossato'] === true && !indossato) avvisi.push(`${dove}.equipaggiamento.${id}: ${indossabile ? 'si indossa una sola armatura e un solo scudo' : 'non si indossa'}`);
+        lista.push({ id, quante, indossato });
+      }
+      out.equipaggiamento = lista;
+    }
+  }
+  const m = ogg(o['monete']);
+  if (o['monete'] !== undefined) {
+    if (!s.monete || !m) avvisi.push(`${dove}.monete: ${s.monete ? '{id di moneta: quante}' : `il set ${s.id} non ha monete`}`);
+    else {
+      const r: Record<string, number> = {};
+      for (const [k, n] of Object.entries(m)) {
+        if (!s.monete.tagli.some((t) => t.id === k)) avvisi.push(`${dove}.monete: «${k}» non è una moneta del set ${s.id}`);
+        else if (!intero(n) || (n as number) < 0) avvisi.push(`${dove}.monete.${k}: un intero da 0 in su`);
+        else r[k] = n as number;
+      }
+      out.monete = r;
+    }
+  }
+  return out;
 }
 
 /**

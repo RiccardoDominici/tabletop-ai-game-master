@@ -332,6 +332,11 @@ prove:
     fuori_fuggito: "{nome} non è più qui."
     # In play but losing the round (surprise…): the line instead of a sentence where it acts (narrazione/guardia-fuori.ts).
     fermo: "{nome} perde questo round ({condizione}): non agisce."
+  # Gear from the set's catalog (regole/equipaggiamento.ts, prove/inventario.ts; docs/regole.md §2, «Catalogo»).
+  equipaggiamento:
+    senza_armatura: "senza armatura"
+    a_due_mani: "{nome} a due mani"
+    lanciato: "{nome} (lanciato)"
 
 regole:
   # «Chiedi una regola» (regole/chiedi.ts): il prompt di sistema è prompts/<lingua>/risponditore-regole.md.

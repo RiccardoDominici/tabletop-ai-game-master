@@ -1,0 +1,163 @@
+# Invented rule set of the R2 fixture (docs/regole.md §2): an old-school d20 game written for the tests, with every
+# piece of the rules-engine work R2 — the coins and the item catalog with its restrictions, the inventory, load and
+# movement, the game clock and the light sources. The numbers are invented: a test against a manual's numbers uses that
+# manual's set (test/manuale-basic-fantasy.test.ts).
+id: bottega-prova
+nome: La bottega (set di prova)
+fonte:
+  titolo: Set di prova di Tabletop AI Game Master, scritto per i test
+  autore: Tabletop AI Game Master
+licenza:
+  nome: CC0
+  libera: true
+risoluzione:
+  tipo: d20_cd
+  dado: 20
+  critico: 20
+  disastro: 1
+  critici: attacchi_e_salvezze
+caratteristiche:
+  - {id: forza, nome: Forza}
+  - {id: destrezza, nome: Destrezza}
+  - {id: costituzione, nome: Costituzione}
+  - {id: intelligenza, nome: Intelligenza}
+modificatore:
+  tipo: tabella
+  tabella:
+    - {da: 3, mod: -2}
+    - {da: 7, mod: -1}
+    - {da: 9, mod: 0}
+    - {da: 13, mod: 1}
+    - {da: 17, mod: 2}
+abilita:
+  - {id: mischia, nome: Attacco in mischia, caratteristica: forza}
+  - {id: distanza, nome: Attacco a distanza, caratteristica: destrezza}
+  - {id: furtivo, nome: Colpo furtivo, caratteristica: forza, danno: doppio, una_volta_per_bersaglio: true, ripiego: mischia}
+  - {id: scassinare, nome: Scassinare, caratteristica: null, soglia: {dado: 100}}
+  - {id: ts_morte, nome: Salvezza contro la morte, caratteristica: null, salvezza: morte}
+difficolta:
+  - {id: facile, nome: Facile, valore: 11}
+  - {id: normale, nome: Normale, valore: 15}
+  - {id: difficile, nome: Difficile, valore: 18}
+difficolta_predefinita: normale
+vantaggio:
+  tipo: bonus
+  valore: 2
+attacchi:
+  tipo: prova
+  danno_critico: normale
+  danno_minimo: 1
+danni:
+  nome: Punti ferita
+  a_zero: a zero si rischia la morte
+sociale:
+  caratteristica: intelligenza
+  nota: Si tira Intelligenza contro la diffidenza del PNG.
+tiri_salvezza:
+  colonne:
+    - {id: morte, nome: Morte o veleno}
+classi:
+  - id: guerriero
+    nome: Guerriero
+    tiri_salvezza: [{da: 0, valori: [14]}, {da: 1, valori: [12]}]
+  - id: mago
+    nome: Mago
+    tiri_salvezza: [{da: 1, valori: [13]}]
+    incantesimi_al_giorno: [{da: 1, slot: [1]}]
+  - id: ladro
+    nome: Ladro
+    tiri_salvezza: [{da: 1, valori: [13]}]
+razze:
+  - id: umano
+    nome: Umano
+  - id: piccolo
+    nome: Piccolo popolo
+magia: {preparazione: vanciana}
+riposo:
+  - {id: notte, nome: Una notte di sonno, cura: 1}
+
+# The coins: worth in copper (the smallest); prices in gold, silver and copper; fifty coins weigh one unit of load.
+monete:
+  base: mo
+  prezzi: [mo, ma, mr]
+  peso: {quante: 50, peso: 1}
+  tagli:
+    - {id: mp, nome: Monete di platino, vale: 1000}
+    - {id: mo, nome: Monete d'oro, vale: 100}
+    - {id: ma, nome: Monete d'argento, vale: 10}
+    - {id: mr, nome: Monete di rame, vale: 1}
+
+catalogo:
+  difesa: {senza_armatura: 10, caratteristica: destrezza}
+  abilita: {mischia: mischia, distanza: distanza}
+  danno_caratteristica: forza
+  gittate:
+    unita: metri
+    parole_unita: [metri, metro, m]
+    fasce:
+      - {id: vicina, nome: Gittata vicina, bonus: 2, parole: [da vicino, a bruciapelo]}
+      - {id: media, nome: Gittata media, bonus: 0}
+      - {id: lontana, nome: Gittata lontana, bonus: -3, parole: [da lontano]}
+    predefinita: media
+  armi:
+    - {id: spada, nome: Spada, danno: "1d8", taglia: M, peso: 3, costo: "8 mo", proprieta: [taglio]}
+    - {id: mazza, nome: Mazza, danno: "1d6", taglia: M, peso: 5, costo: "4 mo", proprieta: [contundente]}
+    - {id: pugnale, nome: Pugnale, danno: "1d4", taglia: P, peso: 1, costo: "2 mo", proprieta: [taglio], lancio: {gittate: [3, 6, 9], nome: Pugnale lanciato}}
+    - {id: lancia, nome: Lancia, danno: "1d6", taglia: M, peso: 4, costo: "3 mo", lancio: {gittate: [4, 8, 12]}, a_due_mani: {danno: "1d8", nome: Lancia a due mani}}
+    - {id: spadone, nome: Spadone, danno: "1d10", taglia: G, mani: 2, peso: 8, costo: "15 mo", proprieta: [taglio]}
+    - {id: arco, nome: Arco, danno: "1d6", taglia: M, mani: 2, peso: 2, costo: "20 mo", gittate: [10, 20, 30], munizioni: [freccia, freccia_argento]}
+    - {id: balestra, nome: Balestra, danno: "1d8", taglia: M, mani: 2, peso: 6, costo: "25 mo", gittate: [12, 24, 36], munizioni: [dardo], ricarica: 2}
+    - {id: fionda, nome: Fionda, danno: "1d4", taglia: P, peso: 0, costo: "1 mo", gittate: [6, 12, 18], munizioni: [sasso], forza_al_danno: true}
+  armature:
+    - {id: giubba, nome: Giubba imbottita, ca: 12, categoria: leggera, peso: 10, costo: "15 mo"}
+    - {id: maglia, nome: Cotta di maglia, ca: 14, categoria: pesante, peso: 30, costo: "50 mo"}
+    - {id: corazza, nome: Corazza, ca: 16, categoria: pesante, max_caratteristica: 0, peso: 45, costo: "200 mo"}
+  scudi:
+    - {id: scudo, nome: Scudo, bonus: 1, peso: 4, costo: "6 mo"}
+  munizioni:
+    - {id: freccia, nome: Frecce, peso: 1, confezione: 10, costo: "1 ma"}
+    - {id: freccia_argento, nome: Frecce d'argento, peso: 0.1, costo: "1 mo", proprieta: [argento]}
+    - {id: dardo, nome: Dardi, peso: 0.1, costo: "2 ma"}
+    - {id: sasso, nome: Sassi, peso: 0.1}
+  attrezzatura:
+    - {id: torcia, nome: Torcia, peso: 1, confezione: 5, costo: "1 mo", luce: {raggio: 9, fioca: 6, durata: "1d4+2", unita: turno}}
+    - {id: lanterna, nome: Lanterna, peso: 2, costo: "6 mo", luce: {raggio: 9, fioca: 6, durata: 12, unita: turno, consuma: olio}}
+    - {id: olio, nome: Fiasca d'olio, peso: 1, costo: "1 ma"}
+    - {id: zaino, nome: Zaino, peso: 2, costo: "3 mo", capienza: 30}
+    - {id: corda, nome: Corda, peso: 5, costo: "1 mo"}
+  restrizioni:
+    - {classe: mago, cosa: arma, ammessi: [pugnale], penalita: {attacco: -4}}
+    - {classe: mago, cosa: armatura, ammessi: [], penalita: {senza_incantesimi: true}}
+    - {classe: mago, cosa: scudo, ammessi: [], penalita: {senza_incantesimi: true}}
+    - {classe: ladro, cosa: armatura, ammessi_categorie: [leggera], penalita: {senza_abilita: [scassinare, furtivo]}}
+    - {razza: piccolo, cosa: arma, vietati_taglie: [G], penalita: {vietato: true}}
+
+poteri:
+  - id: scintilla
+    nome: Scintilla
+    tipo: incantesimo
+    livello: {mago: 1}
+    bersaglio: uno
+    parole: [scintilla]
+    effetti: [{tipo: danno, dadi: "1d6"}]
+  - id: fasciare
+    nome: Fasciare le ferite
+    tipo: azione
+    bersaglio: uno
+    parole: [fascio, fasciare, bendo]
+    effetti: [{tipo: stabilizza}]
+
+combattimento:
+  iniziativa: {tipo: individuale, dado: 6, caratteristica: destrezza, ogni_round: true, pari: simultanei}
+  fasi:
+    - {id: turno, nome: Turno, png: attacco}
+  azioni:
+    - {id: attacco, nome: Attacco, quante: "uno, oppure un incantesimo"}
+  danni:
+    modello: pf
+    a_zero: {pg: tiri_morte, png: morte}
+    tiri_morte: {cd: 10, successi: 1, fallimenti: 1, venti_rialza: false, uno_doppio: false, abilita: ts_morte, finestra: "2d10"}
+  condizioni:
+    - {id: svenuto, nome: Svenuto, icona: SV, effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio], testo: A terra senza sensi.}
+  condizione_a_zero: svenuto
+  fine: {morale: true}

@@ -1,0 +1,25 @@
+id: png_mercante
+nome: Osvaldo
+pronuncia: Osvàldo
+alias: [mercante, osvaldo]
+livello: principale
+ruolo: mercante
+aspetto:
+  lettura: Un uomo basso con un grembiule di cuoio e una bilancia per le monete.
+  invarianti: [grembiule di cuoio, bilancia]
+personalita:
+  superficie: [cortese]
+  sotto_pressione: [tirchio]
+  contraddizione: Sorride a tutti ma pesa ogni moneta due volte.
+desiderio: Vendere tutto prima di chiudere.
+voce:
+  tts: {voce_id: vincent}
+  registro: voi
+  stile: Frasi rapide.
+  battuta_campione: Pagate prima, provate dopo.
+sa: [f_bottega, f_cantina]
+non_sa: []
+atteggiamento_pg:
+  pg_aldo: {stato: indifferente, perche: cliente, vuole: che compri}
+  pg_bice: {stato: indifferente, perche: cliente, vuole: che compri}
+  pg_ciro: {stato: indifferente, perche: cliente, vuole: che non rubi}
