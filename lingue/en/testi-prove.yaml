@@ -119,6 +119,26 @@ prove:
     descrittivo: "Effect of {potere} on {bersagli}: tell it as the manual describes it, the Engine does not measure it."
     senza_munizioni: "{nome} has no {risorsa} left for {arma}: no attack."
     una_volta: " ({abilita} already used against {bersaglio} in this fight: an ordinary attack)"
+  # Timed effects (prove/attivi.ts): conditions, bonuses and immunities from powers and hazards.
+  attivi:
+    per_round: "for {n} rounds"
+    fino_scena: "until the end of the scene"
+    fino_riposo: "until the next rest"
+    fino_permanente: "until the Game Master removes it"
+    fino_round: "for one round"
+    immune: "{nome} is not affected: immune to {cosa}."
+    condizione: "{nome} is {condizione} {quanto}."
+    bonus: "{nome} has {valore} {a}{contro} {quanto}."
+    a_difesa: "to Armor Class"
+    a_attacchi: "to attack rolls"
+    a_salvezze: "to saving throws"
+    a_danni: "to damage"
+    contro_mischia: " against melee"
+    contro_distanza: " against missiles"
+    immunita: "{nome} is protected by {fonte} {quanto}."
+    finiti: "Ending: {elenco}."
+    finito: "{cosa} of {nome}"
+    sempre_colpito: " (hit anyway: {condizione})"
   # Saving throws pinned to their own number (regole/salvezze.ts).
   salvezze:
     tiro_salvezza: "saving throw"

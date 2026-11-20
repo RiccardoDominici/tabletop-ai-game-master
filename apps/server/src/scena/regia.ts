@@ -2965,6 +2965,8 @@ export class Regia {
     this.mondo.stallo.azzera();
     // Chi era fuggito dalla scena di prima può ricomparire in questa (i morti restano morti).
     const tornati = this.prove?.stato.dimenticaFughe() ?? [];
+    // The scene-long effects of powers end (a charm, a light); the narrator hears it next turn (prove/attivi.ts).
+    this.prove?.fineScena();
     this.o.log.info({ da, a: nuova.id, fase: this.fase, immagine: this.o.immagini?.luogo(nuova.id) ?? null, ...(tornati.length ? { fughe_dimenticate: tornati } : {}) }, 'scena: cambio di scena');
     if (!inGioco) {
       this.notifica();

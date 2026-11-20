@@ -106,6 +106,8 @@ export interface OpzioniRisolutoreRegole {
   effetti?: ContestoEffetti;
   /** What a character's traits and active effects add to one of its saves (regole/tratti.ts, prove/attivi.ts). */
   extraSalvezza?: (id: string, abilita: string) => number;
+  /** The active bonuses of a character (prove/attivi.ts): to its AC, attack rolls, damage; against melee or missiles. */
+  bonusAttivi?: (id: string, a: 'difesa' | 'attacchi' | 'danni', contro: 'mischia' | 'distanza') => number;
   /**
    * The set's powers and the characters' resources (prove/poteri.ts, prove/risorse.ts): spells, items, ammunition, the
    * once-per-target sneak attack. Absent = no power can be used and nothing is counted (as before).
@@ -402,9 +404,12 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     // Il critico raddoppia i dadi del danno solo se il set lo dice (SRD sì); il danno minimo è del set (Basic Fantasy: 1).
     const d = tiraDanno(dadiDanno, attaccante.danno, 0, critico && s.attacchi.dannoCritico === 'doppio');
     // A situational modifier with `danno: doppio` (Basic Fantasy's charge, p. 52): the damage of the hit is doubled.
-    const base = doppio ? d.totale * 2 : d.totale;
+    // An active bonus to damage (prove/attivi.ts) adds to the hit.
+    const base = (doppio ? d.totale * 2 : d.totale) + (o.bonusAttivi?.(t.chi, 'danni', attaccante.distanza ? 'distanza' : 'mischia') ?? 0);
     const ridotto = Math.max(s.attacchi.dannoMinimo, s.attacchi.armaturaRiduce ? Math.max(0, base - bersaglio.armatura) : base);
     const r = o.stato.danneggia(bersaglio.id, ridotto);
+    // A condition that ends on injury (sleep) ends with this hit.
+    const svegli = ridotto > 0 ? (o.effetti?.attivi?.ferito(bersaglio.id) ?? []) : [];
     t.danno = dannoMostrato({ formula: d.formula, dadi: d.dadi, bonus: d.bonus, totale: ridotto, tipo: attaccante.tipo_danno });
     const pf = o.stato.puntiFerita(bersaglio.id)!;
     t.a_terra = pf.attuali <= 0;
@@ -412,7 +417,8 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     const stato = bersaglio.di_png ? salute(pf.attuali, pf.massimi) : pf.attuali <= 0 ? testo('prove.salute.set_a_terra', { danni, a_zero: s.danni.aZero }) : testo('prove.salute.set', { attuali: pf.attuali, danni, massimi: pf.massimi });
     const armatura = s.attacchi.armaturaRiduce && bersaglio.armatura ? testo('prove.fatto.armatura', { armatura: bersaglio.armatura }) : '';
     void r;
-    return testo('prove.fatto.danno_set', { danno: fraseDanno(ridotto, attaccante.tipo_danno ? tipoDanno(attaccante.tipo_danno) : null), armatura, nome: o.nome(bersaglio.id), stato });
+    const sveglio = svegli.map((c) => ` ${testo('prove.effetti.svegliato', { nome: o.nome(bersaglio.id), condizione: c.toLowerCase() })}`).join('');
+    return testo('prove.fatto.danno_set', { danno: fraseDanno(ridotto, attaccante.tipo_danno ? tipoDanno(attaccante.tipo_danno) : null), armatura, nome: o.nome(bersaglio.id), stato }) + sveglio;
   }
 
   /**
@@ -468,11 +474,21 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     const fonti = [...date, ...fontiAttacco(o.condizioni, chi, bersaglio)];
     const v = combinaVantaggi(fonti.map((f) => f.v));
     // d20 contro la difesa del bersaglio; gli altri tipi con la loro risoluzione (fasce, soglia).
-    const sist = s.risoluzione.tipo === 'd20_cd' && sb.difesa !== null ? { ...s, difficolta: [{ id: ID_DIFESA, nome: testo('prove.cd.difesa_di', { nome: o.nome(bersaglio) }), valore: sb.difesa, divisore: null, modificatore: null }] } : s;
+    // The target's active AC bonus (Shield: +3 against melee, +6 against missiles) and the attacker's attack bonus.
+    const contro = a.distanza ? 'distanza' : 'mischia';
+    const difesa = sb.difesa !== null ? sb.difesa + (o.bonusAttivi?.(bersaglio, 'difesa', contro) ?? 0) : null;
+    const sist = s.risoluzione.tipo === 'd20_cd' && difesa !== null ? { ...s, difficolta: [{ id: ID_DIFESA, nome: testo('prove.cd.difesa_di', { nome: o.nome(bersaglio) }), valore: difesa, divisore: null, modificatore: null }] } : s;
     // Etichetta una volta sola: senza una mossa né un’abilità la «cosa» è l’arma stessa.
     const etichetta = cosa.etichetta === a.nome ? a.nome : `${a.nome}, ${cosa.etichetta}`;
-    const extra = situazioni.reduce((x, m) => x + m.bonus, 0);
+    const extra = situazioni.reduce((x, m) => x + m.bonus, 0) + (o.bonusAttivi?.(chi, 'attacchi', contro) ?? 0);
     const e = tiraCol(sist, dadiTiro, cosa.valore + extra, sist === s ? null : ID_DIFESA, v, etichetta, true);
+    // A target that is always hit (asleep: Basic Fantasy p. 36) is hit whatever the die.
+    const sempre = conEffetto(o.condizioni, bersaglio, 'colpito_automaticamente');
+    if (sempre && !e.riuscita) {
+      e.riuscita = true;
+      e.grado = { id: 'successo', nome: testo('prove.regola.colpisce') };
+      e.regola += testo('prove.attivi.sempre_colpito', { condizione: sempre.toLowerCase() });
+    }
     if (situazioni.length) e.regola += testo('prove.regola.situazioni', { elenco: situazioni.map((m) => `${m.nome} ${m.bonus > 0 ? '+' : '−'}${Math.abs(m.bonus)}`).join(', ') });
     e.regola += nota;
     const t = cartaDa(e, chi, 'attacco', a.nome, bersaglio, fonti.filter((f) => f.v === v).map((f) => f.motivo).join('; ') || null, privata);

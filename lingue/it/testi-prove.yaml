@@ -125,6 +125,26 @@ prove:
     descrittivo: "Effetto di {potere} su {bersagli}: raccontalo come lo descrive il manuale, il Motore non lo misura."
     senza_munizioni: "{nome} non ha più {risorsa} per {arma}: nessun attacco."
     una_volta: " ({abilita} già usato contro {bersaglio} in questo scontro: attacco normale)"
+  # Timed effects (prove/attivi.ts): conditions, bonuses and immunities from powers and hazards.
+  attivi:
+    per_round: "per {n} round"
+    fino_scena: "fino alla fine della scena"
+    fino_riposo: "fino al prossimo riposo"
+    fino_permanente: "finché il master non lo toglie"
+    fino_round: "per un round"
+    immune: "{nome} non ne è toccato: è immune a {cosa}."
+    condizione: "{nome} è {condizione} {quanto}."
+    bonus: "{nome} ha {valore} {a}{contro} {quanto}."
+    a_difesa: "alla Classe d'Armatura"
+    a_attacchi: "ai tiri per colpire"
+    a_salvezze: "ai tiri salvezza"
+    a_danni: "ai danni"
+    contro_mischia: " contro la mischia"
+    contro_distanza: " contro i tiri a distanza"
+    immunita: "{nome} è protetto da {fonte} {quanto}."
+    finiti: "Finiscono: {elenco}."
+    finito: "{cosa} di {nome}"
+    sempre_colpito: " (colpito comunque: {condizione})"
   # Saving throws pinned to their own number (regole/salvezze.ts).
   salvezze:
     tiro_salvezza: "tiro salvezza"

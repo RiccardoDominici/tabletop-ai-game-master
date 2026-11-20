@@ -767,6 +767,14 @@ Now every source goes through one Engine path, prove/effetti.ts, with the typed 
   its target until the fight ends, then the attack rolls with its `ripiego`; with `danno: doppio` the weapon's roll
   is doubled. The rules arbiter picks the weapon whose name the action says most fully («spada corta alle spalle»).
   Tests: test/poteri.test.ts.
+- **Timed effects** (prove/attivi.ts): a `condizione`, `bonus` or `immunita` effect lives in the Engine state with its
+  duration: rounds (rolled at the cast, + `round_per_livello` × the caster's level) tick at each round of a fight and at
+  each closed window outside one (no game clock: P4-01 of the audit); `scena` ends at the scene change
+  (`MotoreProve.fineScena`, called by the director), `riposo` at the panel's rest, `permanente` never. The fight reads
+  the conditions as its own; a bonus counts on the bearer's AC (against melee or missiles), attack rolls, saves or
+  damage; an immunity blocks a power (Shield and the magic missile) or a condition. Damage ends the conditions marked
+  `finisce_se_ferito` (a sleeper wakes: «Il colpo scuote …»). What ends is a fact for the narrator. Saved in the
+  snapshot (`StatoProveSalvato.attivi`). Tests: test/attivi.test.ts.
 - Tests: test/effetti.test.ts (the closed list, the scaling, both falling tables, damage halved by a save, healing that
   never revives, a trap's attack, save-or-die, a failed scene check's fall, a rest, the Game Master's hazard, the SRD's
   data), strumenti/test_valida_effetti.py (the validator's mirror).

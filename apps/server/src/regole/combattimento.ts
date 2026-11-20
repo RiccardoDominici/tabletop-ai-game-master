@@ -22,6 +22,11 @@ export const EFFETTI = [
   'fallisce_salvezze_forza_destrezza',
   'perde_turno',
   'non_si_muove',
+  // Counts as out of the fight (its end, morale) and does not act against the other side: asleep, charmed (Basic
+  // Fantasy p. 57: «sleeping, charmed or held count as dead» for morale).
+  'fuori_combattimento',
+  // Every attack against it hits (Basic Fantasy's sleep, p. 36: «victims of this spell can always be hit»).
+  'colpito_automaticamente',
 ] as const;
 export type Effetto = (typeof EFFETTI)[number];
 

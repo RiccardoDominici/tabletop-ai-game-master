@@ -7,6 +7,7 @@ import type { PuntiFerita, TiroMostrato } from '@tabletop-ai-gm/shared';
 import type { SchedaNumerica } from '../campagna/schede';
 import type { StatoCombattimentoSalvato } from './combattimento';
 import type { StatoRisorseSalvato } from './risorse';
+import type { StatoAttiviSalvato } from './attivi';
 
 export interface StatoProveSalvato {
   seme: string;
@@ -26,6 +27,8 @@ export interface StatoProveSalvato {
   fatti_in_sospeso?: string[];
   /** The characters' resources of a manual's set (prove/risorse.ts): spell slots, prepared spells, items, ammunition. */
   risorse?: StatoRisorseSalvato;
+  /** Timed effects of powers and hazards (prove/attivi.ts). */
+  attivi?: StatoAttiviSalvato;
 }
 
 /** Fuori gioco oltre ai PF: morto (finché il master non lo cura), fuggito (finché la scena non cambia). */

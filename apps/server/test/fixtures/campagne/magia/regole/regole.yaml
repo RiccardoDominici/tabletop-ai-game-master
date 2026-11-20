@@ -159,8 +159,8 @@ combattimento:
     tiri_morte: {cd: 10, successi: 1, fallimenti: 1, venti_rialza: false, uno_doppio: false}
   condizioni:
     - {id: sorpreso, nome: Sorpreso, icona: SO, effetti: [perde_turno, non_si_muove], testo: Perde il primo round.}
-    - {id: addormentato, nome: Addormentato, icona: ZZ, effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio], testo: Dorme; un colpo lo sveglia.}
-    - {id: affascinato, nome: Affascinato, icona: AF, effetti: [], testo: Vede in chi lo ha incantato un amico.}
+    - {id: addormentato, nome: Addormentato, icona: ZZ, effetti: [perde_turno, non_si_muove, fuori_combattimento, colpito_automaticamente], testo: Dorme; un colpo lo sveglia.}
+    - {id: affascinato, nome: Affascinato, icona: AF, effetti: [fuori_combattimento], testo: Vede in chi lo ha incantato un amico.}
     - {id: svenuto, nome: Svenuto, icona: SV, effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio], testo: A terra senza sensi.}
   condizione_a_zero: svenuto
   fine: {morale: true}

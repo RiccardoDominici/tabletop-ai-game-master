@@ -49,6 +49,7 @@ import type { CombattimentoMaster, CombattimentoPubblico, RichiestaTiroMaster } 
 import { applicaEffetti, type ContestoEffetti } from './effetti';
 import { riposa } from './riposo';
 import { Risorse } from './risorse';
+import { Attivi } from './attivi';
 import { sistemaSrd } from '../regole/srd';
 import { leggiEffetto } from '../regole/effetti';
 import type { SistemaRegole } from '../regole/tipi';
@@ -179,11 +180,14 @@ export class MotoreProve {
   private fattiInSospeso: string[] = [];
   /** The characters' resources of a manual's set (prove/risorse.ts): spell slots, prepared spells, items, ammunition. */
   private readonly risorse: Risorse | null;
+  /** Timed effects of powers and hazards (prove/attivi.ts): conditions, bonuses, immunities that outlive a fight. */
+  readonly attivi: Attivi;
 
   constructor(private readonly o: OpzioniMotoreProve) {
     this.gregari = new Map((o.gregari ?? []).map((g) => [g.id, g]));
     this.stato = new StatoProve(this.generico ? this.generico.schede : o.schede);
     this.risorse = this.generico ? new Risorse(this.generico.regole.sistema, this.generico.schede) : null;
+    this.attivi = new Attivi({ nome: (id) => this.nomeDi(this.o.contesto(), id), nomeCondizione: (id) => this.regoleCombattimento().condizioni.find((c) => c.id === id)?.nome ?? id });
     this.dadi = o.dadi ?? this.nuoviDadi(o.seme);
     this.combattimento = new GestoreCombattimento({
       regole: this.regoleCombattimento(),
@@ -201,6 +205,12 @@ export class MotoreProve {
       // A PC's own rolls in the fight (initiative, death saves) go through the pass's table: asked at the table with
       // manual rolls, the Engine's otherwise.
       dadiDelPg: (pg, gruppo) => this.tavolo?.fonte({ pg, azione: null, privata: false, ...gruppo }) ?? null,
+      // The timed effects' conditions count in the fight; they tick at each new round (prove/attivi.ts).
+      condizioniEsterne: (id) => this.attivi.condizioni(id),
+      nuovoRound: (fatti) => {
+        const f = Attivi.fatto(this.attivi.passaRound(), (id) => this.nomeDi(this.o.contesto(), id));
+        if (f) fatti.push(f);
+      },
       log: o.log.child({ modulo: 'combattimento' }),
     });
   }
@@ -690,7 +700,10 @@ export class MotoreProve {
     const c = this.o.contesto();
     this.tavolo = tavolo;
     try {
+      // Outside a fight a closed window is a round for the timed effects (no game clock): they tick before the actions.
+      const finiti = this.combattimento.attivo ? null : Attivi.fatto(this.attivi.passaRound(), (id) => this.nomeDi(c, id));
       const r = this.passaRisolutore(turno, c, azioni, decisioni, { dadiDeiPg: tavolo });
+      if (finiti) r.fatti.unshift(finiti);
       // What the Game Master applied from the panel since the last turn (a rest, a hazard) comes first for the narrator.
       if (this.fattiInSospeso.length) {
         r.fatti.unshift(...this.fattiInSospeso);
@@ -784,7 +797,9 @@ export class MotoreProve {
       condizioni: (id) => this.combattimento.condizioniDi(id),
       turni: { regole: this.regoleCombattimento().iniziativa.tipo !== 'nessuna', inCorso: this.combattimento.aTurni },
       effetti: this.contestoEffetti(turno, c),
-      ...(this.risorse ? { poteri: { risorse: this.risorse, nemici: (autore: string) => this.nemiciDi(c, autore), alleati: () => c.pgAlTavolo.filter((id) => g.schede.has(id)) } } : {}),
+      ...(this.risorse ? { poteri: { risorse: this.risorse, nemici: (autore: string) => this.nemiciDi(c, autore), alleati: () => c.pgAlTavolo.filter((id) => g.schede.has(id)), immuneAttivo: (id: string, cosa: string) => this.attivi.immune(id, cosa) } } : {}),
+      extraSalvezza: (id: string) => this.attivi.bonus(id, 'salvezze'),
+      bonusAttivi: (id: string, a: 'difesa' | 'attacchi' | 'danni', contro: 'mischia' | 'distanza') => this.attivi.bonus(id, a, contro),
       log: this.o.log.child({ turno }),
     };
   }
@@ -822,6 +837,11 @@ export class MotoreProve {
       danni: s.danni,
       difesa: (id) => (g ? (g.schede.get(id)?.difesa ?? null) : (this.o.schede.get(id)?.ca ?? null)),
       dopoCura: (id) => this.combattimento.dopoCura(id),
+      attivi: {
+        aggiungi: (id, e, fonte, livello, dadi) => this.attivi.aggiungi(id, e, fonte, livello, dadi),
+        ferito: (id) => this.attivi.ferito(id),
+        stabilizza: () => false,
+      },
       log: this.o.log.child({ turno, modulo: 'effetti' }),
     };
   }
@@ -848,7 +868,8 @@ export class MotoreProve {
     const e = riposa(r, ids, { stato: this.stato, dadi: this.dadi, nome: (x) => this.nomeDi(c, x), danni: this.sistema.danni.nome, dopoCura: (x) => this.combattimento.dopoCura(x), log: this.o.log.child({ modulo: 'riposo' }) });
     // A rest that refreshes: spell slots, prepared spells and the resources that come back with rest (prove/risorse.ts).
     const ricaricati = r.ricarica && this.risorse ? this.risorse.ricarica('riposo') : [];
-    const fatto = ricaricati.length ? `${e.fatto} ${testo('prove.riposo.ricarica')}` : e.fatto;
+    const finiti = Attivi.fatto(this.attivi.riposo(), (x) => this.nomeDi(c, x));
+    const fatto = [e.fatto, ricaricati.length ? testo('prove.riposo.ricarica') : '', finiti ?? ''].filter(Boolean).join(' ');
     if (ricaricati.length) this.o.log.info({ riposo: r.id }, 'rest: resources and spells refreshed');
     this.fattiInSospeso.push(fatto);
     return { ok: true, fatto };
@@ -870,6 +891,16 @@ export class MotoreProve {
     this.fattiInSospeso.push(...x.fatti);
     this.o.log.info({ id, cosa, valore, fonte, fatti: x.fatti }, 'effects: applied by the Game Master');
     return { fatti: x.fatti };
+  }
+
+  /**
+   * The scene changes (scena/regia.ts): the scene-long and round-long timed effects end; their line goes to the narrator
+   * with the next turn. Returns that line, or null.
+   */
+  fineScena(): string | null {
+    const f = Attivi.fatto(this.attivi.cambioScena(), (id) => this.nomeDi(this.o.contesto(), id));
+    if (f) this.fattiInSospeso.push(f);
+    return f;
   }
 
   /** Le regole di combattimento del set (SRD 5.2 se la campagna non ne ha un altro). */
@@ -1142,7 +1173,7 @@ export class MotoreProve {
   // ------------------------------------------------------------------ sessione
 
   esporta(): StatoProveSalvato {
-    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}) };
+    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta() };
   }
 
   importa(s: StatoProveSalvato): void {
@@ -1151,6 +1182,7 @@ export class MotoreProve {
     this.scontroChiesto = s.combattimento_chiesto === true;
     this.fattiInSospeso = Array.isArray(s.fatti_in_sospeso) ? s.fatti_in_sospeso.filter((x): x is string => typeof x === 'string') : [];
     this.risorse?.importa(s.risorse);
+    this.attivi.importa(s.attivi);
     if (!this.o.dadi && s.seme && /^[0-9a-f]{8,128}$/i.test(s.seme)) this.dadi = this.nuoviDadi(s.seme, s.contatore ?? 0);
     const ultimo = s.recenti?.at(-1)?.turno;
     this.ultimoTurno = ultimo !== undefined ? { turno: ultimo, tiri: (s.recenti ?? []).filter((t) => t.turno === ultimo) } : null;
@@ -1164,6 +1196,7 @@ export class MotoreProve {
     this.scontroChiesto = false;
     this.fattiInSospeso = [];
     this.risorse?.azzera();
+    this.attivi.azzera();
     this.intestazione = null;
     this.cache.clear();
     this.ultimi.clear();

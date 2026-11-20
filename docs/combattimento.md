@@ -47,7 +47,13 @@ combattimento:
 
 - **Effects** (closed list, the Engine applies them to the rolls): `svantaggio_attacchi`, `vantaggio_attacchi`,
   `svantaggio_prove`, `svantaggio_salvezze`, `attacchi_contro_vantaggio`, `attacchi_contro_svantaggio`,
-  `critico_contro`, `fallisce_salvezze_forza_destrezza`, `perde_turno`, `non_si_muove`.
+  `critico_contro`, `fallisce_salvezze_forza_destrezza`, `perde_turno`, `non_si_muove`, `fuori_combattimento` (counts as
+  out for the fight's end and for morale, and does not act: asleep, charmed; Basic Fantasy p. 57), `colpito_automaticamente`
+  (every attack against it hits: asleep, p. 36).
+- **Timed conditions of powers** (prove/attivi.ts, docs/prove.md §10): a condition a power or a hazard gives lives
+  outside the fight's own, with its duration in rounds (they tick at each new round, and at each closed window outside
+  a fight), the scene or until a rest; the fight reads it as its own (`condizioniEsterne`), the initiative bar shows it,
+  and it survives the fight's end. A condition with `finisce_se_ferito` (sleep) ends when its bearer takes damage.
 - **Default values without the section**:
   - SRD: everything in the SRD 5.2, that is the 15 conditions plus «In guardia» (On guard; the Schivata condition).
   - 2d6: `iniziativa: nessuna`.

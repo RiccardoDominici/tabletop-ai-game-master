@@ -14,7 +14,7 @@ from .esito import Esito
 EFFETTI = (
     "svantaggio_attacchi", "vantaggio_attacchi", "svantaggio_prove", "svantaggio_salvezze",
     "attacchi_contro_vantaggio", "attacchi_contro_svantaggio", "critico_contro",
-    "fallisce_salvezze_forza_destrezza", "perde_turno", "non_si_muove",
+    "fallisce_salvezze_forza_destrezza", "perde_turno", "non_si_muove", "fuori_combattimento", "colpito_automaticamente",
 )
 INIZIATIVE = ("individuale", "per_schieramento", "nessuna")
 DADI_INIZIATIVA = (4, 6, 8, 10, 12, 20)

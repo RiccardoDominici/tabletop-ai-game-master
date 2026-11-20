@@ -71,6 +71,13 @@ export interface DipendenzeCombattimento {
    * the Engine's. NPC rolls and side rolls (surprise, initiative by sides) never ask for it.
    */
   dadiDelPg?: (pg: string, gruppo: { per: 'iniziativa' | 'morte'; etichetta: string; modificatore?: number; contro?: number; giro?: number }) => FonteDadi | null;
+  /**
+   * Conditions a character has outside the fight's own (timed effects of powers and hazards, prove/attivi.ts), by id:
+   * they count as the fight's (a sleeping guard loses its turn). Absent = none.
+   */
+  condizioniEsterne?: (id: string) => string[];
+  /** A new round began: the timed effects tick (prove/attivi.ts); the facts of what ended go to the narrator. */
+  nuovoRound?: (fatti: string[]) => void;
   log: Logger;
 }
 
@@ -144,11 +151,17 @@ export class GestoreCombattimento {
   /** Condizioni attive di un personaggio, per i resolver (prove/condizioni.ts). */
   condizioniDi(id: string): Array<{ nome: string; effetti: Effetto[] }> {
     const p = this.part(id);
-    if (!p) return [];
-    return p.condizioni.flatMap((c) => {
-      const x = this.cond(c.id);
+    // The timed effects' conditions (prove/attivi.ts) count in and out of the fight, once each.
+    const ids = [...new Set([...(p?.condizioni.map((c) => c.id) ?? []), ...(this.d.condizioniEsterne?.(id) ?? [])])];
+    return ids.flatMap((c) => {
+      const x = this.cond(c);
       return x ? [{ nome: x.nome, effetti: x.effetti }] : [];
     });
+  }
+
+  /** Out of the fight by a condition (asleep, charmed): its end and morale count it as down; it does not act. */
+  private fuoriPerCondizione(id: string): boolean {
+    return !!this.haEffetto(id, 'fuori_combattimento');
   }
 
   /**
@@ -365,6 +378,7 @@ export class GestoreCombattimento {
       if (scadute.length) fatti.push(testo('prove.combattimento.finisce', { nome: p.nome, condizioni: scadute.map((c) => this.cond(c.id)?.nome ?? c.id).join(', ') }));
       p.condizioni = p.condizioni.filter((c) => !scadute.includes(c));
     }
+    this.d.nuovoRound?.(fatti);
     if (this.d.regole.iniziativa.ogniRound && this.d.regole.iniziativa.tipo === 'individuale') fatti.push(this.ritiraIndividuale());
     else if (this.d.regole.iniziativa.ogniRound) {
       const lati = this.tiraLati();
@@ -494,7 +508,7 @@ export class GestoreCombattimento {
     const p = this.part(id);
     if (!p || (!insieme && (p.esito !== 'in_gioco' || this.d.stato.aTerra(id)))) return;
     // Falling at this same moment, the condition at zero («Privo di sensi») does not stop the one blow; any other does.
-    const perde = insieme ? (p.condizioni.filter((c) => c.id !== this.d.regole.condizioneAZero).map((c) => this.cond(c.id)).find((c) => c?.effetti.includes('perde_turno'))?.nome ?? null) : this.haEffetto(id, 'perde_turno');
+    const perde = insieme ? (p.condizioni.filter((c) => c.id !== this.d.regole.condizioneAZero).map((c) => this.cond(c.id)).find((c) => c?.effetti.includes('perde_turno'))?.nome ?? null) : (this.haEffetto(id, 'perde_turno') ?? this.haEffetto(id, 'fuori_combattimento'));
     if (perde) {
       fatti.push(testo('prove.combattimento.png_non_agisce', { nome: p.nome, condizione: perde.toLowerCase() }));
       return;
@@ -614,9 +628,9 @@ export class GestoreCombattimento {
     const s = this.s;
     if (!s || !this.d.regole.fine.morale) return;
     const png = s.partecipanti.filter((p) => p.lato === 'png');
-    const caduti = png.filter((p) => p.esito === 'morto' || p.esito === 'fuggito' || this.d.stato.aTerra(p.id)).length;
+    const caduti = png.filter((p) => p.esito === 'morto' || p.esito === 'fuggito' || this.d.stato.aTerra(p.id) || this.fuoriPerCondizione(p.id)).length;
     const soglia = caduti >= 1 && !s.moraleControllato.includes('primo') ? 'primo' : caduti * 2 >= png.length && !s.moraleControllato.includes('meta') ? 'meta' : null;
-    const vivi = png.filter((p) => p.esito === 'in_gioco' && !this.d.stato.aTerra(p.id));
+    const vivi = png.filter((p) => p.esito === 'in_gioco' && !this.d.stato.aTerra(p.id) && !this.fuoriPerCondizione(p.id));
     if (!soglia || !vivi.length) return;
     s.moraleControllato.push(soglia);
     const morale = Math.min(...vivi.map((p) => this.d.morale(p.id) ?? 7));
@@ -635,7 +649,7 @@ export class GestoreCombattimento {
   private controllaFine(fatti: string[], tiriDelTurno?: { turno: number; tiri: TiroMostrato[] }): boolean {
     const s = this.s;
     if (!s) return true;
-    const fuori = (p: Partecipante): boolean => p.esito !== 'in_gioco' || this.d.stato.aTerra(p.id);
+    const fuori = (p: Partecipante): boolean => p.esito !== 'in_gioco' || this.d.stato.aTerra(p.id) || this.fuoriPerCondizione(p.id);
     const png = s.partecipanti.filter((p) => p.lato === 'png');
     const pg = s.partecipanti.filter((p) => p.lato === 'pg');
     if (png.length && png.every(fuori)) return this.termina(testo(png.some((p) => p.esito === 'fuggito') ? 'prove.combattimento.fine_fuggiti' : 'prove.combattimento.fine_nemici'), fatti);
@@ -731,8 +745,8 @@ export class GestoreCombattimento {
         iniziativa: p.iniziativa,
         corrente: ora.has(p.id) || (passo?.lato === 'png' && passo.attori.includes(p.id)),
         pf: pf(p.id),
-        condizioni: p.condizioni.flatMap((c) => {
-          const x = this.cond(c.id);
+        condizioni: [...new Set([...p.condizioni.map((c) => c.id), ...(this.d.condizioniEsterne?.(p.id) ?? [])])].flatMap((c) => {
+          const x = this.cond(c);
           return x ? [{ id: x.id, nome: x.nome, icona: x.icona }] : [];
         }),
         stato: p.esito === 'in_gioco' && this.d.stato.aTerra(p.id) ? 'a_terra' : p.esito,
