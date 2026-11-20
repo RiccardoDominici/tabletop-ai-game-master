@@ -1,0 +1,35 @@
+id: png_brigante
+nome: Brigante
+pronuncia: Brigànte
+alias: [brigante]
+livello: supporto
+ruolo: brigante che gioca a dadi
+aspetto:
+  lettura: Un uomo magro con la barba sfatta e un coltello alla cintura.
+  invarianti: [barba sfatta, coltello]
+personalita:
+  superficie: [sbruffone]
+  sotto_pressione: [scappa]
+  contraddizione: Fa il duro ma ha paura del buio.
+desiderio: Vincere ai dadi.
+voce:
+  tts: {voce_id: dario}
+  registro: tu
+  stile: Frasi brevi.
+  battuta_campione: Chi siete voi?
+sa: [f_cantina]
+non_sa: [f_bottino]
+atteggiamento_pg:
+  pg_ilaria: {stato: ostile, perche: intrusa, vuole: che se ne vada}
+  pg_bruno: {stato: ostile, perche: intruso, vuole: che se ne vada}
+  pg_sara: {stato: ostile, perche: intrusa, vuole: che se ne vada}
+scheda:
+  caratteristiche: {forza: 13, destrezza: 10, costituzione: 12, intelligenza: 9, saggezza: 8}
+  dadi_vita: 3
+  tipo: umanoide
+  salva_come: {classe: guerriero, livello: 3}
+  pf: 12
+  difesa: 13
+  morale: 8
+  attacchi:
+  - {nome: Coltello, danno: "1d4", abilita: mischia}

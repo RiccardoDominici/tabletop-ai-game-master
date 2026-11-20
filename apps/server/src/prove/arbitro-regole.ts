@@ -15,7 +15,7 @@ import { testo } from '../lingua';
 import { messaggioProve, scenaPerArbitro, type MisuraProve } from './arbitro-haiku';
 import type { ArbitroProve, DecisioneRegole, IngressoArbitroProve, TipoDecisione } from './tipi';
 
-const TIPI: readonly TipoDecisione[] = ['nessuna', 'impossibile', 'prova', 'attacco', 'aiuto'];
+const TIPI: readonly TipoDecisione[] = ['nessuna', 'impossibile', 'prova', 'attacco', 'aiuto', 'potere'];
 
 /**
  * Prompt di sistema per il set (stabile per tutta la sessione: va in cache), a pezzi dal pacchetto della
@@ -28,6 +28,8 @@ export function promptArbitroRegole(r: RegoleCampagna): string {
     testo('prove.arbitro_regole.intro', { nome: s.nome }),
     testo('prove.arbitro_regole.regola_oro'),
     s.mosse.length ? testo('prove.arbitro_regole.mosse', { mosse: s.mosse.map((m) => `- ${m.id} (${m.nome}): ${m.quando}`).join('\n') }) : '',
+    // The set's powers (regole/poteri.ts): the arbiter names one; its cost, targets and effects are the Engine's.
+    s.poteri?.length ? testo('prove.arbitro_regole.poteri', { poteri: s.poteri.filter((p) => p.tipo !== 'pericolo').map((p) => `- ${p.id} (${p.nome}${p.parole.length ? `: ${p.parole.join(', ')}` : ''})`).join('\n') }) : '',
     testo('prove.arbitro_regole.prova', { caratteristiche: elenco(s.caratteristiche), abilita: elenco(s.abilita), difficolta: elenco(s.difficolta), predefinita: s.difficoltaPredefinita }),
     s.sociale.nota ? testo('prove.arbitro_regole.sociale', { nota: s.sociale.nota }) : '',
     testo(s.vantaggio.tipo !== 'nessuno' ? 'prove.arbitro_regole.vantaggio' : 'prove.arbitro_regole.senza_vantaggio'),
@@ -53,6 +55,7 @@ export function schemaRegole(r: RegoleCampagna): Record<string, unknown> {
             id: { type: 'string' },
             tipo: { type: 'string', enum: [...TIPI] },
             mossa: { type: 'string', enum: ids(s.mosse) },
+            potere: { type: 'string', enum: ids(s.poteri ?? []) },
             abilita: { type: 'string', enum: ids(s.abilita) },
             caratteristica: { type: 'string', enum: ids(s.caratteristiche) },
             difficolta: { type: 'string', enum: ids(s.difficolta) },
@@ -65,7 +68,7 @@ export function schemaRegole(r: RegoleCampagna): Record<string, unknown> {
             reazione_png: { type: 'string' },
             reazione_quando: { type: 'string', enum: ['nessuna', 'sempre', 'se_fallisce'] },
           },
-          required: ['id', 'tipo', 'mossa', 'abilita', 'caratteristica', 'difficolta', 'bersaglio', 'arma', 'prova_scena', 'vantaggio', 'motivo', 'aiuta', 'reazione_png', 'reazione_quando'],
+          required: ['id', 'tipo', 'mossa', 'potere', 'abilita', 'caratteristica', 'difficolta', 'bersaglio', 'arma', 'prova_scena', 'vantaggio', 'motivo', 'aiuta', 'reazione_png', 'reazione_quando'],
           additionalProperties: false,
         },
       },
@@ -75,7 +78,7 @@ export function schemaRegole(r: RegoleCampagna): Record<string, unknown> {
   };
 }
 
-type Grezza = Record<'id' | 'tipo' | 'mossa' | 'abilita' | 'caratteristica' | 'difficolta' | 'bersaglio' | 'arma' | 'prova_scena' | 'vantaggio' | 'motivo' | 'aiuta' | 'reazione_png' | 'reazione_quando', string>;
+type Grezza = Record<'id' | 'tipo' | 'mossa' | 'potere' | 'abilita' | 'caratteristica' | 'difficolta' | 'bersaglio' | 'arma' | 'prova_scena' | 'vantaggio' | 'motivo' | 'aiuta' | 'reazione_png' | 'reazione_quando', string>;
 const v = (x: string | undefined): string | null => (x && x.trim() ? x.trim() : null);
 
 export function daGrezzaRegole(g: Grezza, r: RegoleCampagna): DecisioneRegole {
@@ -87,6 +90,7 @@ export function daGrezzaRegole(g: Grezza, r: RegoleCampagna): DecisioneRegole {
     id: g.id,
     tipo: (TIPI as readonly string[]).includes(g.tipo) ? (g.tipo as TipoDecisione) : 'nessuna',
     mossa: tra(g.mossa, s.mosse),
+    potere: tra(g.potere ?? '', s.poteri ?? []),
     abilita: tra(g.abilita, s.abilita),
     caratteristica: tra(g.caratteristica, s.caratteristiche),
     difficolta: tra(g.difficolta, s.difficolta),

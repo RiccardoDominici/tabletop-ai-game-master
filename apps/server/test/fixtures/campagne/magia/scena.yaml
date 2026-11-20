@@ -1,0 +1,54 @@
+id: scena_cantina
+nodo: n_cantina
+nome: La cantina dei briganti
+descrizione: Una cantina bassa con le botti in fila. Un brigante gioca a dadi su una cassa col suo capo; in un angolo uno scheletro è incatenato al muro. Un corridoio col pavimento di assi porta a una porta chiusa.
+domanda_drammatica: Il gruppo prenderà il bottino prima che arrivi la ronda?
+intensita: 3
+sensi:
+- Odore di vino e di muffa.
+- Il tintinnio dei dadi sulla cassa.
+- Il legno del pavimento scricchiola.
+elementi_interattivi:
+- cosa: le botti in fila
+  dove: lungo il muro
+  azioni: ci si nasconde dietro
+- cosa: il corridoio di assi
+  dove: verso la porta chiusa
+  azioni: si attraversa, ma le assi suonano vuote
+png_presenti:
+- png_brigante
+- png_capo
+- png_scheletro
+orologi_attivi:
+- o_ronda
+indizi:
+- id: i_bottino
+  conclusione: r_bottino
+  tipo: oggetto
+  nodo: n_cantina
+  essenziale: false
+  tiro: nessuno
+  modi: 1
+  come_si_trova: Dietro la botte più grande c'è un sacco di monete.
+prove:
+- id: p_fossa
+  quando: un PG attraversa il corridoio di assi
+  abilita: ts_morte_destrezza
+  difficolta: normale
+  nome: Fossa coperta
+  se_fallisce: le assi cedono sotto i piedi
+  effetti_se_fallisce: [{tipo: caduta, altezza: 20}]
+  parole: [corridoio, assi, attraverso]
+- id: p_dardo
+  quando: un PG apre la porta chiusa in fondo al corridoio
+  abilita: ts_morte
+  difficolta: normale
+  nome: Trappola a dardo
+  se_fallisce: un dardo parte dallo stipite
+  effetti_se_fallisce: [{tipo: attacco, bonus: 1, dadi: "1d4"}]
+  parole: [porta, apro, maniglia]
+mossa_morbida_pronta: Sopra la botola si sentono dei passi.
+apertura: Un brigante e il suo capo giocano a dadi su una cassa, uno scheletro incatenato vi guarda dall'angolo. Che fate?
+musica:
+  tag: tensione
+taglio: Si chiude quando il gruppo prende il bottino o risale.

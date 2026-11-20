@@ -51,9 +51,58 @@ export function leggiSchedaGenerica(s: SistemaRegole, id: string, nome: string, 
     const c = typeof a['caratteristica'] === 'string' && s.caratteristiche.some((x) => x.id === a['caratteristica']) ? (a['caratteristica'] as string) : null;
     const ab = typeof a['abilita'] === 'string' && s.abilita.some((x) => x.id === a['abilita']) ? (a['abilita'] as string) : null;
     if (a['automatico'] !== undefined && typeof a['automatico'] !== 'boolean') avvisi.push(`${dove}.attacchi[${i + 1}].automatico: true o false`);
-    return [{ id: chiave(n), nome: n, danno: danno ?? { numero: 1, facce: 4, bonus: 0 }, caratteristica: c, abilita: ab, tipo_danno: typeof a['tipo_danno'] === 'string' ? a['tipo_danno'] : null, distanza: a['distanza'] === true, ...(a['automatico'] === true ? { automatico: true } : {}) }];
+    // `consuma`: a resource of the set each attack spends (ammunition); refused when it is at 0 (prove/risorse.ts).
+    const consuma = typeof a['consuma'] === 'string' && (s.risorse ?? []).some((r) => r.id === a['consuma']) ? { consuma: a['consuma'] as string } : {};
+    if (typeof a['consuma'] === 'string' && !('consuma' in consuma)) avvisi.push(`${dove}.attacchi[${i + 1}].consuma: «${a['consuma']}» non è una risorsa del set`);
+    return [{ id: chiave(n), nome: n, danno: danno ?? { numero: 1, facce: 4, bonus: 0 }, caratteristica: c, abilita: ab, tipo_danno: typeof a['tipo_danno'] === 'string' ? a['tipo_danno'] : null, distanza: a['distanza'] === true, ...(a['automatico'] === true ? { automatico: true } : {}), ...consuma }];
   });
-  return { id, nome, di_png, caratteristiche, abilita, pf_massimi: pf && pf > 0 ? pf : 1, difesa: intero(o['difesa']) ?? intero(o['ca']), armatura: intero(o['armatura']) ?? 0, attacchi, ...classeDellaScheda(s, o, dove, avvisi), avvisi };
+  return { id, nome, di_png, caratteristiche, abilita, pf_massimi: pf && pf > 0 ? pf : 1, difesa: intero(o['difesa']) ?? intero(o['ca']), armatura: intero(o['armatura']) ?? 0, attacchi, ...classeDellaScheda(s, o, dove, avvisi), ...risorseDellaScheda(s, o, dove, avvisi), avvisi };
+}
+
+/**
+ * What the sheet carries for the set's resources and powers (regole/risorse.ts, regole/poteri.ts): counters, prepared
+ * or known spells, spell slots written by hand, items with a power, creature types, immunities, hit dice. Ids the set
+ * does not have are reported and dropped.
+ */
+function risorseDellaScheda(s: SistemaRegole, o: DatiYaml, dove: string, avvisi: string[]): Pick<SchedaGenerica, 'risorse' | 'incantesimi' | 'slot' | 'oggetti' | 'tipo' | 'immune' | 'dadiVita'> {
+  const out: Pick<SchedaGenerica, 'risorse' | 'incantesimi' | 'slot' | 'oggetti' | 'tipo' | 'immune' | 'dadiVita'> = {};
+  const poteri = new Map((s.poteri ?? []).map((p) => [p.id, p]));
+  const conteggi = (k: string, ammesso: (id: string) => boolean, nomeCosa: string): Record<string, number> | undefined => {
+    const m = ogg(o[k]);
+    if (!m) return undefined;
+    const r: Record<string, number> = {};
+    for (const [id, n] of Object.entries(m)) {
+      if (!ammesso(id)) avvisi.push(`${dove}.${k}: «${id}» non è ${nomeCosa} del set ${s.id}`);
+      else if (intero(n) === null || (n as number) < 0) avvisi.push(`${dove}.${k}.${id}: un intero da 0 in su`);
+      else r[id] = n as number;
+    }
+    return r;
+  };
+  const risorse = conteggi('risorse', (id) => (s.risorse ?? []).some((r) => r.id === id), 'una risorsa');
+  if (risorse) out.risorse = risorse;
+  const oggetti = conteggi('oggetti', (id) => poteri.get(id)?.tipo === 'oggetto', 'un oggetto (potere di tipo oggetto)');
+  if (oggetti) out.oggetti = oggetti;
+  if (Array.isArray(o['incantesimi'])) {
+    out.incantesimi = o['incantesimi'].filter((id): id is string => {
+      const ok = typeof id === 'string' && poteri.get(id)?.tipo === 'incantesimo';
+      if (!ok) avvisi.push(`${dove}.incantesimi: «${String(id)}» non è un incantesimo del set ${s.id}`);
+      return ok;
+    });
+  }
+  if (Array.isArray(o['slot'])) {
+    const slot = o['slot'].map((n) => intero(n));
+    if (slot.some((n) => n === null || n < 0)) avvisi.push(`${dove}.slot: incantesimi al giorno per livello, interi da 0 in su`);
+    else out.slot = slot as number[];
+  }
+  const lista = (k: string): string[] | undefined => (Array.isArray(o[k]) ? o[k].filter((x): x is string => typeof x === 'string') : typeof o[k] === 'string' ? [o[k] as string] : undefined);
+  const tipo = lista('tipo');
+  if (tipo) out.tipo = tipo;
+  const immune = lista('immune');
+  if (immune) out.immune = immune;
+  const dv = intero(o['dadi_vita']);
+  if (o['dadi_vita'] !== undefined && (dv === null || dv < 0)) avvisi.push(`${dove}.dadi_vita: un intero (i più e i meno non contano, Basic Fantasy p. 54)`);
+  else if (dv !== null) out.dadiVita = dv;
+  return out;
 }
 
 /**

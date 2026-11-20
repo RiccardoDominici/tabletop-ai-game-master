@@ -1,0 +1,68 @@
+situazione_comune: Siete scesi nella cantina dei briganti per riprendervi il bottino.
+personaggi:
+- id: pg_ilaria
+  nome: Ilaria
+  pronomi: lei
+  specie: umana
+  classe: maga
+  livello: 2
+  aspetto: Una giovane donna con un mantello blu e le dita macchiate d'inchiostro.
+  concetto: Maga di bottega che ha studiato troppo e camminato poco.
+  aggancio: Il bottino comprende un suo libro rubato.
+  cosa_sai_fare:
+  - lanci dardo arcano e sonno, una volta ciascuno al giorno
+  - leggi le scritte magiche
+  scheda:
+    caratteristiche: {forza: 8, destrezza: 13, costituzione: 10, intelligenza: 17, saggezza: 12}
+    classe: mago
+    livello: 2
+    pf: 5
+    difesa: 11
+    incantesimi: [dardo_arcano, sonno]
+    attacchi:
+    - {nome: Pugnale, danno: "1d4", abilita: mischia}
+- id: pg_bruno
+  nome: Bruno
+  pronomi: lui
+  specie: umano
+  classe: chierico
+  livello: 2
+  aspetto: Un uomo robusto col saio e una mazza alla cintura.
+  concetto: Chierico di campagna, più abituato alle pecore che ai briganti.
+  aggancio: I briganti hanno rubato le offerte del suo tempio.
+  cosa_sai_fare:
+  - curi le ferite, una volta al giorno
+  - fasci chi sta morendo
+  scheda:
+    caratteristiche: {forza: 13, destrezza: 9, costituzione: 13, intelligenza: 10, saggezza: 16}
+    classe: chierico
+    livello: 2
+    pf: 10
+    difesa: 15
+    incantesimi: [cura_ferite]
+    oggetti: {pozione_cura: 1}
+    attacchi:
+    - {nome: Mazza, danno: "1d8+1", abilita: mischia}
+- id: pg_sara
+  nome: Sara
+  pronomi: lei
+  specie: folletto
+  classe: guerriera
+  livello: 1
+  aspetto: Una piccola donna dai capelli rossi con un arco più alto di lei.
+  concetto: Arciera dei boschi, svelta e silenziosa.
+  aggancio: Il capo dei briganti le deve una vendetta.
+  cosa_sai_fare:
+  - tiri con l'arco
+  - colpisci alle spalle chi non ti vede
+  scheda:
+    caratteristiche: {forza: 12, destrezza: 16, costituzione: 12, intelligenza: 10, saggezza: 10}
+    classe: guerriero
+    livello: 1
+    pf: 8
+    difesa: 14
+    risorse: {frecce: 2, monete: 12}
+    attacchi:
+    - {nome: Spada corta, danno: "1d6", abilita: mischia}
+    - {nome: Spada corta alle spalle, danno: "1d6", abilita: furtivo}
+    - {nome: Arco corto, danno: "1d6", abilita: distanza, distanza: true, consuma: frecce}

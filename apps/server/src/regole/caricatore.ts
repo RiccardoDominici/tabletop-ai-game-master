@@ -24,6 +24,8 @@ import { combattimentoPredefinito, leggiCombattimento } from './combattimento';
 import { leggiModificatori } from './modificatori';
 import { leggiCadute, leggiRiposo } from './salute';
 import { leggiClassi, leggiColonneSalvezza } from './classi';
+import { leggiPoteri } from './poteri';
+import { leggiMagia, leggiRisorse } from './risorse';
 
 export const CARTELLA_REGOLE = 'regole';
 const TIPI: readonly TipoRisoluzione[] = ['d20_cd', '2d6_fasce', 'sotto_soglia'];
@@ -63,7 +65,7 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
   const caratteristiche = voci(d['caratteristiche'], 'caratteristiche', errori);
   if (!caratteristiche.length) errori.push('caratteristiche: almeno una');
   const idCar = new Set(caratteristiche.map((c) => c.id));
-  const abilita = (Array.isArray(d['abilita']) ? d['abilita'] : []).flatMap((x, i) => {
+  const abilita: SistemaRegole['abilita'] = (Array.isArray(d['abilita']) ? d['abilita'] : []).flatMap((x, i): SistemaRegole['abilita'] => {
     const [v] = voci([x], `abilita[${i + 1}]`, errori);
     if (!v) return [];
     const car = str(ogg(x)?.['caratteristica']);
@@ -72,7 +74,7 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     // `salvezza`: true (a save of the sheet's bonus) or the id of a column of `tiri_salvezza` (regole/salvezze.ts).
     const sv = ogg(x)?.['salvezza'];
     if (sv !== undefined && typeof sv !== 'boolean' && typeof sv !== 'string') errori.push(`abilita.${v.id}.salvezza: true o false, o una colonna di tiri_salvezza`);
-    const salvezza = sv === true ? { salvezza: true } : typeof sv === 'string' && sv ? { salvezza: sv } : {};
+    const salvezza = { ...(sv === true ? { salvezza: true } : typeof sv === 'string' && sv ? { salvezza: sv } : {}), ...attaccoSpeciale(ogg(x) ?? {}, v.id, errori) };
     // Un'abilità che il manuale tira a parte: percentuale (d100) o «x su 6» (d6), sotto la soglia della scheda.
     const so = ogg(ogg(x)?.['soglia']);
     if (ogg(x)?.['soglia'] === undefined) return [{ ...v, caratteristica: car, ...salvezza }];
@@ -182,6 +184,10 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     if (!str(es['successo']) || !str(es['fallimento'])) errori.push(`mosse.${m.id}: esiti.successo e esiti.fallimento`);
     mosse.push({ ...m, quando: str(o['quando']) ?? '', caratteristica: car ?? '', esiti: { successo: str(es['successo']) ?? '', parziale: str(es['parziale']), fallimento: str(es['fallimento']) ?? '' } });
   }
+  const combattimento = leggiCombattimento(d['combattimento'], combattimentoPredefinito(tipo, false, [...idCar]), idCar, errori);
+  const classiEPoteri = tabelleDiClasse(d, abilita, errori);
+  const poteri = leggiPoteri(d['poteri'], { salvezze: new Set(abilita.filter((a) => a.salvezza).map((a) => a.id)), classi: classiEPoteri.classi?.length ? new Set(classiEPoteri.classi.map((c) => c.id)) : null, condizioni: new Set(combattimento.condizioni.map((c) => c.id)) }, errori);
+  for (const a of abilita) if (a.ripiego && !abilita.some((x) => x.id === a.ripiego)) errori.push(`abilita.${a.id}.ripiego: «${a.ripiego}» non è un'abilità del set`);
   const fonte = ogg(d['fonte']) ?? {};
   const lic = ogg(d['licenza']) ?? {};
   if (typeof lic['libera'] !== 'boolean') errori.push('licenza.libera: true o false (un set da un manuale non libero resta fuori dal repository)');
@@ -220,13 +226,31 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
       const sid = str(o?.['id']);
       return o && sid ? [{ id: sid, nome: str(o['nome']) ?? sid, testo: str(o['testo']) ?? '' }] : [];
     }),
-    combattimento: leggiCombattimento(d['combattimento'], combattimentoPredefinito(tipo, false, [...idCar]), idCar, errori),
+    combattimento,
     paroleChiave: leggiParoleChiave(d['parole_chiave'], new Set([...idCar, ...abilita.map((a) => a.id), ...mosse.map((m) => m.id)]), errori),
     modificatori: leggiModificatori(d['modificatori'], new Set(abilita.map((a) => a.id)), errori),
+    poteri,
     cadute: leggiCadute(d['cadute'], errori),
     riposo: leggiRiposo(d['riposo'], errori),
-    ...tabelleDiClasse(d, abilita, errori),
+    ...classiEPoteri,
+    risorse: leggiRisorse(d['risorse'], errori),
+    magia: leggiMagia(d['magia'], errori),
   };
+}
+
+/** An attack ability's extras (Basic Fantasy's sneak attack): double damage, once per target per fight, its fallback. */
+function attaccoSpeciale(o: D, id: string, errori: string[]): { danno?: 'doppio'; unaVoltaPerBersaglio?: boolean; ripiego?: string | null } {
+  const out: { danno?: 'doppio'; unaVoltaPerBersaglio?: boolean; ripiego?: string | null } = {};
+  if (o['danno'] !== undefined) {
+    if (o['danno'] === 'doppio') out.danno = 'doppio';
+    else if (o['danno'] !== 'normale') errori.push(`abilita.${id}.danno: normale o doppio`);
+  }
+  if (o['una_volta_per_bersaglio'] !== undefined) {
+    if (typeof o['una_volta_per_bersaglio'] !== 'boolean') errori.push(`abilita.${id}.una_volta_per_bersaglio: true o false`);
+    else if (o['una_volta_per_bersaglio']) out.unaVoltaPerBersaglio = true;
+  }
+  if (typeof o['ripiego'] === 'string') out.ripiego = o['ripiego'];
+  return out;
 }
 
 /** The save columns and the classes (regole/classi.ts); an ability's `salvezza` column must be one of the set's. */

@@ -47,6 +47,7 @@ import { applicaEffetti, type ContestoEffetti } from './effetti';
 import { effettiSeFallisce } from '../campagna/prove-scena';
 import type { EffettoTipato } from '../regole/effetti';
 import { bersaglioSalvezza, type BersaglioSalvezza } from '../regole/salvezze';
+import { usaPotere, type ContestoPoteri } from './poteri';
 
 /** Una prova scritta nei dati della scena, col vocabolario del set (scena → prove). */
 export interface ProvaScenaRegole {
@@ -105,6 +106,11 @@ export interface OpzioniRisolutoreRegole {
   effetti?: ContestoEffetti;
   /** What a character's traits and active effects add to one of its saves (regole/tratti.ts, prove/attivi.ts). */
   extraSalvezza?: (id: string, abilita: string) => number;
+  /**
+   * The set's powers and the characters' resources (prove/poteri.ts, prove/risorse.ts): spells, items, ammunition, the
+   * once-per-target sneak attack. Absent = no power can be used and nothing is counted (as before).
+   */
+  poteri?: Pick<ContestoPoteri, 'risorse' | 'nemici' | 'alleati' | 'immuneAttivo'>;
   log: Logger;
 }
 
@@ -130,6 +136,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
   const s = o.sistema;
   const perAzione = new Map<string, EsitoAzioneProve>();
   const tiri: TiroMostrato[] = [];
+  const ostili: Array<{ chi: string; bersaglio: string }> = [];
   const fatti: string[] = [];
   const fattiPrivati: string[] = [];
   const ids = new Set(o.azioni.map((a) => a.id));
@@ -138,7 +145,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
     const d = o.decisioni.get(a.id);
     if (d?.tipo === 'aiuto' && d.aiuta && ids.has(d.aiuta) && d.aiuta !== a.id) aiutanti.set(d.aiuta, [...(aiutanti.get(d.aiuta) ?? []), o.nome(a.autore)]);
   }
-  const { cheCosa, cartaDa, attacca, bersaglioDiSalvezza } = strumentiRegole(o);
+  const { cheCosa, cartaDa, attacca, bersaglioDiSalvezza, salvezzaDelBersaglio, munizioni } = strumentiRegole(o);
   // The PC's own dice for one roll of an action (manual rolls), or the Engine's.
   const dadiDelPg = (a: AzioneRisolvibile, per: 'prova' | 'danno', extra: Pick<GruppoDadi, 'etichetta' | 'modificatore'> = {}): FonteDadi =>
     o.dadiDeiPg?.fonte({ pg: a.autore, per, azione: a.id, privata: a.privata, ...extra }) ?? o.dadi;
@@ -167,9 +174,28 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
     } else if (!sch) {
       fatto = fattoSenzaScheda();
       o.log.warn({ azione: a.id, autore: a.autore }, 'prove: serve un tiro ma il PG non ha una scheda del set («sì, ma»)');
+    } else if (d.tipo === 'potere') {
+      // A power of the set (prove/poteri.ts): its cost, its targets, their saves, its effects; refused when spent.
+      const p = d.potere ? (s.poteri ?? []).find((x) => x.id === d.potere) : undefined;
+      if (!p || !o.poteri || !o.effetti) {
+        fatto = fattoNessunTiro();
+        o.log.warn({ azione: a.id, potere: d.potere ?? null }, 'powers: a power decision the Engine cannot use (unknown power, or no powers here): no roll');
+      } else {
+        const r = usaPotere(
+          { sistema: s, schede: o.schede, effetti: o.effetti, salvezza: salvezzaDelBersaglio, log: o.log, ...o.poteri },
+          { autore: a.autore, potere: p, bersaglio: d.bersaglio && o.esiste(d.bersaglio) ? d.bersaglio : null, privata: a.privata, dadiAutore: dadiDelPg(a, 'danno', { etichetta: p.nome, modificatore: 0 }), dadiDelPg: (pg) => o.dadiDeiPg?.fonte({ pg, per: 'contesa', azione: a.id, privata: a.privata, etichetta: p.nome }) ?? o.dadi },
+        );
+        for (const t of r.tiri) aggiungi(t);
+        ostili.push(...r.ostili);
+        esito.riuscita = r.usato;
+        (r.usato ? esito.riuscite : esito.fallite).push('potere', p.id);
+        fatto = r.fatti.join(' ');
+      }
     } else if (d.tipo === 'attacco') {
       const b = d.bersaglio && o.esiste(d.bersaglio) && d.bersaglio !== a.autore ? d.bersaglio : null;
-      if (!b || !o.schede.get(b)) fatto = fattoAttaccoSenzaScheda(b ? o.nome(b) : null);
+      const senza = b ? munizioni(a.autore, d.arma) : null;
+      if (senza) fatto = senza;
+      else if (!b || !o.schede.get(b)) fatto = fattoAttaccoSenzaScheda(b ? o.nome(b) : null);
       else if (o.stato.fuoriGioco(b) === 'fuggito') fatto = fattoFuggito(o.nome(b));
       else if (o.stato.aTerra(b)) fatto = fattoGiaATerra(o.nome(b));
       else {
@@ -248,7 +274,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
     o.log.info({ azione: a.id, autore: a.autore, tipo: d?.tipo ?? null, mossa: d?.mossa ?? null, tiri: esito.tiri.map((t) => ({ etichetta: t.etichetta, dadi: t.dadi, totale: t.totale, regola: t.regola, grado: t.grado?.nome ?? null })) }, 'prove: azione risolta (set del manuale)');
   });
   void conSegno;
-  return { turno: o.turno, perAzione, tiri, fatti, fattiPrivati };
+  return { turno: o.turno, perAzione, tiri, fatti, fattiPrivati, ...(ostili.length ? { ostili } : {}) };
 }
 
 /**
@@ -407,7 +433,21 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     const sa = o.schede.get(chi);
     const sb = o.schede.get(bersaglio);
     if (!sa || !sb) return null;
-    const a = arma(sa, idArma);
+    let a = arma(sa, idArma);
+    // Ammunition (`consuma`): one per attack, tracked by the Engine (prove/risorse.ts); the caller refuses at 0.
+    if (a.consuma && o.poteri?.risorse.restanti(chi, a.consuma) !== null) o.poteri?.risorse.spendi(chi, a.consuma);
+    // An ability usable once per target per fight (Basic Fantasy's sneak attack): spent on this target, the attack
+    // falls back to the ability's `ripiego` (an ordinary melee attack), without its double damage.
+    let nota = '';
+    const speciale = a.abilita ? s.abilita.find((x) => x.id === a.abilita) : undefined;
+    if (speciale?.unaVoltaPerBersaglio && o.poteri) {
+      if (o.poteri.risorse.giaUsato(chi, speciale.id, bersaglio)) {
+        nota = testo('prove.poteri.una_volta', { abilita: speciale.nome, bersaglio: o.nome(bersaglio) });
+        o.log.info({ chi, bersaglio, abilita: speciale.id, ripiego: speciale.ripiego ?? null }, 'resources: once-per-target ability already used on this target, an ordinary attack');
+        a = { ...a, abilita: speciale.ripiego ?? null, caratteristica: speciale.ripiego ? null : speciale.caratteristica };
+      } else o.poteri.risorse.segnaUsato(chi, speciale.id, bersaglio);
+    }
+    const doppioAbilita = !nota && speciale?.danno === 'doppio';
     const danno = dadiDanno?.({ etichetta: testo('prove.richiesta.etichetta_danno', { arma: a.nome }), modificatore: a.danno.bonus }) ?? o.dadi;
     // Automatico per il set, o per quest'arma (il dardo incantato colpisce sempre).
     if (s.attacchi.tipo === 'automatico' || a.automatico) {
@@ -434,10 +474,24 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     const extra = situazioni.reduce((x, m) => x + m.bonus, 0);
     const e = tiraCol(sist, dadiTiro, cosa.valore + extra, sist === s ? null : ID_DIFESA, v, etichetta, true);
     if (situazioni.length) e.regola += testo('prove.regola.situazioni', { elenco: situazioni.map((m) => `${m.nome} ${m.bonus > 0 ? '+' : '−'}${Math.abs(m.bonus)}`).join(', ') });
+    e.regola += nota;
     const t = cartaDa(e, chi, 'attacco', a.nome, bersaglio, fonti.filter((f) => f.v === v).map((f) => f.motivo).join('; ') || null, privata);
     if (!e.riuscita) return { t, testo: testo('prove.fatto.attacco_set', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, esito: esitoInParole(e, true) }), esito: e };
-    const fatto = colpisci(t, a, sb, e.grado?.id === 'critico' || !!conEffetto(o.condizioni, bersaglio, 'critico_contro'), danno, situazioni.some((m) => m.danno === 'doppio'));
+    const fatto = colpisci(t, a, sb, e.grado?.id === 'critico' || !!conEffetto(o.condizioni, bersaglio, 'critico_contro'), danno, situazioni.some((m) => m.danno === 'doppio') || doppioAbilita);
     return { t, testo: testo('prove.fatto.attacco_set_colpito', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, esito: esitoInParole(e, true), danno: fatto }), esito: e };
   }
-  return { cheCosa, cartaDa, colpisci, attacca, bersaglioDiSalvezza, salvezzaDelBersaglio };
+  /**
+   * An attack's ammunition (`attacchi[].consuma`): the line that refuses it when the counter is at 0, or null (it can
+   * shoot: no ammunition needed, not tracked, or some left).
+   */
+  function munizioni(chi: string, idArma: string | null): string | null {
+    const sch = o.schede.get(chi);
+    const a = sch ? arma(sch, idArma) : null;
+    if (!a?.consuma || !o.poteri) return null;
+    const n = o.poteri.risorse.restanti(chi, a.consuma);
+    if (n === null || n > 0) return null;
+    o.log.info({ chi, arma: a.id, risorsa: a.consuma }, 'resources: out of ammunition, no attack');
+    return testo('prove.poteri.senza_munizioni', { nome: o.nome(chi), risorsa: (s.risorse ?? []).find((r) => r.id === a.consuma)?.nome.toLowerCase() ?? a.consuma, arma: a.nome });
+  }
+  return { cheCosa, cartaDa, colpisci, attacca, bersaglioDiSalvezza, salvezzaDelBersaglio, munizioni };
 }

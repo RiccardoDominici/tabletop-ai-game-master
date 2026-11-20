@@ -55,7 +55,8 @@ combattimento:
 
 ## 3. Flow (Engine: prove/combattimento.ts, prove/motore.ts)
 
-1. **Combat starts** when an attack roll touches a character with a sheet: a PC attacks an NPC, or an NPC reacts. Or with
+1. **Combat starts** when an attack roll touches a character with a sheet: a PC attacks an NPC, or an NPC reacts, or a PC
+   uses a hostile power of the set on an NPC (a damage spell; `poteri[].ostile`, docs/prove.md §10). Or with
    the Game Master's panel, «Inizia combattimento» (Start combat): at once with automatic rolls (the first turn after
    the click says the order and runs any NPC step at the head of it, before the actions written in that window, which
    wait for the next turn); with manual rolls at the next closed window,

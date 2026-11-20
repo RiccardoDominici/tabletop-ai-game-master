@@ -135,3 +135,56 @@ def test_scheda_con_tabella_non_scrive_il_proprio_bonus(tmp_path: Path) -> None:
     modifica(dest, "pg.yaml", lambda d: d["personaggi"][0]["scheda"].update(classe="guerriero", livello=1, abilita={"ts_veleno": 5}))
     esito, _ = valida(dest, rigoroso=True)
     assert any(v.codice == "REGOLE.classi" and "il Motore ignora il bonus della scheda" in v.messaggio for v in esito.errori)
+
+
+MAGIA = BX.parent / "magia"
+
+
+def test_set_magia_valido() -> None:
+    """The R1 fixture (powers, resources, class tables): a valid set and valid sheets."""
+    assert regole_di(MAGIA) == []
+
+
+def test_poteri_e_risorse_rotti(tmp_path: Path) -> None:
+    dest = copia(MAGIA, tmp_path)
+
+    def rompi(d: dict) -> None:
+        d["poteri"].append({"id": "p_x", "tipo": "incantesimo", "salvezza": {"abilita": "mischia"}, "effetti": []})
+        d["poteri"].append({"id": "p_y", "tipo": "teletrasporto", "bersaglio": "tutti", "livello": {"bardo": 1}, "effetti": [{"tipo": "cura", "dadi": "1d4"}]})
+        d["risorse"].append({"id": "frecce", "ricarica": "mai"})
+        d["risorse"].append({"id": "luna", "ricarica": "plenilunio"})
+        d["magia"] = {"preparazione": "a memoria"}
+        d["abilita"][2]["ripiego"] = "lotta"
+    modifica(dest, "regole/regole.yaml", rompi)
+    errori = " | ".join(regole_di(dest))
+    assert "poteri.p_x.livello: un incantesimo vuole {classe: livello}" in errori
+    assert "poteri.p_x.salvezza.abilita: un tiro salvezza del set" in errori
+    assert "poteri.p_x: effetti, oppure descrittivo: true" in errori
+    assert "poteri.p_y.tipo: incantesimo, oggetto, azione, pericolo" in errori and "poteri.p_y.bersaglio" in errori
+    assert "poteri.p_y.livello: «bardo» non è una classe del set" in errori
+    assert "risorse: id ripetuto «frecce»" in errori and "risorse[4]" in errori
+    assert "magia.preparazione: vanciana o slot" in errori
+    assert "abilita.furtivo.ripiego: «lotta» non è un'abilità del set" in errori
+
+
+def test_schede_con_poteri_e_risorse(tmp_path: Path) -> None:
+    """Sheet ids of the set, whole counts; a vancian caster with more copies than the day's slots of that level."""
+    dest = copia(MAGIA, tmp_path)
+
+    def rompi(d: dict) -> None:
+        maga = d["personaggi"][0]["scheda"]
+        maga["incantesimi"] = ["dardo_arcano", "sonno", "amicizia", "cura_ferite"]
+        bruno = d["personaggi"][1]["scheda"]
+        bruno["oggetti"] = {"pozione_cura": -1, "fasciare": 2}
+        sara = d["personaggi"][2]["scheda"]
+        sara["risorse"] = {"frecce": 2, "gemme": 3}
+        sara["attacchi"][2]["consuma"] = "dardi"
+        sara["dadi_vita"] = "tanti"
+    modifica(dest, "pg.yaml", rompi)
+    errori = " | ".join(regole_di(dest))
+    assert "scheda.incantesimi: 4 di 1° livello preparati, la classe ne dà 2 al giorno" in errori
+    assert "scheda.oggetti.pozione_cura: un intero da 0 in su" in errori
+    assert "scheda.oggetti: «fasciare» non è un oggetto (potere di tipo oggetto) del set" in errori
+    assert "scheda.risorse: «gemme» non è una risorsa del set" in errori
+    assert "attacchi[3].consuma: «dardi» non è una risorsa del set" in errori
+    assert "scheda.dadi_vita: un intero" in errori

@@ -29,6 +29,8 @@ personaggi:
       # Punteggi del manuale: il bonus lo dà la tabella del set (regole/regole.yaml, modificatore).
       caratteristiche: {forza: 16, intelligenza: 10, saggezza: 9, destrezza: 13, costituzione: 15, carisma: 11}
       # Guerriera di primo livello: salvezza 12, 13, 14, 15, 17. Porte bloccate: 3 su 6 con la Forza.
+      classe: guerriero
+      livello: 1
       abilita: {mischia: 1, distanza: 1, ts_morte: 5, ts_morte_destrezza: 5, ts_bacchette: 4, ts_paralisi: 3, ts_soffio: 2, ts_incantesimi: 0, forzare: 3}
       pf: 9                      # 1d8 al massimo, più 1 di Costituzione
       difesa: 17                 # cotta di maglia 15, scudo +1, Destrezza +1
@@ -59,6 +61,9 @@ personaggi:
       caratteristiche: {forza: 13, intelligenza: 9, saggezza: 15, destrezza: 8, costituzione: 14, carisma: 10}
       # Chierico di primo livello (11, 12, 14, 16, 15) con il bonus dei nani (+4, e +3 al soffio).
       # Occhio per la pietra: 2 su 6. Porte bloccate: 2 su 6 con la Forza.
+      # Il chierico lancia incantesimi dal secondo livello (p. 7): al primo non ne ha.
+      classe: chierico
+      livello: 1
       abilita: {mischia: 1, distanza: 1, ts_morte: 10, ts_morte_destrezza: 10, ts_bacchette: 9, ts_paralisi: 7, ts_soffio: 4, ts_incantesimi: 6, forzare: 2, pietra: 2}
       pf: 7                      # 1d6 al massimo, più 1 di Costituzione
       difesa: 15                 # cotta di maglia 15, scudo +1, Destrezza −1
@@ -92,13 +97,16 @@ personaggi:
       # Abilità del ladro in percentuale; nascondersi al chiuso come halfling (70%).
       # Distanza: +1 degli halfling. Attacco furtivo: +4. Il +1 degli halfling all'iniziativa lo schema non lo porta
       # (l'iniziativa somma solo la Destrezza).
+      classe: ladro
+      livello: 1
       abilita: {mischia: 1, distanza: 2, alle_spalle: 5, ts_morte: 8, ts_morte_destrezza: 8, ts_bacchette: 7, ts_paralisi: 8, ts_soffio: 4, ts_incantesimi: 6,
                 scassinare: 25, trappole: 20, borseggiare: 30, muoversi_in_silenzio: 25, scalare: 80, nascondersi: 70, ascoltare: 30}
       pf: 5                      # 1d4 al massimo, più 1 di Costituzione
       difesa: 15                 # armatura di cuoio 13, Destrezza +2
       attacchi:
         - {nome: "Spada corta", danno: "1d6", abilita: mischia}
-        - {nome: "Spada corta alle spalle", danno: "2d6", abilita: alle_spalle}
+        # Danno doppio dell'attacco furtivo: lo raddoppia il Motore (il tiro dell'arma per due, p. 9).
+        - {nome: "Spada corta alle spalle", danno: "1d6", abilita: alle_spalle}
         - {nome: "Fionda", danno: "1d4", abilita: distanza, distanza: true}
 
   - id: pg_eliandro
@@ -123,11 +131,14 @@ personaggi:
       # Punteggi del manuale: il bonus lo dà la tabella del set (regole/regole.yaml, modificatore).
       caratteristiche: {forza: 10, intelligenza: 16, saggezza: 12, destrezza: 14, costituzione: 12, carisma: 9}
       # Mago di primo livello (13, 14, 13, 16, 15) con il bonus degli elfi (+2 bacchette e incantesimi, +1 paralisi).
-      # Porte segrete: 3 su 6 (elfo con Intelligenza 15 o più). Dardo incantato: colpisce sempre (automatico).
+      # Porte segrete: 3 su 6 (elfo con Intelligenza 15 o più). Dardo incantato: un potere del set (regole.yaml).
+      # Un posto di primo livello al giorno (p. 8): prepara il dardo incantato. Leggere il magico lo conosce (è nel libro).
+      classe: mago
+      livello: 1
+      incantesimi: [dardo_incantato]
       abilita: {mischia: 1, distanza: 1, ts_morte: 4, ts_morte_destrezza: 4, ts_bacchette: 5, ts_paralisi: 5, ts_soffio: 1, ts_incantesimi: 4, cercare: 3}
       pf: 4                      # 1d4 al massimo
       difesa: 12                 # senza armatura 11, Destrezza +1
       attacchi:
         - {nome: "Pugnale", danno: "1d4", abilita: mischia}
         - {nome: "Pugnale lanciato", danno: "1d4", abilita: distanza, distanza: true}
-        - {nome: "Dardo incantato", danno: "1d6+1", abilita: dardo_incantato, distanza: true, automatico: true}

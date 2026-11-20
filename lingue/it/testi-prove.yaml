@@ -107,6 +107,24 @@ prove:
     morte: "{nome} muore: {fonte}."
     stabilizzato: "{fonte}: {nome} è fasciato e stabile a zero punti ferita; non combatte né lancia incantesimi finché non torna sopra zero."
     non_serve_stabilizzare: "{fonte}: {nome} non sta morendo, non serve."
+  # Powers of the set (prove/poteri.ts): spells, items, class actions.
+  poteri:
+    usa: "{nome} usa {potere}{costo}."
+    costo_incantesimo: " (incantesimo di {livello}° livello: gliene restano {restanti} di quel livello per oggi)"
+    costo_incantesimo_senza_slot: " (incantesimo di {livello}° livello)"
+    costo_oggetto: " (ne restano {restanti})"
+    rifiuto_classe: "{nome} non può lanciare {potere}: non è un incantesimo della sua classe. Nessun incantesimo parte, e ciò che voleva non succede."
+    rifiuto_non_preparato: "{nome} non ha {potere} tra gli incantesimi preparati per oggi: nessun incantesimo parte, e ciò che voleva non succede."
+    rifiuto_senza_slot: "{nome} ha già lanciato tutti gli incantesimi di {livello}° livello di oggi: {potere} non parte, e ciò che voleva non succede. Tornano col riposo."
+    rifiuto_oggetto: "{nome} non ha più {potere}: non succede niente."
+    pericolo: "{potere} non è una cosa che {nome} può usare: nessun effetto."
+    immune: "{potere} non ha effetto su {bersaglio}."
+    troppo_forte: "{bersaglio} è troppo potente per {potere}: non ne è toccato."
+    nessun_bersaglio: "{potere} non trova un bersaglio adatto: non succede niente."
+    resiste: "{bersaglio} resiste a {potere} (tiro salvezza riuscito): nessun effetto."
+    descrittivo: "Effetto di {potere} su {bersagli}: raccontalo come lo descrive il manuale, il Motore non lo misura."
+    senza_munizioni: "{nome} non ha più {risorsa} per {arma}: nessun attacco."
+    una_volta: " ({abilita} già usato contro {bersaglio} in questo scontro: attacco normale)"
   # Saving throws pinned to their own number (regole/salvezze.ts).
   salvezze:
     tiro_salvezza: "tiro salvezza"
@@ -115,6 +133,7 @@ prove:
     fatto: "Riposo ({riposo}): {elenco}."
     pg: "{nome} recupera {n} {danni} ({attuali} su {massimi})"
     nessuno: "nessuno recupera punti ferita"
+    ricarica: "Gli incantesimi e le risorse del riposo tornano."
   # Il perché di un vantaggio o di uno svantaggio, sulla carta.
   motivo:
     annullati: "vantaggio e svantaggio si annullano"
@@ -177,6 +196,7 @@ prove:
     intro: "Sei l'arbitro delle prove di una partita di gioco di ruolo dal vivo, in italiano, con le regole del manuale «{nome}». I giocatori scrivono cosa fanno i loro personaggi (PG). Per ogni azione decidi se serve un tiro e quale, con il vocabolario di questo manuale. Non narri e non tiri i dadi: lo fa il programma. Rispondi solo con il JSON richiesto."
     regola_oro: "Regola d'oro: si tira solo quando l'esito è incerto E il fallimento conta. Azioni banali o sicure (parlare, chiedere, guardarsi intorno, camminare): «nessuna». Ciò che non può riuscire come scritto: «impossibile», con il motivo in una frase. Un PG che aiuta l'azione di un altro: «aiuto», con l'id di quell'azione in «aiuta». Colpire una creatura: «attacco», con bersaglio e arma della scheda. Tutto il resto che è incerto e rischioso: «prova»."
     mosse: "Mosse del manuale: se l'azione è una di queste, metti il suo id in «mossa» (la statistica la sa il programma):\n{mosse}"
+    poteri: "Poteri del manuale (incantesimi, oggetti, azioni di classe): se l'azione ne usa uno, «potere» con il suo id in «potere» e il bersaglio se l'azione lo nomina (quanti ne restano e che cosa fanno lo sa il programma):\n{poteri}"
     prova: "Per una «prova» senza mossa scegli l'abilità o, se nessuna va bene, la caratteristica.\n- Caratteristiche: {caratteristiche}\n- Abilità: {abilita}\n- Difficoltà: {difficolta} (nel dubbio {predefinita})"
     sociale: "Prove sociali nel manuale: {nota}"
     vantaggio: "Vantaggio o svantaggio: solo per una circostanza chiara scritta nell'azione o nella narrazione; «motivo» in poche parole, senza segreti. Altrimenti «nessuno» e motivo vuoto."

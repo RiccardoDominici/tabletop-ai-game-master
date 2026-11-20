@@ -1,0 +1,24 @@
+# Invented fixture for the rules-engine work R1 (docs/regole.md §2: typed effects, powers, resources, saves, traits,
+# death): a cellar with three bandits, a skeleton, a pit and a dart trap. Generic: no campaign's content.
+id: magia
+canone:
+- id: f_cantina
+  noto_ai_pg: true
+  testo: La cantina dei briganti ha una botola sul fondo e un corridoio col pavimento che suona vuoto.
+- id: f_bottino
+  noto_ai_pg: false
+  testo: Il bottino dei briganti è nascosto dietro una botte.
+orologi:
+- id: o_ronda
+  nome: La ronda dei briganti
+  segmenti: 4
+  segno_almeno_ogni: 3
+  pieni_all_inizio: 0
+  segni:
+  - Passi sopra la botola.
+  - Una voce chiama il capo.
+  - La botola cigola.
+  - Scendono in tre.
+  al_completo: Arriva la ronda.
+sessione:
+  riassunto_iniziale: Siete scesi nella cantina dei briganti.

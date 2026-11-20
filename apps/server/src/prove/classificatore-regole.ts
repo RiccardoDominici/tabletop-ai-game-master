@@ -85,6 +85,12 @@ export interface IngressoClassificatore {
    * così trovato per parole chiave non è una prova: gli attacchi li decide il gesto d'attacco (passo 1).
    */
   attacchiPer?: ReadonlySet<string>;
+  /**
+   * A manual's set with powers (regole/poteri.ts): the powers a PC can call by name — the spells on its sheet (spent
+   * ones too, so the Engine refuses them with a clear line), its items, the class actions anyone has — with the words
+   * that call each (its `parole` and its name). Absent = no powers.
+   */
+  poteriDi?: (autore: string) => ReadonlyArray<{ id: string; parole: readonly string[] }>;
 }
 
 function vuota(id: string): DecisioneProva & { mossa: string | null } {
@@ -182,7 +188,11 @@ export function attaccoDiRegole(az: { id: string; testo: string; autore: string 
   // A named NPC with a sheet, or else a minion of the scene named by its type's words (C5: «colpisco la sentinella»).
   const bersaglioDi = (testo: string): string | null => [...pngNominati(testo, nomi)].find((id) => id !== az.autore && i.haScheda(id)) ?? i.gregario?.(testo) ?? null;
   const nominato = bersaglioDi(fatti);
-  const arma = armi.find((a) => armaUsata(fatti, [a])) ?? null;
+  // The weapon used whose name the action says most fully: «la spada corta alle spalle» is the sneak attack's line,
+  // not the plain «spada corta» that comes first on the sheet.
+  const parole = paroleDi(fatti);
+  const quante = (a: string): number => paroleDi(a).filter((w) => parole.includes(w)).length;
+  const arma = armi.filter((a) => armaUsata(fatti, [a])).sort((x, y) => quante(y) - quante(x))[0] ?? null;
   const attacco = (bersaglio: string, conArma: string | null): DecisioneProva => ({ ...vuota(az.id), tipo: 'attacco', bersaglio, arma: conArma }) as DecisioneProva;
   // The first-person words count with a named target only in a fight: «Tiro ancora la corda verso Ruggero» outside one
   // is no attack (attacco_mio has «tiro ancora»), and an attack would open a fight.
@@ -204,6 +214,27 @@ export function attaccoDiRegole(az: { id: string; testo: string; autore: string 
   return bersaglio ? attacco(bersaglio, arma) : null;
 }
 
+/**
+ * Step 0 (a manual's set with powers): a power of the PC named in what it does («lancio il dardo incantato contro il
+ * goblin», «bevo la pozione», «fascio le ferite di Livia»), by one of its words, whole. Its target: an NPC with a sheet
+ * named there, or a PC named there; none = the power's own data decides (prove/poteri.ts). Deterministic: the Engine
+ * applies it after ANY arbiter, before the attack step, so a spell is never rolled as an unlimited weapon. Two powers
+ * named at once → nothing (in doubt, no roll). null = no power named.
+ */
+export function potereDiRegole(az: { id: string; testo: string; autore: string }, i: IngressoClassificatore): DecisioneRegole | null {
+  const poteri = i.poteriDi?.(az.autore) ?? [];
+  if (!poteri.length) return null;
+  const fatti = senzaParlato(az.testo);
+  const parole = paroleDi(fatti);
+  const nominati = poteri.filter((p) => p.parole.some((v) => haVoce(parole, v)));
+  if (nominati.length !== 1) return null;
+  const nomi = nomiDeiPng(i.campagna);
+  const png = [...pngNominati(fatti, nomi)].find((id) => id !== az.autore && i.haScheda(id)) ?? i.gregario?.(fatti) ?? null;
+  const t = normalizza(fatti);
+  const pgNominato = i.campagna.pg.find((p) => p.id !== az.autore && [p.nome, p.nome.split(/\s+/)[0] ?? ''].map(normalizza).some((n) => n.length > 2 && new RegExp(`\\b${n}\\b`).test(t)))?.id ?? null;
+  return { ...vuota(az.id), tipo: 'potere', potere: nominati[0]!.id, bersaglio: png ?? pgNominato } as DecisioneRegole;
+}
+
 export function classificaARegole(az: { id: string; testo: string; autore: string }, i: IngressoClassificatore): DecisioneProva | DecisioneRegole {
   const d = vuota(az.id);
   // Ciò che il PG fa, senza il parlato; il testo intero vale solo per le prove sociali.
@@ -220,6 +251,9 @@ export function classificaARegole(az: { id: string; testo: string; autore: strin
   const socialeVerso = (p: string | null, parolaNeiFatti: boolean): boolean => !!p && !soloChiede && (rivolti.has(p) || parolaNeiFatti);
   const s = i.regole?.sistema ?? null;
 
+  // 0. A power of the PC named in what it does (a manual's set with powers): before the attack step.
+  const potere = potereDiRegole(az, i);
+  if (potere) return potere;
   // 1. Attacco: un verbo d'attacco o un'arma usata, contro chi ha una scheda ed è nominato in ciò che fa.
   const attacco = attaccoDiRegole(az, i);
   if (attacco) return attacco;

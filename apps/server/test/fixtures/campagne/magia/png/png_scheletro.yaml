@@ -1,0 +1,36 @@
+id: png_scheletro
+nome: Lo scheletro incatenato
+pronuncia: Lo schelètro incatenàto
+alias: [scheletro]
+livello: supporto
+ruolo: scheletro animato incatenato al muro
+aspetto:
+  lettura: Uno scheletro con una catena al collo e le orbite vuote.
+  invarianti: [catena al collo, orbite vuote]
+personalita:
+  superficie: [muto]
+  sotto_pressione: [scatta]
+  contraddizione: Sembra morto ma si muove.
+desiderio: Liberarsi dalla catena.
+voce:
+  tts: {voce_id: dario}
+  registro: tu
+  stile: Non parla.
+  battuta_campione: …
+sa: []
+non_sa: [f_bottino]
+atteggiamento_pg:
+  pg_ilaria: {stato: ostile, perche: vivi, vuole: niente}
+  pg_bruno: {stato: ostile, perche: vivi, vuole: niente}
+  pg_sara: {stato: ostile, perche: vivi, vuole: niente}
+scheda:
+  caratteristiche: {forza: 10, destrezza: 10, costituzione: 10, intelligenza: 3, saggezza: 3}
+  dadi_vita: 1
+  tipo: [non_morto]
+  immune: [amicizia]
+  salva_come: {classe: guerriero, livello: 1}
+  pf: 6
+  difesa: 13
+  morale: 12
+  attacchi:
+  - {nome: Artigli, danno: "1d6", abilita: mischia}

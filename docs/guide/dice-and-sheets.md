@@ -140,7 +140,7 @@ Without a model (the default referee), the program starts from medium (or your r
 - An NPC who is down, dead or has fled no longer speaks or acts: its prepared lines are set aside, its improvised lines are dropped, the projector stops showing it among those present, and the narrator is told («non parla né agisce», meaning: does not speak or act). Fled NPCs can turn up again in a later scene; dead ones stay dead unless the Game Master gives them hit points back in the panel.
 - If the whole party falls in a fight, the death saves are rolled to the end, then the narrator says what happens to the defeated (the campaign's prepared ending for that scene, or a short closing sentence) and the table pauses: you, as Game Master, choose how to go on (another scene, healing, or the end of the evening).
 - The table always hears the hits, the falls, the flights and the death saves. If the narration leaves one out (the Engine looks for the character's name and a word for that fact), the Engine adds a short narrator line, such as «Corrado cade a terra.» (Corrado falls to the ground.) or «Ruggero incassa il colpo.» (Ruggero takes the blow.). The lines come from the language pack (`lingue/<code>/testi-prove.yaml`, `prove.dovuti`), and the server log says «prove: fatti dello scontro non detti dalla narrazione, li dice il Motore».
-- A player's character has one action per turn. Bonus actions, multiple attacks and spells are described, not resolved.
+- A player's character has one action per turn. Bonus actions and multiple attacks are described, not resolved. Spells are resolved when the campaign's rule set has them as data (`poteri`, see [Your rules manual](your-rules-manual.md#4-what-gets-created)): the program spends the spell, rolls its dice and the targets' saves, and refuses it once the day's slots are gone; with the SRD 5.2 they are still described.
 
 **At 0 HP.**
 - An NPC dies or is knocked out, according to its rule set (SRD: it dies).
@@ -320,7 +320,7 @@ This checks the `nozze-neve` campaign. It finishes with no errors if everything 
 From `docs/prove.md`, §7:
 - combat with movement and distances, opportunity attacks, several attacks or spells in one turn: see [Combat](#combat);
 - conditions from the narrator: only the Engine (at 0 HP) and the Game Master set them;
-- HP are set by hand in the panel's Combat section (see [The Game Master panel](master-panel.md));
+- HP change by attacks, by the rule set's spells, potions and traps, by a rest or a hazard from the panel, and by hand in the panel's Combat section (see [The Game Master panel](master-panel.md)); the SRD 5.2 has no spells as data yet;
 - an NPC's attitude that changes during the story: the advantage does not follow it yet.
 
 ## A rule set different from the SRD

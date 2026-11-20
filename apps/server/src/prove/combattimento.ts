@@ -136,6 +136,11 @@ export class GestoreCombattimento {
     return this.d.regole.condizioni.find((c) => c.id === id);
   }
 
+  /** The combatants of a side still standing in the fight (in play, above 0): the reach of a power on «nemici». */
+  inPiedi(lato: Lato): string[] {
+    return (this.s?.partecipanti ?? []).filter((p) => p.lato === lato && p.esito === 'in_gioco' && !this.d.stato.aTerra(p.id)).map((p) => p.id);
+  }
+
   /** Condizioni attive di un personaggio, per i resolver (prove/condizioni.ts). */
   condizioniDi(id: string): Array<{ nome: string; effetti: Effetto[] }> {
     const p = this.part(id);

@@ -37,7 +37,7 @@ import { proveScenaRegole, risolviTurnoRegole } from './risolutore-regole';
 import { regolePerNarratore } from '../regole/narratore';
 import { etichettaProva, etichettaSalvezza, regolaEsiti } from './testi';
 import { GestoreCombattimento } from './combattimento';
-import { attaccoDiRegole, classificaARegole, provaSocialeSrd, type IngressoClassificatore } from './classificatore-regole';
+import { attaccoDiRegole, classificaARegole, potereDiRegole, provaSocialeSrd, type IngressoClassificatore } from './classificatore-regole';
 import { vagliaImpossibile, vincoliPubblici } from './impossibile';
 import { combattimentoSrd, type Combattimento, type Fase } from '../regole/combattimento';
 import { strumentiRegole } from './risolutore-regole';
@@ -48,6 +48,7 @@ import { modCaratteristica } from '../campagna/schede';
 import type { CombattimentoMaster, CombattimentoPubblico, RichiestaTiroMaster } from '@tabletop-ai-gm/shared';
 import { applicaEffetti, type ContestoEffetti } from './effetti';
 import { riposa } from './riposo';
+import { Risorse } from './risorse';
 import { sistemaSrd } from '../regole/srd';
 import { leggiEffetto } from '../regole/effetti';
 import type { SistemaRegole } from '../regole/tipi';
@@ -176,10 +177,13 @@ export class MotoreProve {
    * the narrator hears them in the next resolved turn, first. Kept in the snapshot.
    */
   private fattiInSospeso: string[] = [];
+  /** The characters' resources of a manual's set (prove/risorse.ts): spell slots, prepared spells, items, ammunition. */
+  private readonly risorse: Risorse | null;
 
   constructor(private readonly o: OpzioniMotoreProve) {
     this.gregari = new Map((o.gregari ?? []).map((g) => [g.id, g]));
     this.stato = new StatoProve(this.generico ? this.generico.schede : o.schede);
+    this.risorse = this.generico ? new Risorse(this.generico.regole.sistema, this.generico.schede) : null;
     this.dadi = o.dadi ?? this.nuoviDadi(o.seme);
     this.combattimento = new GestoreCombattimento({
       regole: this.regoleCombattimento(),
@@ -432,8 +436,20 @@ export class MotoreProve {
     // qualunque cosa abbia detto l'arbitro: passo deterministico prima di tutti gli arbitri.
     if (this.attivo) {
       const ing = this.ingressoClassificatore(c, azioni);
+      // A power of the PC named in what it does is a power, whatever the arbiter said (a spell rolled as a weapon would
+      // be unlimited: audit row C-SP-01). Before the attack override below.
+      if (ing.poteriDi) {
+        for (const a of azioni) {
+          const d = decisioni.get(a.id);
+          const pot = potereDiRegole(a, ing);
+          if (!pot || (d?.tipo === 'potere' && (d as DecisioneRegole).potere === pot.potere)) continue;
+          decisioni.set(a.id, d?.tipo === 'potere' ? { ...pot, bersaglio: d.bersaglio ?? pot.bersaglio } : pot);
+          this.o.log.warn({ turno, azione: a.id, arbitro: d?.tipo ?? null, potere: pot.potere, bersaglio: pot.bersaglio }, 'powers: a power named in the action, decided by the rules instead of the arbiter');
+        }
+      }
       for (const a of azioni) {
         const d = decisioni.get(a.id);
+        if (d?.tipo === 'potere') continue;
         // An arbiter's attack on a target with a sheet stands; one on nobody known (an invented «sentinella») gets the
         // rules' target, a minion of the scene included (C5).
         if (d?.tipo === 'attacco' && d.bersaglio && ing.haScheda(d.bersaglio)) continue;
@@ -681,13 +697,16 @@ export class MotoreProve {
         this.fattiInSospeso = [];
       }
       // Combattimento: si entra con un attacco; poi i turni dei PNG e i tiri contro la morte fino al prossimo PG.
-      const attacchi = r.tiri.filter((t) => t.tipo === 'attacco' && t.bersaglio).map((t) => ({ chi: t.chi, bersaglio: t.bersaglio!.id }));
+      // A hostile power on an NPC counts as an attack: it opens the fight and the NPC goes for its author.
+      const attacchi = [...r.tiri.filter((t) => t.tipo === 'attacco' && t.bersaglio).map((t) => ({ chi: t.chi, bersaglio: t.bersaglio!.id })), ...(r.ostili ?? [])];
       // Each PC's last target: an attack with no target named goes there (bersaglioImplicito).
       for (const a of attacchi) if (c.campagna.pg.some((p) => p.id === a.chi)) this.ultimoBersaglio.set(a.chi, a.bersaglio);
       // A check the Game Master asked (pseudo-action «m_…») is not the PC's action in the fight: it does not move whose turn it is.
       const comb = this.combattimento.dopoAzioni({ turno, attacchi, autori: azioni.filter((a) => !a.id.startsWith('m_')).map((a) => a.autore), candidati: () => this.candidati(c, attacchi), apri: this.scontroChiesto });
       // The panel's fight started in this pass (the real one, or the dry run on its copy): the request is used up.
       if (this.combattimento.attivo) this.scontroChiesto = false;
+      // The fight ended: the once-per-target uses and the per-fight resources come back.
+      if (comb.finito) this.risorse?.ricarica('scontro');
       r.fatti.push(...comb.fatti);
       r.tiri.push(...comb.tiri);
       this.intestazione = comb.intestazione;
@@ -765,8 +784,21 @@ export class MotoreProve {
       condizioni: (id) => this.combattimento.condizioniDi(id),
       turni: { regole: this.regoleCombattimento().iniziativa.tipo !== 'nessuna', inCorso: this.combattimento.aTurni },
       effetti: this.contestoEffetti(turno, c),
+      ...(this.risorse ? { poteri: { risorse: this.risorse, nemici: (autore: string) => this.nemiciDi(c, autore), alleati: () => c.pgAlTavolo.filter((id) => g.schede.has(id)) } } : {}),
       log: this.o.log.child({ turno }),
     };
+  }
+
+  /**
+   * The enemies a PC's power can reach now (prove/poteri.ts): in a fight, the NPCs standing in it; outside one, the NPCs
+   * with a sheet in the scene who are hostile to that PC, and the scene's minions.
+   */
+  private nemiciDi(c: ContestoProve, autore: string): string[] {
+    const ha = (id: string): boolean => (this.generico ? this.generico.schede.has(id) : this.o.schede.has(id));
+    if (this.combattimento.attivo) return this.combattimento.inPiedi('png');
+    const presenti = c.presenti ?? new Set(c.campagna.scena.png_presenti);
+    const ostili = [...presenti].filter((id) => ha(id) && !this.stato.fuoriGioco(id) && this.atteggiamento(c.campagna, id, autore) === 'ostile');
+    return [...ostili, ...this.gregariInScena(c).map((x) => x.id).filter((id) => ha(id) && !this.stato.fuoriGioco(id))];
   }
 
   /** The rule set in use: the campaign's, or the SRD 5.2 of the code (its falls, its rest). */
@@ -814,8 +846,12 @@ export class MotoreProve {
     const c = this.o.contesto();
     const ids = [...(this.generico ? this.generico.schede.keys() : this.o.schede.keys())];
     const e = riposa(r, ids, { stato: this.stato, dadi: this.dadi, nome: (x) => this.nomeDi(c, x), danni: this.sistema.danni.nome, dopoCura: (x) => this.combattimento.dopoCura(x), log: this.o.log.child({ modulo: 'riposo' }) });
-    this.fattiInSospeso.push(e.fatto);
-    return { ok: true, fatto: e.fatto };
+    // A rest that refreshes: spell slots, prepared spells and the resources that come back with rest (prove/risorse.ts).
+    const ricaricati = r.ricarica && this.risorse ? this.risorse.ricarica('riposo') : [];
+    const fatto = ricaricati.length ? `${e.fatto} ${testo('prove.riposo.ricarica')}` : e.fatto;
+    if (ricaricati.length) this.o.log.info({ riposo: r.id }, 'rest: resources and spells refreshed');
+    this.fattiInSospeso.push(fatto);
+    return { ok: true, fatto };
   }
 
   /**
@@ -876,7 +912,9 @@ export class MotoreProve {
     const armi = (g ? g.schede.get(png)?.attacchi : this.o.schede.get(png)?.attacchi) ?? null;
     if (!armi) return null;
     // B/X: nella fase dei proiettili solo chi ha un'arma a distanza, in mischia solo le armi da mischia.
-    const adatte = armi.filter((a) => (fase.png === 'attacco_distanza' ? a.distanza : fase.png === 'attacco_mischia' ? !a.distanza : true));
+    // A weapon out of ammunition (`consuma`, prove/risorse.ts) is not used: the NPC takes the next one that fits.
+    const conMunizioni = (a: (typeof armi)[number]): boolean => !('consuma' in a) || !a.consuma || !this.risorse || (this.risorse.restanti(png, a.consuma) ?? 1) > 0;
+    const adatte = armi.filter((a) => (fase.png === 'attacco_distanza' ? a.distanza : fase.png === 'attacco_mischia' ? !a.distanza : true) && conMunizioni(a));
     if (fase.png !== 'attacco' && !adatte.length) return null;
     if (g) return strumentiRegole(this.opzioniRegole(turno, c, g)).attacca(png, pg, adatte[0]?.id ?? null, [], false);
     return attaccoPngSrd(this.opzioniSrd(turno, c), png, pg, false, adatte[0]?.id ?? null);
@@ -929,8 +967,10 @@ export class MotoreProve {
     // caratteristiche: «Forza» serve anche a spingere un masso.
     const attacchiPer = new Set(g ? [...g.schede.values()].flatMap((sch) => sch.attacchi.flatMap((a) => (a.abilita ? [a.abilita] : []))) : []);
     const sociale = g?.regole.sistema.sociale;
+    const poteri = g?.regole.sistema.poteri ?? [];
     return {
       ...(g ? { attacchiPer } : {}),
+      ...(poteri.length ? { poteriDi: (pg: string) => this.poteriDi(pg) } : {}),
       campagna: c.campagna,
       regole: g ? g.regole : null,
       armi: (id) => (g ? g.schede.get(id)?.attacchi : this.o.schede.get(id)?.attacchi)?.map((a) => a.id) ?? [],
@@ -953,6 +993,19 @@ export class MotoreProve {
       // What the scene says about the conditions (prove/difficolta.ts): the last narration and the scene's description.
       scena: [...frasiDi(c.narrazione), ...frasiDi(typeof c.campagna.scena.dati['descrizione'] === 'string' ? c.campagna.scena.dati['descrizione'] : '')],
     };
+  }
+
+  /**
+   * The powers a PC can call by name (prove/classificatore-regole.ts, potereDiRegole): the spells on its sheet, its items,
+   * and the set's class actions; each with its own words (the power's `parole` and its name). Not the words of the
+   * manual's passages: «lancio» or «magia» there would turn a thrown dagger into a spell.
+   */
+  private poteriDi(pg: string): Array<{ id: string; parole: string[] }> {
+    const g = this.generico;
+    const sch = g?.schede.get(pg);
+    if (!g || !sch) return [];
+    const suoi = (g.regole.sistema.poteri ?? []).filter((p) => (p.tipo === 'incantesimo' && (sch.incantesimi ?? []).includes(p.id)) || (p.tipo === 'oggetto' && (sch.oggetti?.[p.id] ?? 0) > 0) || p.tipo === 'azione');
+    return suoi.map((p) => ({ id: p.id, parole: [...p.parole, p.nome] }));
   }
 
   get inCombattimento(): boolean {
@@ -1009,6 +1062,7 @@ export class MotoreProve {
     }
     if (!this.combattimento.attivo) return false;
     this.combattimento.termina(motivo);
+    this.risorse?.ricarica('scontro');
     this.intestazione = null;
     return true;
   }
@@ -1088,7 +1142,7 @@ export class MotoreProve {
   // ------------------------------------------------------------------ sessione
 
   esporta(): StatoProveSalvato {
-    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}) };
+    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}) };
   }
 
   importa(s: StatoProveSalvato): void {
@@ -1096,6 +1150,7 @@ export class MotoreProve {
     this.combattimento.importa(s.combattimento ?? null);
     this.scontroChiesto = s.combattimento_chiesto === true;
     this.fattiInSospeso = Array.isArray(s.fatti_in_sospeso) ? s.fatti_in_sospeso.filter((x): x is string => typeof x === 'string') : [];
+    this.risorse?.importa(s.risorse);
     if (!this.o.dadi && s.seme && /^[0-9a-f]{8,128}$/i.test(s.seme)) this.dadi = this.nuoviDadi(s.seme, s.contatore ?? 0);
     const ultimo = s.recenti?.at(-1)?.turno;
     this.ultimoTurno = ultimo !== undefined ? { turno: ultimo, tiri: (s.recenti ?? []).filter((t) => t.turno === ultimo) } : null;
@@ -1108,6 +1163,7 @@ export class MotoreProve {
     this.combattimento.importa(null);
     this.scontroChiesto = false;
     this.fattiInSospeso = [];
+    this.risorse?.azzera();
     this.intestazione = null;
     this.cache.clear();
     this.ultimi.clear();

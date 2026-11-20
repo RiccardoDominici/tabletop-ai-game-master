@@ -65,6 +65,10 @@ The set can keep the manual's numbers as they are, instead of converting them (t
 - a weapon that always hits (`automatico: true` on the sheet's weapon);
 - situational attack modifiers (`modificatori`): from behind, a charge, short or long range, each with the words of a player's action that make it apply («alle spalle», «carico», «da lontano»), the kind of attack, and the weapon it needs (a charge needs a spear). The program knows no positions: the player's words decide, and an NPC's attack never gets one;
 - what a natural 20 or 1 does on a d20, and on which rolls (`critici`: attacks only, attacks and saving throws, or every roll; the saving throws are the skills marked `salvezza: true`), critical and minimum damage, the extras of a death save, initiative rolled again every round, and ties acting at the same moment (`pari: simultanei`).
+- **spells, potions and class actions as data** (`poteri`): what each one does, from a closed list of effects (damage, healing, a condition for some rounds, a bonus to AC, attacks or saves, an immunity, a fall, a trap's attack, binding a dying character, save or die), who it reaches (oneself, one target, every enemy within a hit-dice limit, the allies), and the target's own saving throw (it negates, or halves the damage). The program spends what it costs and refuses it once it is gone, with a clear line for the narrator: a spell needs a prepared copy and a slot of its level (`classi[].incantesimi_al_giorno`, the manual's spells-per-day table, and `magia: {preparazione: vanciana}` for Basic Fantasy), an item is taken off the sheet (`oggetti`). Spells and slots come back with the rest you give from the panel ([the Game Master panel](master-panel.md#combat));
+- **resources** (`risorse`): arrows, coins, any counter of the manual, with what refreshes it (never, a rest, the end of a fight); a weapon line with `consuma: frecce` spends one arrow a shot and is refused with none left;
+- **saving throws by the manual's table**: the save categories (`tiri_salvezza.colonne`) and each class's rows by level (`classi[].tiri_salvezza`); the sheet names its class and level (`classe`, `livello`), a monster its «save as» (`salva_come`). A save is always rolled against its own number, never moved by a difficulty or by the referee's advantage;
+- an attack ability's extras (`danno: doppio`, `una_volta_per_bersaglio`, `ripiego`): Basic Fantasy's sneak attack deals double damage and only once per opponent in a fight, then the thief attacks normally.
 
 Where the set says nothing, the SRD 5.2 values apply.
 
@@ -102,6 +106,7 @@ The campaign `campagne/torre-mozza` («La chiave della Torre Mozza», a one-shot
 
 - `campagne/torre-mozza/regole/regole.yaml`: the structure, with comments on how each rule of the manual was translated (the ability table, percentile and «x in 6» rolls, natural 20 and 1 on attacks);
 - `campagne/torre-mozza/regole/riassunto.md` and `estratti/`: what the players read and the passages for «Chiedi una regola».
+- the magic-user's spells are counted: Eliandro prepares *magic missile* (`dardo_incantato`, a power of the set) in his one first-level slot of the day; cast once, it is refused until the party rests («Riposo: Una notte di sonno» in the panel). Nespola's sneak attack is once per opponent per fight, with double damage.
 
 The manual itself is not in the repository: it would go in `manuali/basic-fantasy-rpg-r142.pdf`. To play the campaign you do not need it:
 

@@ -46,7 +46,10 @@ export function punteggiSet(testo: string, r: RegoleCampagna): Array<[string, nu
     if (n) punti.set(id, (punti.get(id) ?? 0) + n * peso);
   };
   for (const [id, voci] of Object.entries(s.paroleChiave)) conta(id, voci, 2);
-  for (const e of r.estratti) if (e.per) conta(e.per, e.parole, 1);
+  // A passage tagged with a power (`per: <potere>`) calls that power (prove/classificatore-regole.ts, potereDiRegole),
+  // never a check: only the set's skills, moves and characteristics score here.
+  const ids = new Set([...s.abilita.map((a) => a.id), ...s.mosse.map((m) => m.id), ...s.caratteristiche.map((c) => c.id)]);
+  for (const e of r.estratti) if (e.per && ids.has(e.per)) conta(e.per, e.parole, 1);
   for (const m of s.mosse) if (inComune(testo, `${m.nome} ${m.quando}`) >= 2) punti.set(m.id, (punti.get(m.id) ?? 0) + 1);
   return [...punti].sort((x, y) => y[1] - x[1]);
 }

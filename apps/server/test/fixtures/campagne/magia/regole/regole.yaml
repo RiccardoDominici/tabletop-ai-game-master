@@ -1,0 +1,166 @@
+# Invented rule set of the R1 fixture (docs/regole.md §2): an old-school d20 game written for the tests, with every
+# piece of the rules-engine work — save tables by class and level, spells per day, powers as typed effects, resources,
+# race traits, death and dying. The numbers are invented: a test against a manual's numbers uses that manual's set.
+id: magia-prova
+nome: Vecchia scuola con la magia (set di prova)
+fonte:
+  titolo: Set di prova di Tabletop AI Game Master, scritto per i test
+  autore: Tabletop AI Game Master
+licenza:
+  nome: CC0
+  libera: true
+risoluzione:
+  tipo: d20_cd
+  dado: 20
+  critico: 20
+  disastro: 1
+  critici: attacchi_e_salvezze
+caratteristiche:
+  - {id: forza, nome: Forza}
+  - {id: destrezza, nome: Destrezza}
+  - {id: costituzione, nome: Costituzione}
+  - {id: intelligenza, nome: Intelligenza}
+  - {id: saggezza, nome: Saggezza}
+modificatore:
+  tipo: tabella
+  tabella:
+    - {da: 3, mod: -2}
+    - {da: 7, mod: -1}
+    - {da: 9, mod: 0}
+    - {da: 13, mod: 1}
+    - {da: 17, mod: 2}
+abilita:
+  - {id: mischia, nome: Attacco in mischia, caratteristica: forza}
+  - {id: distanza, nome: Attacco a distanza, caratteristica: destrezza}
+  - {id: furtivo, nome: Colpo furtivo, caratteristica: forza, danno: doppio, una_volta_per_bersaglio: true, ripiego: mischia}
+  - {id: ts_morte, nome: Salvezza contro la morte, caratteristica: null, salvezza: morte}
+  - {id: ts_morte_destrezza, nome: Salvezza contro la morte con la Destrezza, caratteristica: destrezza, salvezza: morte}
+  - {id: ts_veleno, nome: Salvezza contro il veleno, caratteristica: costituzione, salvezza: morte}
+  - {id: ts_magia, nome: Salvezza contro la magia, caratteristica: null, salvezza: magia}
+  - {id: ts_mente, nome: Salvezza contro gli incanti della mente, caratteristica: saggezza, salvezza: magia}
+difficolta:
+  - {id: facile, nome: Facile, valore: 11}
+  - {id: normale, nome: Normale, valore: 15}
+  - {id: difficile, nome: Difficile, valore: 18}
+difficolta_predefinita: normale
+vantaggio:
+  tipo: bonus
+  valore: 2
+attacchi:
+  tipo: prova
+  danno_critico: normale
+  danno_minimo: 1
+danni:
+  nome: Punti ferita
+  a_zero: a zero si rischia la morte
+sociale:
+  caratteristica: saggezza
+  nota: Si tira Saggezza contro la diffidenza del PNG.
+
+tiri_salvezza:
+  colonne:
+    - {id: morte, nome: Morte o veleno}
+    - {id: magia, nome: Magia}
+classi:
+  - id: guerriero
+    nome: Guerriero
+    tiri_salvezza: [{da: 0, valori: [14, 17]}, {da: 1, valori: [12, 16]}, {da: 3, valori: [11, 15]}, {da: 5, valori: [10, 14]}]
+  - id: mago
+    nome: Mago
+    tiri_salvezza: [{da: 1, valori: [13, 14]}, {da: 3, valori: [12, 13]}]
+    incantesimi_al_giorno: [{da: 1, slot: [1]}, {da: 2, slot: [2]}, {da: 3, slot: [2, 1]}]
+  - id: chierico
+    nome: Chierico
+    tiri_salvezza: [{da: 1, valori: [11, 15]}, {da: 3, valori: [10, 14]}]
+    incantesimi_al_giorno: [{da: 1, slot: []}, {da: 2, slot: [1]}, {da: 3, slot: [2]}]
+magia: {preparazione: vanciana}
+risorse:
+  - {id: frecce, nome: Frecce, ricarica: mai}
+  - {id: monete, nome: Monete, ricarica: mai}
+cadute: {dadi: "1d6", ogni: 10, unita: piedi, arrotonda: vicino, massimo: 20}
+riposo:
+  - {id: notte, nome: Una notte di sonno, cura: 1}
+
+poteri:
+  - id: dardo_arcano
+    nome: Dardo arcano
+    tipo: incantesimo
+    livello: {mago: 1}
+    bersaglio: uno
+    parole: [dardo arcano, dardi arcani]
+    effetti: [{tipo: danno, dadi: "1d6+1", colpi: {ogni_livelli: 3, massimo: 5}}]
+  - id: sonno
+    nome: Sonno
+    tipo: incantesimo
+    livello: {mago: 1}
+    bersaglio: nemici
+    dadi_vita_max: 3
+    oppure_uno_fino_a: 4
+    immuni: [non_morto]
+    salvezza: {abilita: ts_magia, esito: annulla}
+    parole: [sonno, addormento]
+    effetti: [{tipo: condizione, condizione: addormentato, durata: {round_per_livello: 5}, finisce_se_ferito: true}]
+  - id: amicizia
+    nome: Amicizia
+    tipo: incantesimo
+    livello: {mago: 1}
+    bersaglio: uno
+    solo_tipi: [umanoide]
+    dadi_vita_max: 4
+    salvezza: {abilita: ts_mente, esito: annulla}
+    parole: [amicizia, ammalio]
+    effetti: [{tipo: condizione, condizione: affascinato, durata: scena}]
+  - id: scudo
+    nome: Scudo
+    tipo: incantesimo
+    livello: {mago: 1}
+    bersaglio: se_stesso
+    parole: [scudo magico]
+    effetti:
+      - {tipo: bonus, a: difesa, valore: 3, contro: mischia, durata: {round: 5, round_per_livello: 1}}
+      - {tipo: bonus, a: difesa, valore: 6, contro: distanza, durata: {round: 5, round_per_livello: 1}}
+      - {tipo: immunita, a: [dardo_arcano], durata: {round: 5, round_per_livello: 1}}
+  - id: cura_ferite
+    nome: Cura ferite
+    tipo: incantesimo
+    livello: {chierico: 1}
+    bersaglio: uno
+    parole: [cura ferite, curo]
+    effetti: [{tipo: cura, dadi: "1d6+1"}]
+  - id: luce
+    nome: Luce
+    tipo: incantesimo
+    livello: {chierico: 1, mago: 1}
+    bersaglio: se_stesso
+    parole: [luce magica]
+    descrittivo: true
+  - id: pozione_cura
+    nome: Pozione di cura
+    tipo: oggetto
+    bersaglio: uno
+    parole: [pozione]
+    effetti: [{tipo: cura, dadi: "1d6+1"}]
+  - id: fasciare
+    nome: Fasciare le ferite
+    tipo: azione
+    bersaglio: uno
+    parole: [fascio, fasciare, bendo]
+    effetti: [{tipo: stabilizza}]
+
+combattimento:
+  iniziativa: {tipo: individuale, dado: 6, caratteristica: destrezza, ogni_round: true, pari: simultanei}
+  fasi:
+    - {id: turno, nome: Turno, png: attacco}
+  azioni:
+    - {id: attacco, nome: Attacco, quante: "uno, oppure un incantesimo"}
+  danni:
+    modello: pf
+    a_zero: {pg: tiri_morte, png: morte}
+    tiri_morte: {cd: 10, successi: 1, fallimenti: 1, venti_rialza: false, uno_doppio: false}
+  condizioni:
+    - {id: sorpreso, nome: Sorpreso, icona: SO, effetti: [perde_turno, non_si_muove], testo: Perde il primo round.}
+    - {id: addormentato, nome: Addormentato, icona: ZZ, effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio], testo: Dorme; un colpo lo sveglia.}
+    - {id: affascinato, nome: Affascinato, icona: AF, effetti: [], testo: Vede in chi lo ha incantato un amico.}
+    - {id: svenuto, nome: Svenuto, icona: SV, effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio], testo: A terra senza sensi.}
+  condizione_a_zero: svenuto
+  fine: {morale: true}

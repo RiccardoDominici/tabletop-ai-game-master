@@ -68,6 +68,9 @@ abilita:                      # optional; caratteristica = an existing id [V]
   - {id: persuadere, nome: "Persuadere", caratteristica: potere}
   - {id: scalare, nome: "Scalare pareti", caratteristica: null, soglia: {dado: 100}}               # optional [V]:
   - {id: porte, nome: "Porte segrete", caratteristica: null, soglia: {dado: 6, predefinita: 1}}   #   rolled separately
+  - {id: alle_spalle, nome: "Attacco furtivo", caratteristica: forza, danno: doppio, una_volta_per_bersaglio: true, ripiego: mischia}
+    # optional [V]: an attack ability that doubles the weapon's damage roll, usable once per target per fight; then the
+    # attack rolls with `ripiego` (Basic Fantasy's sneak attack, p. 9)
   - {id: ts_veleno, nome: "Tiro salvezza contro veleno", caratteristica: null, salvezza: true}    # optional [V] true or a column:
     # a saving throw of the manual: the Engine cannot tell one by its id, and `critici: attacchi_e_salvezze` needs it
     # A save is pinned to its own number (regole/salvezze.ts): `true` = the sheet's bonus against the default difficulty;
@@ -159,6 +162,24 @@ classi:                                     # optional [V]: the classes and thei
     nome: "Mago"
     tiri_salvezza: [{da: 1, valori: [13, 15]}, {da: 4, valori: [12, 13]}]   # [V] one value per column; `da` grows
     incantesimi_al_giorno: [{da: 1, slot: [1]}, {da: 3, slot: [2, 1]}]      # [V] spells per day by spell level
+magia: {preparazione: vanciana}             # optional [V]: vanciana (each prepared copy is one cast, back at a rest)
+                                            #   | slot (the sheet's spells are known; a cast spends a slot of its level)
+risorse:                                    # optional [V]: per-character counters (prove/risorse.ts), in the snapshot
+  - {id: frecce, nome: "Frecce", ricarica: mai}   # ricarica: mai | riposo (a rest that refreshes) | scontro (a fight's end)
+poteri:                                     # optional [V]: spells, items, class actions, hazards (regole/poteri.ts)
+  - id: sonno
+    nome: "Sonno"
+    tipo: incantesimo                       # [V] incantesimo (a prepared copy and a slot) | oggetto (off the sheet) | azione | pericolo
+    livello: {mago: 1}                      # [V] incantesimo: class → spell level
+    bersaglio: nemici                       # [V] se_stesso | uno | nemici | alleati
+    dadi_vita_max: 3                        # only targets of these hit dice or fewer (sheet `dadi_vita`; a PC's level)…
+    oppure_uno_fino_a: 4                    #   …or, with none of them, a single one up to this
+    salvezza: {abilita: ts_incantesimi, esito: annulla, modificatore: 0}   # [V] each target's own save: annulla | dimezza
+    immuni: [non_morto]                     # creature types (sheet `tipo`) it never affects; solo_tipi: the only ones
+    parole: [sonno, addormento]             # the words that call it (the rules arbiter); its name counts too
+    effetti: [{tipo: condizione, condizione: addormentato, durata: {round_per_livello: 5}, finisce_se_ferito: true}]
+    ostile: true                            # opens a fight on an NPC (default: it deals damage or attacks)
+    descrittivo: false                      # true and no effetti: the cost is spent, the narrator tells the rest
 cadute: {dadi: "1d6", ogni: 10, unita: "piedi", arrotonda: vicino, massimo: 20}   # optional [V]: falling damage
   # (Basic Fantasy p. 59): `dadi` per step of `ogni` (in `unita`, said on the card); `vicino` rounds to the nearest step
   # (1–4 feet nothing, 5–14 feet 1d6), `giu` counts full steps only (SRD 5.2); at most `massimo` steps. Without it a fall
@@ -204,8 +225,16 @@ scheda:
   livello: 1                                    #   (a save of a table column then ignores the sheet's own bonus: strict warning)
   razza: elfo                                   # optional: a race of the set (its traits)
   salva_come: {classe: guerriero, livello: 3}   # optional [V]: a monster saves as a class and level («Save As»)
+  incantesimi: [dardo_incantato]                # optional [V]: prepared (vanciana: one copy per cast) or known (slot)
+  slot: [2, 1]                                  # optional [V]: spells per day by spell level, instead of the class table
+  oggetti: {pozione_guarigione: 2}              # optional [V]: items with a power (tipo oggetto) and how many
+  risorse: {frecce: 20, monete: 35}             # optional [V]: the starting counters of the set's resources
+  tipo: umanoide                                # optional: creature types, read by a power's immuni / solo_tipi
+  immune: [sonno]                               # optional: powers or conditions it ignores
+  dadi_vita: 3                                  # optional [V]: hit dice, for powers limited by them
   attacchi: [{nome: "Spada", danno: "1d8", caratteristica: vigore}]   # or abilita: combattere
-                                                # automatico: true = the weapon always hits (the enchanted dart), only the damage
+                                                # automatico: true = the weapon always hits, only the damage
+                                                # consuma: frecce = each attack spends one; refused at 0 [V]
 ```
 
 With the SRD 5.2 the sheets remain those of docs/prove.md §2 (scores, proficiencies, calculated AC).

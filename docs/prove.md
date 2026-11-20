@@ -750,6 +750,23 @@ Now every source goes through one Engine path, prove/effetti.ts, with the typed 
   `svantaggio_salvezze` still counts. A target rolls its own save against a PC's power (`salvezzaDelBersaglio`): an
   NPC with the Engine's dice, its card marked `nascosta` (only the Game Master panel lists it, docs/prove.md §9).
   Tests: test/salvezze.test.ts.
+- **Powers and resources** (regole/poteri.ts, prove/poteri.ts, prove/risorse.ts; audit C-SP-01, C-CLS-11, C-THF-10). A
+  decision of type `potere` (with `potere: <id>`) uses a power of the set: the rules arbiter finds one of the PC's
+  powers by its words (`potereDiRegole`: the spells on its sheet, its items, the class actions), the model arbiter may
+  name one (its schema has the set's powers), and the Engine applies the rules' finding after any arbiter, before the
+  attack override, so a spell is never rolled as an unlimited weapon. The cost comes first: a spell of the caster's
+  class needs a prepared copy (vancian) or a known spell (slots) and a slot of its level from the class table or the
+  sheet's `slot`; an item one of `oggetti`. Spent, it is refused with a line for the narrator and nothing else
+  happens. Then the targets (one named, every enemy standing in the fight or hostile in the scene within the hit-dice
+  limit, the allies, oneself; types it never affects and immunities are said), each target's own save (an NPC's with
+  the Engine's dice, hidden), and the effects. A hostile power on an NPC opens the fight like an attack
+  (`EsitoTurnoProve.ostili`). Resources: counters of the set (`risorse`), slots, prepared copies and items in
+  `StatoProveSalvato.risorse`; a rest that refreshes gives back the slots and the prepared list, the end of a fight
+  the once-per-target uses and the per-fight counters. A weapon with `consuma` spends one per attack and is refused at
+  0 (an NPC takes another weapon). An attack ability with `una_volta_per_bersaglio` (the sneak attack) is marked on
+  its target until the fight ends, then the attack rolls with its `ripiego`; with `danno: doppio` the weapon's roll
+  is doubled. The rules arbiter picks the weapon whose name the action says most fully («spada corta alle spalle»).
+  Tests: test/poteri.test.ts.
 - Tests: test/effetti.test.ts (the closed list, the scaling, both falling tables, damage halved by a save, healing that
   never revives, a trap's attack, save-or-die, a failed scene check's fall, a rest, the Game Master's hazard, the SRD's
   data), strumenti/test_valida_effetti.py (the validator's mirror).

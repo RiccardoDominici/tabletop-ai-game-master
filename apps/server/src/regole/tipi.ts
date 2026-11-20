@@ -12,6 +12,8 @@ import type { Combattimento } from './combattimento';
 import type { RegolaCadute, TipoRiposo } from './salute';
 import type { TiriSalvezza } from './salvezze';
 import type { Classe } from './classi';
+import type { Potere } from './poteri';
+import type { Magia, Risorsa } from './risorse';
 
 export interface Voce {
   id: string;
@@ -107,7 +109,19 @@ export interface SistemaRegole {
    * `salvezza`: the ability is a saving throw of the manual (the Engine cannot tell one by its id): with
    * `risoluzione.critici: attacchi_e_salvezze` its natural d20s count as an attack's do.
    */
-  abilita: Array<Voce & { caratteristica: string | null; soglia?: { dado: 6 | 20 | 100; predefinita: number | null } | null; salvezza?: boolean | string }>;
+  abilita: Array<
+    Voce & {
+      caratteristica: string | null;
+      soglia?: { dado: 6 | 20 | 100; predefinita: number | null } | null;
+      salvezza?: boolean | string;
+      /** An attack with this ability deals double damage (Basic Fantasy's sneak attack, p. 9: twice the weapon's roll). */
+      danno?: 'doppio';
+      /** Usable once per target per fight (the sneak attack); then the attack rolls with `ripiego` instead. */
+      unaVoltaPerBersaglio?: boolean;
+      /** The ability an attack falls back to once this one is spent on that target (`mischia`). */
+      ripiego?: string | null;
+    }
+  >;
   /** Come il valore di una caratteristica entra nel tiro. */
   /**
    * Come una caratteristica diventa il numero del tiro: `srd` (punteggio − 10) / 2; `diretto` (la scheda
@@ -144,6 +158,12 @@ export interface SistemaRegole {
   tiriSalvezza?: TiriSalvezza | null;
   /** The classes of the set and their level tables (regole.yaml → classi; regole/classi.ts). Absent = none. */
   classi?: Classe[];
+  /** Spells, items, class actions and hazards as typed effects (regole.yaml → poteri; regole/poteri.ts). */
+  poteri?: Potere[];
+  /** Per-character counters and what refreshes them (regole.yaml → risorse; regole/risorse.ts). */
+  risorse?: Risorsa[];
+  /** How spells are prepared (regole.yaml → magia); null = `slot`. */
+  magia?: Magia | null;
 }
 
 /** Un passo del manuale (regole/estratti/*.md), per l'arbitro e per «Chiedi una regola». */
@@ -182,7 +202,21 @@ export interface SchedaGenerica {
   /** Attacchi automatici: riduce il danno subito. */
   armatura: number;
   /** `automatico`: quest'arma colpisce sempre, si tira solo il danno (il dardo incantato). */
-  attacchi: Array<{ id: string; nome: string; danno: FormulaDadi; caratteristica: string | null; abilita: string | null; tipo_danno: string | null; distanza: boolean; automatico?: boolean }>;
+  attacchi: Array<{ id: string; nome: string; danno: FormulaDadi; caratteristica: string | null; abilita: string | null; tipo_danno: string | null; distanza: boolean; automatico?: boolean; consuma?: string }>;
+  /** Starting counters of the set's resources (`scheda.risorse`: arrows, coins). */
+  risorse?: Record<string, number>;
+  /** Spells prepared (`vanciana`: each copy one cast) or known (`slot`), ids of the set's powers. */
+  incantesimi?: string[];
+  /** Spell slots by spell level (index 0 = 1st level), when the sheet writes them (an NPC caster); else the class table. */
+  slot?: number[] | null;
+  /** Items with a power and how many (`scheda.oggetti: {pozione_guarigione: 2}`). */
+  oggetti?: Record<string, number>;
+  /** Creature types (`scheda.tipo`: umanoide, non_morto), read by a power's `immuni` and `solo_tipi`. */
+  tipo?: string[];
+  /** Powers and conditions this creature is immune to (`scheda.immune`). */
+  immune?: string[];
+  /** Hit dice, for powers limited by them (`scheda.dadi_vita`); a PC's are its level. */
+  dadiVita?: number | null;
   /** The set's class id and level (`scheda.classe`, `scheda.livello`): they pick the rows of the class tables. */
   classe?: string | null;
   livello?: number | null;

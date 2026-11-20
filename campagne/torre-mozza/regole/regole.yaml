@@ -21,8 +21,11 @@
 # - Gittata (+1 corta, −2 lunga, p. 54), attacco da dietro (+2, non col colpo furtivo del ladro, p. 53) e carica
 #   (+2 e danno doppio, solo con lancia o arma in asta, p. 52) sono `modificatori` del set: valgono per le parole
 #   dell'azione del PG (il Motore non conosce le posizioni). Restano fuori: il −5 a chi tira con un nemico a un metro e
-#   mezzo, il −2 alla Classe d'Armatura di chi carica, il rateo di fuoco delle balestre, il numero di incantesimi al
-#   giorno. La sorpresa con 1d6 sì (combattimento.sorpresa).
+#   mezzo, il −2 alla Classe d'Armatura di chi carica, il rateo di fuoco delle balestre. La sorpresa con 1d6 sì
+#   (combattimento.sorpresa).
+# - Incantesimi (p. 15–16): sono `poteri` del set, con gli effetti tipati; quanti al giorno lo dice la tabella della
+#   classe (`classi[].incantesimi_al_giorno`, p. 7–8). Il mago prepara un incantesimo per ogni posto del giorno
+#   (`magia: vanciana`): lanciato, se ne va fino al riposo, e il Motore lo conta (docs/regole.md §2).
 id: basic-fantasy-r142
 nome: "Basic Fantasy (4ª edizione)"
 per_il_narratore: "Si tira un d20 e si somma un bonus: gli attacchi contro la Classe d'Armatura, tutto il resto contro diciassette al primo livello; a zero punti ferita si rischia la morte."
@@ -68,12 +71,10 @@ abilita:
   # Bonus d'attacco della tabella (p. 53): Forza in mischia, Destrezza con le armi da lancio e da tiro.
   - {id: mischia, nome: "Attacco in mischia", caratteristica: forza}
   - {id: distanza, nome: "Attacco a distanza", caratteristica: destrezza}
-  # Attacco furtivo del ladro (p. 9): +4 al tiro e danno doppio. Il +4 è nel bonus della scheda, il danno doppio
-  # nella formula dell'arma (due dadi invece di uno: stessa media, distribuzione un po' diversa).
-  - {id: alle_spalle, nome: "Attacco furtivo", caratteristica: forza}
-  # Dardo incantato (incantesimo del mago di primo livello): colpisce sempre, l'arma della scheda è «automatico».
-  # Una volta al giorno: il Motore non lo conta, lo dice la scheda.
-  - {id: dardo_incantato, nome: "Dardo incantato", caratteristica: null}
+  # Attacco furtivo del ladro (p. 9): +4 al tiro e danno doppio, non due volte contro lo stesso avversario nello stesso
+  # scontro. Il +4 è nel bonus della scheda; il danno doppio è dell'abilità (il tiro dell'arma per due); dopo il primo,
+  # contro quel bersaglio si attacca in mischia normale (`ripiego`).
+  - {id: alle_spalle, nome: "Attacco furtivo", caratteristica: forza, danno: doppio, una_volta_per_bersaglio: true, ripiego: mischia}
   # I cinque tiri salvezza (p. 60–61): bonus = 17 − numero della tabella della classe, più la razza.
   - {id: ts_morte, nome: "Tiro salvezza contro raggio della morte o veleno", caratteristica: null, salvezza: true}
   # Lo stesso salvezza con la Destrezza, come il manuale lo chiede per fosse, cadute e inseguimenti (p. 43, 52): stesso
@@ -129,6 +130,90 @@ attacchi:
   danno_critico: normale
   danno_minimo: 1
 
+# Classi (p. 7–8): gli incantesimi al giorno per livello d'incantesimo (1°…6°), dalla tabella di ogni classe. I tiri
+# salvezza per classe e livello (p. 61) sono nella stessa voce.
+classi:
+  - id: guerriero
+    nome: "Guerriero"
+  - id: chierico
+    nome: "Chierico"
+    # p. 7: niente al 1° livello.
+    incantesimi_al_giorno:
+      - {da: 1, slot: []}
+      - {da: 2, slot: [1]}
+      - {da: 3, slot: [2]}
+      - {da: 4, slot: [2, 1]}
+      - {da: 5, slot: [2, 2]}
+      - {da: 6, slot: [2, 2, 1]}
+      - {da: 7, slot: [3, 2, 2]}
+      - {da: 8, slot: [3, 2, 2, 1]}
+      - {da: 9, slot: [3, 3, 2, 2]}
+      - {da: 10, slot: [3, 3, 2, 2, 1]}
+      - {da: 11, slot: [4, 3, 3, 2, 2]}
+      - {da: 12, slot: [4, 4, 3, 2, 2, 1]}
+      - {da: 13, slot: [4, 4, 3, 3, 2, 2]}
+      - {da: 14, slot: [4, 4, 4, 3, 2, 2]}
+      - {da: 15, slot: [4, 4, 4, 3, 3, 2]}
+      - {da: 16, slot: [5, 4, 4, 3, 3, 2]}
+      - {da: 17, slot: [5, 5, 4, 3, 3, 2]}
+      - {da: 18, slot: [5, 5, 4, 4, 3, 3]}
+      - {da: 19, slot: [6, 5, 4, 4, 3, 3]}
+      - {da: 20, slot: [6, 5, 5, 4, 3, 3]}
+  - id: mago
+    nome: "Mago"
+    # p. 8.
+    incantesimi_al_giorno:
+      - {da: 1, slot: [1]}
+      - {da: 2, slot: [2]}
+      - {da: 3, slot: [2, 1]}
+      - {da: 4, slot: [2, 2]}
+      - {da: 5, slot: [2, 2, 1]}
+      - {da: 6, slot: [3, 2, 2]}
+      - {da: 7, slot: [3, 2, 2, 1]}
+      - {da: 8, slot: [3, 3, 2, 2]}
+      - {da: 9, slot: [3, 3, 2, 2, 1]}
+      - {da: 10, slot: [4, 3, 3, 2, 2]}
+      - {da: 11, slot: [4, 4, 3, 2, 2, 1]}
+      - {da: 12, slot: [4, 4, 3, 3, 2, 2]}
+      - {da: 13, slot: [4, 4, 4, 3, 2, 2]}
+      - {da: 14, slot: [4, 4, 4, 3, 3, 2]}
+      - {da: 15, slot: [5, 4, 4, 3, 3, 2]}
+      - {da: 16, slot: [5, 5, 4, 3, 3, 2]}
+      - {da: 17, slot: [5, 5, 4, 4, 3, 3]}
+      - {da: 18, slot: [6, 5, 4, 4, 3, 3]}
+      - {da: 19, slot: [6, 5, 5, 4, 3, 3]}
+      - {da: 20, slot: [6, 5, 5, 4, 4, 3]}
+  - id: ladro
+    nome: "Ladro"
+
+# Incantesimi (p. 15): il mago e il chierico preparano ogni mattina un incantesimo per posto; lanciato, se ne va fino al
+# riposo successivo (Basic Fantasy, alla vecchia maniera).
+magia: {preparazione: vanciana}
+
+# Poteri: gli incantesimi come effetti tipati (docs/regole.md §2). Il Motore spende il posto del giorno, sceglie i
+# bersagli, fa tirare a ciascuno il suo salvezza e applica gli effetti.
+poteri:
+  # Dardo incantato (p. 29): colpisce sempre un bersaglio visibile, 1d6+1, nessun salvezza; un dardo in più ogni tre
+  # livelli oltre il primo (2 al 4°, 3 al 7°, 4 al 10°, 5 dal 13°).
+  - id: dardo_incantato
+    nome: "Dardo incantato"
+    tipo: incantesimo
+    livello: {mago: 1}
+    bersaglio: uno
+    ostile: true
+    parole: [dardo incantato, dardi incantati, dardo magico]
+    effetti: [{tipo: danno, dadi: "1d6+1", colpi: {ogni_livelli: 3, massimo: 5}}]
+    pagina: 29
+  # Leggere il magico (p. 34): legge le scritte magiche; si prepara anche senza il libro. Effetto da raccontare.
+  - id: leggere_il_magico
+    nome: "Leggere il magico"
+    tipo: incantesimo
+    livello: {mago: 1}
+    bersaglio: se_stesso
+    parole: [leggere il magico, leggo il magico]
+    descrittivo: true
+    pagina: 34
+
 # Cadute (p. 59): 1d6 ogni 10 piedi (3 metri), al massimo 20d6, arrotondando all'altezza più vicina (da 1–4 piedi
 # niente, da 5–14 piedi 1d6: in metri, da un metro e mezzo si prende 1d6). Le altezze delle scene sono in metri.
 cadute: {dadi: "1d6", ogni: 3, unita: "metri", arrotonda: vicino, massimo: 20}
@@ -159,7 +244,7 @@ condizioni:
 sottosistemi:
   - id: incantesimi
     nome: "Incantesimi"
-    testo: "Il mago di primo livello conosce leggere il magico e un incantesimo di primo livello, e ne lancia uno al giorno. Il chierico lancia incantesimi solo dal secondo livello."
+    testo: "Il mago di primo livello conosce leggere il magico e un incantesimo di primo livello, e ne lancia uno al giorno: il Motore conta gli incantesimi preparati e i posti del giorno, e li ridà col riposo. Il chierico lancia incantesimi solo dal secondo livello."
   - id: scacciare
     nome: "Scacciare i non morti"
     testo: "Il chierico mostra il simbolo sacro e tira un d20 contro la tabella del suo livello e del tipo di non morto: al primo livello 13 per gli scheletri, 17 per gli zombi, 19 per i ghoul (p. 57)."

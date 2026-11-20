@@ -15,8 +15,9 @@ import type { EsitoCombattimento } from './combattimento';
  * - attacco: tiro per colpire contro la CA di un bersaglio, con un'arma della scheda;
  * - contrapposta: abilità del PG contro il passivo di un PNG (o contro il tiro di un altro PG);
  * - aiuto: il PG aiuta l'azione di un altro (azione Aiutare, SRD 5.2): quella ha vantaggio.
+ * - potere: a power of a manual's set (a spell, a potion, binding wounds: `potere`), used on `bersaglio` or by its data.
  */
-export type TipoDecisione = 'nessuna' | 'impossibile' | 'prova' | 'salvezza' | 'attacco' | 'contrapposta' | 'aiuto';
+export type TipoDecisione = 'nessuna' | 'impossibile' | 'prova' | 'salvezza' | 'attacco' | 'contrapposta' | 'aiuto' | 'potere';
 
 export interface DecisioneProva {
   /** Id dell'azione. */
@@ -56,6 +57,8 @@ export interface DecisioneRegole extends Omit<DecisioneProva, 'caratteristica' |
   difficolta: string | null;
   abilita_bersaglio: string | null;
   mossa: string | null;
+  /** tipo «potere»: the id of the set's power (regole/poteri.ts). Absent on decisions written before powers. */
+  potere?: string | null;
 }
 
 /** Azione come la vede l'arbitro delle prove. */
@@ -134,4 +137,6 @@ export interface EsitoTurnoProve {
   tardive: string[];
   /** Lo scontro dopo questo turno (invitati, intestazione per il narratore, fine), o null. */
   combattimento: EsitoCombattimento | null;
+  /** Hostile powers a PC used on NPCs this turn (prove/poteri.ts): like attacks, they open the fight. */
+  ostili?: Array<{ chi: string; bersaglio: string }>;
 }

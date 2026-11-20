@@ -19,6 +19,7 @@ from .carica import Campagna
 from .esito import Esito
 from . import regole_combattimento
 from . import regole_classi
+from . import regole_poteri
 from .regole_effetti import controlla_cadute, controlla_effetti, controlla_riposo
 from .regole_repertorio import blocchi_richiede
 from .lingua import generiche_in
@@ -462,7 +463,7 @@ def controlla(c: Campagna, e: Esito) -> None:
     car = {o["id"] for o in _voci(r.get("caratteristiche"), "caratteristiche", dove, e, obbligatorio=True)}
     abi = _abilita(r, car, e, dove)
     if (_ogg(r.get("risoluzione")) or {}).get("critici") == "attacchi_e_salvezze" and not any(
-            isinstance(o, dict) and o.get("salvezza") is True for o in r.get("abilita") or []):
+            isinstance(o, dict) and (o.get("salvezza") is True or isinstance(o.get("salvezza"), str)) for o in r.get("abilita") or []):
         _err(e, "critici", dove, "risoluzione.critici: attacchi_e_salvezze senza nessuna abilità con salvezza: true")
     diff = set(_difficolta(r, tipo, e, dove))
     _modificatore(r, tipo, e, dove)
@@ -481,8 +482,15 @@ def controlla(c: Campagna, e: Esito) -> None:
     classi = regole_classi.classi_del_set(r, colonne, e, dove)
     col_abil = regole_classi.colonne_delle_abilita(r, colonne, e, dove)
     tabelle = {o["id"] for o in r.get("classi") or [] if isinstance(o, dict) and o.get("tiri_salvezza")}
-    _schede(c, e, car, abi, dadi_attivi(c), tabella_modificatori(r), soglie_abilita(r),
-            per_scheda=lambda s, d: regole_classi.controlla_scheda(s, d, classi, col_abil, tabelle, e))
+    salvezze = {o["id"] for o in r.get("abilita") or [] if isinstance(o, dict) and o.get("salvezza")}
+    poteri = regole_poteri.poteri_del_set(r, salvezze, classi, condizioni_del_set(r), e, dove)
+    risorse = regole_poteri.risorse_del_set(r, e, dove)
+    regole_poteri.abilita_d_attacco(r, e, dove)
+
+    def per_scheda(s: dict, d: str) -> None:
+        regole_classi.controlla_scheda(s, d, classi, col_abil, tabelle, e)
+        regole_poteri.controlla_scheda(s, d, r, poteri, risorse, e)
+    _schede(c, e, car, abi, dadi_attivi(c), tabella_modificatori(r), soglie_abilita(r), per_scheda=per_scheda)
     _prove_di_scena(c, e, car, abi, mosse, diff, condizioni_del_set(r))
     controlla_cadute(r, e, dove)
     controlla_riposo(r, e, dove)

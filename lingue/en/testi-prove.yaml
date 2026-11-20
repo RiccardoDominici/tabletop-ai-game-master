@@ -101,6 +101,24 @@ prove:
     morte: "{nome} dies: {fonte}."
     stabilizzato: "{fonte}: {nome} is bandaged and stable at zero hit points; no fighting or spellcasting until above zero."
     non_serve_stabilizzare: "{fonte}: {nome} is not dying, there is no need."
+  # Powers of the set (prove/poteri.ts): spells, items, class actions.
+  poteri:
+    usa: "{nome} uses {potere}{costo}."
+    costo_incantesimo: " (a level {livello} spell: {restanti} of that level left for today)"
+    costo_incantesimo_senza_slot: " (a level {livello} spell)"
+    costo_oggetto: " ({restanti} left)"
+    rifiuto_classe: "{nome} cannot cast {potere}: it is not a spell of their class. No spell goes off, and what they wanted does not happen."
+    rifiuto_non_preparato: "{nome} does not have {potere} among today's prepared spells: no spell goes off, and what they wanted does not happen."
+    rifiuto_senza_slot: "{nome} has already cast every level {livello} spell of today: {potere} does not go off, and what they wanted does not happen. They come back with rest."
+    rifiuto_oggetto: "{nome} has no {potere} left: nothing happens."
+    pericolo: "{potere} is not something {nome} can use: no effect."
+    immune: "{potere} has no effect on {bersaglio}."
+    troppo_forte: "{bersaglio} is too powerful for {potere}: not affected."
+    nessun_bersaglio: "{potere} finds no fitting target: nothing happens."
+    resiste: "{bersaglio} resists {potere} (saving throw made): no effect."
+    descrittivo: "Effect of {potere} on {bersagli}: tell it as the manual describes it, the Engine does not measure it."
+    senza_munizioni: "{nome} has no {risorsa} left for {arma}: no attack."
+    una_volta: " ({abilita} already used against {bersaglio} in this fight: an ordinary attack)"
   # Saving throws pinned to their own number (regole/salvezze.ts).
   salvezze:
     tiro_salvezza: "saving throw"
@@ -109,6 +127,7 @@ prove:
     fatto: "Rest ({riposo}): {elenco}."
     pg: "{nome} recovers {n} {danni} ({attuali} of {massimi})"
     nessuno: "nobody recovers hit points"
+    ricarica: "Spells and the resources rest gives back return."
   motivo:
     annullati: "advantage and disadvantage cancel out"
     aiuta: "{nome} helps"
@@ -165,6 +184,7 @@ prove:
     intro: "You are the check arbiter of a live tabletop role-playing game, in English, with the rules of the rulebook “{nome}”. The players write what their characters (PCs) do. For each action decide whether a roll is needed and which one, with the vocabulary of this rulebook. You do not narrate and you do not roll the dice: the program does. Reply only with the requested JSON."
     regola_oro: "Golden rule: roll only when the outcome is uncertain AND failure matters. Trivial or safe actions (talking, asking, looking around, walking): \"nessuna\". What cannot succeed as written: \"impossibile\", with the reason in one sentence. A PC helping another's action: \"aiuto\", with the id of that action in \"aiuta\". Striking a creature: \"attacco\", with target and weapon from the sheet. Everything else that is uncertain and risky: \"prova\"."
     mosse: "Rulebook moves: if the action is one of these, put its id in \"mossa\" (the program knows the stat):\n{mosse}"
+    poteri: "Powers of the rulebook (spells, items, class actions): if the action uses one, \"potere\" with its id in \"potere\" and the target if the action names one (the program knows how many are left and what they do):\n{poteri}"
     prova: "For a \"prova\" without a move choose the skill or, if none fits, the ability.\n- Abilities: {caratteristiche}\n- Skills: {abilita}\n- Difficulties: {difficolta} (when in doubt {predefinita})"
     sociale: "Social checks in the rulebook: {nota}"
     vantaggio: "Advantage or disadvantage: only for a clear circumstance written in the action or in the narration; \"motivo\" in a few words, in English, no secrets. Otherwise \"nessuno\" and an empty motivo."

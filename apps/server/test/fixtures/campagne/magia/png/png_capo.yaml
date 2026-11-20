@@ -1,0 +1,35 @@
+id: png_capo
+nome: Il capo dei briganti
+pronuncia: Il càpo dei brigànti
+alias: [capo]
+livello: principale
+ruolo: capo dei briganti
+aspetto:
+  lettura: Un omone con un elmo ammaccato e un'ascia.
+  invarianti: [elmo ammaccato, ascia]
+personalita:
+  superficie: [calmo]
+  sotto_pressione: [urla]
+  contraddizione: Comanda tutti ma non sa leggere.
+desiderio: Tenersi il bottino.
+voce:
+  tts: {voce_id: vincent}
+  registro: voi
+  stile: Frasi lente.
+  battuta_campione: Posate le armi.
+sa: [f_cantina, f_bottino]
+non_sa: []
+atteggiamento_pg:
+  pg_ilaria: {stato: ostile, perche: intrusa, vuole: il suo libro}
+  pg_bruno: {stato: ostile, perche: intruso, vuole: che se ne vada}
+  pg_sara: {stato: ostile, perche: vecchio conto, vuole: vederla morta}
+scheda:
+  caratteristiche: {forza: 16, destrezza: 10, costituzione: 14, intelligenza: 9, saggezza: 10}
+  dadi_vita: 5
+  tipo: umanoide
+  salva_come: {classe: guerriero, livello: 5}
+  pf: 25
+  difesa: 15
+  morale: 10
+  attacchi:
+  - {nome: Ascia, danno: "1d8+1", abilita: mischia}
