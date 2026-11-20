@@ -873,6 +873,8 @@ export class Regia {
           // Checks see the attitudes as they are now, changed in play (docs/mondo.md §4).
           atteggiamento: (png, pg) => this.mondo.atteggiamenti.stato(png, pg),
           ...(po.gregari?.length ? { gregari: po.gregari } : {}),
+          // Where the PCs and the clock start this session (a package's pg_all_inizio, docs/strati.md).
+          ...(this.campagna.statoAllInizio ? { allInizio: this.campagna.statoAllInizio } : {}),
         })
       : null;
     if (this.prove) opzioni.log.info({ dadi: this.prove.attivo, seme: this.prove.attivo ? this.prove.seme : null }, 'prove: Motore delle prove pronto');

@@ -16,6 +16,7 @@
  * In modalità A (improvvisa) il Motore non tiene indizi né battute: quelle sezioni sono null e lo
  * dice un avviso, invece di inventarle.
  */
+import { pgAllaFine, tempoAllaFine, type OraDiGioco, type StatoPg } from './stato-pg';
 import type { NotaRegia, VoceTrascrizione } from '@tabletop-ai-gm/shared';
 import type { Azione } from '../azioni/tipi';
 import type { Campagna, DatiYaml } from '../campagna/tipi';
@@ -117,6 +118,13 @@ export interface RegistroSessione {
   png_improvvisati?: Array<{ id: string; nome: string; ruolo: string | null; turno: number; scena: string }>;
   /** Who holds what at the end (A22): objects that changed hands, holder (null = back in its place) and turn. */
   oggetti?: Array<{ id: string; chi: string | null; turno: number }>;
+  /**
+   * The PCs' hit points, gear, coins and counters at the end (sessione/stato-pg.ts): copied into the next package's
+   * `pg_all_inizio` by strumenti/tra_sessioni.py. Absent without dice.
+   */
+  pg_alla_fine?: Array<{ id: string } & StatoPg>;
+  /** The game clock at the end (day and time), for the next package's `tempo_all_inizio`. Absent without a clock. */
+  tempo_alla_fine?: OraDiGioco;
   pg: Array<{ id: string; nome: string; azioni_pubbliche: AzioneRegistrata[]; azioni_private: AzioneRegistrata[] }>;
   /** I turni in cui il Motore ha registrato un cambiamento, con le righe dette e le azioni che c'erano. */
   momenti: Array<{ turno: number; cosa: string[]; azioni: Array<{ id: string; pg: string; privata: boolean }>; righe: Array<{ chi: string; testo: string }> }>;
@@ -464,6 +472,11 @@ export function estraiRegistro(s: SessioneDaRegistrare, eventi: readonly EventoD
     ...((ultima?.improvvisati ?? []).length ? { png_improvvisati: (ultima?.improvvisati ?? []).map((i) => ({ ...i })) } : {}),
     ...((ultima?.oggetti ?? []).length ? { oggetti: (ultima?.oggetti ?? []).map(([id, chi, turno]) => ({ id, chi, turno })).sort((a, b) => a.turno - b.turno || a.id.localeCompare(b.id)) } : {}),
     ...(mondo.length ? { mondo } : {}),
+    ...(() => {
+      const fine = pgAllaFine(ultima?.prove, def.pg.map((p) => p.id));
+      const ora = ultima?.prove?.tempo ? tempoAllaFine(ultima.prove) : null;
+      return { ...(fine ? { pg_alla_fine: fine } : {}), ...(ora ? { tempo_alla_fine: ora } : {}) };
+    })(),
     avvisi,
   };
   const trascrizione: TrascrizionePubblica = {

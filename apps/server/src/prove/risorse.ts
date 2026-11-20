@@ -148,6 +148,34 @@ export class Risorse {
     else this.vestiti.delete(chi);
   }
 
+  /**
+   * Start `chi` from a package's `pg_all_inizio` (sessione/stato-pg.ts): its items and coins replace the sheet's (when
+   * written), counters and prepared spells are set, the worn armor replaced. Returns the counters it could not track.
+   */
+  inizia(chi: string, s: { oggetti?: Record<string, number>; monete?: Record<string, number>; indossati?: string[]; contatori?: Record<string, number>; incantesimi?: string[] }): string[] {
+    if (!this.schede.has(chi)) return [];
+    const m = this.contatori.get(chi) ?? new Map<string, number>();
+    const ignoti: string[] = [];
+    const sostituisci = (pref: string, v: Record<string, number> | undefined): void => {
+      if (!v) return;
+      for (const k of [...m.keys()]) if (k.startsWith(pref)) m.delete(k);
+      for (const [id, n] of Object.entries(v)) m.set(`${pref}${id}`, n);
+    };
+    sostituisci('oggetto:', s.oggetti);
+    sostituisci('moneta:', s.monete);
+    for (const [k, n] of Object.entries(s.contatori ?? {})) {
+      if (m.has(k)) m.set(k, n);
+      else ignoti.push(k);
+    }
+    this.contatori.set(chi, m);
+    if (s.incantesimi) this.preparati.set(chi, [...s.incantesimi]);
+    if (s.indossati) {
+      if (s.indossati.length) this.vestiti.set(chi, new Set(s.indossati));
+      else this.vestiti.delete(chi);
+    }
+    return ignoti;
+  }
+
   /** The fight round of a line's last shot (rate of fire), or null. */
   ultimoTiro(chi: string, linea: string): number | null {
     return this.ultimiTiri.get(`${chi}|${linea}`) ?? null;

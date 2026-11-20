@@ -18,7 +18,7 @@ import path from 'node:path';
 import YAML from 'yaml';
 import { dividiTesto } from '../narrazione/frasi';
 import type { Logger } from '../logger';
-import { CARTELLA_SESSIONI, elencoPacchetti, ErrorePacchetto, FILE_SESSIONE, ordinaScene, unisciSessione, type Pacchetto } from './pacchetti';
+import { CARTELLA_SESSIONI, elencoPacchetti, ErrorePacchetto, FILE_SESSIONE, ordinaScene, statoAllInizio, unisciSessione, type Pacchetto } from './pacchetti';
 import { caricaMondo, type MondoCampagna } from './mondo';
 import {
   ID_NARRATORE,
@@ -220,9 +220,20 @@ export function caricaCampagna(cartella: string, log?: Logger, opzioni: OpzioniC
     avvisa(`repertorio/ della campagna: in una campagna a pacchetti le battute stanno in ${relPacchetto}/repertorio/ (qui vale solo parole_segrete.yaml)`);
   }
 
+  // Where the PCs and the clock start this session (the previous log's end, copied by strumenti/tra_sessioni.py).
+  let inizio: Campagna['statoAllInizio'] | null = null;
+  if (scelto && sessioneGrezza) {
+    try {
+      inizio = statoAllInizio(sessioneGrezza, pg.map((p) => p.id), `${relPacchetto}/${FILE_SESSIONE}`);
+    } catch (err) {
+      throw new ErroreCampagna(err instanceof ErrorePacchetto ? err.message : String(err));
+    }
+  }
+
   const campagna: Campagna = {
     id,
     cartella,
+    ...(inizio ? { statoAllInizio: inizio } : {}),
     lingua: linguaCampagna,
     titolo: stringa(stile['titolo']) ?? scena.titolo,
     stile,

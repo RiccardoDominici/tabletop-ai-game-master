@@ -6,7 +6,8 @@ Ciò che non chiede giudizio lo fa il codice, così l'agente scrive solo ciò ch
              e le condizioni di `accelera` / `rallenta` che l'agente deve giudicare sul registro;
   completo   il pacchetto di sessioni/<n+1>/ ha ciò che lo scheletro lascia all'agente: riassunto, scene con la
              loro scheda, un repertorio, e per ogni filo se è ripreso o rimandato;
-  pacchetto  lo scheletro di sessioni/<n+1>/ dallo stato: pieni_all_inizio, i fili aperti da riprendere o
+  pacchetto  lo scheletro di sessioni/<n+1>/ dallo stato: pieni_all_inizio, pg_all_inizio e tempo_all_inizio (dal
+             registro: PF, equipaggiamento, monete, risorse dei PG e ora di gioco), i fili aperti da riprendere o
              rimandare, le schede aggiornate dei PNG ricorrenti cambiati in gioco (sa, non_sa e atteggiamento
              dallo stato), le parole segrete senza quelle dei fatti che i PG ormai sanno.
 Non sovrascrive mai un file che esiste: si può rilanciare.
@@ -169,14 +170,24 @@ def pacchetto(cartella: Path, n: int) -> int:
     print(f"Scheletro di {dest} dallo stato dopo la sessione {n}:")
     fili = [{"id": pid, "cosa": p.get("cosa", ""), "come": "da_decidere"} for pid, p in sorted(d.promesse.items()) if p.get("stato") == "aperta"]
     fili += [{"id": fid, "come": "da_decidere"} for fid, s in sorted(d.fili.items()) if s == "aperto"]
+    # Where the PCs and the game clock ended (registro.yaml → pg_alla_fine, tempo_alla_fine): the next session starts
+    # there; the agent changes what the time between the sessions changes (rest, purchases, a journey).
+    fine = registri[n].dati if n in registri else {}
+    pg_all_inizio = {x["id"]: {k: v for k, v in x.items() if k != "id"} for x in fine.get("pg_alla_fine") or []
+                     if isinstance(x, dict) and isinstance(x.get("id"), str)}
+    tempo = fine.get("tempo_alla_fine")
     _scrivi(dest / "sessione.yaml", {
         "riassunto_iniziale": "",
         "scene": [],
         # The clocks the Engine plays: campagna.yaml → orologi and the fronts' orologi_extra (docs/mondo.md §3).
         "pieni_all_inizio": {oid: (o or {}).get("pieni") for oid, o in sorted((stato.get("orologi") or {}).items()) if oid in c.orologi},
+        **({"pg_all_inizio": pg_all_inizio} if pg_all_inizio else {}),
+        **({"tempo_all_inizio": tempo} if isinstance(tempo, dict) else {}),
         "preparazione": {"fili": fili},
     }, f"# Pacchetto della sessione {n + 1}: scheletro di strumenti/tra_sessioni.py. Da scrivere: riassunto_iniziale\n"
-       "# (dai fatti dello stato), scene, repertorio; per ogni filo, come: ripreso o rimandato.\n")
+       "# (dai fatti dello stato), scene, repertorio; per ogni filo, come: ripreso o rimandato.\n"
+       "# pg_all_inizio e tempo_all_inizio vengono dal registro (come sono finiti PG e orologio di gioco): cambia ciò che\n"
+       "# il tempo tra le sessioni cambia (un riposo, gli acquisti in paese, un viaggio).\n")
     # Schede dei PNG ricorrenti cambiati in gioco: la scheda intera, con ciò che lo stato dice di loro.
     for pid, p in sorted(d.png.items()):
         if p.get("vivo") is False or not (p["sa"] or p["atteggiamento"] or p.get("dove")):

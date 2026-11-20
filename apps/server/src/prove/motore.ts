@@ -136,6 +136,12 @@ export interface OpzioniMotoreProve {
    * `schede` (or the set's) under their ids. They are enemies of their scene: targets, combatants, never NPC cards.
    */
   gregari?: readonly Gregario[];
+  /**
+   * Where the PCs and the game clock start this session (a package's `pg_all_inizio` and `tempo_all_inizio`,
+   * sessione/stato-pg.ts): hit points, gear, coins, counters, prepared spells; the clock's absolute start. Applied on
+   * top of the sheets at the start and at «Ricomincia»; a resumed session takes its snapshot instead.
+   */
+  allInizio?: Campagna['statoAllInizio'];
 }
 
 interface VoceCache {
@@ -221,7 +227,7 @@ export class MotoreProve {
     this.risorse = this.generico ? new Risorse(this.generico.regole.sistema, this.generico.schede) : null;
     const sist = this.generico?.regole.sistema;
     this.inventario = this.generico && this.risorse && (sist?.catalogo || sist?.monete) ? new Inventario({ sistema: sist, schede: this.generico.schede, risorse: this.risorse, nome: (id) => this.nomeDi(this.o.contesto(), id), log: o.log.child({ modulo: 'inventario' }) }) : null;
-    this.tempo = new TempoDiGioco(this.sistema.tempo ?? null, { nome: (id) => this.nomeDi(this.o.contesto(), id), nomeOggetto: (id) => voce(this.sistema.catalogo, id)?.nome ?? id, log: o.log.child({ modulo: 'tempo' }) });
+    this.tempo = new TempoDiGioco(this.sistema.tempo ?? null, { nome: (id) => this.nomeDi(this.o.contesto(), id), nomeOggetto: (id) => voce(this.sistema.catalogo, id)?.nome ?? id, log: o.log.child({ modulo: 'tempo' }) }, o.allInizio?.tempo ?? null);
     this.attivi = new Attivi({
       nome: (id) => this.nomeDi(this.o.contesto(), id),
       nomeCondizione: (id) => this.regoleCombattimento().condizioni.find((c) => c.id === id)?.nome ?? id,
@@ -270,6 +276,29 @@ export class MotoreProve {
       },
       log: o.log.child({ modulo: 'combattimento' }),
     });
+    this.applicaInizio();
+  }
+
+  /**
+   * The session's starting state from the package (`allInizio`): each PC's hit points, gear, coins, counters and
+   * prepared spells replace the sheet's (sessione/stato-pg.ts); then AC and attack lines follow the gear again.
+   */
+  private applicaInizio(): void {
+    const a = this.o.allInizio;
+    if (!a) return;
+    for (const [id, s] of Object.entries(a.pg)) {
+      if (s.pf !== undefined) {
+        const p = this.stato.puntiFerita(id);
+        if (p) {
+          if (s.pf < p.attuali) this.stato.danneggia(id, p.attuali - s.pf);
+          else if (s.pf > p.attuali) this.stato.cura(id, s.pf - p.attuali);
+        }
+      }
+      const ignoti = this.risorse?.inizia(id, s) ?? [];
+      if (ignoti.length) this.o.log.warn({ id, ignoti }, 'session: pg_all_inizio names counters the set does not track, ignored');
+    }
+    this.inventario?.rideriva();
+    this.o.log.info({ pg: Object.keys(a.pg), tempo: a.tempo }, 'session: the PCs and the clock start where the package says');
   }
 
   /** Il set non SRD in uso (null = SRD 5.2). */
@@ -1539,7 +1568,7 @@ export class MotoreProve {
   // ------------------------------------------------------------------ sessione
 
   esporta(): StatoProveSalvato {
-    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta(), tempo: this.tempo.esporta() };
+    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta(), ...(this.tempo.mostrato ? { tempo: this.tempo.esporta() } : {}) };
   }
 
   importa(s: StatoProveSalvato): void {
@@ -1570,6 +1599,7 @@ export class MotoreProve {
     this.morenti.azzera();
     this.tempo.azzera();
     this.luciSpente = [];
+    this.applicaInizio();
     this.intestazione = null;
     this.cache.clear();
     this.ultimi.clear();

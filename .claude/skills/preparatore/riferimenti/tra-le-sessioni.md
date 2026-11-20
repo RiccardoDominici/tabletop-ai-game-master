@@ -56,10 +56,15 @@ The work between sessions is done by an agent with this skill, like the preparat
    ```
    It stops if the state has errors (`STATO`). Then it writes, never overwriting, the skeleton of `sessioni/<n+1>/`:
    `sessione.yaml` with `pieni_all_inizio` from the state (the narrator's clocks and the fronts' `orologi_extra`, which the
-   Engine also plays: docs/mondo.md §3) and the open threads to be decided; the whole sheets of the
+   Engine also plays: docs/mondo.md §3), `pg_all_inizio` and `tempo_all_inizio` from the log (`pg_alla_fine`,
+   `tempo_alla_fine`: each PC's hit points, gear, coins, spell slots and resources left, and the day and time of the
+   game clock) and the open threads to be decided; the whole sheets of the
    recurring NPCs changed in play, with `sa`, `non_sa` and attitude taken from the state; the secret words in use, without
    those of the facts the PCs now know.
 5. **Session after** (the agent). The same steps the skill uses for a one-shot, starting from state and arc:
+   - `pg_all_inizio` and `tempo_all_inizio` as the time between the sessions changes them: a week in town heals and
+     refreshes (raise `pf`, give back `contatori` such as `slot_1`), purchases change `oggetti` and `monete` (catalog ids
+     and coins of the set), a journey moves the day; what nothing changed stays as the log wrote it;
    - the summary to read at the opening (three to five sentences, from the facts of the state), the scenes, the repertoire;
    - for each thread, `come: ripreso` or `rimandato`; in the copied sheets, `perche` and `vuole` rewritten;
    - the secret words of the new secrets: one for each fact still secret that enters the session;

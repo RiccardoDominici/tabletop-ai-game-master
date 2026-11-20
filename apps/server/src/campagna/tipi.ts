@@ -56,6 +56,11 @@ export interface Campagna {
   id: string;
   cartella: string;
   /**
+   * Where the PCs and the game clock start this session (a package's `pg_all_inizio` and `tempo_all_inizio`,
+   * campagna/pacchetti.ts statoAllInizio; absolute game seconds for the clock). Absent = the sheets and the set's hour.
+   */
+  statoAllInizio?: { pg: Record<string, import('../sessione/stato-pg').StatoPg>; tempo: number | null };
+  /**
    * Where the play data of this instance live (the lexicon learned in play, `pronunce-gioco.yaml`): the campaign's
    * folder for the real game, the instance's log folder for a test instance (avvio.ts). A test run must never write
    * into campagne/<id>/: round 6's run taught it «Oreste» and «Carla», and round 7 took them for campaign names.

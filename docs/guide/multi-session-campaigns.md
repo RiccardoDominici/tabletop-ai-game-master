@@ -185,7 +185,9 @@ scripts/tra-sessioni.sh campagne/<id> 1 --pacchetto
 
 1. It checks the state (validator, class `STATO`): with errors, it stops.
 2. It writes the skeleton of `sessioni/02/`, without overwriting anything:
-   - `sessione.yaml`, with the clock ticks already full (`pieni_all_inizio`) and the open threads to decide;
+   - `sessione.yaml`, with the clock ticks already full (`pieni_all_inizio`), where each PC starts (`pg_all_inizio`: hit
+     points, gear, coins, spell slots and other resources left at the end of the session played, from `registro.yaml →
+     pg_alla_fine`), the day and time of the game clock (`tempo_all_inizio`), and the open threads to decide;
    - the whole character sheets of the recurring NPCs that changed in play, with what they know and their attitude, taken from the state;
    - the secret words still in use, without those of the facts the PCs now know.
 

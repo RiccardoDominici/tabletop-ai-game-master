@@ -9,6 +9,8 @@
  *   riassunto_iniziale   letto all'apertura, prima della prima scena;
  *   scene: [id, ...]     ordine delle scene (la prima apre la sessione);
  *   pieni_all_inizio     {orologio della campagna: segni già pieni} all'inizio di questa sessione;
+ *   pg_all_inizio        {pg: {pf, oggetti, monete, indossati, contatori, incantesimi}}: where each PC starts (the
+ *                        previous log's `pg_alla_fine`, sessione/stato-pg.ts); tempo_all_inizio {giorno, ora, minuto};
  *   orologi, canone, rivelazioni, nodi, colli_di_bottiglia(_nota), ...: si UNISCONO a campagna.yaml
  *   (liste accodate; un id ripetuto è un errore);
  *   titolo, preparazione: non vanno al narratore.
@@ -21,12 +23,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import type { DatiYaml } from './tipi';
+import { secondiDiOra, type StatoPg } from '../sessione/stato-pg';
 
 export const CARTELLA_SESSIONI = 'sessioni';
 export const FILE_SESSIONE = 'sessione.yaml';
 
 /** Chiavi di sessione.yaml che il compilatore usa ma che il narratore non vede. */
-const CHIAVI_NON_AL_NARRATORE = new Set(['riassunto_iniziale', 'scene', 'titolo', 'numero', 'id', 'preparazione', 'pieni_all_inizio']);
+const CHIAVI_NON_AL_NARRATORE = new Set(['riassunto_iniziale', 'scene', 'titolo', 'numero', 'id', 'preparazione', 'pieni_all_inizio', 'pg_all_inizio', 'tempo_all_inizio']);
 
 export interface Pacchetto {
   /** Numero della sessione (dal nome della cartella: «02» → 2). */
@@ -124,4 +127,53 @@ export function ordinaScene<T extends { id: string }>(scene: T[], ordine: unknow
     out.push(s);
   }
   return out;
+}
+
+/**
+ * `pg_all_inizio` and `tempo_all_inizio` of sessione.yaml (sessione/stato-pg.ts): where each PC and the game clock start
+ * this session. Ids must be PCs of pg.yaml; the numbers whole and from 0. The gear's ids are checked by the validator
+ * against the rule set (the Engine ignores an unknown one, with a log line).
+ */
+export function statoAllInizio(sessione: DatiYaml, pg: readonly string[], dove: string): { pg: Record<string, StatoPg>; tempo: number | null } | null {
+  const v = sessione['pg_all_inizio'];
+  const t = sessione['tempo_all_inizio'];
+  if ((v === undefined || v === null) && (t === undefined || t === null)) return null;
+  const out: Record<string, StatoPg> = {};
+  const intero = (x: unknown): x is number => typeof x === 'number' && Number.isInteger(x) && x >= 0;
+  const mappa = (x: unknown, k: string): Record<string, number> | undefined => {
+    if (x === undefined) return undefined;
+    if (!x || typeof x !== 'object' || Array.isArray(x) || !Object.values(x).every(intero)) throw new ErrorePacchetto(`${dove}: pg_all_inizio.${k} dev'essere {id: intero ≥ 0}`);
+    return x as Record<string, number>;
+  };
+  const lista = (x: unknown, k: string): string[] | undefined => {
+    if (x === undefined) return undefined;
+    if (!Array.isArray(x) || !x.every((y) => typeof y === 'string')) throw new ErrorePacchetto(`${dove}: pg_all_inizio.${k} dev'essere una lista di id`);
+    return x as string[];
+  };
+  if (v !== undefined && v !== null) {
+    if (typeof v !== 'object' || Array.isArray(v)) throw new ErrorePacchetto(`${dove}: pg_all_inizio dev'essere {id_pg: {pf, oggetti, monete, indossati, contatori, incantesimi}}`);
+    for (const [id, x] of Object.entries(v as DatiYaml)) {
+      if (!pg.includes(id)) throw new ErrorePacchetto(`${dove}: pg_all_inizio cita «${id}», che non è un PG di pg.yaml`);
+      const d = (x ?? {}) as DatiYaml;
+      if (d['pf'] !== undefined && !intero(d['pf'])) throw new ErrorePacchetto(`${dove}: pg_all_inizio.${id}.pf dev'essere un intero ≥ 0`);
+      const s: StatoPg = {};
+      if (d['pf'] !== undefined) s.pf = d['pf'] as number;
+      const oggetti = mappa(d['oggetti'], `${id}.oggetti`);
+      const monete = mappa(d['monete'], `${id}.monete`);
+      const contatori = mappa(d['contatori'], `${id}.contatori`);
+      const indossati = lista(d['indossati'], `${id}.indossati`);
+      const incantesimi = lista(d['incantesimi'], `${id}.incantesimi`);
+      Object.assign(s, oggetti ? { oggetti } : {}, monete ? { monete } : {}, contatori ? { contatori } : {}, indossati ? { indossati } : {}, incantesimi ? { incantesimi } : {});
+      out[id] = s;
+    }
+  }
+  let tempo: number | null = null;
+  if (t !== undefined && t !== null) {
+    const o = t as DatiYaml;
+    if (typeof t !== 'object' || !intero(o['giorno']) || (o['giorno'] as number) < 1 || (o['ora'] !== undefined && !intero(o['ora'])) || (o['minuto'] !== undefined && !intero(o['minuto']))) {
+      throw new ErrorePacchetto(`${dove}: tempo_all_inizio dev'essere {giorno: da 1, ora, minuto}`);
+    }
+    tempo = secondiDiOra({ giorno: o['giorno'] as number, ora: (o['ora'] as number | undefined) ?? 0, minuto: (o['minuto'] as number | undefined) ?? 0 });
+  }
+  return { pg: out, tempo };
 }

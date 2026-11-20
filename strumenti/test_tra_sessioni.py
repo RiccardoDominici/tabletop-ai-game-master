@@ -136,3 +136,18 @@ def test_riassunto_degli_oggetti(giocata, capsys):
     out = capsys.readouterr().out
     assert "oggetto t4: ogg_chiave → pg_anna" in out
     assert "oggetto t6: ogg_lettera → al suo posto" in out
+
+
+def test_pacchetto_porta_pg_e_tempo_dal_registro(giocata):
+    """R2: the PCs' hit points, gear, coins, counters and the game clock at the end of session 1 (registro.yaml →
+    pg_alla_fine, tempo_alla_fine) are where session 2 starts (sessione.yaml → pg_all_inizio, tempo_all_inizio)."""
+    f = giocata / "sessioni" / "01" / "registro.yaml"
+    d = yaml.safe_load(f.read_text(encoding="utf-8"))
+    pg = d["pg"][0]["id"]
+    d["pg_alla_fine"] = [{"id": pg, "pf": 3, "oggetti": {"torcia": 2}, "monete": {"mo": 7}, "contatori": {"slot_1": 0}}]
+    d["tempo_alla_fine"] = {"giorno": 1, "ora": 21, "minuto": 40}
+    f.write_text(yaml.safe_dump(d, allow_unicode=True, sort_keys=False), encoding="utf-8")
+    assert T.pacchetto(giocata, 1) == 0
+    sessione = yaml.safe_load((giocata / "sessioni" / "02" / "sessione.yaml").read_text())
+    assert sessione["pg_all_inizio"] == {pg: {"pf": 3, "oggetti": {"torcia": 2}, "monete": {"mo": 7}, "contatori": {"slot_1": 0}}}
+    assert sessione["tempo_all_inizio"] == {"giorno": 1, "ora": 21, "minuto": 40}

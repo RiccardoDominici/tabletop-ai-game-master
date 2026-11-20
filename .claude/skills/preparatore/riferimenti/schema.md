@@ -486,6 +486,9 @@ The log contains the private actions: it is the GM's material. It is not touched
 
 ### sessioni/<nn>/ (the package, shape of apps/server/src/campagna/pacchetti.ts)
 `sessione.yaml` with `riassunto_iniziale`, `scene` (in order), `pieni_all_inizio: {o_…: ticks}` (replaces that of the campaign's clocks),
+`pg_all_inizio: {pg_…: {pf, oggetti: {id: n}, monete: {mo: n}, indossati: [ids], contatori: {slot_1: n}, incantesimi: [ids]}}`
+(where each PC starts: written by `tra-sessioni.sh --pacchetto` from the log, every field optional, the sheet's value
+otherwise), `tempo_all_inizio: {giorno, ora, minuto}` (the game clock),
 any clocks, and the canon and nodes of the session (they are merged into campagna.yaml), and `preparazione.fili: [{id, come: ripreso|rimandato}]`,
 which sits in `preparazione` so that it does not reach the narrator. Plus `scene/`, `png/` (the NPCs of this session and the updated sheets of the
 recurring ones, which replace those of the campaign), `repertorio/` with its `parole_segrete.yaml` (they replace those of the campaign).

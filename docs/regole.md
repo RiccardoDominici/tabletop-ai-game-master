@@ -424,7 +424,7 @@ The `significato` of bands and grades replaces it. With the SRD 5.2 the rule sta
 - **Rules-engine work R1 (20 November) leaves open** (the interim tick of R1, one round per closed window, is replaced
   by the game clock of R2, docs/prove.md §11): the SRD 5.2 has its falls and long rest as
   data but no spells or slots yet; monster specials (poison riders, breath, paralysis on a hit) can use the typed
-  effects but are not data of any set; carrying HP and resources from one session to the next (`tra_sessioni.py`) is
-  not done; subdual damage is not modelled; spells of levels 3–6 of Basic Fantasy are not data yet.
+  effects but are not data of any set; carrying HP and resources from one session to the next is done by R2 (the log's
+  `pg_alla_fine`, a package's `pg_all_inizio`, docs/strati.md); subdual damage is not modelled; spells of levels 3–6 of Basic Fantasy are not data yet.
 - **Subsystems** (`sottosistemi`) are text only. Conditions apply in the fight (docs/combattimento.md); damage, healing, falls and rest outside an attack are typed effects (above).
 - **Opposed checks** in a non-SRD set become normal checks. Saving throws are pinned to their own number (above), and a target rolls its own save against a PC's power (`salvezzaDelBersaglio`, the Game Master's side for an NPC).

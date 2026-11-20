@@ -20,6 +20,8 @@ export interface LuceAccesa {
 }
 
 export interface StatoTempoSalvato {
+  /** Absolute game seconds (since midnight of day 1) at which the session started: the set's `inizio` or the package's. */
+  inizio?: number;
   secondi: number;
   /** Seconds not yet a whole round (they add up with the next advance). */
   resto: number;
@@ -42,12 +44,17 @@ export class TempoDiGioco {
   private readonly luci = new Map<string, LuceAccesa>();
   readonly regola: RegolaTempo;
 
+  /** Absolute game seconds at which the session started (the package's `tempo_all_inizio`, else the set's `inizio`). */
+  readonly inizio: number;
+
   constructor(
     regola: RegolaTempo | null,
     private readonly o: OpzioniTempo,
+    inizio: number | null = null,
   ) {
     this.regola = regola ?? SENZA_TEMPO;
     this.mostrato = regola !== null;
+    this.inizio = inizio ?? this.regola.inizio;
   }
 
   /** The set has a clock worth showing (its own `tempo`). */
@@ -60,7 +67,7 @@ export class TempoDiGioco {
 
   /** Game seconds since midnight of day 1. */
   adesso(): number {
-    return this.regola.inizio + this.secondi;
+    return this.inizio + this.secondi;
   }
 
   /** Seconds passed since the session started. */
@@ -137,7 +144,7 @@ export class TempoDiGioco {
   }
 
   esporta(): StatoTempoSalvato {
-    return { secondi: this.secondi, resto: this.resto, luci: [...this.luci.values()].map((l) => ({ ...l })) };
+    return { inizio: this.inizio, secondi: this.secondi, resto: this.resto, luci: [...this.luci.values()].map((l) => ({ ...l })) };
   }
 
   importa(s: StatoTempoSalvato | null | undefined): void {

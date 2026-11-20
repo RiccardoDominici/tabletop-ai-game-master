@@ -80,6 +80,11 @@ does not exist):
   other keys the session applies, with a warning. The `sessione` block of campagna.yaml has no effect (the recap is
   in the package). They do not reach the narrator: `riassunto_iniziale`, `scene`, `titolo`, `pieni_all_inizio`,
   `preparazione` (of the campaign and of the session: for example `preparazione.fili`).
+- **pg_all_inizio** `{pg_x: {pf, oggetti, monete, indossati, contatori, incantesimi}}` and **tempo_all_inizio**
+  `{giorno, ora, minuto}`: where each PC and the game clock start this session (sessione/stato-pg.ts): the previous log's
+  `pg_alla_fine` and `tempo_alla_fine`, copied by `tra_sessioni.py pacchetto` and changed by the between-session work.
+  The Engine applies them over the sheets at the start and at «Ricomincia» (a resumed session takes its snapshot); a PC
+  id that is not in pg.yaml is an error, a counter the set does not track is logged and ignored. Not for the narrator.
 - **pieni_all_inizio** `{id_orologio: n}`: the signs already filled on a campaign clock at the start of this session
   (written between sessions from the log and from the world that moves). The fronts' `orologi_extra` can be cited
   too: the Engine plays them off-screen (docs/mondo.md §3). An id that does not exist is an error; a clock not
@@ -156,7 +161,9 @@ its turn and cause: narration or master, signs removed, departure), `indizi` (cl
 (lies), `fatti_noti` (known facts) (with the line that brings them), `png_incontrati` (NPCs met) (who spoke, first and
 last turn), `png_improvvisati` (minor characters the narrator improvised in mode A with `[nuovo png]`: name, role,
 turn, scene; only when there are any, docs/coerenza.md), `oggetti` (objects that changed hands: id, holder at the end
-or null back in its place, turn; only when there are any, A22), `pg` (PCs) (public and private actions kept separate, exact text and outcome), `momenti` (moments) (the turns
+or null back in its place, turn; only when there are any, A22), `pg_alla_fine` and `tempo_alla_fine` (each PC's hit
+points, gear, coins, counters and prepared spells, and the game clock's day and time, from the last snapshot: only with
+dice, sessione/stato-pg.ts), `pg` (PCs) (public and private actions kept separate, exact text and outcome), `momenti` (moments) (the turns
 in which the Engine recorded a change, with the lines said and the actions), `note_del_master` (the Game Master's notes),
 `avvisi` (warnings). `trascrizione.yaml` sits next to it: the public entries turn by turn, exact text. In mode A there
 are no lines (`battute: null`); clues, lies and known facts come from the narrator's `[indizio]`, `[menzogna]`,
