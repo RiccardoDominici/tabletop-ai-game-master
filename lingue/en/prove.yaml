@@ -179,6 +179,8 @@ srd:
 # a stem that must start a word («persua» finds «persuade», «persuasion»); \b at the end wants the whole word.
 # Players write in the first person («I climb the wall»), so the phrases are first-person where it matters.
 parole:
+  # Number words for a distance, «word=value» («at twenty yards»): the range band of a shot (prove/gittate.ts). Digits always work.
+  numeri: ["one=1", "two=2", "three=3", "four=4", "five=5", "six=6", "seven=7", "eight=8", "nine=9", "ten=10", "fifteen=15", "twenty=20", "thirty=30", "forty=40", "fifty=50", "sixty=60", "seventy=70", "eighty=80", "ninety=90", "hundred=100"]
   # SRD skills, in the order they are tried: the most specific first (the first that matches wins).
   abilita:
     storia: [i remember, 'try(ing)? to remember', 'do i (know|remember)', what do i know, recall, legend, 'lore\b', coat of arms, heraldr, 'crest\b', 'noble (house|family)', chronicl, histor, deciph, inscription]

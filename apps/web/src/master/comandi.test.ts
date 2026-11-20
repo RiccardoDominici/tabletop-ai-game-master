@@ -33,6 +33,7 @@ const UNO_PER_TIPO: Record<TipoComandoMaster, ComandoMaster> = {
   condizione: { tipo: 'condizione', id: 'pg_anna', condizione: 'avvelenato', attiva: true },
   riposo: { tipo: 'riposo', riposo: 'notte' },
   pericolo: { tipo: 'pericolo', id: 'pg_anna', cosa: 'caduta', valore: 20 },
+  inventario: { tipo: 'inventario', id: 'pg_anna', cosa: 'compra', oggetto: 'torcia', quante: 2 },
   tiro: { tipo: 'tiro', id: 'r_a3', valori: [14] },
   chiedi_prova: { tipo: 'chiedi_prova', id_pg: 'pg_anna', cosa: 'abilita:percezione', difficolta: null },
 };

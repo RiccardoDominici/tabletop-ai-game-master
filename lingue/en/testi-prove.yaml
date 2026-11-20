@@ -324,6 +324,36 @@ prove:
     senza_armatura: "no armor"
     a_due_mani: "{nome}, two-handed"
     lanciato: "{nome} (thrown)"
+    gittata: " ({fascia}{bonus}{distanza})"
+    gittata_predefinita: " ({fascia}{bonus}: no distance said)"
+    fuori_gittata: "{nome} cannot shoot {arma} at {distanza} {unita}: it reaches {massimo} {unita}."
+    ricarica: "{nome} is still reloading {arma} (one shot every {n} rounds): no attack."
+    abilita_bloccata: "{nome} cannot use {abilita} wearing {cosa}: no roll."
+    speciale_bloccato: " ({abilita} blocked by {cosa}: an ordinary attack)"
+    penalita_arma: " (with the {valore} penalty: {arma} is not a weapon for that class or race)"
+    perde_incantesimi: " {nome} used a weapon their faith forbids ({arma}): today's spells are lost."
+    incantesimo_vietato: "{nome} cannot cast {potere} wearing {cosa}: nothing is spent."
+    incantesimo_perso: "{nome} tries to cast {potere} wearing {cosa}: the spell fails and is lost."
+  # The inventory and the coins (prove/inventario.ts): buying, selling, finding, wearing.
+  scorta:
+    slot: "Spells of level {livello}"
+  inventario:
+    sconosciuto: "«{oggetto}» is not in the set's catalog."
+    non_ha: "{nome} has no {oggetto}."
+    prende: "{nome} takes {oggetti}."
+    perde: "{nome} no longer has {oggetti}."
+    riceve: "{nome} receives {monete}."
+    paga_monete: "{nome} pays {costo}."
+    senza_monete: "{nome} has not enough coins: {costo} needed, {ha} owned."
+    senza_prezzo: "{oggetto} is not bought or sold."
+    non_basta: "{nome} has not enough coins for {oggetti}: it costs {costo}, they have {ha}."
+    resto: " (change: {resto})"
+    compra: "{nome} buys {oggetti} for {costo}{resto}."
+    vende: "{nome} sells {oggetti} for {prezzo}."
+    non_indossabile: "{oggetto} is not worn."
+    vietato: "{nome} cannot wear {oggetto}: their class or race does not allow it."
+    indossa: "{nome} puts on {oggetto}: Armor Class {ca}."
+    toglie: "{nome} takes off {oggetto}: Armor Class {ca}."
 
 regole:
   domanda:

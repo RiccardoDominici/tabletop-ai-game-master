@@ -70,6 +70,8 @@ export interface PacchettoProve {
     difficolta?: { piu_facile: string[]; piu_difficile: string[] };
     /** SRD skills of routine moves that roll only when a difficulty signal makes them hard. */
     abilita_se_difficile?: Record<string, string[]>;
+    /** Number words a player may say for a distance («a venti metri»), as «word=value» (prove/gittate.ts). */
+    numeri?: string[];
   };
 }
 

@@ -12,6 +12,9 @@ import type { Logger } from '../logger';
 import { ID_DIFESA, tiraCol, type EsitoTiroGenerico } from '../regole/risoluzione';
 import { valoreCaratteristica } from '../regole/schede';
 import type { SchedaGenerica, SistemaRegole } from '../regole/tipi';
+import { voce, type Penalita } from '../regole/catalogo';
+import { chiaveOggetto } from './risorse';
+import { gittataDelTiro } from './gittate';
 import type { FonteDadi } from './dadi';
 import type { DadiDeiPg, GruppoDadi } from './dadi-tavolo';
 import { combinaVantaggi, danno as tiraDanno } from './regole';
@@ -114,7 +117,14 @@ export interface OpzioniRisolutoreRegole {
    * The set's powers and the characters' resources (prove/poteri.ts, prove/risorse.ts): spells, items, ammunition, the
    * once-per-target sneak attack. Absent = no power can be used and nothing is counted (as before).
    */
-  poteri?: Pick<ContestoPoteri, 'risorse' | 'nemici' | 'alleati' | 'immuneAttivo'>;
+  poteri?: Pick<ContestoPoteri, 'risorse' | 'nemici' | 'alleati' | 'immuneAttivo' | 'indossate'>;
+  /**
+   * What each character wears now and what its class or race restrictions forbid while worn (regole/equipaggiamento.ts,
+   * penalitaIndossate): abilities blocked (a thief in metal armor), no spells. Absent = nothing blocked.
+   */
+  indossate?: (id: string) => Penalita & { motivi: string[] };
+  /** The fight's current round (a crossbow's rate of fire), or null outside a fight. */
+  round?: number | null;
   log: Logger;
 }
 
@@ -186,7 +196,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
         o.log.warn({ azione: a.id, potere: d.potere ?? null }, 'powers: a power decision the Engine cannot use (unknown power, or no powers here): no roll');
       } else {
         const r = usaPotere(
-          { sistema: s, schede: o.schede, effetti: o.effetti, salvezza: salvezzaDelBersaglio, log: o.log, ...o.poteri },
+          { sistema: s, schede: o.schede, effetti: o.effetti, salvezza: salvezzaDelBersaglio, log: o.log, ...(o.indossate ? { indossate: o.indossate } : {}), ...o.poteri },
           { autore: a.autore, potere: p, bersaglio: d.bersaglio && o.esiste(d.bersaglio) ? d.bersaglio : null, privata: a.privata, dadiAutore: dadiDelPg(a, 'danno', { etichetta: p.nome, modificatore: 0 }), dadiDelPg: (pg) => o.dadiDeiPg?.fonte({ pg, per: 'contesa', azione: a.id, privata: a.privata, etichetta: p.nome }) ?? o.dadi },
         );
         for (const t of r.tiri) aggiungi(t);
@@ -197,7 +207,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
       }
     } else if (d.tipo === 'attacco') {
       const b = d.bersaglio && o.esiste(d.bersaglio) && d.bersaglio !== a.autore ? d.bersaglio : null;
-      const senza = b ? munizioni(a.autore, d.arma) : null;
+      const senza = b ? munizioni(a.autore, d.arma, a.testo) : null;
       if (senza) fatto = senza;
       else if (!b || !o.schede.get(b)) fatto = fattoAttaccoSenzaScheda(b ? o.nome(b) : null);
       else if (o.stato.fuoriGioco(b) === 'fuggito') fatto = fattoFuggito(o.nome(b));
@@ -222,7 +232,14 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
       const ps = d.prova_scena ? (o.proveScena.find((p) => p.id === d.prova_scena) ?? null) : null;
       const sociale = !!d.bersaglio?.startsWith('png_');
       const cosa = cheCosa(sch, ps ?? d, sociale);
-      if (!cosa) {
+      // An ability the worn armor forbids (Basic Fantasy's thief in metal armor, p. 187): no roll, and the table hears why.
+      const bloccata = (ps ?? d).abilita && o.indossate?.(a.autore).senzaAbilita?.includes((ps ?? d).abilita!) ? (ps ?? d).abilita! : null;
+      if (bloccata) {
+        fatto = testo('prove.equipaggiamento.abilita_bloccata', { nome: o.nome(a.autore), abilita: s.abilita.find((x) => x.id === bloccata)?.nome ?? bloccata, cosa: o.indossate!(a.autore).motivi.join(', ').toLowerCase() });
+        esito.riuscita = false;
+        esito.fallite.push('prova', bloccata);
+        o.log.info({ azione: a.id, autore: a.autore, abilita: bloccata }, 'gear: an ability blocked by the worn armor, no roll');
+      } else if (!cosa) {
         fatto = fattoNessunTiro();
         o.log.warn({ azione: a.id, decisione: d }, 'prove: decisione senza caratteristica, abilità né mossa del set: nessun tiro');
       } else {
@@ -446,6 +463,18 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     let a = arma(sa, idArma);
     // Ammunition (`consuma`): one per attack, tracked by the Engine (prove/risorse.ts); the caller refuses at 0.
     if (a.consuma && o.poteri?.risorse.restanti(chi, a.consuma) !== null) o.poteri?.risorse.spendi(chi, a.consuma);
+    // Catalog ammunition (M2): one of the first kind the bearer still has; a shot takes that ammunition's damage when
+    // the manual gives one (a sling stone 1d3), with the line's own bonus (the sling's Strength).
+    const munizione = a.munizioni && o.poteri ? a.munizioni.find((m) => (o.poteri!.risorse.restanti(chi, chiaveOggetto(m)) ?? 0) > 0) : undefined;
+    if (munizione) {
+      o.poteri!.risorse.spendi(chi, chiaveOggetto(munizione));
+      const m = voce(s.catalogo, munizione);
+      if (m?.tipo === 'munizione' && m.danno) a = { ...a, danno: { numero: m.danno.numero, facce: m.danno.facce, bonus: a.danno.bonus + m.danno.bonus } };
+      o.log.info({ chi, arma: a.id, munizione, restanti: o.poteri!.risorse.restanti(chi, chiaveOggetto(munizione)) }, 'inventory: a shot spends one of its ammunition');
+    }
+    // Rate of fire (a crossbow): the round of this shot, so the next one waits.
+    // A shot that opens the fight comes before its first round (the Engine's round 1 starts with the order rolled).
+    if (a.ricarica && a.ricarica > 1) o.poteri?.risorse.segnaTiro(chi, a.id, o.round ?? 0);
     // An ability usable once per target per fight (Basic Fantasy's sneak attack): spent on this target, the attack
     // falls back to the ability's `ripiego` (an ordinary melee attack), without its double damage.
     let nota = '';
@@ -456,6 +485,13 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
         o.log.info({ chi, bersaglio, abilita: speciale.id, ripiego: speciale.ripiego ?? null }, 'resources: once-per-target ability already used on this target, an ordinary attack');
         a = { ...a, abilita: speciale.ripiego ?? null, caratteristica: speciale.ripiego ? null : speciale.caratteristica };
       } else o.poteri.risorse.segnaUsato(chi, speciale.id, bersaglio);
+    }
+    // The worn armor forbids the special ability (a thief in metal armor cannot sneak attack, p. 187): an ordinary attack.
+    const blocchi = o.indossate?.(chi);
+    if (speciale && blocchi?.senzaAbilita?.includes(speciale.id) && !nota) {
+      nota = testo('prove.equipaggiamento.speciale_bloccato', { abilita: speciale.nome, cosa: blocchi.motivi.join(', ').toLowerCase() });
+      o.log.info({ chi, abilita: speciale.id }, 'gear: the special attack is blocked by the worn armor, an ordinary attack');
+      a = { ...a, abilita: speciale.ripiego ?? null, caratteristica: speciale.ripiego ? null : speciale.caratteristica };
     }
     const doppioAbilita = !nota && speciale?.danno === 'doppio';
     const danno = dadiDanno?.({ etichetta: testo('prove.richiesta.etichetta_danno', { arma: a.nome }), modificatore: a.danno.bonus }) ?? o.dadi;
@@ -473,6 +509,11 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     // The set's situational modifiers (A17): summed into the roll, said in the rule; they replace the arbiter's own
     // advantage for the same action (never ±2 twice for one situation); the help of another PC and conditions stay.
     const situazioni = azione ? modificatoriDellAttacco(s, azione, a) : [];
+    // The range band of a missile or thrown line (catalogo.gittate): by the distance said, the band's words, or the
+    // set's default; a shot beyond the long limit never gets here (munizioni refuses it).
+    const banda = a.gittate && s.catalogo?.gittate ? gittataDelTiro(s.catalogo.gittate, a.gittate, azione ?? '') : null;
+    const gittata = banda && !banda.fuori ? banda : null;
+    if (gittata) o.log.info({ chi, arma: a.id, fascia: gittata.fascia.id, da: gittata.da, distanza: gittata.distanza }, 'range: the band of the shot');
     const date = situazioni.length ? fontiDate.filter((f) => f.fonte !== 'arbitro') : fontiDate;
     if (situazioni.length) o.log.info({ chi, bersaglio, arma: a.id, modificatori: situazioni.map((m) => `${m.id} ${m.bonus}`), senza_vantaggio_arbitro: date.length !== fontiDate.length }, 'prove: situational modifiers of the set');
     const fonti = [...date, ...fontiAttacco(o.condizioni, chi, bersaglio)];
@@ -484,7 +525,8 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     const sist = s.risoluzione.tipo === 'd20_cd' && difesa !== null ? { ...s, difficolta: [{ id: ID_DIFESA, nome: testo('prove.cd.difesa_di', { nome: o.nome(bersaglio) }), valore: difesa, divisore: null, modificatore: null }] } : s;
     // Etichetta una volta sola: senza una mossa né un’abilità la «cosa» è l’arma stessa.
     const etichetta = cosa.etichetta === a.nome ? a.nome : `${a.nome}, ${cosa.etichetta}`;
-    const extra = situazioni.reduce((x, m) => x + m.bonus, 0) + (o.bonusAttivi?.(chi, 'attacchi', contro) ?? 0);
+    // A class or race restriction's penalty with this weapon (Basic Fantasy: a magic-user's sword, −5, p. 187).
+    const extra = situazioni.reduce((x, m) => x + m.bonus, 0) + (o.bonusAttivi?.(chi, 'attacchi', contro) ?? 0) + (a.penalita ?? 0) + (gittata?.fascia.bonus ?? 0);
     const e = tiraCol(sist, dadiTiro, cosa.valore + extra, sist === s ? null : ID_DIFESA, v, etichetta, true);
     // A target that is always hit (asleep: Basic Fantasy p. 36) is hit whatever the die.
     const sempre = conEffetto(o.condizioni, bersaglio, 'colpito_automaticamente');
@@ -494,7 +536,14 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
       e.regola += testo('prove.attivi.sempre_colpito', { condizione: sempre.toLowerCase() });
     }
     if (situazioni.length) e.regola += testo('prove.regola.situazioni', { elenco: situazioni.map((m) => `${m.nome} ${m.bonus > 0 ? '+' : '−'}${Math.abs(m.bonus)}`).join(', ') });
+    if (gittata) e.regola += testo(gittata.da === 'predefinita' ? 'prove.equipaggiamento.gittata_predefinita' : 'prove.equipaggiamento.gittata', { fascia: gittata.fascia.nome, bonus: gittata.fascia.bonus ? ` ${gittata.fascia.bonus > 0 ? '+' : '−'}${Math.abs(gittata.fascia.bonus)}` : '', distanza: gittata.distanza !== null ? ` ${gittata.distanza} ${s.catalogo!.gittate!.unita}` : '' });
+    if (a.penalita) e.regola += testo('prove.equipaggiamento.penalita_arma', { valore: `−${Math.abs(a.penalita)}`, arma: a.nome });
     e.regola += nota;
+    // An edged weapon in a cleric's hand (p. 187): the day's spells are gone.
+    if (a.perdeIncantesimi && o.poteri?.risorse.dimenticaIncantesimi(chi)) {
+      e.regola += testo('prove.equipaggiamento.perde_incantesimi', { nome: o.nome(chi), arma: a.nome });
+      o.log.info({ chi, arma: a.id }, 'gear: a weapon forbidden to the class, the spells of the day are lost');
+    }
     const t = cartaDa(e, chi, 'attacco', a.nome, bersaglio, fonti.filter((f) => f.v === v).map((f) => f.motivo).join('; ') || null, privata);
     if (!e.riuscita) return { t, testo: testo('prove.fatto.attacco_set', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, esito: esitoInParole(e, true) }), esito: e };
     const fatto = colpisci(t, a, sb, e.grado?.id === 'critico' || !!conEffetto(o.condizioni, bersaglio, 'critico_contro'), danno, situazioni.some((m) => m.danno === 'doppio') || doppioAbilita);
@@ -504,9 +553,24 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
    * An attack's ammunition (`attacchi[].consuma`): the line that refuses it when the counter is at 0, or null (it can
    * shoot: no ammunition needed, not tracked, or some left).
    */
-  function munizioni(chi: string, idArma: string | null): string | null {
+  function munizioni(chi: string, idArma: string | null, azione?: string): string | null {
     const sch = o.schede.get(chi);
     const a = sch ? arma(sch, idArma) : null;
+    // Catalog ammunition, the range limit, the rate of fire (M2).
+    if (a?.munizioni?.length && o.poteri && !a.munizioni.some((m) => (o.poteri!.risorse.restanti(chi, chiaveOggetto(m)) ?? 0) > 0)) {
+      o.log.info({ chi, arma: a.id, munizioni: a.munizioni }, 'inventory: out of ammunition, no attack');
+      return testo('prove.poteri.senza_munizioni', { nome: o.nome(chi), risorsa: (voce(s.catalogo, a.munizioni[0]!)?.nome ?? a.munizioni[0]!).toLowerCase(), arma: a.nome });
+    }
+    const banda = a?.gittate && s.catalogo?.gittate ? gittataDelTiro(s.catalogo.gittate, a.gittate, azione ?? '') : null;
+    if (a && banda?.fuori) {
+      o.log.info({ chi, arma: a.id, distanza: banda.distanza, massimo: banda.massimo }, 'range: beyond the long range, no attack');
+      return testo('prove.equipaggiamento.fuori_gittata', { nome: o.nome(chi), arma: a.nome, distanza: banda.distanza, massimo: banda.massimo, unita: s.catalogo!.gittate!.unita });
+    }
+    const ultimo = a?.ricarica && a.ricarica > 1 && o.round != null && o.poteri ? o.poteri.risorse.ultimoTiro(chi, a.id) : null;
+    if (a && ultimo !== null && o.round! - ultimo < a.ricarica!) {
+      o.log.info({ chi, arma: a.id, ultimo, round: o.round, ricarica: a.ricarica }, 'range: the weapon is reloading, no attack');
+      return testo('prove.equipaggiamento.ricarica', { nome: o.nome(chi), arma: a.nome, n: a.ricarica! });
+    }
     if (!a?.consuma || !o.poteri) return null;
     const n = o.poteri.risorse.restanti(chi, a.consuma);
     if (n === null || n > 0) return null;

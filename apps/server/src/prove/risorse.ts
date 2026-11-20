@@ -15,18 +15,29 @@ export interface StatoRisorseSalvato {
   contatori: Array<[string, Array<[string, number]>]>;
   preparati: Array<[string, string[]]>;
   usati: string[];
+  /** The armor and shield each character wears (catalog ids; prove/inventario.ts). Absent in older snapshots. */
+  indossati?: Array<[string, string[]]>;
+  /** The fight round of each weapon's last shot («chi|linea»), for its rate of fire. Cleared when a fight ends. */
+  tiri?: Array<[string, number]>;
 }
 
 export type EsitoLancio = { ok: true; livello: number } | { ok: false; motivo: 'classe' | 'non_preparato' | 'senza_slot'; livello: number | null };
 
 export const chiaveSlot = (livello: number): string => `slot_${livello}`;
 export const chiaveOggetto = (id: string): string => `oggetto:${id}`;
+export const chiaveMoneta = (id: string): string => `moneta:${id}`;
+/** Counters a character can gain in play although the sheet did not start with them: catalog items and coins. */
+const LIBERA = /^(oggetto|moneta):[a-z0-9_]+$/;
 
 export class Risorse {
   private readonly contatori = new Map<string, Map<string, number>>();
   private readonly preparati = new Map<string, string[]>();
   /** «chi|uso|bersaglio»: an ability used once per target per fight (cleared when the fight ends). */
   private readonly usati = new Set<string>();
+  /** The armor and shield each character wears (catalog ids). */
+  private readonly vestiti = new Map<string, Set<string>>();
+  /** «chi|linea» → the fight round of the line's last shot (rate of fire); cleared when the fight ends. */
+  private readonly ultimiTiri = new Map<string, number>();
 
   constructor(
     private readonly s: SistemaRegole,
@@ -47,6 +58,8 @@ export class Risorse {
     this.contatori.clear();
     this.preparati.clear();
     this.usati.clear();
+    this.vestiti.clear();
+    this.ultimiTiri.clear();
     for (const sch of this.schede.values()) this.ricaricaScheda(sch, 'tutto');
   }
 
@@ -61,13 +74,23 @@ export class Risorse {
       this.slotDi(sch).forEach((n, i) => m.set(chiaveSlot(i + 1), n));
       if (sch.incantesimi) this.preparati.set(sch.id, [...sch.incantesimi]);
     }
-    if (quando === 'tutto') for (const [id, n] of Object.entries(sch.oggetti ?? {})) m.set(chiaveOggetto(id), n);
-    if (m.size) this.contatori.set(sch.id, m);
+    if (quando === 'tutto') {
+      for (const [id, n] of Object.entries(sch.oggetti ?? {})) m.set(chiaveOggetto(id), n);
+      // The catalog gear and the coins the sheet starts with (M2): counted like the items with a power.
+      for (const e of sch.equipaggiamento ?? []) m.set(chiaveOggetto(e.id), (m.get(chiaveOggetto(e.id)) ?? 0) + e.quante);
+      for (const [id, n] of Object.entries(sch.monete ?? {})) m.set(chiaveMoneta(id), n);
+      const vestiti = (sch.equipaggiamento ?? []).filter((e) => e.indossato).map((e) => e.id);
+      if (vestiti.length) this.vestiti.set(sch.id, new Set(vestiti));
+    }
+    if (m.size || sch.equipaggiamento || sch.monete) this.contatori.set(sch.id, m);
   }
 
   /** A rest that refreshes, or the end of a fight: what comes back by the set's rule. Returns who got something back. */
   ricarica(quando: 'riposo' | 'scontro'): string[] {
-    if (quando === 'scontro') this.usati.clear();
+    if (quando === 'scontro') {
+      this.usati.clear();
+      this.ultimiTiri.clear();
+    }
     const prima = JSON.stringify(this.esporta());
     for (const sch of this.schede.values()) this.ricaricaScheda(sch, quando);
     return prima === JSON.stringify(this.esporta()) ? [] : [...this.schede.keys()];
@@ -86,12 +109,52 @@ export class Risorse {
     return true;
   }
 
-  /** Change a counter by hand (the Game Master's panel: coins found, arrows picked up). False if not tracked. */
+  /**
+   * Change a counter by hand (the Game Master's panel: coins found, arrows picked up). False if not tracked; a catalog
+   * item or a coin (`oggetto:…`, `moneta:…`) is tracked as soon as a character with a sheet gains one.
+   */
   imposta(chi: string, chiave: string, valore: number): boolean {
-    const m = this.contatori.get(chi);
-    if (!m || !m.has(chiave) || !Number.isInteger(valore) || valore < 0) return false;
+    if (!this.schede.has(chi) || !Number.isInteger(valore) || valore < 0) return false;
+    const m = this.contatori.get(chi) ?? new Map<string, number>();
+    if (!m.has(chiave) && !LIBERA.test(chiave)) return false;
     m.set(chiave, valore);
+    this.contatori.set(chi, m);
     return true;
+  }
+
+  /** Add (or, negative, remove) n of a counter, never below 0; returns the new value, or null if it cannot be tracked. */
+  aggiungi(chi: string, chiave: string, n: number): number | null {
+    const v = Math.max(0, (this.restanti(chi, chiave) ?? 0) + n);
+    return this.imposta(chi, chiave, v) ? v : null;
+  }
+
+  /** Every counter of `chi` whose key starts with `prefisso` (`oggetto:`, `moneta:`), without the prefix. */
+  conPrefisso(chi: string, prefisso: string): Array<[string, number]> {
+    return [...(this.contatori.get(chi) ?? new Map<string, number>())].filter(([k]) => k.startsWith(prefisso)).map(([k, n]) => [k.slice(prefisso.length), n]);
+  }
+
+  /** The armor and shield `chi` wears (catalog ids). */
+  indossati(chi: string): ReadonlySet<string> {
+    return this.vestiti.get(chi) ?? new Set<string>();
+  }
+
+  /** Put on (or take off) a catalog item; the caller checks what may be worn (prove/inventario.ts). */
+  vesti(chi: string, id: string, indossato: boolean, toglie: readonly string[] = []): void {
+    const v = new Set(this.indossati(chi));
+    for (const x of toglie) v.delete(x);
+    if (indossato) v.add(id);
+    else v.delete(id);
+    if (v.size) this.vestiti.set(chi, v);
+    else this.vestiti.delete(chi);
+  }
+
+  /** The fight round of a line's last shot (rate of fire), or null. */
+  ultimoTiro(chi: string, linea: string): number | null {
+    return this.ultimiTiri.get(`${chi}|${linea}`) ?? null;
+  }
+
+  segnaTiro(chi: string, linea: string, round: number): void {
+    this.ultimiTiri.set(`${chi}|${linea}`, round);
   }
 
   /** The spell level of a power for a caster: its class's, else the only (or lowest) level the power has. */
@@ -163,6 +226,8 @@ export class Risorse {
       contatori: [...this.contatori].map(([id, m]) => [id, [...m]]),
       preparati: [...this.preparati].map(([id, l]) => [id, [...l]]),
       usati: [...this.usati],
+      indossati: [...this.vestiti].map(([id, v]) => [id, [...v]]),
+      tiri: [...this.ultimiTiri],
     };
   }
 
@@ -171,11 +236,19 @@ export class Risorse {
     this.azzera();
     if (!s) return;
     for (const [id, voci] of s.contatori ?? []) {
-      const m = this.contatori.get(id);
-      if (!m) continue;
-      for (const [k, n] of voci) if (m.has(k) && Number.isInteger(n) && n >= 0) m.set(k, n);
+      if (!this.schede.has(id)) continue;
+      const m = this.contatori.get(id) ?? new Map<string, number>();
+      // Items and coins gained in play are kept even if the sheet did not start with them (an item found, a coin given).
+      for (const [k, n] of voci) if ((m.has(k) || LIBERA.test(k)) && Number.isInteger(n) && n >= 0) m.set(k, n);
+      if (m.size) this.contatori.set(id, m);
     }
     for (const [id, l] of s.preparati ?? []) if (this.preparati.has(id) && Array.isArray(l)) this.preparati.set(id, l.filter((x) => typeof x === 'string'));
     for (const u of s.usati ?? []) if (typeof u === 'string') this.usati.add(u);
+    // A snapshot from before the inventory keeps the sheet's worn armor.
+    if (s.indossati) {
+      this.vestiti.clear();
+      for (const [id, l] of s.indossati) if (this.schede.has(id) && Array.isArray(l) && l.length) this.vestiti.set(id, new Set(l.filter((x) => typeof x === 'string')));
+    }
+    for (const [k, n] of s.tiri ?? []) if (typeof k === 'string' && Number.isInteger(n)) this.ultimiTiri.set(k, n);
   }
 }

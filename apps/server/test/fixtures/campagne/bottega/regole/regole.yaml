@@ -75,6 +75,8 @@ razze:
 magia: {preparazione: vanciana}
 riposo:
   - {id: notte, nome: Una notte di sonno, cura: 1}
+parole_chiave:
+  scassinare: [scassino, grimaldello]
 
 # The coins: worth in copper (the smallest); prices in gold, silver and copper; fifty coins weigh one unit of load.
 monete:
@@ -127,6 +129,7 @@ catalogo:
     - {id: corda, nome: Corda, peso: 5, costo: "1 mo"}
   restrizioni:
     - {classe: mago, cosa: arma, ammessi: [pugnale], penalita: {attacco: -4}}
+    - {classe: mago, cosa: arma, vietati: [mazza], penalita: {perde_incantesimi: true}}
     - {classe: mago, cosa: armatura, ammessi: [], penalita: {senza_incantesimi: true}}
     - {classe: mago, cosa: scudo, ammessi: [], penalita: {senza_incantesimi: true}}
     - {classe: ladro, cosa: armatura, ammessi_categorie: [leggera], penalita: {senza_abilita: [scassinare, furtivo]}}

@@ -159,6 +159,8 @@ def catalogo_del_set(r: dict, car: set[str], abi: set[str], classi: set[str], ra
                     _err(e, dove, f"{d}.ca: la Classe d'Armatura, un intero")
                 if not (isinstance(v.get("categoria"), str) and RE_ID.match(v["categoria"])):
                     _err(e, dove, f"{d}.categoria: il tipo di armatura (cuoio, metallo), snake_case")
+            elif tipo == "munizione" and v.get("danno") is not None and not _formula(v["danno"]):
+                _err(e, dove, f"{d}.danno: una formula come 1d6")
             elif tipo == "scudo" and not _intero(v.get("bonus")):
                 _err(e, dove, f"{d}.bonus: quanto aggiunge alla CA, un intero")
             elif tipo == "attrezzo" and v.get("luce") is not None:
@@ -204,6 +206,11 @@ def catalogo_del_set(r: dict, car: set[str], abi: set[str], classi: set[str], ra
         pen = _ogg(rr.get("penalita"))
         if not pen or any(k not in PENALITA for k in pen):
             _err(e, dove, f"{d}.penalita: una o più di {', '.join(PENALITA)}")
+        for k, x in (pen or {}).items():
+            ok = (_intero(x) if k == "attacco" else isinstance(x, list) if k == "senza_abilita"
+                  else x in (True, "perso") if k == "senza_incantesimi" else x is True)
+            if k in PENALITA and not ok:
+                _err(e, dove, f"{d}.penalita.{k}: attacco un intero, senza_abilita un elenco, senza_incantesimi true o perso, le altre true")
         for a in (pen or {}).get("senza_abilita") or []:
             if a not in abi:
                 _err(e, dove, f"{d}.penalita.senza_abilita: «{a}» non è un'abilità del set")

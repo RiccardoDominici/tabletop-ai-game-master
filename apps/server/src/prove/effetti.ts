@@ -35,6 +35,11 @@ export interface ContestoEffetti {
   dopoCura?: (id: string) => void;
   /** Hit points just fell to zero outside the fight's own steps: the set's rule at zero (prove/morte.ts). */
   aZero?: (id: string, fatti: string[], tiri: TiroMostrato[]) => void;
+  /** The inventory (prove/inventario.ts): items and coins gained or lost. Absent = the set has no catalog (logged). */
+  inventario?: {
+    oggetto(chi: string, id: string, n: number): { ok: boolean; fatto: string };
+    aggiungiMonete(chi: string, m: Record<string, number>): { ok: boolean; fatto: string };
+  };
   /** The timed effects (conditions, bonuses, immunities): absent = they are not applied (logged). */
   attivi?: {
     aggiungi(id: string, e: Extract<EffettoTipato, { tipo: 'condizione' | 'bonus' | 'immunita' }>, fonte: string, livello: number, dadi: FonteDadi): string | null;
@@ -201,6 +206,16 @@ export function applicaEffetti(a: Applicazione, ctx: ContestoEffetti): EsitoEffe
       case 'stabilizza': {
         const ok = ctx.attivi?.stabilizza(a.bersaglio) ?? false;
         out.fatti.push(testo(ok ? 'prove.effetti.stabilizzato' : 'prove.effetti.non_serve_stabilizzare', { nome: ctx.nome(a.bersaglio), fonte: a.fonte }));
+        break;
+      }
+      case 'oggetto':
+      case 'monete': {
+        if (!ctx.inventario) {
+          ctx.log.warn({ bersaglio: a.bersaglio, effetto: e.tipo }, 'effects: no inventory here (the set has no catalog), skipped');
+          break;
+        }
+        const r = e.tipo === 'oggetto' ? ctx.inventario.oggetto(a.bersaglio, e.oggetto, e.quante) : ctx.inventario.aggiungiMonete(a.bersaglio, e.monete);
+        if (r.fatto) out.fatti.push(r.fatto);
         break;
       }
       case 'condizione':

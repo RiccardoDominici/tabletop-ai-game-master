@@ -15,6 +15,8 @@
  *     - {tipo: immunita, a: [dardo_incantato], durata: {round: 5}}
  *     - {tipo: stabilizza}                                                       # binding wounds: a dying PC is stable
  *     - {tipo: morte}                                                            # save or die (poison)
+ *     - {tipo: oggetto, oggetto: corda, quante: 1}                               # a catalog item found (−1: lost)
+ *     - {tipo: monete, monete: {mo: 20}}                                         # coins found (negative: paid)
  *
  * Durations: `istantanea` (default for damage and healing), `{round: N | "XdY", round_per_livello: k}`, `{turni: …}`
  * (game turns of ten minutes: the Engine has no game clock, docs/regole-audit P4-01, so they last the scene), `scena`
@@ -37,7 +39,7 @@ export type Durata =
   | { tipo: 'permanente' };
 
 /** The closed list of effect kinds (docs/regole.md §2). */
-export const TIPI_EFFETTO = ['danno', 'cura', 'caduta', 'attacco', 'condizione', 'bonus', 'immunita', 'stabilizza', 'morte'] as const;
+export const TIPI_EFFETTO = ['danno', 'cura', 'caduta', 'attacco', 'condizione', 'bonus', 'immunita', 'stabilizza', 'morte', 'oggetto', 'monete'] as const;
 export type TipoEffetto = (typeof TIPI_EFFETTO)[number];
 
 /** What a temporary bonus adds to: Armor Class, attack rolls, saving throws, damage. */
@@ -53,7 +55,11 @@ export type EffettoTipato =
   | { tipo: 'bonus'; a: BersaglioBonus; valore: number; contro: 'tutti' | 'mischia' | 'distanza'; durata: Durata }
   | { tipo: 'immunita'; a: string[]; durata: Durata }
   | { tipo: 'stabilizza' }
-  | { tipo: 'morte' };
+  | { tipo: 'morte' }
+  /** A catalog item gained (quante > 0: a chest's rope) or lost (< 0) by the target (prove/inventario.ts). */
+  | { tipo: 'oggetto'; oggetto: string; quante: number }
+  /** Coins gained (a reward) or paid (negative: their worth, with change) by the target. */
+  | { tipo: 'monete'; monete: Record<string, number> };
 
 type D = Record<string, unknown>;
 const ogg = (v: unknown): D | null => (v !== null && typeof v === 'object' && !Array.isArray(v) ? (v as D) : null);
@@ -160,6 +166,23 @@ export function leggiEffetto(v: unknown, dove: string, errori: string[]): Effett
       return { tipo: 'stabilizza' };
     case 'morte':
       return { tipo: 'morte' };
+    case 'oggetto': {
+      const oggetto = typeof o['oggetto'] === 'string' && ID.test(o['oggetto']) ? o['oggetto'] : null;
+      const quante = o['quante'] === undefined ? 1 : intero(o['quante']);
+      if (!oggetto || quante === null || quante === 0) {
+        errori.push(`${dove}: {tipo: oggetto, oggetto: an id of the set's catalog, quante: a whole number, negative to lose it}`);
+        return null;
+      }
+      return { tipo: 'oggetto', oggetto, quante };
+    }
+    case 'monete': {
+      const m = ogg(o['monete']);
+      if (!m || !Object.keys(m).length || !Object.entries(m).every(([k, n]) => ID.test(k) && intero(n) !== null && n !== 0)) {
+        errori.push(`${dove}: {tipo: monete, monete: {coin id: amount}} (negative to pay)`);
+        return null;
+      }
+      return { tipo: 'monete', monete: m as Record<string, number> };
+    }
   }
 }
 

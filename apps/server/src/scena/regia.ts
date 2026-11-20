@@ -30,6 +30,7 @@ import { LINGUA_PREDEFINITA, linguaAttiva, testo as testoFisso, type Lingua } fr
 import { FILE_LESSICO, fileLessicoGioco, leggiLessico } from '../voce/pronuncia';
 import type {
   AzionePrivata,
+  ComandoMaster,
   Esito,
   EsitoPrivato,
   FaseScena,
@@ -3889,6 +3890,19 @@ export class Regia {
     const r = this.prove?.effettoDelMaster(id, cosa, valore, fonte, this.turno);
     if (!r) return { ok: false, errore: testoFisso('regia.errori.pericolo_non_valido') };
     this.rigaDiSistema(this.turno, r.fatti.join(' '));
+    this.notifica();
+    return { ok: true };
+  }
+
+  /**
+   * The Game Master changes a character's gear or coins (docs/prove.md §10; prove/inventario.ts): the fact goes to the
+   * transcript and to the narrator in the next turn; a refusal (not enough coins, a forbidden armor) back to the panel.
+   */
+  inventario(c: Extract<ComandoMaster, { tipo: 'inventario' }>): Esito {
+    const r = this.prove?.inventarioDelMaster(c);
+    if (!r) return { ok: false, errore: testoFisso('regia.errori.inventario_non_valido') };
+    if (!r.ok) return { ok: false, errore: r.fatto || testoFisso('regia.errori.inventario_non_valido') };
+    this.rigaDiSistema(this.turno, r.fatto);
     this.notifica();
     return { ok: true };
   }

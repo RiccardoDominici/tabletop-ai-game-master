@@ -385,6 +385,20 @@ export class ControlliMaster {
         if (!esito.ok) return rifiuto(esito.errore);
         return { esito, dettagli: dettaglio('pericolo', { id, cosa, valore: String(valore), fonte }), dati: { id, cosa, valore, fonte } };
       }
+      case 'inventario': {
+        // A character's gear and coins (docs/prove.md §10): the catalog's ids, checked by the Engine (prove/inventario.ts).
+        const id = typeof c.id === 'string' && ID_VALIDO.test(c.id) ? c.id : null;
+        const cosa = ['oggetto', 'monete', 'compra', 'vendi', 'indossa', 'togli'].includes(c.cosa) ? c.cosa : null;
+        const oggetto = typeof c.oggetto === 'string' && /^[a-z0-9_]{1,64}$/.test(c.oggetto) ? c.oggetto : undefined;
+        const quante = c.quante === undefined ? undefined : Number.isInteger(c.quante) && Math.abs(c.quante) <= 9999 && c.quante !== 0 ? c.quante : null;
+        const monete = c.monete && typeof c.monete === 'object' && Object.entries(c.monete).every(([k, n]) => /^[a-z0-9_]{1,32}$/.test(k) && Number.isInteger(n) && Math.abs(n) <= 1_000_000) ? c.monete : undefined;
+        const prezzo = typeof c.prezzo === 'string' && /^[0-9.,]{1,9}\s*[a-z_]{0,16}$/.test(c.prezzo.trim()) ? c.prezzo.trim() : undefined;
+        if (!id || !cosa || quante === null || (cosa === 'monete' ? !monete : !oggetto)) return rifiutoDi('inventario_non_valido');
+        const comando = { tipo: 'inventario' as const, id, cosa, ...(oggetto ? { oggetto } : {}), ...(quante ? { quante } : {}), ...(monete ? { monete } : {}), ...(prezzo ? { prezzo } : {}) };
+        const esito = regia.inventario(comando);
+        if (!esito.ok) return rifiuto(esito.errore);
+        return { esito, dettagli: dettaglio('inventario', { id, cosa, oggetto: oggetto ?? JSON.stringify(monete) }), dati: comando };
+      }
       case 'effetto': {
         const id = typeof c.id === 'string' && ID_VALIDO.test(c.id) ? c.id : '';
         if (!this.o.audio?.effetti().includes(id)) return rifiutoDi('effetto_sconosciuto', dettaglio('effetto_sconosciuto', { effetto: id.slice(0, 64) }));

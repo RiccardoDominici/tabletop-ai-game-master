@@ -337,6 +337,36 @@ prove:
     senza_armatura: "senza armatura"
     a_due_mani: "{nome} a due mani"
     lanciato: "{nome} (lanciato)"
+    gittata: " ({fascia}{bonus}{distanza})"
+    gittata_predefinita: " ({fascia}{bonus}: la distanza non è detta)"
+    fuori_gittata: "{nome} non può tirare con {arma} a {distanza} {unita}: arriva a {massimo} {unita}."
+    ricarica: "{nome} sta ancora ricaricando {arma} (tira una volta ogni {n} round): nessun attacco."
+    abilita_bloccata: "{nome} non può usare {abilita} con {cosa} addosso: nessun tiro."
+    speciale_bloccato: " ({abilita} impedito da {cosa}: attacco normale)"
+    penalita_arma: " (compresa la penalità {valore}: {arma} non è un'arma per la sua classe o razza)"
+    perde_incantesimi: " {nome} ha usato un'arma proibita alla sua fede ({arma}): perde gli incantesimi di oggi."
+    incantesimo_vietato: "{nome} non può lanciare {potere} con {cosa} addosso: non spende nulla."
+    incantesimo_perso: "{nome} prova a lanciare {potere} con {cosa} addosso: l'incantesimo fallisce ed è perso."
+  # The inventory and the coins (prove/inventario.ts): buying, selling, finding, wearing.
+  scorta:
+    slot: "Incantesimi di {livello}° livello"
+  inventario:
+    sconosciuto: "«{oggetto}» non è nel catalogo del set."
+    non_ha: "{nome} non ha {oggetto}."
+    prende: "{nome} prende {oggetti}."
+    perde: "{nome} non ha più {oggetti}."
+    riceve: "{nome} riceve {monete}."
+    paga_monete: "{nome} paga {costo}."
+    senza_monete: "{nome} non ha abbastanza monete: servono {costo}, ne ha {ha}."
+    senza_prezzo: "{oggetto} non si vende né si compra."
+    non_basta: "{nome} non ha abbastanza monete per {oggetti}: costa {costo}, ne ha {ha}."
+    resto: " (resto: {resto})"
+    compra: "{nome} compra {oggetti} per {costo}{resto}."
+    vende: "{nome} vende {oggetti} per {prezzo}."
+    non_indossabile: "{oggetto} non si indossa."
+    vietato: "{nome} non può indossare {oggetto}: la sua classe o razza non lo permette."
+    indossa: "{nome} indossa {oggetto}: Classe d'Armatura {ca}."
+    toglie: "{nome} si toglie {oggetto}: Classe d'Armatura {ca}."
 
 regole:
   # «Chiedi una regola» (regole/chiedi.ts): il prompt di sistema è prompts/<lingua>/risponditore-regole.md.

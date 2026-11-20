@@ -24,7 +24,7 @@
  *     armi: [{id, nome, danno, taglia, mani, peso, costo, proprieta, gittate, lancio, munizioni, ricarica, a_due_mani}]
  *     armature: [{id, nome, ca, categoria, max_caratteristica, peso, costo}]
  *     scudi: [{id, nome, bonus, peso, costo}]
- *     munizioni: [{id, nome, peso, costo, confezione}]
+ *     munizioni: [{id, nome, peso, costo, confezione, danno}]          # danno: a shot's damage with it (a sling stone 1d3)
  *     attrezzatura: [{id, nome, peso, costo, confezione, capienza, luce: {raggio, fioca, durata, unita, consuma}}]
  *     restrizioni: [{classe | razza, cosa: arma | armatura | scudo, ammessi | ammessi_proprieta | ammessi_categorie |
  *                    vietati | vietati_taglie, penalita: {attacco | vietato | senza_incantesimi | senza_abilita | perde_incantesimi}}]
@@ -110,6 +110,8 @@ export interface Scudo extends VoceBase {
 
 export interface Munizione extends VoceBase {
   tipo: 'munizione';
+  /** The damage of a shot with it, when the manual gives it on the ammunition (an arrow 1d6, a sling stone 1d3). */
+  danno: FormulaDadi | null;
 }
 
 export interface Luce {
@@ -153,8 +155,11 @@ export interface Penalita {
   attacco?: number;
   /** Cannot be used: no attack line, cannot be worn. */
   vietato?: boolean;
-  /** While worn or wielded, no spell can be cast (a magic-user in armor, p. 8). */
-  senzaIncantesimi?: boolean;
+  /**
+   * While worn, no spell can be cast: `true` refuses the cast (nothing spent), `perso` lets the attempt fail and the
+   * spell is lost (Basic Fantasy p. 187: «any attempt fails, and the spell is lost»).
+   */
+  senzaIncantesimi?: true | 'perso';
   /** While worn, these abilities cannot be used (a thief in metal armor, p. 8). */
   senzaAbilita?: string[];
   /** Attacking with it empties the day's spells (a cleric with an edged weapon, p. 187). */
@@ -337,7 +342,7 @@ function leggiVoce(sezione: keyof typeof SEZIONI, x: unknown, i: number, ctx: Ct
     if (!intero(o['bonus'])) errori.push(`${d}.bonus: what the shield adds to the AC, a whole number`);
     return { id, tipo: 'scudo', ...base(o, d, ctx.monete, errori), bonus: intero(o['bonus']) ? (o['bonus'] as number) : 1 };
   }
-  if (sezione === 'munizioni') return { id, tipo: 'munizione', ...base(o, d, ctx.monete, errori) };
+  if (sezione === 'munizioni') return { id, tipo: 'munizione', ...base(o, d, ctx.monete, errori), danno: o['danno'] === undefined ? null : formula(o['danno'], `${d}.danno`, errori) };
   const capienza = o['capienza'] === undefined ? null : numero(o['capienza']) && (o['capienza'] as number) > 0 ? (o['capienza'] as number) : (errori.push(`${d}.capienza: what it holds, a number`), null);
   return { id, tipo: 'attrezzo', ...base(o, d, ctx.monete, errori), capienza, luce: leggiLuce(o['luce'], d, errori) };
 }
@@ -376,10 +381,10 @@ function leggiPenalita(v: unknown, dove: string, errori: string[]): Penalita {
   for (const [k, x] of Object.entries(o)) {
     if (k === 'attacco' && intero(x)) p.attacco = x;
     else if (k === 'vietato' && x === true) p.vietato = true;
-    else if (k === 'senza_incantesimi' && x === true) p.senzaIncantesimi = true;
+    else if (k === 'senza_incantesimi' && (x === true || x === 'perso')) p.senzaIncantesimi = x;
     else if (k === 'perde_incantesimi' && x === true) p.perdeIncantesimi = true;
     else if (k === 'senza_abilita' && ids(x)?.length) p.senzaAbilita = x as string[];
-    else errori.push(`${dove}.${k}: one of ${PENALITA.join(', ')} (attacco: a whole number, senza_abilita: ability ids, the others true)`);
+    else errori.push(`${dove}.${k}: one of ${PENALITA.join(', ')} (attacco: a whole number, senza_abilita: ability ids, senza_incantesimi: true or perso, the others true)`);
   }
   return p;
 }

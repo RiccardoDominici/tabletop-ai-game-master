@@ -15,7 +15,7 @@ Regole ricavate da Basic Fantasy RPG, quarta edizione (Chris Gonnerman, CC BY-SA
 - Nel tuo turno ti muovi e poi **attacchi una volta**, oppure lanci un incantesimo o fai un'altra cosa.
 - **Per colpire**: d20 più il bonus d'attacco (con la Forza in mischia, con la Destrezza a distanza), contro la **Classe d'Armatura** del bersaglio.
 - **Danno**: il dado dell'arma, più la Forza in mischia.
-- Colpire alle spalle dà +2; caricare con una lancia +2 e danno doppio; tirare da vicino +1, da lontano −2. Dillo nell'azione («colpisco alle spalle», «tiro da lontano»). Essere accecati o afferrati peggiora le cose.
+- Colpire alle spalle dà +2; caricare con una lancia +2 e danno doppio. A distanza conta la gittata (vicino +1, lontano −2): dillo («tiro a 20 metri»). Ogni tiro spende una freccia.
 - I mostri e i PNG hanno un **morale**: quando cade il primo di loro, o metà di loro, possono fuggire o arrendersi.
 
 ## Ferite e morte

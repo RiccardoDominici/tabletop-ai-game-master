@@ -78,6 +78,7 @@ regia:
     riposo_in_combattimento: "No resting during a fight: end it first."
     riposo_sconosciuto: "This rule set has no rest of that kind."
     pericolo_non_valido: "Invalid hazard: it needs a character with a sheet and damage like 2d6, or a height."
+    inventario_non_valido: "Invalid gear change: it needs a character with a sheet and a set with a catalog."
   # Automatic audio cues in the panel's event list ({origine}: "line <id>" or the cue's own origin).
   audio:
     origine_battuta: "line {id}"
@@ -281,6 +282,7 @@ master:
     condizione_non_valida: "Invalid condition."
     riposo_non_valido: "Invalid rest."
     pericolo_non_valido: "Invalid hazard: character, kind (danno, cura, caduta) and value."
+    inventario_non_valido: "Invalid gear change: character, kind (oggetto, monete, compra, vendi, indossa, togli) and the item."
     tiro_non_valido: "Invalid roll."
     prova_non_valida: "Invalid check, difficulty or character (it needs a PC with a sheet)."
     tiro_nessuna: "No roll is waiting with this name."
@@ -341,6 +343,7 @@ master:
     condizione_messa: "{id}: {condizione} applied"
     riposo: "rest: {riposo}"
     pericolo: "{id}: {cosa} {valore} ({fonte})"
+    inventario: "{id}: {cosa} {oggetto}"
     condizione_tolta: "{id}: {condizione} removed"
     tiro_inserito: "{id}: dice {valori} entered by the Game Master"
     tiro_automatico: "{id}: the Engine rolls"

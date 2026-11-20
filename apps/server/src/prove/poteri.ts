@@ -9,6 +9,7 @@ import type { TiroMostrato } from '@tabletop-ai-gm/shared';
 import { testo } from '../lingua';
 import type { Logger } from '../logger';
 import type { Potere } from '../regole/poteri';
+import type { Penalita } from '../regole/catalogo';
 import type { SchedaGenerica, SistemaRegole } from '../regole/tipi';
 import type { FonteDadi } from './dadi';
 import { applicaEffetti, type ContestoEffetti } from './effetti';
@@ -28,6 +29,8 @@ export interface ContestoPoteri {
   alleati: () => string[];
   /** Immune to a power or a condition by an active effect (prove/attivi.ts); the sheet's own `immune` is read here. */
   immuneAttivo?: (id: string, cosa: string) => boolean;
+  /** What the caster wears forbids spells (regole/equipaggiamento.ts, penalitaIndossate): a magic-user in armor. */
+  indossate?: (id: string) => Penalita & { motivi: string[] };
   log: Logger;
 }
 
@@ -120,6 +123,19 @@ export function usaPotere(c: ContestoPoteri, u: UsoPotere): EsitoPotere {
       return out;
     }
     livello = sch?.livello ?? sch?.dadiVita ?? 1;
+    // In armor a magic-user casts nothing (Basic Fantasy p. 187): refused (nothing spent), or the attempt fails and the
+    // spell is lost (`senza_incantesimi: perso`).
+    const vieta = c.indossate?.(u.autore);
+    if (vieta?.senzaIncantesimi) {
+      const cosa = vieta.motivi.join(', ').toLowerCase();
+      if (vieta.senzaIncantesimi === 'perso') {
+        c.risorse.lancia(u.autore, p, l.livello);
+        out.usato = true;
+        out.fatti.push(testo('prove.equipaggiamento.incantesimo_perso', { nome: chi, potere: p.nome, cosa }));
+      } else out.fatti.push(testo('prove.equipaggiamento.incantesimo_vietato', { nome: chi, potere: p.nome, cosa }));
+      c.log.info({ autore: u.autore, potere: p.id, perso: vieta.senzaIncantesimi === 'perso' }, 'gear: no spells while wearing this armor');
+      return out;
+    }
     c.risorse.lancia(u.autore, p, l.livello);
     const restanti = c.risorse.restanti(u.autore, chiaveSlot(l.livello));
     costo = restanti === null ? testo('prove.poteri.costo_incantesimo_senza_slot', { livello: l.livello }) : testo('prove.poteri.costo_incantesimo', { livello: l.livello, restanti });

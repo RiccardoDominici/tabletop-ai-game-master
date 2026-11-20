@@ -47,10 +47,13 @@ import { bonusTratti, type Tratto } from '../regole/tratti';
 import { bersaglioSalvezza, colonnaDi } from '../regole/salvezze';
 import { comeCaratteristica } from '../campagna/regole-srd';
 import { modCaratteristica } from '../campagna/schede';
-import type { CombattimentoMaster, CombattimentoPubblico, RichiestaTiroMaster } from '@tabletop-ai-gm/shared';
+import type { ComandoMaster, CombattimentoMaster, CombattimentoPubblico, RichiestaTiroMaster, ScortaScheda } from '@tabletop-ai-gm/shared';
+import { difesaDa } from '../regole/equipaggiamento';
+import { leggiCosto } from '../regole/catalogo';
 import { applicaEffetti, type ContestoEffetti } from './effetti';
 import { riposa } from './riposo';
 import { Risorse } from './risorse';
+import { Inventario } from './inventario';
 import { Attivi } from './attivi';
 import { Morenti } from './morte';
 import type { EsitoMorte } from './fatti-dovuti';
@@ -194,11 +197,22 @@ export class MotoreProve {
    * window that ran out): owed facts the table must hear (prove/fatti-dovuti.ts), handed with the next turn's result.
    */
   private morteFuori: Array<{ id: string; nome: string; esito: EsitoMorte }> = [];
+  /**
+   * The Engine's own copies of the set's sheets: their AC and attack lines follow the gear the character has now
+   * (prove/inventario.ts), so every reader of a sheet sees the same numbers; the campaign's sheets stay as loaded, and
+   * a dry run (`ombra`) gets copies of its own.
+   */
+  private readonly schedeVive: ReadonlyMap<string, SchedaGenerica> | null;
+  /** What each character carries and wears, and its coins (prove/inventario.ts). Null without a catalog or coins. */
+  readonly inventario: Inventario | null;
 
   constructor(private readonly o: OpzioniMotoreProve) {
     this.gregari = new Map((o.gregari ?? []).map((g) => [g.id, g]));
+    this.schedeVive = o.regole && !o.regole.regole.sistema.srd ? new Map([...o.regole.schede].map(([id, sch]) => [id, structuredClone(sch)])) : null;
     this.stato = new StatoProve(this.generico ? this.generico.schede : o.schede);
     this.risorse = this.generico ? new Risorse(this.generico.regole.sistema, this.generico.schede) : null;
+    const sist = this.generico?.regole.sistema;
+    this.inventario = this.generico && this.risorse && (sist?.catalogo || sist?.monete) ? new Inventario({ sistema: sist, schede: this.generico.schede, risorse: this.risorse, nome: (id) => this.nomeDi(this.o.contesto(), id), log: o.log.child({ modulo: 'inventario' }) }) : null;
     this.attivi = new Attivi({ nome: (id) => this.nomeDi(this.o.contesto(), id), nomeCondizione: (id) => this.regoleCombattimento().condizioni.find((c) => c.id === id)?.nome ?? id, immuneDiScheda: (id, cosa) => this.immuneDiScheda(id, cosa) });
     this.dadi = o.dadi ?? this.nuoviDadi(o.seme);
     this.combattimento = new GestoreCombattimento({
@@ -244,7 +258,7 @@ export class MotoreProve {
 
   /** Il set non SRD in uso (null = SRD 5.2). */
   private get generico(): { regole: RegoleCampagna; schede: ReadonlyMap<string, SchedaGenerica> } | null {
-    return this.o.regole && !this.o.regole.regole.sistema.srd ? this.o.regole : null;
+    return this.o.regole && this.schedeVive ? { regole: this.o.regole.regole, schede: this.schedeVive } : null;
   }
 
   /** A name for the cards and the facts: a minion's own («goblin 2»), otherwise the director's. */
@@ -834,6 +848,8 @@ export class MotoreProve {
       extraSalvezza: (id: string, abilita: string) => this.attivi.bonus(id, 'salvezze') + bonusTratti(this.trattiDi(id), { tipo: 'salvezza', colonna: colonnaDi(g.regole.sistema, abilita) }),
       extraAbilita: (id: string, abilita: string) => bonusTratti(this.trattiDi(id), { tipo: 'abilita', abilita }),
       bonusAttivi: (id: string, a: 'difesa' | 'attacchi' | 'danni', contro: 'mischia' | 'distanza') => this.attivi.bonus(id, a, contro),
+      ...(this.inventario ? { indossate: (id: string) => this.inventario!.penalita(id) } : {}),
+      round: this.combattimento.round,
       log: this.o.log.child({ turno }),
     };
   }
@@ -960,6 +976,7 @@ export class MotoreProve {
         if (this.morenti.ferma(id)) this.o.log.info({ id }, 'death: healed above 0, no longer dying');
       },
       aZero: (id, fatti, tiri) => this.aZeroFuoriScontro(id, turno, fatti, tiri),
+      ...(this.inventario ? { inventario: this.inventario } : {}),
       attivi: {
         aggiungi: (id, e, fonte, livello, dadi) => this.attivi.aggiungi(id, e, fonte, livello, dadi),
         ferito: (id) => this.attivi.ferito(id),
@@ -1026,6 +1043,68 @@ export class MotoreProve {
     this.fattiInSospeso.push(...x.fatti);
     this.o.log.info({ id, cosa, valore, fonte, fatti: x.fatti }, 'effects: applied by the Game Master');
     return { fatti: x.fatti };
+  }
+
+  /**
+   * What a character of a manual's set has now (docs/prove.md §10): AC and attack lines from its gear, what it carries
+   * and wears, its coins and the counters of its spells and resources. For the Game Master's panel and its own phone.
+   * Null = the SRD, or no sheet.
+   */
+  vistaInventario(id: string): ScortaScheda | null {
+    const g = this.generico;
+    const sch = g?.schede.get(id);
+    if (!g || !sch || !this.risorse) return null;
+    const s = g.regole.sistema;
+    const inv = this.inventario;
+    const dif = inv && sch.equipaggiamento ? difesaDa(s, sch, inv.dotazione(id)) : null;
+    const potere = (k: string): string => (s.poteri ?? []).find((p) => p.id === k)?.nome ?? k;
+    const contatori = this.risorse.vista(id).flatMap(({ chiave, restanti }) => {
+      if (chiave.startsWith('moneta:')) return [];
+      if (chiave.startsWith('oggetto:')) {
+        const k = chiave.slice('oggetto:'.length);
+        return s.catalogo?.voci.some((v) => v.id === k) ? [] : [{ id: chiave, nome: potere(k), restanti }];
+      }
+      const slot = /^slot_(\d+)$/.exec(chiave);
+      if (slot) return [{ id: chiave, nome: testo('prove.scorta.slot', { livello: slot[1]! }), restanti }];
+      return [{ id: chiave, nome: (s.risorse ?? []).find((r) => r.id === chiave)?.nome ?? chiave, restanti }];
+    });
+    return {
+      difesa: sch.difesa,
+      difesa_da: dif?.da ?? null,
+      attacchi: sch.attacchi.map((a) => a.nome),
+      oggetti: inv?.oggetti(id) ?? [],
+      monete: inv?.monete(id) ?? [],
+      contatori,
+    };
+  }
+
+  /**
+   * The Game Master changes a character's gear or coins from the panel (docs/prove.md §10): an item found or lost, coins
+   * gained or paid, a purchase or a sale, armor put on or taken off (prove/inventario.ts). A change that happens goes to
+   * the narrator in the next turn; a refusal (not enough coins, a forbidden armor) only to the panel. Null = no catalog.
+   */
+  inventarioDelMaster(c: Extract<ComandoMaster, { tipo: 'inventario' }>): { ok: boolean; fatto: string } | null {
+    const inv = this.inventario;
+    if (!this.attivo || !inv) return null;
+    const errori: string[] = [];
+    const prezzo = c.prezzo !== undefined && c.prezzo !== '' ? leggiCosto(c.prezzo, this.sistema.monete ?? null, 'prezzo', errori) : null;
+    if (errori.length) return { ok: false, fatto: errori.join('; ') };
+    const n = c.quante ?? 1;
+    const e =
+      c.cosa === 'monete'
+        ? inv.aggiungiMonete(c.id, c.monete ?? {})
+        : !c.oggetto
+          ? { ok: false as const, fatto: '' }
+          : c.cosa === 'oggetto'
+            ? inv.oggetto(c.id, c.oggetto, n)
+            : c.cosa === 'compra'
+              ? inv.compra(c.id, c.oggetto, n, prezzo)
+              : c.cosa === 'vendi'
+                ? inv.vendi(c.id, c.oggetto, n, prezzo)
+                : inv.indossa(c.id, c.oggetto, c.cosa === 'indossa');
+    if (e.ok && e.fatto) this.fattiInSospeso.push(e.fatto);
+    this.o.log.info({ id: c.id, cosa: c.cosa, oggetto: c.oggetto ?? null, quante: n, ok: e.ok }, 'inventory: the Game Master changes the gear');
+    return { ok: e.ok, fatto: e.fatto };
   }
 
   /**
@@ -1322,6 +1401,7 @@ export class MotoreProve {
     this.scontroChiesto = s.combattimento_chiesto === true;
     this.fattiInSospeso = Array.isArray(s.fatti_in_sospeso) ? s.fatti_in_sospeso.filter((x): x is string => typeof x === 'string') : [];
     this.risorse?.importa(s.risorse);
+    this.inventario?.rideriva();
     this.attivi.importa(s.attivi);
     this.morenti.importa(s.morenti);
     if (!this.o.dadi && s.seme && /^[0-9a-f]{8,128}$/i.test(s.seme)) this.dadi = this.nuoviDadi(s.seme, s.contatore ?? 0);
@@ -1337,6 +1417,7 @@ export class MotoreProve {
     this.scontroChiesto = false;
     this.fattiInSospeso = [];
     this.risorse?.azzera();
+    this.inventario?.rideriva();
     this.attivi.azzera();
     this.morenti.azzera();
     this.intestazione = null;

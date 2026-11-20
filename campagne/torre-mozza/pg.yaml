@@ -34,10 +34,20 @@ personaggi:
       razza: umano
       abilita: {mischia: 1, distanza: 1, forzare: 3}
       pf: 9                      # 1d8 al massimo, più 1 di Costituzione
-      difesa: 17                 # cotta di maglia 15, scudo +1, Destrezza +1
-      attacchi:
-        - {nome: "Spada lunga", danno: "1d8+2", abilita: mischia}
-        - {nome: "Arco corto", danno: "1d6", abilita: distanza, distanza: true}
+      # Equipaggiamento dal catalogo del set (p. 10–11): la CA 17 viene da cotta di maglia 15, scudo +1, Destrezza +1;
+      # gli attacchi dalle armi (spada lunga 1d8 più la Forza +2; arco corto 1d6, senza Forza, una freccia a tiro).
+      # Monete: 3d6 × 10 = 130 mo (p. 10, tiro del Preparatore) meno 111 mo spesi.
+      equipaggiamento:
+        - cotta_di_maglia
+        - scudo
+        - spada_lunga
+        - arco_corto
+        - {id: freccia_arco_corto, quante: 20}
+        - faretra
+        - zaino
+        - {id: torcia, quante: 6}
+        - otre
+      monete: {mo: 19}
 
   - id: pg_fulco
     nome: "Fulco Granito"
@@ -68,11 +78,20 @@ personaggi:
       razza: nano
       abilita: {mischia: 1, distanza: 1, forzare: 2, pietra: 2}
       pf: 7                      # 1d6 al massimo, più 1 di Costituzione
-      difesa: 15                 # cotta di maglia 15, scudo +1, Destrezza −1
-      attacchi:
-        - {nome: "Mazza", danno: "1d8+1", abilita: mischia}
-        # La fionda somma la Forza al danno (p. 55: «sling bullets or stones do»).
-        - {nome: "Fionda", danno: "1d4+1", abilita: distanza, distanza: true}
+      # Equipaggiamento dal catalogo del set: la CA 15 viene da cotta di maglia 15, scudo +1, Destrezza −1; mazza 1d8 e
+      # fionda 1d4 più la Forza +1 (la fionda somma la Forza al danno, p. 55: «sling bullets or stones do»).
+      # Monete: 3d6 × 10 = 110 mo (p. 10) meno 107 mo spesi.
+      equipaggiamento:
+        - cotta_di_maglia
+        - scudo
+        - mazza
+        - fionda
+        - {id: proiettile, quante: 20}
+        - simbolo_sacro
+        - zaino
+        - {id: torcia, quante: 6}
+        - otre
+      monete: {mo: 3}
 
   - id: pg_nespola
     nome: "Nespola Tondi"
@@ -104,12 +123,22 @@ personaggi:
       abilita: {mischia: 1, distanza: 1, alle_spalle: 5,
                 scassinare: 25, trappole: 20, borseggiare: 30, muoversi_in_silenzio: 25, scalare: 80, nascondersi: 70, ascoltare: 30}
       pf: 5                      # 1d4 al massimo, più 1 di Costituzione
-      difesa: 15                 # armatura di cuoio 13, Destrezza +2
+      # Equipaggiamento dal catalogo del set: la CA 15 viene da armatura di cuoio 13 e Destrezza +2; spada corta 1d6 e
+      # fionda 1d4 (Forza +0). Monete: 3d6 × 10 = 100 mo (p. 10) meno 61 mo spesi.
+      equipaggiamento:
+        - cuoio
+        - spada_corta
+        - fionda
+        - {id: proiettile, quante: 20}
+        - arnesi_da_scasso
+        - zaino
+        - corda_di_canapa
+        - {id: torcia, quante: 6}
+        - otre
+      monete: {mo: 39}
       attacchi:
-        - {nome: "Spada corta", danno: "1d6", abilita: mischia}
         # Danno doppio dell'attacco furtivo: lo raddoppia il Motore (il tiro dell'arma per due, p. 9).
-        - {nome: "Spada corta alle spalle", danno: "1d6", abilita: alle_spalle}
-        - {nome: "Fionda", danno: "1d4", abilita: distanza, distanza: true}
+        - {nome: "Spada corta alle spalle", arma: spada_corta, abilita: alle_spalle}
 
   - id: pg_eliandro
     nome: "Eliandro"
@@ -141,7 +170,14 @@ personaggi:
       incantesimi: [dardo_incantato]
       abilita: {mischia: 1, distanza: 1, cercare: 3}
       pf: 4                      # 1d4 al massimo
-      difesa: 12                 # senza armatura 11, Destrezza +1
-      attacchi:
-        - {nome: "Pugnale", danno: "1d4", abilita: mischia}
-        - {nome: "Pugnale lanciato", danno: "1d4", abilita: distanza, distanza: true}
+      # Equipaggiamento dal catalogo del set: la CA 12 viene da senza armatura 11 e Destrezza +1; il pugnale 1d4, anche
+      # lanciato (Forza +0). Il mago non porta armature (p. 8). Monete: 3d6 × 10 = 90 mo (p. 10) meno 45 mo spesi.
+      equipaggiamento:
+        - pugnale
+        - libro_degli_incantesimi
+        - mantello
+        - zaino
+        - {id: torcia, quante: 6}
+        - otre
+        - razioni
+      monete: {mo: 45}

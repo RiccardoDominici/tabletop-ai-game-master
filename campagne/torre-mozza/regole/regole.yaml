@@ -19,11 +19,14 @@
 # - Bonus d'attacco (p. 53): un'abilità «mischia» (con la Forza) e una «distanza» (con la Destrezza); nella
 #   scheda vale il bonus della tabella (+1 per tutte le classi al primo livello; per i mostri i dadi vita).
 #   Il bonus di Forza al danno in mischia (p. 55) è scritto nella formula del danno dell'arma («1d8+2»).
-# - Gittata (+1 corta, −2 lunga, p. 54), attacco da dietro (+2, non col colpo furtivo del ladro, p. 53) e carica
-#   (+2 e danno doppio, solo con lancia o arma in asta, p. 52) sono `modificatori` del set: valgono per le parole
-#   dell'azione del PG (il Motore non conosce le posizioni). Restano fuori: il −5 a chi tira con un nemico a un metro e
-#   mezzo, il −2 alla Classe d'Armatura di chi carica, il rateo di fuoco delle balestre. La sorpresa con 1d6 sì
-#   (combattimento.sorpresa).
+# - Attacco da dietro (+2, non col colpo furtivo del ladro, p. 53) e carica (+2 e danno doppio, solo con lancia o arma
+#   in asta, p. 52) sono `modificatori` del set: valgono per le parole dell'azione del PG (il Motore non conosce le
+#   posizioni). La gittata (+1 corta, −2 lunga, p. 11 e 54) viene dal catalogo: le fasce di ogni arma, in metri, per la
+#   distanza che il giocatore dice («a 20 metri») o le parole della fascia; oltre la lunga non si tira. Il rateo di fuoco
+#   delle balestre è nel catalogo (`ricarica`). Restano fuori: il −5 a chi tira con un nemico a un metro e mezzo, il −2
+#   alla Classe d'Armatura di chi carica. La sorpresa con 1d6 sì (combattimento.sorpresa).
+# - Equipaggiamento (p. 10–12): monete, armi, armature, scudi, munizioni e attrezzatura sono nel catalogo (`monete`,
+#   `catalogo`); le schede elencano ciò che portano e il Motore ne ricava la Classe d'Armatura e gli attacchi.
 # - Incantesimi (p. 15–16): sono `poteri` del set, con gli effetti tipati; quanti al giorno lo dice la tabella della
 #   classe (`classi[].incantesimi_al_giorno`, p. 7–8). Il mago prepara un incantesimo per ogni posto del giorno
 #   (`magia: vanciana`): lanciato, se ne va fino al riposo, e il Motore lo conta (docs/regole.md §2).
@@ -125,8 +128,8 @@ vantaggio:
 modificatori:
   - {id: da_dietro, nome: "Attacco da dietro", bonus: 2, parole: [alle spalle, da dietro, di spalle], non_con: [alle_spalle]}
   - {id: carica, nome: "Carica", bonus: 2, attacchi: mischia, parole: [carico, carichiamo, alla carica], armi: [lancia, picca, alabarda, asta], danno: doppio}
-  - {id: gittata_corta, nome: "Gittata corta", bonus: 1, attacchi: distanza, parole: [da vicino, a pochi passi, da pochi passi]}
-  - {id: gittata_lunga, nome: "Gittata lunga", bonus: -2, attacchi: distanza, parole: [da lontano, da molto lontano, dalla distanza]}
+  # La gittata (+1 corta, −2 lunga, p. 11 e 54) non è più un modificatore a parole: la danno le fasce del catalogo
+  # (catalogo.gittate) per la distanza detta o le sue parole, con i limiti di ogni arma; oltre la lunga non si tira.
 
 # Si colpisce con d20 + bonus contro la Classe d'Armatura (p. 53); l'armatura non riduce il danno.
 attacchi:
@@ -690,6 +693,165 @@ cadute: {dadi: "1d6", ogni: 3, unita: "metri", arrotonda: vicino, massimo: 20}
 riposo:
   - {id: notte, nome: "Una notte di sonno", cura: 1}
   - {id: a_letto, nome: "Un giorno di riposo a letto", cura: 2}
+
+# Monete (p. 10): 1 pp = 5 gp, 1 gp = 10 sp, 1 ep = 5 sp, 1 sp = 10 cp. Il valore è in rame (il taglio più piccolo vale 1).
+# Peso: una moneta pesa 1/20 di libbra, quindi 20 monete = 1 unità di carico (1 libbra).
+monete:
+  base: mo
+  prezzi: [mo, ma, mr]
+  peso: {quante: 20, peso: 1}
+  tagli:                                    # p. 10: 1 pp = 5 gp = 500 cp (qui in rame), 1 ep = 5 sp = 50 cp
+    - {id: mp, nome: "Monete di platino", vale: 500}
+    - {id: mo, nome: "Monete d'oro", vale: 100}
+    - {id: me, nome: "Monete d'elettro", vale: 50}
+    - {id: ma, nome: "Monete d'argento", vale: 10}
+    - {id: mr, nome: "Monete di rame", vale: 1}
+
+# Catalogo (p. 10–12). Conversioni: piedi × 0,3 = metri (50 piedi = 15 m); libbre come nel manuale; prezzi in mo (gp),
+# ma (sp), mr (cp). Peso «*» = 0,1 libbre, «**» = 0 (si contano poco). Le gittate del manuale, in piedi, sono in metri.
+catalogo:
+  # Classe d'Armatura senza armatura: 11 (p. 11), più il bonus di Destrezza (p. 3).
+  difesa: {senza_armatura: 11, caratteristica: destrezza}
+  abilita: {mischia: mischia, distanza: distanza}
+  # Il bonus di Forza si aggiunge al danno in mischia e a quello delle armi da lancio (p. 55).
+  danno_caratteristica: forza
+  # Gittate (p. 11): corta +1, media 0, lunga −2. Le distanze nel manuale sono in piedi (50/100/150 piedi = 15/30/45 m).
+  gittate:
+    unita: metri
+    parole_unita: [metri, metro, m]
+    fasce:
+      - {id: corta, nome: "Gittata corta", bonus: 1, parole: [da vicino, a pochi passi, da pochi passi]}
+      - {id: media, nome: "Gittata media", bonus: 0}
+      - {id: lunga, nome: "Gittata lunga", bonus: -2, parole: [da lontano, da molto lontano, dalla distanza]}
+    predefinita: media
+
+  # Armi (p. 11). Taglia: S piccola, M media, L grande (le armi L si usano a due mani, p. 11). «mani: 2» = a due mani.
+  # «proprieta»: taglio = da taglio, contundente = da botta, punta = da punta, argento = d'argento (contro i licantropi).
+  armi:
+    # Asce (p. 11).
+    - {id: ascia_da_mano, nome: "Ascia da mano", danno: "1d6", taglia: S, peso: 5, costo: "4 mo", proprieta: [taglio], lancio: {gittate: [3, 6, 9], nome: "Ascia da mano lanciata"}}   # 10/20/30 piedi
+    - {id: ascia_da_battaglia, nome: "Ascia da battaglia", danno: "1d8", taglia: M, peso: 7, costo: "7 mo", proprieta: [taglio]}
+    - {id: grande_ascia, nome: "Grande ascia", danno: "1d10", taglia: L, mani: 2, peso: 15, costo: "14 mo", proprieta: [taglio]}
+    # Archi (p. 11, gittate: arco corto 50/100/150 piedi, arco lungo 70/140/210 piedi).
+    - {id: arco_corto, nome: "Arco corto", danno: "1d6", taglia: M, mani: 2, peso: 2, costo: "25 mo", gittate: [15, 30, 45], munizioni: [freccia_arco_corto, freccia_arco_corto_argento]}
+    - {id: arco_lungo, nome: "Arco lungo", danno: "1d8", taglia: L, mani: 2, peso: 3, costo: "60 mo", gittate: [21, 42, 63], munizioni: [freccia_arco_lungo, freccia_arco_lungo_argento]}
+    # Balestre (p. 11, gittate: leggera 60/120/180 piedi, pesante 80/160/240 piedi). Ricarica: spara ogni N round (p. 54).
+    - {id: balestra_leggera, nome: "Balestra leggera", danno: "1d6", taglia: M, mani: 2, peso: 7, costo: "30 mo", gittate: [18, 36, 54], munizioni: [quadrello_leggero, quadrello_leggero_argento], ricarica: 2}
+    - {id: balestra_pesante, nome: "Balestra pesante", danno: "1d8", taglia: L, mani: 2, peso: 14, costo: "50 mo", gittate: [24, 48, 72], munizioni: [quadrello_pesante, quadrello_pesante_argento], ricarica: 3}
+    # Pugnali (p. 11, gittata come il pugnale: 10/20/30 piedi).
+    - {id: pugnale, nome: "Pugnale", danno: "1d4", taglia: S, peso: 1, costo: "2 mo", proprieta: [taglio], lancio: {gittate: [3, 6, 9], nome: "Pugnale lanciato"}}
+    - {id: pugnale_argento, nome: "Pugnale d'argento", danno: "1d4", taglia: S, peso: 1, costo: "25 mo", proprieta: [taglio, argento], lancio: {gittate: [3, 6, 9], nome: "Pugnale d'argento lanciato"}}
+    # Spade (p. 11).
+    - {id: spada_corta, nome: "Spada corta", danno: "1d6", taglia: S, peso: 3, costo: "6 mo", proprieta: [taglio]}
+    - {id: spada_lunga, nome: "Spada lunga", danno: "1d8", taglia: M, peso: 4, costo: "10 mo", proprieta: [taglio]}   # Longsword/Scimitar
+    - {id: spadone, nome: "Spadone", danno: "1d10", taglia: L, mani: 2, peso: 10, costo: "18 mo", proprieta: [taglio]}   # Two-Handed Sword
+    # Martelli e mazze (p. 11).
+    - {id: martello_da_guerra, nome: "Martello da guerra", danno: "1d6", taglia: S, peso: 6, costo: "4 mo", proprieta: [contundente], lancio: {gittate: [3, 6, 9], nome: "Martello da guerra lanciato"}}   # Warhammer, 10/20/30 piedi
+    - {id: mazza, nome: "Mazza", danno: "1d8", taglia: M, peso: 10, costo: "6 mo", proprieta: [contundente]}
+    - {id: maglio, nome: "Maglio", danno: "1d10", taglia: L, mani: 2, peso: 16, costo: "10 mo", proprieta: [contundente]}   # Maul
+    # Altre armi (p. 11).
+    - {id: randello, nome: "Randello", danno: "1d4", taglia: M, peso: 1, costo: "2 ma", proprieta: [contundente]}   # Club/Cudgel/Walking Staff
+    - {id: bastone, nome: "Bastone", danno: "1d6", taglia: L, mani: 2, peso: 4, costo: "2 mo", proprieta: [contundente]}   # Quarterstaff
+    - {id: arma_in_asta, nome: "Arma in asta", danno: "1d10", taglia: L, mani: 2, peso: 15, costo: "9 mo", proprieta: [punta]}   # Pole Arm
+    # Fionda (p. 11): gittate 30/60/90 piedi; con la Forza si aggiunge il bonus al danno (p. 55). Il sasso è in munizioni.
+    - {id: fionda, nome: "Fionda", danno: "1d4", taglia: S, peso: 0.1, costo: "1 mo", gittate: [9, 18, 27], munizioni: [proiettile, sasso], forza_al_danno: true, proprieta: [contundente]}
+    # Lancia (p. 11): 1d6 a una mano, 1d8 a due mani; lanciata come le gittate di 10/20/30 piedi.
+    - {id: lancia, nome: "Lancia", danno: "1d6", taglia: M, peso: 5, costo: "5 mo", proprieta: [punta], lancio: {gittate: [3, 6, 9]}, a_due_mani: {danno: "1d8", nome: "Lancia a due mani"}}
+
+  # Armature (p. 11): CA 13, 15, 17. «categoria»: cuoio (ladro), metallo (non per il ladro).
+  armature:
+    - {id: cuoio, nome: "Armatura di cuoio", ca: 13, categoria: cuoio, peso: 15, costo: "20 mo"}   # Leather Armor
+    - {id: cotta_di_maglia, nome: "Cotta di maglia", ca: 15, categoria: metallo, peso: 40, costo: "60 mo"}   # Chain Mail
+    - {id: armatura_a_piastre, nome: "Armatura a piastre", ca: 17, categoria: metallo, peso: 50, costo: "300 mo"}   # Plate Mail
+
+  # Scudo (p. 11): +1 alla CA.
+  scudi:
+    - {id: scudo, nome: "Scudo", bonus: 1, peso: 5, costo: "7 mo"}
+
+  # Munizioni (p. 11): pesano 0,1 libbre l'una («*»). I prezzi sono per pezzo, come nel manuale.
+  # Argento: frecce, quadrelli e pugnali d'argento contro i licantropi (p. 11, †).
+  munizioni:
+    - {id: freccia_arco_corto, nome: "Frecce per arco corto", danno: "1d6", peso: 0.1, costo: "1 ma"}
+    - {id: freccia_arco_corto_argento, nome: "Frecce d'argento per arco corto", danno: "1d6", peso: 0.1, costo: "2 mo", proprieta: [argento]}
+    - {id: freccia_arco_lungo, nome: "Frecce per arco lungo", danno: "1d8", peso: 0.1, costo: "2 ma"}
+    - {id: freccia_arco_lungo_argento, nome: "Frecce d'argento per arco lungo", danno: "1d8", peso: 0.1, costo: "4 mo", proprieta: [argento]}
+    - {id: quadrello_leggero, nome: "Quadrelli leggeri", danno: "1d6", peso: 0.1, costo: "2 ma"}
+    - {id: quadrello_leggero_argento, nome: "Quadrelli leggeri d'argento", danno: "1d6", peso: 0.1, costo: "5 mo", proprieta: [argento]}
+    - {id: quadrello_pesante, nome: "Quadrelli pesanti", danno: "1d8", peso: 0.1, costo: "4 ma"}
+    - {id: quadrello_pesante_argento, nome: "Quadrelli pesanti d'argento", danno: "1d8", peso: 0.1, costo: "10 mo", proprieta: [argento]}
+    - {id: proiettile, nome: "Proiettili per fionda", danno: "1d4", peso: 0.1, costo: "1 ma"}   # Bullet
+    - {id: sasso, nome: "Sassi", danno: "1d3", peso: 0.1}   # Stone: il prezzo è n/a, quindi nessun costo
+
+  # Attrezzatura (p. 10, 12): i 46 oggetti della lista di p. 10 nell'ordine del manuale. «confezione»: peso e costo
+  # sono di tutta la confezione (p. 10). Contenitori: capienza in libbre (p. 12). Luce (p. 12): raggio 30 piedi = 9 m,
+  # fioca 20 piedi = 6 m. Le candele non hanno «luce»: il manuale dà i turni per pollice d'altezza, non per candela.
+  attrezzatura:
+    # p. 10 (colonna sinistra), p. 12.
+    - {id: zaino, nome: "Zaino", peso: 0.1, costo: "4 mo", capienza: 40}   # p. 12: 40 libbre; lo zaino dell'halfling ne regge 30
+    - {id: borsa_da_cintura, nome: "Borsa da cintura", peso: 0.1, costo: "1 mo"}
+    - {id: morso_e_briglie, nome: "Morso e briglie", peso: 3, costo: "15 ma"}
+    - {id: candele, nome: "Candele", peso: 0.1, confezione: 12, costo: "1 mo"}   # p. 12: a candle lights 5' di raggio; non modellato
+    - {id: gesso, nome: "Gesso", peso: 0.1, costo: "2 mo"}   # Chalk, piccolo sacchetto di pezzi; serve per segnare la strada
+    - {id: mantello, nome: "Mantello", peso: 1, costo: "2 mo"}   # Cloak
+    - {id: abiti_comuni, nome: "Abiti comuni", peso: 1, costo: "4 mo"}   # Clothing, common outfit
+    - {id: bottiglia_di_vetro, nome: "Bottiglia o fiala di vetro", peso: 0.1, costo: "1 mo"}   # Glass bottle or vial
+    - {id: rampino, nome: "Rampino", peso: 4, costo: "2 mo"}   # Grappling Hook
+    - {id: simbolo_sacro, nome: "Simbolo sacro", peso: 0.1, costo: "25 mo"}   # Holy Symbol
+    - {id: acqua_santa, nome: "Acqua santa", peso: 0.1, costo: "10 mo"}   # Holy Water, per fiala
+    - {id: ferri_di_cavallo, nome: "Ferri di cavallo e ferratura", peso: 10, costo: "1 mo"}   # Horseshoes & shoeing
+    - {id: inchiostro, nome: "Inchiostro", peso: 0.5, costo: "8 mo"}   # Ink, per vasetto (½ libbra)
+    - {id: chiodi_di_ferro, nome: "Chiodi di ferro", confezione: 12, peso: 1, costo: "1 mo"}   # Iron Spikes, 12
+    - {id: scala, nome: "Scala", peso: 20, costo: "1 mo"}   # Ladder, 10 piedi (3 m)
+    # Lanterne (p. 12): luce 30 piedi = 9 m, fioca 20 piedi = 6 m. Una fiasca d'olio dura 18+1d6 turni.
+    - {id: lanterna, nome: "Lanterna", peso: 2, costo: "5 mo", luce: {raggio: 9, fioca: 6, durata: "1d6+18", unita: turno, consuma: olio}}
+    - {id: lanterna_a_fascio, nome: "Lanterna a fascio", peso: 3, costo: "14 mo", luce: {raggio: 9, fioca: 6, durata: "1d6+18", unita: turno, consuma: olio}}   # Bullseye: cono di 30 piedi, modellato come luce tonda
+    - {id: lanterna_schermabile, nome: "Lanterna schermabile", peso: 2, costo: "8 mo", luce: {raggio: 9, fioca: 6, durata: "1d6+18", unita: turno, consuma: olio}}   # Hooded: si può schermare
+    - {id: manette, nome: "Manette (senza lucchetto)", peso: 4, costo: "6 mo"}   # Manacles
+    - {id: astuccio_per_mappe, nome: "Astuccio per mappe o pergamene", peso: 0.5, costo: "1 mo"}   # Map or scroll case
+    - {id: specchio, nome: "Specchio piccolo di metallo", peso: 0.1, costo: "7 mo"}   # Mirror, small metal
+    - {id: olio, nome: "Fiasca d'olio", peso: 1, costo: "1 mo"}   # Oil, per fiasca
+    - {id: lucchetto, nome: "Lucchetto (con due chiavi)", peso: 1, costo: "12 mo"}   # Padlock
+    - {id: carta, nome: "Carta", peso: 0, costo: "1 mo"}   # Paper, per foglio
+    - {id: pertica, nome: "Pertica di legno", peso: 10, costo: "1 mo"}   # Pole, 10 piedi (3 m)
+    - {id: penna, nome: "Penna d'oca", peso: 0, costo: "1 ma"}   # Quill
+    - {id: coltellino, nome: "Coltellino per penne", peso: 0.1, costo: "1 mo"}   # Quill Knife
+    - {id: faretra, nome: "Faretra o astuccio per quadrelli", peso: 1, costo: "1 mo"}   # Quiver or Bolt case, 20 proiettili (p. 12)
+    - {id: razioni, nome: "Razioni secche, per una settimana", peso: 14, costo: "10 mo"}   # Rations, Dry, one week
+    - {id: corda_di_canapa, nome: "Corda di canapa, 15 m", peso: 5, costo: "1 mo"}   # Rope, Hemp, per 50 piedi (p. 12)
+    - {id: corda_di_seta, nome: "Corda di seta, 15 m", peso: 2, costo: "10 mo"}   # Rope, Silk, per 50 piedi (p. 12)
+    - {id: sacco_grande, nome: "Sacco grande", peso: 0.1, costo: "1 mo", capienza: 40}   # Sack, Large; p. 12: 40 libbre
+    - {id: sacco_piccolo, nome: "Sacco piccolo", peso: 0.1, costo: "5 ma", capienza: 20}   # Sack, Small; p. 12: 20 libbre
+    - {id: sella_da_soma, nome: "Sella da soma", peso: 15, costo: "5 mo"}   # Saddle, Pack
+    - {id: sella, nome: "Sella da cavalcare", peso: 35, costo: "10 mo"}   # Saddle, Riding
+    - {id: bisacce, nome: "Bisacce (coppia)", peso: 7, costo: "4 mo", capienza: 10}   # Saddlebags, pair; p. 12: 10 libbre divise tra le due
+    - {id: libro_degli_incantesimi, nome: "Libro degli incantesimi (128 pagine)", peso: 1, costo: "25 mo"}   # Spellbook
+    - {id: tenda_grande, nome: "Tenda grande (per dieci uomini)", peso: 20, costo: "25 mo"}   # Tent, Large
+    - {id: tenda_piccola, nome: "Tenda piccola (per un uomo)", peso: 10, costo: "5 mo"}   # Tent, Small
+    - {id: arnesi_da_scasso, nome: "Arnesi da scasso", peso: 1, costo: "25 mo"}   # Thieves' picks and tools (p. 12: servono per le abilità del ladro)
+    - {id: acciarino, nome: "Acciarino", peso: 1, costo: "3 mo"}   # Tinderbox, pietra focaia e acciarino
+    - {id: torcia, nome: "Torcia", peso: 1, confezione: 6, costo: "1 mo", luce: {raggio: 9, fioca: 6, durata: "1d4+4", unita: turno}}   # Torches, 6; p. 12: 1d4+4 turni
+    - {id: cote, nome: "Cote", peso: 1, costo: "1 mo"}   # Whetstone
+    - {id: fischietto, nome: "Fischietto", peso: 0, costo: "1 mo"}   # Whistle
+    - {id: otre, nome: "Otre", peso: 2, costo: "1 mo"}   # Wineskin/Waterskin, pieno (vuoto è trascurabile)
+    - {id: coperta, nome: "Coperta invernale", peso: 3, costo: "1 mo"}   # Winter blanket
+
+    # Animali da soma (p. 11). Il peso è zero: la bestia non si porta nello zaino.
+    - {id: cavallo_da_tiro, nome: "Cavallo da tiro", peso: 0, costo: "120 mo", proprieta: [animale]}   # Horse, Draft
+    - {id: cavallo_da_guerra, nome: "Cavallo da guerra", peso: 0, costo: "200 mo", proprieta: [animale]}   # Horse, War
+    - {id: cavallo_da_sella, nome: "Cavallo da sella", peso: 0, costo: "75 mo", proprieta: [animale]}   # Horse, Riding
+    - {id: pony, nome: "Pony", peso: 0, costo: "40 mo", proprieta: [animale]}   # Pony
+    - {id: pony_da_guerra, nome: "Pony da guerra", peso: 0, costo: "80 mo", proprieta: [animale]}   # Pony, War
+
+  # Restrizioni (p. 5–8 e 187): che cosa può usare ogni classe e razza, e la penalità se lo fa comunque.
+  restrizioni:
+    - {classe: mago, cosa: arma, ammessi: [pugnale, pugnale_argento, randello], penalita: {attacco: -5}, pagina: 187}
+    - {classe: mago, cosa: armatura, ammessi: [], penalita: {senza_incantesimi: perso}, pagina: 187}
+    - {classe: mago, cosa: scudo, ammessi: [], penalita: {senza_incantesimi: perso}, pagina: 8}
+    - {classe: chierico, cosa: arma, ammessi_proprieta: [contundente], penalita: {perde_incantesimi: true}, pagina: 187}
+    - {classe: ladro, cosa: armatura, ammessi_categorie: [cuoio], penalita: {senza_abilita: [scassinare, trappole, borseggiare, muoversi_in_silenzio, scalare, nascondersi, ascoltare, alle_spalle]}, pagina: 187}
+    - {classe: ladro, cosa: scudo, ammessi: [], penalita: {senza_abilita: [scassinare, trappole, borseggiare, muoversi_in_silenzio, scalare, nascondersi, ascoltare, alle_spalle]}, pagina: 8}
+    - {razza: nano, cosa: arma, vietati: [spadone, arma_in_asta, arco_lungo], penalita: {vietato: true}, pagina: 5}
+    - {razza: halfling, cosa: arma, vietati_taglie: [L], penalita: {vietato: true}, pagina: 6}
 
 danni:
   nome: "Punti ferita"

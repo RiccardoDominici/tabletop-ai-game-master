@@ -791,3 +791,14 @@ Now every source goes through one Engine path, prove/effetti.ts, with the typed 
 
 Credits: this work includes material from the System Reference Document 5.2 («SRD 5.2») by Wizards of the Coast LLC,
 https://www.dndbeyond.com/srd, licensed under the Creative Commons Attribution 4.0 International License.
+
+- **Gear and coins from the panel** (Game Master command `inventario`, `MotoreProve.inventarioDelMaster`, prove/inventario.ts;
+  docs/regole.md §2, «Catalogo»). With a set that has a catalog: an item found or lost (`cosa: oggetto`, `quante` negative
+  to lose), coins gained or paid (`cosa: monete`, `monete: {mo: 3}`; negative = pay that worth with change), a purchase
+  or a sale (`compra`, `vendi`, `prezzo` like «15 ma», default the catalog's), an armor or shield put on or taken off
+  (`indossa`, `togli`; one of each kind, never a forbidden one). The AC and the attack lines are derived again at once,
+  on the Engine's own copy of the sheet, so attacks, traps' attacks and the arbiter's weapon list see the same numbers. A
+  change goes to the transcript and to the narrator in the next turn; a refusal («non ha abbastanza monete») only back to
+  the panel. The typed effects `oggetto` and `monete` do the same from a power or a scene check. `vistaInventario(id)`
+  is what the panel and the PC's own phone show (`ScortaScheda`: AC and what gives it, attack lines, items, coins, the
+  counters of spell slots, resources and power items). Tests: test/inventario.test.ts, test/catalogo.test.ts.

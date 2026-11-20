@@ -252,6 +252,25 @@ the ammunition and the rate of fire; a thrown line), in the order the sheet list
 sheet without `equipaggiamento` (a monster, a set without a catalog) keeps its typed `difesa` and `attacchi`; one that
 types both gets a warning, and the gear's numbers stand.
 
+In play (prove/inventario.ts, prove/gittate.ts; docs/prove.md §10): what each character carries and wears and its coins
+are counters of the Engine state (`oggetto:<id>`, `moneta:<id>`, the worn armor), in the snapshot like the spell slots.
+- A **shot** spends one of the line's ammunition (the first kind the bearer still has; a kind with its own `danno`, a
+  sling stone, sets the shot's dice) and is refused at none; a crossbow with `ricarica: 2` shoots once every two rounds
+  of a fight (the shot that opens a fight comes before round 1).
+- The **range band** comes from the action's words, read by code (the Engine knows no positions): a distance with the
+  set's unit («a 20 metri», «a venti metri», number words from the language pack's `parole.numeri`) against the line's
+  limits; else a band's `parole` («da vicino»); else `predefinita`, and the card says the distance was not given. Beyond
+  the long limit there is no shot. The band's bonus is added and named on the card. A set with bands should not also
+  have word `modificatori` for range (they would add twice).
+- **Restrictions** apply where they bite: a weapon's `attacco` penalty on its card; a `vietato` weapon gives no line and a
+  `vietato` armor cannot be put on; a worn armor with `senza_incantesimi` refuses a cast (`true`: nothing spent) or lets
+  it fail and lose the spell (`perso`, Basic Fantasy p. 187); `senza_abilita` refuses a check of those abilities and
+  turns a special attack (the sneak attack) into an ordinary one; `perde_incantesimi` empties the day's spells when the
+  weapon is used (the cleric's atonement quest is the Game Master's story).
+- **Buying** pays with change: the smallest coins first, the change in `monete.prezzi`, largest first; a pack's price is
+  divided by `confezione` (three torches of a pack of six cost half its price, rounded up). A purchase that cannot be
+  paid changes nothing and only the panel hears it. **Selling** gives the catalog price unless the Game Master types one.
+
 **Typed effects** (regole/effetti.ts; prove/effetti.ts applies them, docs/prove.md §10). A closed list, used by a
 scene check's `effetti_se_fallisce`, by the Game Master's hazards and by the set's powers:
 
@@ -266,6 +285,8 @@ scene check's `effetti_se_fallisce`, by the Game Master's hazards and by the set
 - {tipo: immunita, a: [dardo_incantato], durata: scena}                # powers or conditions the target ignores
 - {tipo: stabilizza}                                                   # a dying PC is stable at 0
 - {tipo: morte}                                                        # save or die
+- {tipo: oggetto, oggetto: corda, quante: 1}                           # a catalog item found (negative: lost)
+- {tipo: monete, monete: {mo: 20}}                                     # coins found (negative: paid, with change)
 ```
 
 Durations: `istantanea`, `{round: N | "XdY", round_per_livello: k}`, `{turni: …}` (game turns: the Engine has no game

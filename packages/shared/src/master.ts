@@ -393,6 +393,13 @@ export type ComandoMaster =
    */
   | { tipo: 'pericolo'; id: string; cosa: 'danno' | 'cura' | 'caduta'; valore: string | number; fonte?: string }
   /**
+   * A character's gear and coins (docs/prove.md §10, the set's catalog): an item found or lost (`oggetto`, `quante` may be
+   * negative), coins gained or paid (`monete`: coin id → amount, negative = pay that much with change), a purchase or a
+   * sale (`compra`, `vendi`; `prezzo` like «15 ma», default the catalog's), an armor or shield put on or taken off
+   * (`indossa`, `togli`). The fact goes to the transcript and to the narrator in the next turn.
+   */
+  | { tipo: 'inventario'; id: string; cosa: 'oggetto' | 'monete' | 'compra' | 'vendi' | 'indossa' | 'togli'; oggetto?: string; quante?: number; monete?: Record<string, number>; prezzo?: string }
+  /**
    * Manual rolls (docs/prove.md §8): the Game Master enters the dice for a player's open request (`valori`), or switches
    * it to the Engine's dice (`valori: null`); `id: '*'` switches every open request.
    */

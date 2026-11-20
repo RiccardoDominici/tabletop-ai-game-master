@@ -13,7 +13,7 @@ import re
 
 from .esito import Esito
 
-TIPI_EFFETTO = ("danno", "cura", "caduta", "attacco", "condizione", "bonus", "immunita", "stabilizza", "morte")
+TIPI_EFFETTO = ("danno", "cura", "caduta", "attacco", "condizione", "bonus", "immunita", "stabilizza", "morte", "oggetto", "monete")
 BERSAGLI_BONUS = ("difesa", "attacchi", "salvezze", "danni")
 CONTRO_BONUS = ("tutti", "mischia", "distanza")
 DURATE = ("istantanea", "scena", "riposo", "permanente")
@@ -119,6 +119,14 @@ def controlla_effetti(v, dove: str, e: Esito, codice: str, condizioni: set[str] 
             if not isinstance(a, list) or not a or not all(isinstance(x, str) and RE_ID.match(x) for x in a):
                 e.errore(codice, d, "a: una lista di id (poteri o condizioni)")
                 ok = False
+        if tipo == "oggetto" and not (isinstance(o.get("oggetto"), str) and RE_ID.match(o["oggetto"])
+                                      and (o.get("quante") is None or (_intero(o["quante"]) and o["quante"] != 0))):
+            e.errore(codice, d, "oggetto: l'id di una voce del catalogo del set, quante un intero (negativo per perderlo)")
+            ok = False
+        if tipo == "monete" and not (isinstance(o.get("monete"), dict) and o["monete"]
+                                     and all(isinstance(k, str) and _intero(n) and n != 0 for k, n in o["monete"].items())):
+            e.errore(codice, d, "monete: {id di moneta: quante} (negativo per pagare)")
+            ok = False
         if tipo in ("condizione", "bonus", "immunita"):
             controlla_durata(o.get("durata"), f"{d}.durata", e, codice)
         if ok:

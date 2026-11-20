@@ -68,6 +68,7 @@ export const master = {
   'master.cmd.pf': 'Punti ferita',
   'master.cmd.riposo': 'Riposo',
   'master.cmd.pericolo': 'Pericolo',
+  'master.cmd.inventario': 'Equipaggiamento',
   'master.cmd.condizione': 'Condizione',
   'master.cmd.tiro': 'Tiro',
   'master.tiri.tutti': 'tutti i tiri aperti',

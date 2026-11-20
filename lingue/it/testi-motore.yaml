@@ -79,6 +79,7 @@ regia:
     riposo_in_combattimento: "Durante uno scontro non si riposa: prima terminalo."
     riposo_sconosciuto: "Questo set di regole non ha quel tipo di riposo."
     pericolo_non_valido: "Pericolo non valido: serve un personaggio con la scheda e un danno come 2d6, o un'altezza."
+    inventario_non_valido: "Equipaggiamento non valido: serve un personaggio con la scheda e un set con il catalogo."
   # Segnali audio automatici nell'elenco degli eventi del pannello ({origine}: «battuta <id>» o quella del segnale).
   audio:
     origine_battuta: "battuta {id}"
@@ -282,6 +283,7 @@ master:
     condizione_non_valida: "Condizione non valida."
     riposo_non_valido: "Riposo non valido."
     pericolo_non_valido: "Pericolo non valido: personaggio, cosa (danno, cura, caduta) e valore."
+    inventario_non_valido: "Equipaggiamento non valido: personaggio, cosa (oggetto, monete, compra, vendi, indossa, togli) e l'oggetto."
     tiro_non_valido: "Tiro non valido."
     prova_non_valida: "Prova, difficoltà o personaggio non validi (serve un PG con la scheda)."
     tiro_nessuna: "Nessun tiro in attesa con questo nome."
@@ -342,6 +344,7 @@ master:
     condizione_messa: "{id}: {condizione} messa"
     riposo: "riposo: {riposo}"
     pericolo: "{id}: {cosa} {valore} ({fonte})"
+    inventario: "{id}: {cosa} {oggetto}"
     condizione_tolta: "{id}: {condizione} tolta"
     tiro_inserito: "{id}: dadi {valori} inseriti dal master"
     tiro_automatico: "{id}: tira il Motore"

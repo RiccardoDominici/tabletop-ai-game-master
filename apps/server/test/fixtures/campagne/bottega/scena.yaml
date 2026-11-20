@@ -34,3 +34,12 @@ apertura: Il mercante vi guarda da dietro il banco, la botola della cantina è a
 musica:
   tag: tensione
 taglio: Si chiude quando il gruppo trova il passaggio o la bottega chiude.
+prove:
+- id: p_ago
+  quando: un PG apre la cassa del mercante
+  abilita: ts_morte
+  difficolta: normale
+  nome: Ago nella serratura
+  se_fallisce: un ago scatta dalla serratura
+  effetti_se_fallisce: [{tipo: attacco, bonus: 0, dadi: "1d4"}]
+  parole: [cassa]

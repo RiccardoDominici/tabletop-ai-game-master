@@ -137,6 +137,11 @@ export class GestoreCombattimento {
     return this.s !== null;
   }
 
+  /** The fight's current round (1 = the first), or null outside a fight. */
+  get round(): number | null {
+    return this.s?.round ?? null;
+  }
+
   /** Con un ordine di turni (iniziativa individuale o per schieramento). */
   get aTurni(): boolean {
     return this.s !== null && this.d.regole.iniziativa.tipo !== 'nessuna';

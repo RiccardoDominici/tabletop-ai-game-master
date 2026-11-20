@@ -50,7 +50,7 @@ export function penalitaDi(violate: readonly Restrizione[]): Penalita {
   for (const r of violate) {
     if (r.penalita.attacco) p.attacco = (p.attacco ?? 0) + r.penalita.attacco;
     if (r.penalita.vietato) p.vietato = true;
-    if (r.penalita.senzaIncantesimi) p.senzaIncantesimi = true;
+    if (r.penalita.senzaIncantesimi) p.senzaIncantesimi = p.senzaIncantesimi === 'perso' ? 'perso' : r.penalita.senzaIncantesimi;
     if (r.penalita.perdeIncantesimi) p.perdeIncantesimi = true;
     if (r.penalita.senzaAbilita) p.senzaAbilita = [...new Set([...(p.senzaAbilita ?? []), ...r.penalita.senzaAbilita])];
   }

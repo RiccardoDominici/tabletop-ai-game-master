@@ -142,3 +142,72 @@ describe('death and dying (p. 188, optional «Save vs. Death»)', () => {
     expect(s.poteri!.find((p) => p.id === 'fasciare')).toMatchObject({ tipo: 'azione', effetti: [{ tipo: 'stabilizza' }] });
   });
 });
+
+describe('the item catalog (pp. 10–12): coins, weapons, ranges, armor, gear', () => {
+  const v = (s: SistemaRegole, id: string) => s.catalogo!.voci.find((x) => x.id === id)!;
+  it('coins: 1 pp = 5 gp, 1 gp = 10 sp, 1 ep = 5 sp, 1 sp = 10 cp; twenty coins to the pound (p. 10)', () => {
+    const s = set();
+    expect(Object.fromEntries(s.monete!.tagli.map((t) => [t.id, t.vale]))).toEqual({ mp: 500, mo: 100, me: 50, ma: 10, mr: 1 });
+    expect(s.monete!.peso).toEqual({ quante: 20, peso: 1 });
+  });
+  it('weapons: price, size, weight, damage (p. 11); ranges in metres, feet × 0.3 (p. 11); rate of fire (p. 54)', () => {
+    const s = set();
+    const arma = (id: string) => v(s, id) as Extract<ReturnType<typeof v>, { tipo: 'arma' }>;
+    expect(arma('ascia_da_mano')).toMatchObject({ costo: 400, taglia: 'S', peso: 5, danno: { numero: 1, facce: 6 } });
+    expect(arma('spadone')).toMatchObject({ costo: 1800, taglia: 'L', peso: 10, mani: 2, danno: { facce: 10 } });
+    expect(arma('randello')).toMatchObject({ costo: 20, taglia: 'M', peso: 1, danno: { facce: 4 } });
+    expect(arma('mazza')).toMatchObject({ costo: 600, taglia: 'M', peso: 10, danno: { facce: 8 } });
+    // Longbow 70/140/210 feet, shortbow 50/100/150, sling 30/60/90, dagger 10/20/30.
+    expect(arma('arco_lungo').gittate).toEqual([21, 42, 63]);
+    expect(arma('arco_corto').gittate).toEqual([15, 30, 45]);
+    expect(arma('fionda').gittate).toEqual([9, 18, 27]);
+    expect(arma('pugnale').lancio!.gittate).toEqual([3, 6, 9]);
+    expect(arma('balestra_leggera').ricarica).toBe(2);
+    expect(arma('balestra_pesante').ricarica).toBe(3);
+    expect(arma('lancia').aDueMani!.danno.facce).toBe(8);
+    expect(s.catalogo!.gittate!.fasce.map((f) => f.bonus)).toEqual([1, 0, -2]);
+    // Silver ammunition (†) and the sling stone, not for sale.
+    expect(v(s, 'freccia_arco_lungo_argento')).toMatchObject({ costo: 400, proprieta: ['argento'] });
+    expect(v(s, 'sasso')).toMatchObject({ costo: null, danno: { facce: 3 } });
+  });
+  it('armor and shields: no armor AC 11; leather 13, chain 15, plate 17, shield +1, with price and weight (p. 11)', () => {
+    const s = set();
+    expect(s.catalogo!.difesa).toEqual({ senzaArmatura: 11, caratteristica: 'destrezza' });
+    expect(v(s, 'cuoio')).toMatchObject({ ca: 13, peso: 15, costo: 2000, categoria: 'cuoio' });
+    expect(v(s, 'cotta_di_maglia')).toMatchObject({ ca: 15, peso: 40, costo: 6000, categoria: 'metallo' });
+    expect(v(s, 'armatura_a_piastre')).toMatchObject({ ca: 17, peso: 50, costo: 30000 });
+    expect(v(s, 'scudo')).toMatchObject({ bonus: 1, peso: 5, costo: 700 });
+  });
+  it('gear: the 46 items of p. 10 with packs; containers and light of p. 12', () => {
+    const s = set();
+    expect(s.catalogo!.voci.filter((x) => x.tipo === 'attrezzo' && !x.proprieta.includes('animale'))).toHaveLength(46);
+    expect(v(s, 'torcia')).toMatchObject({ costo: 100, peso: 1, confezione: 6, luce: { raggio: 9, fioca: 6, durata: { numero: 1, facce: 4, bonus: 4 }, unita: 'turno' } });
+    expect(v(s, 'lanterna')).toMatchObject({ costo: 500, peso: 2, luce: { durata: { numero: 1, facce: 6, bonus: 18 }, consuma: 'olio' } });
+    expect(v(s, 'morso_e_briglie')).toMatchObject({ costo: 150, peso: 3 });
+    expect(v(s, 'razioni')).toMatchObject({ costo: 1000, peso: 14 });
+    expect(v(s, 'zaino')).toMatchObject({ capienza: 40 });
+    expect(v(s, 'cavallo_da_guerra')).toMatchObject({ costo: 20000, proprieta: ['animale'] });
+  });
+  it('restrictions (pp. 5–8, 187): magic-user −5 and no spells in armor; thief in metal armor; dwarf and halfling weapons', () => {
+    const s = set();
+    const r = (k: string, id: string) => s.catalogo!.restrizioni.filter((x) => (x.classe ?? x.razza) === id && x.cosa === k);
+    expect(r('arma', 'mago')[0]).toMatchObject({ ammessi: ['pugnale', 'pugnale_argento', 'randello'], penalita: { attacco: -5 } });
+    expect(r('armatura', 'mago')[0]!.penalita).toEqual({ senzaIncantesimi: 'perso' });
+    expect(r('armatura', 'ladro')[0]).toMatchObject({ ammessiCategorie: ['cuoio'] });
+    expect(r('armatura', 'ladro')[0]!.penalita.senzaAbilita).toContain('alle_spalle');
+    expect(r('arma', 'nano')[0]).toMatchObject({ vietati: ['spadone', 'arma_in_asta', 'arco_lungo'], penalita: { vietato: true } });
+    expect(r('arma', 'halfling')[0]).toMatchObject({ vietatiTaglie: ['L'] });
+  });
+  it('the four pregenerated PCs keep their AC and attack lines, now from the catalog', () => {
+    const s = set();
+    const schede = caricaSchedeGeneriche(s, caricaCampagna(BF));
+    const vista = (id: string) => schede.get(id)!.attacchi.map((a) => `${a.id}|${a.danno.numero}d${a.danno.facce}${a.danno.bonus ? `+${a.danno.bonus}` : ''}|${a.abilita}|${a.distanza}`);
+    expect(['pg_livia', 'pg_fulco', 'pg_nespola', 'pg_eliandro'].map((id) => schede.get(id)!.difesa)).toEqual([17, 15, 15, 12]);
+    expect(vista('pg_livia')).toEqual(['spada_lunga|1d8+2|mischia|false', 'arco_corto|1d6|distanza|true']);
+    expect(vista('pg_fulco')).toEqual(['mazza|1d8+1|mischia|false', 'fionda|1d4+1|distanza|true']);
+    expect(vista('pg_nespola')).toEqual(['spada_corta|1d6|mischia|false', 'fionda|1d4|distanza|true', 'spada_corta_alle_spalle|1d6|alle_spalle|false']);
+    expect(vista('pg_eliandro')).toEqual(['pugnale|1d4|mischia|false', 'pugnale_lanciato|1d4|distanza|true']);
+    expect(schede.get('pg_livia')!.attacchi[1]!.munizioni).toEqual(['freccia_arco_corto', 'freccia_arco_corto_argento']);
+    for (const p of ['pg_livia', 'pg_fulco', 'pg_nespola', 'pg_eliandro']) expect(schede.get(p)!.avvisi).toEqual([]);
+  });
+});

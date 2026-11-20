@@ -213,6 +213,26 @@ export interface PuntiFerita {
   massimi: number;
 }
 
+/**
+ * What a character has now, for its own phone and the Game Master's panel (docs/prove.md §10; docs/regole.md §2,
+ * «Catalogo»): the AC its gear gives, its attack lines, what it carries and wears, its coins, the counters of the set
+ * (spell slots left, arrows, uses), and, when the set has them, its load and movement and its burning lights.
+ */
+export interface ScortaScheda {
+  difesa: number | null;
+  /** What gives the AC («Cotta di maglia + Scudo»); null = the sheet's own number. */
+  difesa_da: string | null;
+  attacchi: string[];
+  oggetti: Array<{ id: string; nome: string; quante: number; indossato: boolean }>;
+  monete: Array<{ id: string; nome: string; quante: number }>;
+  /** Spell slots by level, the set's resources, items with a power: how many are left. */
+  contatori: Array<{ id: string; nome: string; restanti: number }>;
+  /** Load and movement (the set's `carico` and `movimento`); absent = the set has no load rules. */
+  carico?: { peso: number; unita: string; fascia: string; limite: number | null; movimento: number | null; unita_movimento: string | null };
+  /** Light sources burning now, with the time left («3 turni»). */
+  luci?: Array<{ oggetto: string; nome: string; restante: string }>;
+}
+
 // ------------------------------------------------------------------ combattimento (docs/combattimento.md)
 
 /** Un combattente nella barra dell'iniziativa. */

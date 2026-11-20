@@ -68,6 +68,7 @@ export const master = {
   'master.cmd.pf': 'Hit points',
   'master.cmd.riposo': 'Rest',
   'master.cmd.pericolo': 'Hazard',
+  'master.cmd.inventario': 'Gear',
   'master.cmd.condizione': 'Condition',
   'master.cmd.tiro': 'Roll',
   'master.tiri.tutti': 'every open roll',
