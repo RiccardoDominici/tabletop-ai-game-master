@@ -111,7 +111,8 @@ describe('critici del d20: del set, l’SRD se il set tace', () => {
     const errori: string[] = [];
     const d = grezzo();
     Object.assign(d['risoluzione'] as object, { critici: 'attacchi_e_salvezze' });
-    (d['abilita'] as unknown[]).push({ id: 'ts_x', nome: 'TS', caratteristica: null, salvezza: 'sì' });
+    // Neither a boolean nor a string (a column of tiri_salvezza, regole/salvezze.ts): not a save.
+    (d['abilita'] as unknown[]).push({ id: 'ts_x', nome: 'TS', caratteristica: null, salvezza: 1 });
     leggiSistema(d, errori, []);
     expect(errori.join(' ')).toMatch(/abilita\.ts_x\.salvezza: true o false/);
     expect(errori.join(' ')).toMatch(/attacchi_e_salvezze senza nessuna abilità con salvezza: true/);

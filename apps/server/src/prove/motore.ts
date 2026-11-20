@@ -1050,13 +1050,14 @@ export class MotoreProve {
    */
   tiriPubblici(): TiroMostrato[] {
     const mostra = this.mostraCd();
-    return (this.ultimoTurno?.tiri ?? []).filter((t) => !t.privata).map((t) => cartaPerIlTavolo(t, mostra));
+    // A Game Master's side roll (an NPC's save against a PC's power, `nascosta`) stays on the panel only.
+    return (this.ultimoTurno?.tiri ?? []).filter((t) => !t.privata && !t.nascosta).map((t) => cartaPerIlTavolo(t, mostra));
   }
 
   /** Carte di un'azione (anche privata): solo per il telefono del suo autore (without the number to beat either). */
   tiriDellAzione(idAzione: string): TiroMostrato[] {
     const mostra = this.mostraCd();
-    return (this.ultimi.get(idAzione) ?? []).map((t) => cartaPerIlTavolo(t, mostra));
+    return (this.ultimi.get(idAzione) ?? []).filter((t) => !t.nascosta).map((t) => cartaPerIlTavolo(t, mostra));
   }
 
   /** The campaign's opt-in to show the number to beat on the table's cards (prove/modalita.ts). */

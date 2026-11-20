@@ -46,6 +46,7 @@ import { modificatoriDellAttacco } from './modificatori';
 import { applicaEffetti, type ContestoEffetti } from './effetti';
 import { effettiSeFallisce } from '../campagna/prove-scena';
 import type { EffettoTipato } from '../regole/effetti';
+import { bersaglioSalvezza, type BersaglioSalvezza } from '../regole/salvezze';
 
 /** Una prova scritta nei dati della scena, col vocabolario del set (scena → prove). */
 export interface ProvaScenaRegole {
@@ -102,6 +103,8 @@ export interface OpzioniRisolutoreRegole {
   dadiDeiPg?: DadiDeiPg | null;
   /** The Engine's typed effects (prove/effetti.ts): a failed scene check's `effetti_se_fallisce`. Absent = not applied. */
   effetti?: ContestoEffetti;
+  /** What a character's traits and active effects add to one of its saves (regole/tratti.ts, prove/attivi.ts). */
+  extraSalvezza?: (id: string, abilita: string) => number;
   log: Logger;
 }
 
@@ -135,7 +138,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
     const d = o.decisioni.get(a.id);
     if (d?.tipo === 'aiuto' && d.aiuta && ids.has(d.aiuta) && d.aiuta !== a.id) aiutanti.set(d.aiuta, [...(aiutanti.get(d.aiuta) ?? []), o.nome(a.autore)]);
   }
-  const { cheCosa, cartaDa, attacca } = strumentiRegole(o);
+  const { cheCosa, cartaDa, attacca, bersaglioDiSalvezza } = strumentiRegole(o);
   // The PC's own dice for one roll of an action (manual rolls), or the Engine's.
   const dadiDelPg = (a: AzioneRisolvibile, per: 'prova' | 'danno', extra: Pick<GruppoDadi, 'etichetta' | 'modificatore'> = {}): FonteDadi =>
     o.dadiDeiPg?.fonte({ pg: a.autore, per, azione: a.id, privata: a.privata, ...extra }) ?? o.dadi;
@@ -193,13 +196,23 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
         fatto = fattoNessunTiro();
         o.log.warn({ azione: a.id, decisione: d }, 'prove: decisione senza caratteristica, abilità né mossa del set: nessun tiro');
       } else {
-        const condSv = conEffetto(o.condizioni, a.autore, 'svantaggio_prove');
+        // A saving throw of the manual is pinned to its own target (regole/salvezze.ts, M5): the table's number or the
+        // sheet's bonus against the default, never a difficulty rung (the rules arbiter's signal words, the model, the
+        // scene) nor the arbiter's or a helper's advantage. Only the conditions of the fight still count.
+        const idSalvezza = cosa.salvezza && !cosa.soglia && s.risoluzione.tipo === 'd20_cd' ? ((ps ?? d).abilita ?? null) : null;
+        const fisso = idSalvezza ? bersaglioDiSalvezza(sch, idSalvezza) : null;
+        if (fisso) {
+          const tolti = fonti.length || (ps?.difficolta ?? d.difficolta) ? { vantaggi: fonti.map((f) => f.motivo), difficolta: ps?.difficolta ?? d.difficolta } : null;
+          if (tolti) o.log.info({ azione: a.id, abilita: idSalvezza, tolti }, 'saves: pinned to the save\'s own target, the difficulty and advantages dropped');
+          fonti.length = 0;
+        }
+        const condSv = conEffetto(o.condizioni, a.autore, fisso ? 'svantaggio_salvezze' : 'svantaggio_prove');
         if (condSv) fonti.push({ v: 'svantaggio', motivo: condSv.toLowerCase() });
         const v = combinaVantaggi(fonti.map((f) => f.v));
-        const sistTiro = cosa.soglia ? sistemaSoglia(s, cosa.soglia) : s;
-        const e = tiraCol(sistTiro, dadiDelPg(a, 'prova'), cosa.valore, cosa.soglia ? null : (ps?.difficolta ?? d.difficolta), v, cosa.etichetta, false, !!cosa.salvezza);
+        const sistTiro = cosa.soglia ? sistemaSoglia(s, cosa.soglia) : fisso ? sistemaSalvezza(s, fisso.contro) : s;
+        const e = tiraCol(sistTiro, dadiDelPg(a, 'prova'), fisso ? fisso.modificatore : cosa.valore, cosa.soglia ? null : fisso ? ID_SALVEZZA : (ps?.difficolta ?? d.difficolta), v, cosa.etichetta, false, !!cosa.salvezza);
         const b = d.bersaglio && o.esiste(d.bersaglio) && d.bersaglio !== a.autore ? d.bersaglio : null;
-        aggiungi(cartaDa(e, a.autore, 'prova', cosa.etichetta, b, fonti.filter((f) => f.v === v).map((f) => f.motivo).join('; ') || null, a.privata, sistTiro));
+        aggiungi(cartaDa(e, a.autore, fisso ? 'salvezza' : 'prova', cosa.etichetta, b, fonti.filter((f) => f.v === v).map((f) => f.motivo).join('; ') || null, a.privata, sistTiro));
         esito.riuscita = e.riuscita;
         // Prove riuscite per il cancello `richiede.prova`: anche gli id del set (mossa, abilità, caratteristica).
         (e.riuscita ? esito.riuscite : esito.fallite).push(...new Set(['prova', ...[d.abilita, d.caratteristica, d.mossa, ps?.id, ps?.mossa, ps?.abilita, ps?.caratteristica, cosa.mossa?.id, cosa.mossa?.caratteristica].filter((x): x is string => !!x)]));
@@ -257,6 +270,14 @@ export function sistemaSoglia(s: SistemaRegole, dado: 6 | 20 | 100): SistemaRego
   };
 }
 
+/** The id of the made-up difficulty a pinned save rolls against (regole/salvezze.ts): not a difficulty of the set. */
+export const ID_SALVEZZA = '_salvezza';
+
+/** The set seen by a pinned saving throw: one difficulty, the save's own number (the table's, or the default's). */
+export function sistemaSalvezza(s: SistemaRegole, contro: number): SistemaRegole {
+  return { ...s, difficolta: [{ id: ID_SALVEZZA, nome: testo('prove.salvezze.tiro_salvezza'), valore: contro, divisore: null, modificatore: null }], difficoltaPredefinita: ID_SALVEZZA };
+}
+
 export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'decisioni'>) {
   const s = o.sistema;
   const nomeCar = (id: string): string => s.caratteristiche.find((c) => c.id === id)?.nome ?? id;
@@ -289,6 +310,32 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     }
     if (car) return { valore: valoreCaratteristica(s, sch, car), etichetta: nomeCar(car), mossa: null };
     return null;
+  }
+
+  /** A sheet's save with the set's save ability: its number to reach and its bonus (traits and active effects added). */
+  function bersaglioDiSalvezza(sch: SchedaGenerica, abilita: string): BersaglioSalvezza | null {
+    return bersaglioSalvezza(s, sch, abilita, o.extraSalvezza?.(sch.id, abilita) ?? 0);
+  }
+
+  /**
+   * A target's own saving throw against a power (M5, target-side saves): `chi` rolls the set's save ability `abilita`
+   * against its own number, with `modificatore` added (a power that gives a penalty or a bonus to the save). An NPC
+   * rolls with the Engine's dice and its card is the Game Master's (`nascosta`); a PC rolls its own (`dadi`, manual
+   * rolls). Null when `chi` has no sheet or the ability is not a save of the set.
+   */
+  function salvezzaDelBersaglio(chi: string, abilita: string, modificatore: number, dadi: FonteDadi, privata: boolean): { e: EsitoTiroGenerico; t: TiroMostrato } | null {
+    const sch = o.schede.get(chi);
+    const b = sch ? bersaglioDiSalvezza(sch, abilita) : null;
+    if (!sch || !b) return null;
+    const fonti = conEffetto(o.condizioni, chi, 'svantaggio_salvezze');
+    const v = fonti ? ('svantaggio' as const) : null;
+    const sist = sistemaSalvezza(s, b.contro);
+    const etichetta = nomeAbil(abilita);
+    const e = tiraCol(sist, dadi, b.modificatore + modificatore, ID_SALVEZZA, v, etichetta, false, true);
+    const t = cartaDa(e, chi, 'salvezza', etichetta, null, fonti ? fonti.toLowerCase() : null, privata, sist);
+    if (chi.startsWith('png_')) t.nascosta = true;
+    o.log.info({ chi, abilita, dadi: e.dadi, modificatore: e.modificatore, contro: b.contro, fonte: b.fonte, riuscita: e.riuscita }, 'saves: a target rolls its own save');
+    return { e, t };
   }
 
   const carta = (base: Omit<TiroMostrato, 'id' | 'turno'>): TiroMostrato => ({ id: o.stato.nuovoIdTiro(), turno: o.turno, ...base });
@@ -392,5 +439,5 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     const fatto = colpisci(t, a, sb, e.grado?.id === 'critico' || !!conEffetto(o.condizioni, bersaglio, 'critico_contro'), danno, situazioni.some((m) => m.danno === 'doppio'));
     return { t, testo: testo('prove.fatto.attacco_set_colpito', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, esito: esitoInParole(e, true), danno: fatto }), esito: e };
   }
-  return { cheCosa, cartaDa, colpisci, attacca };
+  return { cheCosa, cartaDa, colpisci, attacca, bersaglioDiSalvezza, salvezzaDelBersaglio };
 }

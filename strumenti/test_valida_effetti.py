@@ -96,3 +96,42 @@ def test_effetti_di_una_prova_della_scena(tmp_path: Path) -> None:
     errori = " | ".join(regole_di(dest))
     assert "condizione «sognante» non è tra le condizioni del set" in errori
     assert "altezza: l'altezza della caduta" in errori
+
+
+def test_classi_e_tiri_salvezza(tmp_path: Path) -> None:
+    """tiri_salvezza and classi (regole_classi.py): columns, rows of the right length, a save's column, the sheet's class."""
+    dest = copia(BX, tmp_path)
+
+    def con_tabelle(d: dict) -> None:
+        d["abilita"] = [{"id": "ts_veleno", "nome": "Veleno", "caratteristica": "forza", "salvezza": "morte"}]
+        d["tiri_salvezza"] = {"colonne": [{"id": "morte", "nome": "Morte"}, {"id": "magia", "nome": "Magia"}]}
+        d["classi"] = [{"id": "guerriero", "nome": "Guerriero", "tiri_salvezza": [{"da": 1, "valori": [12, 16]}],
+                        "incantesimi_al_giorno": [{"da": 1, "slot": []}]}]
+    modifica(dest, "regole/regole.yaml", con_tabelle)
+    modifica(dest, "pg.yaml", lambda d: d["personaggi"][0]["scheda"].update(classe="guerriero", livello=1))
+    assert regole_di(dest) == []
+
+    def rotte(d: dict) -> None:
+        d["abilita"][0]["salvezza"] = "fulmini"
+        d["classi"][0]["tiri_salvezza"] = [{"da": 2, "valori": [12]}, {"da": 1, "valori": [11, 15]}]
+    modifica(dest, "regole/regole.yaml", rotte)
+    modifica(dest, "pg.yaml", lambda d: d["personaggi"][0]["scheda"].update(classe="bardo", livello=-1))
+    errori = " | ".join(regole_di(dest))
+    assert "abilita.ts_veleno.salvezza: «fulmini» non è una colonna di tiri_salvezza" in errori
+    assert "1 valori, la tabella ha 2 colonne" in errori and "«da» cresce riga dopo riga" in errori
+    assert "scheda.classe «bardo» non è una classe del set" in errori and "scheda.livello: un intero da 0 in su" in errori
+
+
+def test_scheda_con_tabella_non_scrive_il_proprio_bonus(tmp_path: Path) -> None:
+    """A sheet whose save comes from its class table must not write its own bonus: a strict warning."""
+    from valida import valida
+    dest = copia(BX, tmp_path)
+
+    def con_tabelle(d: dict) -> None:
+        d["abilita"] = [{"id": "ts_veleno", "nome": "Veleno", "caratteristica": None, "salvezza": "morte"}]
+        d["tiri_salvezza"] = {"colonne": [{"id": "morte", "nome": "Morte"}]}
+        d["classi"] = [{"id": "guerriero", "tiri_salvezza": [{"da": 1, "valori": [12]}]}]
+    modifica(dest, "regole/regole.yaml", con_tabelle)
+    modifica(dest, "pg.yaml", lambda d: d["personaggi"][0]["scheda"].update(classe="guerriero", livello=1, abilita={"ts_veleno": 5}))
+    esito, _ = valida(dest, rigoroso=True)
+    assert any(v.codice == "REGOLE.classi" and "il Motore ignora il bonus della scheda" in v.messaggio for v in esito.errori)

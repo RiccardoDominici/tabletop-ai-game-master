@@ -53,7 +53,31 @@ export function leggiSchedaGenerica(s: SistemaRegole, id: string, nome: string, 
     if (a['automatico'] !== undefined && typeof a['automatico'] !== 'boolean') avvisi.push(`${dove}.attacchi[${i + 1}].automatico: true o false`);
     return [{ id: chiave(n), nome: n, danno: danno ?? { numero: 1, facce: 4, bonus: 0 }, caratteristica: c, abilita: ab, tipo_danno: typeof a['tipo_danno'] === 'string' ? a['tipo_danno'] : null, distanza: a['distanza'] === true, ...(a['automatico'] === true ? { automatico: true } : {}) }];
   });
-  return { id, nome, di_png, caratteristiche, abilita, pf_massimi: pf && pf > 0 ? pf : 1, difesa: intero(o['difesa']) ?? intero(o['ca']), armatura: intero(o['armatura']) ?? 0, attacchi, avvisi };
+  return { id, nome, di_png, caratteristiche, abilita, pf_massimi: pf && pf > 0 ? pf : 1, difesa: intero(o['difesa']) ?? intero(o['ca']), armatura: intero(o['armatura']) ?? 0, attacchi, ...classeDellaScheda(s, o, dove, avvisi), avvisi };
+}
+
+/**
+ * The sheet's class, level, race and «save as» (`classe`, `livello`, `razza`, `salva_come`), as ids of the set: they
+ * pick the rows of the class tables and the race's traits. An id the set does not have is reported and dropped.
+ */
+function classeDellaScheda(s: SistemaRegole, o: DatiYaml, dove: string, avvisi: string[]): Pick<SchedaGenerica, 'classe' | 'livello' | 'razza' | 'salvaCome'> {
+  const classi = new Set((s.classi ?? []).map((c) => c.id));
+  const out: Pick<SchedaGenerica, 'classe' | 'livello' | 'razza' | 'salvaCome'> = {};
+  if (typeof o['classe'] === 'string') {
+    if (classi.has(o['classe'])) out.classe = o['classe'];
+    else avvisi.push(`${dove}.classe: «${o['classe']}» non è una classe del set ${s.id}`);
+  }
+  const livello = intero(o['livello']);
+  if (o['livello'] !== undefined && (livello === null || livello < 0)) avvisi.push(`${dove}.livello: un intero da 0 in su`);
+  else if (livello !== null) out.livello = livello;
+  if (typeof o['razza'] === 'string') out.razza = o['razza'];
+  const sc = ogg(o['salva_come']);
+  if (o['salva_come'] !== undefined) {
+    const lv = intero(sc?.['livello']);
+    if (sc && typeof sc['classe'] === 'string' && classi.has(sc['classe']) && lv !== null && lv >= 0) out.salvaCome = { classe: sc['classe'], livello: lv };
+    else avvisi.push(`${dove}.salva_come: {classe: una classe del set, livello: un intero}`);
+  }
+  return out;
 }
 
 export function caricaSchedeGeneriche(s: SistemaRegole, c: Pick<Campagna, 'pg' | 'png'>, avvisa: (m: string) => void = () => {}): Map<string, SchedaGenerica> {

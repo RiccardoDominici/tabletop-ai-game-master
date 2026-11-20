@@ -179,8 +179,11 @@ def test_critici_attacchi_e_salvezze(tmp_path: Path) -> None:
     assert any("attacchi_e_salvezze senza nessuna abilità" in r for r in regole_di(dest)), regole_di(dest)
     modifica(dest, "regole/regole.yaml", lambda d: d.setdefault("abilita", []).append({"id": "ts_veleno", "nome": "TS veleno", "salvezza": True}))
     assert not any(r.startswith(("REGOLE.critici", "REGOLE.abilita")) for r in regole_di(dest)), regole_di(dest)
-    modifica(dest, "regole/regole.yaml", lambda d: d["abilita"][-1].update(salvezza="sì"))
+    # Neither a boolean nor a column id of tiri_salvezza (a string: test_valida_effetti.py).
+    modifica(dest, "regole/regole.yaml", lambda d: d["abilita"][-1].update(salvezza=1))
     assert any("abilita.ts_veleno.salvezza: true o false" in r for r in regole_di(dest)), regole_di(dest)
+    modifica(dest, "regole/regole.yaml", lambda d: d["abilita"][-1].update(salvezza="sì"))
+    assert any("«sì» non è una colonna di tiri_salvezza" in r for r in regole_di(dest)), regole_di(dest)
 
 
 def test_critici_validi_e_null(tmp_path: Path) -> None:

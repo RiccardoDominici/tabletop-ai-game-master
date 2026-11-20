@@ -10,6 +10,8 @@ import type { TipoRisoluzione } from '@tabletop-ai-gm/shared';
 import type { FormulaDadi } from '../campagna/regole-srd';
 import type { Combattimento } from './combattimento';
 import type { RegolaCadute, TipoRiposo } from './salute';
+import type { TiriSalvezza } from './salvezze';
+import type { Classe } from './classi';
 
 export interface Voce {
   id: string;
@@ -105,7 +107,7 @@ export interface SistemaRegole {
    * `salvezza`: the ability is a saving throw of the manual (the Engine cannot tell one by its id): with
    * `risoluzione.critici: attacchi_e_salvezze` its natural d20s count as an attack's do.
    */
-  abilita: Array<Voce & { caratteristica: string | null; soglia?: { dado: 6 | 20 | 100; predefinita: number | null } | null; salvezza?: boolean }>;
+  abilita: Array<Voce & { caratteristica: string | null; soglia?: { dado: 6 | 20 | 100; predefinita: number | null } | null; salvezza?: boolean | string }>;
   /** Come il valore di una caratteristica entra nel tiro. */
   /**
    * Come una caratteristica diventa il numero del tiro: `srd` (punteggio − 10) / 2; `diretto` (la scheda
@@ -138,6 +140,10 @@ export interface SistemaRegole {
   cadute?: RegolaCadute | null;
   /** The kinds of rest and what they heal and refresh (regole.yaml → riposo; regole/salute.ts). Absent = none. */
   riposo?: TipoRiposo[];
+  /** The save table's columns and each class's rows (regole.yaml → tiri_salvezza, classi; regole/salvezze.ts). */
+  tiriSalvezza?: TiriSalvezza | null;
+  /** The classes of the set and their level tables (regole.yaml → classi; regole/classi.ts). Absent = none. */
+  classi?: Classe[];
 }
 
 /** Un passo del manuale (regole/estratti/*.md), per l'arbitro e per «Chiedi una regola». */
@@ -177,5 +183,12 @@ export interface SchedaGenerica {
   armatura: number;
   /** `automatico`: quest'arma colpisce sempre, si tira solo il danno (il dardo incantato). */
   attacchi: Array<{ id: string; nome: string; danno: FormulaDadi; caratteristica: string | null; abilita: string | null; tipo_danno: string | null; distanza: boolean; automatico?: boolean }>;
+  /** The set's class id and level (`scheda.classe`, `scheda.livello`): they pick the rows of the class tables. */
+  classe?: string | null;
+  livello?: number | null;
+  /** The set's race id (`scheda.razza`): its traits (regole/tratti.ts). */
+  razza?: string | null;
+  /** A monster saves as a class and level (`scheda.salva_come: {classe, livello}`, Basic Fantasy «Save As»). */
+  salvaCome?: { classe: string; livello: number } | null;
   avvisi: string[];
 }

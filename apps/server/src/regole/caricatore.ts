@@ -23,6 +23,7 @@ import type { Difficolta, Fascia, Mossa, RegoleCampagna, SistemaRegole, Voce } f
 import { combattimentoPredefinito, leggiCombattimento } from './combattimento';
 import { leggiModificatori } from './modificatori';
 import { leggiCadute, leggiRiposo } from './salute';
+import { leggiClassi, leggiColonneSalvezza } from './classi';
 
 export const CARTELLA_REGOLE = 'regole';
 const TIPI: readonly TipoRisoluzione[] = ['d20_cd', '2d6_fasce', 'sotto_soglia'];
@@ -68,9 +69,10 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     const car = str(ogg(x)?.['caratteristica']);
     if (car && !idCar.has(car)) errori.push(`abilita.${v.id}: caratteristica inesistente «${car}»`);
     // A saving throw of the manual (`salvezza: true`): its natural d20s follow `risoluzione.critici`.
+    // `salvezza`: true (a save of the sheet's bonus) or the id of a column of `tiri_salvezza` (regole/salvezze.ts).
     const sv = ogg(x)?.['salvezza'];
-    if (sv !== undefined && typeof sv !== 'boolean') errori.push(`abilita.${v.id}.salvezza: true o false`);
-    const salvezza = sv === true ? { salvezza: true } : {};
+    if (sv !== undefined && typeof sv !== 'boolean' && typeof sv !== 'string') errori.push(`abilita.${v.id}.salvezza: true o false, o una colonna di tiri_salvezza`);
+    const salvezza = sv === true ? { salvezza: true } : typeof sv === 'string' && sv ? { salvezza: sv } : {};
     // Un'abilità che il manuale tira a parte: percentuale (d100) o «x su 6» (d6), sotto la soglia della scheda.
     const so = ogg(ogg(x)?.['soglia']);
     if (ogg(x)?.['soglia'] === undefined) return [{ ...v, caratteristica: car, ...salvezza }];
@@ -223,7 +225,20 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     modificatori: leggiModificatori(d['modificatori'], new Set(abilita.map((a) => a.id)), errori),
     cadute: leggiCadute(d['cadute'], errori),
     riposo: leggiRiposo(d['riposo'], errori),
+    ...tabelleDiClasse(d, abilita, errori),
   };
+}
+
+/** The save columns and the classes (regole/classi.ts); an ability's `salvezza` column must be one of the set's. */
+function tabelleDiClasse(d: D, abilita: SistemaRegole['abilita'], errori: string[]): Pick<SistemaRegole, 'tiriSalvezza' | 'classi'> {
+  const colonne = leggiColonneSalvezza(d['tiri_salvezza'], errori);
+  const classi = leggiClassi(d['classi'], colonne?.length ?? null, errori);
+  for (const a of abilita) {
+    if (typeof a.salvezza !== 'string') continue;
+    if (!colonne?.some((c) => c.id === a.salvezza)) errori.push(`abilita.${a.id}.salvezza: «${a.salvezza}» is not a column of tiri_salvezza`);
+  }
+  const tabelle = Object.fromEntries(classi.filter((c) => c.tiriSalvezza.length).map((c) => [c.id, c.tiriSalvezza]));
+  return { tiriSalvezza: colonne ? { colonne, classi: tabelle } : null, classi };
 }
 
 /** `parole_chiave: {id: [parole]}`: gli id devono essere abilità, mosse o caratteristiche del set. */

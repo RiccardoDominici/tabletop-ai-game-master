@@ -68,8 +68,11 @@ abilita:                      # optional; caratteristica = an existing id [V]
   - {id: persuadere, nome: "Persuadere", caratteristica: potere}
   - {id: scalare, nome: "Scalare pareti", caratteristica: null, soglia: {dado: 100}}               # optional [V]:
   - {id: porte, nome: "Porte segrete", caratteristica: null, soglia: {dado: 6, predefinita: 1}}   #   rolled separately
-  - {id: ts_veleno, nome: "Tiro salvezza contro veleno", caratteristica: null, salvezza: true}    # optional [V] boolean:
+  - {id: ts_veleno, nome: "Tiro salvezza contro veleno", caratteristica: null, salvezza: true}    # optional [V] true or a column:
     # a saving throw of the manual: the Engine cannot tell one by its id, and `critici: attacchi_e_salvezze` needs it
+    # A save is pinned to its own number (regole/salvezze.ts): `true` = the sheet's bonus against the default difficulty;
+    # a column id of `tiri_salvezza` (below) = the class table's number for the sheet's class and level. Never a difficulty
+    # rung nor the arbiter's advantage (only a fight's condition with `svantaggio_salvezze`); the card is a `salvezza`.
     # rolled below the sheet's threshold, as in the manual: d100 for percentages (scalare: 80 = 80%), d6 for «x su 6» (x out of 6)
     # (porte: 2 = 2 out of 6), d20. `predefinita`: the threshold for whoever lacks the value («1 su 6» (1 out of 6) for everyone);
     # without it, whoever lacks it rolls like any check of the set. The validator checks that the value is between 0 and the die.
@@ -149,6 +152,13 @@ combattimento:                              # optional: without it, the full SRD
   condizione_a_zero: privo_di_sensi         # [V] among the conditions, or null
   fine: {morale: true}                      # B/X morale: 2d6 against the NPCs' scheda.morale
   sorpresa: {dado: 6, fino_a: 2, condizione: sorpreso}   # [V] B/X surprise: 1d6 per side, 1–2 loses round 1 (a set's condition)
+tiri_salvezza:                              # optional [V]: the manual's save categories, in the table's order
+  colonne: [{id: morte, nome: "Raggio della morte o veleno"}, {id: incantesimi, nome: "Incantesimi"}]
+classi:                                     # optional [V]: the classes and their level tables (regole/classi.ts)
+  - id: mago
+    nome: "Mago"
+    tiri_salvezza: [{da: 1, valori: [13, 15]}, {da: 4, valori: [12, 13]}]   # [V] one value per column; `da` grows
+    incantesimi_al_giorno: [{da: 1, slot: [1]}, {da: 3, slot: [2, 1]}]      # [V] spells per day by spell level
 cadute: {dadi: "1d6", ogni: 10, unita: "piedi", arrotonda: vicino, massimo: 20}   # optional [V]: falling damage
   # (Basic Fantasy p. 59): `dadi` per step of `ogni` (in `unita`, said on the card); `vicino` rounds to the nearest step
   # (1–4 feet nothing, 5–14 feet 1d6), `giu` counts full steps only (SRD 5.2); at most `massimo` steps. Without it a fall
@@ -190,6 +200,10 @@ scheda:
   pf: 6                                         # [V] > 0 (named as danni.nome)
   difesa: 13                                    # d20_cd: the target's AC; without it, the CD of the default difficulty
   armatura: 1                                   # with armatura_riduce: subtracted from the damage taken
+  classe: mago                                  # optional [V]: a class of the set; with `livello` it picks the table rows
+  livello: 1                                    #   (a save of a table column then ignores the sheet's own bonus: strict warning)
+  razza: elfo                                   # optional: a race of the set (its traits)
+  salva_come: {classe: guerriero, livello: 3}   # optional [V]: a monster saves as a class and level («Save As»)
   attacchi: [{nome: "Spada", danno: "1d8", caratteristica: vigore}]   # or abilita: combattere
                                                 # automatico: true = the weapon always hits (the enchanted dart), only the damage
 ```
@@ -252,4 +266,4 @@ The `significato` of bands and grades replaces it. With the SRD 5.2 the rule sta
 - **Skill and validator**: done. The text is extracted with `strumenti/regole/estrai.py`; the Preparer skill writes the set at step 1b; the `[V]` checks sit in the `REGOLE` class (`strumenti/valida/regole_set.py`). For the SRD, simply do not write `regole/`.
 - **Requires with a non-SRD set**: `richiede.prova` is not yet checked against the set's ids by the validator.
 - **Subsystems** (`sottosistemi`) are text only. Conditions apply in the fight (docs/combattimento.md); damage, healing, falls and rest outside an attack are typed effects (above).
-- **Opposed checks and saving throws** in a non-SRD set become normal checks.
+- **Opposed checks** in a non-SRD set become normal checks. Saving throws are pinned to their own number (above), and a target rolls its own save against a PC's power (`salvezzaDelBersaglio`, the Game Master's side for an NPC).

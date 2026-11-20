@@ -101,6 +101,9 @@ prove:
     morte: "{nome} dies: {fonte}."
     stabilizzato: "{fonte}: {nome} is bandaged and stable at zero hit points; no fighting or spellcasting until above zero."
     non_serve_stabilizzare: "{fonte}: {nome} is not dying, there is no need."
+  # Saving throws pinned to their own number (regole/salvezze.ts).
+  salvezze:
+    tiro_salvezza: "saving throw"
   # A rest from the Game Master panel (prove/riposo.ts).
   riposo:
     fatto: "Rest ({riposo}): {elenco}."

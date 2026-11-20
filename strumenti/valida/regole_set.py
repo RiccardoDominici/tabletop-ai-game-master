@@ -18,6 +18,7 @@ import yaml
 from .carica import Campagna
 from .esito import Esito
 from . import regole_combattimento
+from . import regole_classi
 from .regole_effetti import controlla_cadute, controlla_effetti, controlla_riposo
 from .regole_repertorio import blocchi_richiede
 from .lingua import generiche_in
@@ -231,8 +232,9 @@ def _abilita(r: dict, car: set[str], e: Esito, dove: str) -> set[str]:
         if o.get("caratteristica") is not None and o["caratteristica"] not in car:
             _err(e, "abilita", dove, f"abilita.{o['id']}: caratteristica inesistente «{o['caratteristica']}»")
         # A saving throw of the manual: its natural d20s follow risoluzione.critici (attacchi_e_salvezze).
-        if "salvezza" in o and not isinstance(o["salvezza"], bool):
-            _err(e, "abilita", dove, f"abilita.{o['id']}.salvezza: true o false")
+        # true, or the id of a column of tiri_salvezza (checked by regole_classi.colonne_delle_abilita).
+        if "salvezza" in o and not isinstance(o["salvezza"], (bool, str)):
+            _err(e, "abilita", dove, f"abilita.{o['id']}.salvezza: true o false, o una colonna di tiri_salvezza")
         # Abilità tirata a parte sotto la soglia della scheda: percentuale (d100) o «x su 6» (d6).
         if "soglia" in o:
             so = _ogg(o["soglia"])
@@ -334,7 +336,7 @@ def _file_del_set(c: Campagna, e: Esito, dove_base: Path) -> None:
 
 
 def _schede(c: Campagna, e: Esito, car: set[str], abi: set[str], dadi: bool, tabella: list[tuple[int, int]] | None = None,
-            soglie: dict[str, int] | None = None) -> None:
+            soglie: dict[str, int] | None = None, per_scheda=None) -> None:
     """Le schede di PG e PNG seguono il set: caratteristiche tutte e sole quelle del set, abilità, PF, attacchi."""
     soglie = soglie or {}
     da_controllare = [(f"pg.yaml {p.get('id', '?')}", p) for p in c.personaggi if "scheda" in p]
@@ -347,6 +349,8 @@ def _schede(c: Campagna, e: Esito, car: set[str], abi: set[str], dadi: bool, tab
             e.errore("SCHEDA.mancante", nome, "manca la scheda (caratteristiche del set, pf, attacchi)")
     for dove, dati in da_controllare:
         s = _ogg(dati.get("scheda")) or {}
+        if per_scheda:
+            per_scheda(s, dove)
         cars = _ogg(s.get("caratteristiche"))
         if cars is None:
             _err(e, "scheda", dove, "scheda.caratteristiche: una mappa con le caratteristiche del set")
@@ -473,7 +477,12 @@ def controlla(c: Campagna, e: Esito) -> None:
             _err(e, "parole_chiave", dove, f"parole_chiave.{k}: non è un'abilità, una mossa o una caratteristica del set")
         if gen := generiche_in(voci, c.lingua):
             _generiche(e, dove, f"parole_chiave.{k}", gen)
-    _schede(c, e, car, abi, dadi_attivi(c), tabella_modificatori(r), soglie_abilita(r))
+    colonne = regole_classi.colonne_salvezza(r, e, dove)
+    classi = regole_classi.classi_del_set(r, colonne, e, dove)
+    col_abil = regole_classi.colonne_delle_abilita(r, colonne, e, dove)
+    tabelle = {o["id"] for o in r.get("classi") or [] if isinstance(o, dict) and o.get("tiri_salvezza")}
+    _schede(c, e, car, abi, dadi_attivi(c), tabella_modificatori(r), soglie_abilita(r),
+            per_scheda=lambda s, d: regole_classi.controlla_scheda(s, d, classi, col_abil, tabelle, e))
     _prove_di_scena(c, e, car, abi, mosse, diff, condizioni_del_set(r))
     controlla_cadute(r, e, dove)
     controlla_riposo(r, e, dove)

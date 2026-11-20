@@ -741,6 +741,15 @@ Now every source goes through one Engine path, prove/effetti.ts, with the typed 
   a formula rolled for each, or all), never during a fight; a hazard applies damage, healing or a fall to one
   character. The panel lists the set's kinds of rest (`CombattimentoMaster.riposi`). Their facts go to the transcript
   at once and to the narrator first in the next resolved turn (`fatti_in_sospeso`, kept in the snapshot).
+- **Saving throws pinned to their number** (regole/salvezze.ts; audit X-SV-03). A save of a manual's set (an ability
+  with `salvezza: true` or a column of `tiri_salvezza`) is rolled against its own number in the resolver, whoever asked
+  for it (the model arbiter, the rules arbiter, a scene check, the panel's «Chiedi una prova»): the class and level
+  table's number when the set has the table and the sheet a class (`scheda.classe`, `livello`, or `salva_come` for a
+  monster), otherwise the sheet's bonus against the set's default difficulty, which is exactly the manual's odds. The
+  difficulty and the arbiter's or a helper's advantage are dropped (the log says so); a fight's condition with
+  `svantaggio_salvezze` still counts. A target rolls its own save against a PC's power (`salvezzaDelBersaglio`): an
+  NPC with the Engine's dice, its card marked `nascosta` (only the Game Master panel lists it, docs/prove.md §9).
+  Tests: test/salvezze.test.ts.
 - Tests: test/effetti.test.ts (the closed list, the scaling, both falling tables, damage halved by a save, healing that
   never revives, a trap's attack, save-or-die, a failed scene check's fall, a rest, the Game Master's hazard, the SRD's
   data), strumenti/test_valida_effetti.py (the validator's mirror).
