@@ -7,12 +7,16 @@
 import { t } from '../lingua';
 import { useEffect } from 'react';
 import { useTelefono } from '../store/telefono';
+import { useTavolo } from '../store/tavolo';
+import { ScortaPg } from './ScortaPg';
 
 export function SchedaPersonaggio() {
   const idPg = useTelefono((s) => s.idPg);
   const scheda = useTelefono((s) => (s.scheda?.id_pg === idPg ? s.scheda : null));
   const aperta = useTelefono((s) => s.schedaAperta);
   const apriScheda = useTelefono((s) => s.apriScheda);
+  // The PC's gear, coins and counters come with the table's state (they change in play).
+  const scorta = useTavolo((s) => s.stato?.pg.find((p) => p.id === idPg)?.scorta ?? null);
 
   // Esc chiude (utile anche con una tastiera collegata al telefono o su desktop).
   useEffect(() => {
@@ -49,6 +53,8 @@ export function SchedaPersonaggio() {
       <div className="sicuro-lati sicuro-basso min-h-0 flex-1 overflow-y-auto py-4">
         <div className="mx-auto flex max-w-2xl flex-col gap-5">
           {scheda.descrizione && <p className="font-racconto text-lg leading-snug text-pergamena-2">{scheda.descrizione}</p>}
+
+          <ScortaPg scorta={scorta} />
 
           {scheda.conoscenze_private.length > 0 && (
             <section className="rounded-carta border border-candela/50 bg-candela-scura/15 p-4" data-testid="conoscenze-private">

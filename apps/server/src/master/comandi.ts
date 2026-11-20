@@ -62,6 +62,8 @@ const TIPI: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>([
   'condizione',
   'riposo',
   'pericolo',
+  'inventario',
+  'tempo',
   'tiro',
   'chiedi_prova',
 ]);

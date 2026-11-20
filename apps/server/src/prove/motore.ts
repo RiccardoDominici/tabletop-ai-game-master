@@ -1255,6 +1255,18 @@ export class MotoreProve {
   }
 
   /**
+   * A character's gear view with its lights lit: with the time left for the Game Master's panel (`conTempo`), or only
+   * that they are lit for the phones (a hidden roll). Null when there is nothing to show (the SRD, a sheet with no gear
+   * and no counters).
+   */
+  scortaConLuci(id: string, conTempo: boolean): ScortaScheda | null {
+    const v = this.vistaInventario(id);
+    if (!v || (!v.oggetti.length && !v.monete.length && !v.contatori.length && !this.generico?.schede.get(id)?.equipaggiamento)) return null;
+    const luci = this.tempo.luciDi(id).map((l) => ({ oggetto: l.oggetto, nome: voce(this.sistema.catalogo, l.oggetto)?.nome ?? l.oggetto, restante: conTempo ? this.tempo.durata(l.restanti) : '' }));
+    return { ...v, ...(luci.length ? { luci } : {}) };
+  }
+
+  /**
    * The Game Master changes a character's gear or coins from the panel (docs/prove.md §10): an item found or lost, coins
    * gained or paid, a purchase or a sale, armor put on or taken off (prove/inventario.ts). A change that happens goes to
    * the narrator in the next turn; a refusal (not enough coins, a forbidden armor) only to the panel. Null = no catalog.
@@ -1375,10 +1387,18 @@ export class MotoreProve {
       ...(this.combattimentoChiesto ? { chiesto: true } : {}),
       schede: ids.flatMap((id) => {
         const pf = this.stato.puntiFerita(id);
-        return pf ? [{ id, nome: c.nome(id), di_png: id.startsWith('png_'), pf }] : [];
+        const scorta = this.scortaConLuci(id, true);
+        return pf ? [{ id, nome: c.nome(id), di_png: id.startsWith('png_'), pf, ...(scorta ? { scorta } : {}) }] : [];
       }),
       condizioni: this.regoleCombattimento().condizioni.map((x) => ({ id: x.id, nome: x.nome, icona: x.icona, testo: x.testo })),
       ...(this.tipiDiRiposo().length ? { riposi: this.tipiDiRiposo() } : {}),
+      ...(this.inventario && this.sistema.catalogo
+        ? { catalogo: { voci: this.sistema.catalogo.voci.map((v) => ({ id: v.id, nome: v.nome, tipo: v.tipo, luce: v.tipo === 'attrezzo' && !!v.luce })), monete: (this.sistema.monete?.tagli ?? []).map((t) => ({ id: t.id, nome: t.nome })) } }
+        : {}),
+      ...(() => {
+        const t = this.vistaTempo();
+        return t ? { tempo: { ...t, unita: this.tempo.regola.unita.map((u) => ({ id: u.id, nome: u.nome })), terreni: (this.sistema.viaggio?.terreni ?? []).map((x) => ({ id: x.id, nome: x.nome })), unita_viaggio: this.sistema.viaggio?.unita ?? null } } : {};
+      })(),
     };
   }
 

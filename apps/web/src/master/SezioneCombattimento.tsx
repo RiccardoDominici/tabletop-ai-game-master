@@ -17,6 +17,8 @@ import { Riquadro, Vuoto } from './Riquadro';
 import { Chip } from './Chip';
 import { classePulsante } from './stili';
 import { valorePericolo } from './pericolo';
+import { ScortaMaster } from './ScortaMaster';
+import { TempoMaster } from './TempoMaster';
 import { t } from '../lingua';
 
 export function SezioneCombattimento({ stato }: { stato: StatoMaster }) {
@@ -75,6 +77,8 @@ export function SezioneCombattimento({ stato }: { stato: StatoMaster }) {
         </p>
       )}
 
+      {cmb.tempo && <TempoMaster tempo={cmb.tempo} attivo={attivo} nomi={new Map(cmb.schede.map((s) => [s.id, s.nome]))} />}
+
       {!attivo && !chiesto && riposi.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {riposi.map((r) => (
@@ -106,8 +110,8 @@ export function SezioneCombattimento({ stato }: { stato: StatoMaster }) {
                 massimi={s.pf.massimi}
                 condizioniAttive={vivo ? (vivo.combattenti.find((c) => c.id === s.id)?.condizioni ?? []) : null}
                 catalogo={cmb.condizioni}
-
               />
+              {s.scorta && <ScortaMaster id={s.id} nome={s.nome} scorta={s.scorta} catalogo={cmb.catalogo} />}
             </li>
           ))}
         </ul>

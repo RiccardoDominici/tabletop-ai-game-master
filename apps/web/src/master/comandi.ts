@@ -129,6 +129,9 @@ export function chiaveComando(comando: ComandoMaster): string {
       return 'chiedi_prova';
     case 'atteggiamento':
       return `atteggiamento:${comando.id_png}:${comando.id_pg}`;
+    case 'inventario':
+      // One gear change at a time on a character.
+      return `inventario:${comando.id}`;
     default:
       // «umore»: una chiave sola, due umori di fila non si accavallano.
       return comando.tipo;

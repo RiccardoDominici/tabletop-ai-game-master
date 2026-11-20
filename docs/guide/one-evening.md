@@ -117,7 +117,7 @@ What the player sees on the phone, from top to bottom:
 - the transcript of what has been said;
 - at the bottom, the action box, with the **«Privata»** (meaning: private) switch and the two buttons **«Ritira»** (meaning: withdraw) and **«Invia»** (meaning: send).
 
-In the sheet («La tua scheda», meaning: your sheet) there is who the character is and, highlighted, **«Solo tu lo sai»** (meaning: only you know): the things that only the character knows. The player decides whether and when to tell them to the others.
+In the sheet («La tua scheda», meaning: your sheet) there is who the character is and, highlighted, **«Solo tu lo sai»** (meaning: only you know): the things that only the character knows. The player decides whether and when to tell them to the others. With a rule set that has an equipment list, the sheet opens with **«Che cosa hai»** (meaning: what you have): the Armor Class, the load and how far the character moves, the coins, the spells and arrows left, the gear and the lights lit. It changes during play by itself (an arrow shot, a purchase), without closing the sheet.
 
 In «Regole» the player can ask a question about the rules («Chiedi una regola», meaning: ask a rule). The answer is seen only on their phone and comes only from the texts of the rules, never from the campaign (`docs/regole.md`, §5).
 

@@ -9,6 +9,7 @@
  * Il pannello vede anche ciò che i telefoni non vedono: azioni private (segnate), segni degli
  * orologi, battute del repertorio. Non vede mai le conoscenze private dei PG.
  */
+import type { ScortaScheda } from './prove';
 import type { StatoAzione, StatoTavolo } from './dominio';
 import type { RichiestaTiroMaster, TiroMostrato } from './prove';
 
@@ -257,10 +258,14 @@ export interface CombattimentoMaster {
   attivo: boolean;
   /** Manual rolls: a fight opened from the panel, starting at the next closed window (the players roll initiative). */
   chiesto?: boolean;
-  schede: Array<{ id: string; nome: string; di_png: boolean; pf: { attuali: number; massimi: number } }>;
+  schede: Array<{ id: string; nome: string; di_png: boolean; pf: { attuali: number; massimi: number }; scorta?: ScortaScheda }>;
   condizioni: Array<{ id: string; nome: string; icona: string; testo: string }>;
   /** The kinds of rest of the rule set (docs/prove.md §10): the panel's «Riposo» buttons. Absent or empty = none. */
   riposi?: Array<{ id: string; nome: string }>;
+  /** The set's catalog and coins for the gear controls (docs/prove.md §10). Absent = the set has none. */
+  catalogo?: { voci: Array<{ id: string; nome: string; tipo: string; luce: boolean }>; monete: Array<{ id: string; nome: string }> };
+  /** The game clock (docs/prove.md §11): the time, the lights with the time left, the set's units and terrains. */
+  tempo?: { ora: string; trascorso: string | null; luci: Array<{ chi: string; oggetto: string; nome: string; restante: string }>; unita: Array<{ id: string; nome: string }>; terreni: Array<{ id: string; nome: string }>; unita_viaggio: string | null };
 }
 
 /** Un PNG nel pannello: se è in scena, e se il master l'ha deciso a mano (altrimenti dice la scena). */

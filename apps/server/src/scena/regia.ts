@@ -2634,7 +2634,11 @@ export class Regia {
         nome: p.nome,
         descrizione: p.descrizione,
         telefoni: conteggio.get(p.id) ?? 0,
-        ...(this.prove?.attivo ? { pf: this.prove.stato.puntiFerita(p.id) } : {}),
+        ...(this.prove?.attivo ? { pf: this.prove.stato.puntiFerita(p.id), ...(() => {
+          // The PC's gear, coins and counters for its own phone (lights without the time left: a hidden roll).
+          const scorta = this.prove!.scortaConLuci(p.id, false);
+          return scorta ? { scorta } : {};
+        })() } : {}),
       })),
       finestra: this.tavolo.finestraPubblica(),
       al_tavolo: this.tavolo.alTavolo(),
