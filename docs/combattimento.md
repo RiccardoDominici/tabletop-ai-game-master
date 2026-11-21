@@ -42,6 +42,7 @@ combattimento:
   condizioni: [{id: prono, nome: "Prono", icona: "⬇", effetti: [svantaggio_attacchi, attacchi_contro_vantaggio], testo: "…"}]
   condizione_a_zero: privo_di_sensi
   fine: {morale: true}          # B/X: 2d6 against the NPC's `scheda.morale` (7 if missing)
+  # or {morale: {quando: [prima_opposizione, meta], resa: {condizione: arreso}}}: Basic Fantasy's timing (p. 57), §3.5
   sorpresa: {dado: 6, fino_a: 2, condizione: sorpreso}   # B/X: see «Surprise» in §3; absent = no surprise roll
 ```
 
@@ -162,7 +163,17 @@ combattimento:
 4. **Conditions**: set by the Engine (at 0) or by the Game Master; they expire at the start of the round, if they have a
    duration. Their effects enter the rolls: advantage or disadvantage with the reason on the sheet, critical, failed saves,
    lost turn.
-5. **End**: enemies on the ground or fled, all PCs on the ground, failed morale (B/X), or «Termina combattimento» (End
+5. **Morale** (`fine.morale`; R4 for Basic Fantasy p. 57). When: the set's `quando` — `prima_opposizione` (the first time
+   a PC attacks one of the NPCs, or uses a hostile power on one), `primo_caduto` (the first of them down: `morale: true`
+   keeps this, the reading before R4), `meta` (half of them down by numbers, or a lone NPC at half its hit points); each
+   at most once a fight. One 2d6 for the side, read against each NPC's own morale (one die, each its own score, like
+   surprise): those above it break, the others hold; 12 never breaks. A giant ant's `morale: {prima: 7, dopo: 12}` reads
+   the first number at the fight's first check and the second after. A broken NPC flees (out of the scene), or with
+   `si_arrende` on its sheet and the set's `resa` condition it surrenders: that condition for the scene, out of the fight
+   and counted as defeated for XP. The roll is the Game Master's: its card («Morale», 2d6) is on the panel only, unless the
+   campaign's `tiri_master` shows it (docs/prove.md §9); the narrator hears who holds and who breaks, with their scores.
+   The Game Master's ±2 adjustment (p. 57) is not on the panel yet: the sheet's score is the one read.
+6. **End**: enemies on the ground or fled, all PCs on the ground, failed morale (B/X), or «Termina combattimento» (End
    combat). When every PC is down nobody can help the dying ones: before the fight closes, their death saves are
    rolled to the end, stable or dead (a natural 20 that puts one back up keeps the fight going). Before, the fight
    closed with them dying and nothing ever rolled again (SRD run of 15 November). Morale is also rolled when the opening blow knocks down an NPC: before, its fact was lost and whoever fled
@@ -182,12 +193,12 @@ combattimento:
    Round 5 of the coherence layer (combat manual, T21–T25) had five turns of «Livia Sarti non agisce.» and nothing
    moving after the party fell. A defeat ending never enters the catalogue nor the clock's finale; the validator wants
    one in a scene with a hostile NPC (`REPERTORIO.sconfitta_mancante`, a warning, an error in strict mode).
-6. **Narrator**: every NPC attack arrives as an explicit sentence before the details («Ruggero lo sgherro colpisce Corrado
+7. **Narrator**: every NPC attack arrives as an explicit sentence before the details («Ruggero lo sgherro colpisce Corrado
    Lanzi: 6 danni» (Ruggero the thug hits Corrado Lanzi: 6 damage), «… manca …» (… misses …)), and the prompt asks to
    narrate it in its own sentence, never by hints. The section «Esiti dei tiri» (Roll outcomes) carries «Combattimento,
    round N, fase X. Ordine … Tocca ora a: …» (Combat, round N, phase X. Order … Now up: …). The narrator closes by
    inviting only whoever is on turn, and does not invent attacks or damage.
-7. **Required facts** (prove/fatti-dovuti.ts): in the final e2e of 10 November (narrator Haiku, Basic Fantasy set) the
+8. **Required facts** (prove/fatti-dovuti.ts): in the final e2e of 10 November (narrator Haiku, Basic Fantasy set) the
    narrator skipped Engine facts even with «raccontalo» (narrate it): a PC at 0 with their death save, the damage dealt.
    Minimal responsibility: the Engine does not ask for another call, it checks.
    - Facts of the turn, one per creature, the most serious: `morto`, `fuggito` (morale), `rialzato` (natural 20), `stabile`,
@@ -212,7 +223,7 @@ combattimento:
      §6b) the Engine added a duplicate «Zirrà fugge.». The lists are those of `guardia_fuori` (`continuaIlSoggetto`).
    - Limits: a negation («il colpo non lo raggiunge» (the blow does not reach him)) counts as said; a pronoun without a name
      («il nano barcolla» (the dwarf staggers)) does not, and the Engine adds its line even if the fact was understood.
-8. **The narrator cannot contradict the cards** (narrazione/guardia-esiti.ts), the other side of the required facts. In
+9. **The narrator cannot contradict the cards** (narrazione/guardia-esiti.ts), the other side of the required facts. In
    the second pass of the final e2e the narrator had a standing goblin «cade sui gradini con un rantolo» and Grosso
    «colpisce Livia» on a card that said miss. Before the voice, a narrator sentence is replaced by the Engine's line when:
    - it tells the OUTCOME of one of the turn's attacks and the opposite of the card: it has an outcome word (a verb of

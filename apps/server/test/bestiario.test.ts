@@ -43,7 +43,7 @@ describe('hit dice as the manual prints them', () => {
 describe('a sheet that points to a stat block', () => {
   it('the set reads its entries inline and from regole/mostri.yaml', () => {
     const s = set();
-    expect(s.mostri!.map((m) => m.id)).toEqual(['artigliatore', 'predone', 'serpe_cenere', 'drago_brina', 'spettro_lanterna', 'occhio_pietra']);
+    expect(s.mostri!.map((m) => m.id)).toEqual(['artigliatore', 'predone', 'serpe_cenere', 'drago_brina', 'spettro_lanterna', 'occhio_pietra', 'formicone', 'capobanda']);
     expect(s.bestiario).toMatchObject({ dadoVita: 8, abilita: ['mischia', 'distanza'], unoMenoMenoDiUno: true });
   });
 

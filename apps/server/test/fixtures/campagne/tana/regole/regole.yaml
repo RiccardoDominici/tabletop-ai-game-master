@@ -162,6 +162,9 @@ combattimento:
     - {id: svenuto, nome: Svenuto, icona: SV, effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio], testo: A terra senza sensi.}
     - {id: paralizzato, nome: Paralizzato, icona: PA, effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio, fuori_combattimento], testo: Immobile.}
     - {id: pietrificato, nome: Pietrificato, icona: PI, effetti: [perde_turno, non_si_muove, fuori_combattimento], testo: Di pietra.}
+    - {id: arreso, nome: Arreso, icona: AR, effetti: [perde_turno, fuori_combattimento], testo: Si è arreso.}
   condizione_a_zero: svenuto
   sorpresa: {dado: 6, fino_a: 2, condizione: sorpreso}
-  fine: {morale: true}
+  # Morale as Basic Fantasy times it (p. 57): at the first opposition and at half strength; a broken NPC with
+  # `si_arrende` surrenders (out of the fight for the scene).
+  fine: {morale: {quando: [prima_opposizione, meta], resa: {condizione: arreso}}}

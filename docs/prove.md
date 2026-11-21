@@ -678,6 +678,9 @@ Riccardo: «Il sistema di tiri può avvenire anche in background dal lato master
 tanto, quando reputi che sia bello che sia casuale, lo dici e fai vedere il tiro.» When an outcome is uncertain and
 nobody at the table rolls for it, the Engine rolls; the model never picks the result.
 
+- **Morale** (R4): the 2d6 of the NPCs' morale in a fight is the Game Master's roll: its card is the panel's (`nascosta`),
+  shown at the table by `tiri_master` like the others (`a_volte` when holding is between one in three and two in three);
+  docs/combattimento.md §3.
 - **What rolls today.** The world's uncertain outcomes: an `avanza_quando` gate of a clock with `tiro: {dado, almeno,
   visibile?}` (docs/mondo.md §2, mondo-vivo's work): does the front advance when the PCs leave, does the news spread.
   The world asks its one roll hook (mondo/tiri.ts, `TiroDelMondo`); the director plugs in the Game Master's roll path,

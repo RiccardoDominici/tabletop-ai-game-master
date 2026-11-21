@@ -318,6 +318,8 @@ export interface SchedaGenerica {
   pfDaTirare?: FormulaDadi;
   /** Morale (2–12, Basic Fantasy p. 57), or one before and one after the creature is engaged (a giant ant: 7, then 12). */
   morale?: number | { prima: number; dopo: number };
+  /** It surrenders instead of fleeing when its morale breaks (`si_arrende: true`: intelligent monsters, p. 57). */
+  siArrende?: boolean;
   /** The attack bonus a stat block prints when it differs from its hit dice (Basic Fantasy p. 62, «in parentheses»). */
   attacco?: number;
   /** Only weapons of these kinds hurt it (`colpito_solo_da`: argento, magica; Basic Fantasy's (s) and (m), p. 62). */

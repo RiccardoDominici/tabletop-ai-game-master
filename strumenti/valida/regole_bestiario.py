@@ -127,6 +127,8 @@ def mostri_del_set(cartella_regole: Path, r: dict, classi: set[str], poteri: set
             _err(e, d, "px: un intero da 0 in su")
         if "colpito_solo_da" in x and not (isinstance(x["colpito_solo_da"], list) and x["colpito_solo_da"] and all(isinstance(w, str) for w in x["colpito_solo_da"])):
             _err(e, d, "colpito_solo_da: le armi che lo feriscono, [argento, magica] o [magica]")
+        if "si_arrende" in x and not isinstance(x["si_arrende"], bool):
+            _err(e, d, "si_arrende: true o false")
         if "resistenze" in x and not resistenze_valide(x["resistenze"]):
             _err(e, d, "resistenze: {tipo di danno: meta | immune}")
     return out

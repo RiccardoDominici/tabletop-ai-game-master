@@ -69,6 +69,7 @@ import { sistemaSrd } from '../regole/srd';
 import { leggiEffetto } from '../regole/effetti';
 import type { SistemaRegole } from '../regole/tipi';
 import { tiraPuntiFeritaMostri } from './bestiario';
+import { mostraTiroDelMaster } from './tiri-master';
 
 /** Decisione dell'arbitro: SRD 5.2, o col vocabolario del set del manuale. */
 type Decisione = DecisioneProva | DecisioneRegole;
@@ -282,6 +283,25 @@ export class MotoreProve {
         if (g) return g.morale;
         const sch = this.o.contesto().campagna.png.find((p) => p.id === png)?.dati['scheda'] as DatiYaml | undefined;
         return typeof sch?.['morale'] === 'number' ? sch['morale'] : null;
+      },
+      // Morale before and after the monster is engaged, and whether it surrenders (its live sheet: a bestiary entry's).
+      moraleDi: (png) => {
+        const sch = this.generico?.schede.get(png);
+        if (!sch || sch.morale === undefined) return null;
+        const m = sch.morale;
+        return typeof m === 'number' ? { prima: m, dopo: m, resa: !!sch.siArrende } : { ...m, resa: !!sch.siArrende };
+      },
+      // A broken NPC that surrenders: the set's condition for the scene, so it stays out after the fight too.
+      arrende: (png, condizione, fatti) => {
+        const f = this.attivi.aggiungi(png, { tipo: 'condizione', condizione, durata: { tipo: 'scena' }, finisceSeFerito: false }, testo('prove.combattimento.morale_etichetta'), 1, this.dadi);
+        fatti.push(testo('prove.combattimento.arreso', { nome: this.nomeDi(this.o.contesto(), png) }));
+        this.o.log.info({ png, condizione, fatto: f }, 'combat: a broken NPC surrenders');
+      },
+      // The morale roll is the Game Master's: hidden, or shown by `tiri_master` (a_volte when the odds are close).
+      mostraMorale: (morale) => {
+        let si = 0;
+        for (let a = 1; a <= 6; a++) for (let b = 1; b <= 6; b++) if (a + b <= morale) si += 1;
+        return mostraTiroDelMaster(this.o.tiriMaster?.() ?? 'nascosti', { visibile: false, p: si / 36 }).mostra;
       },
       nuovoIdTiro: () => this.stato.nuovoIdTiro(),
       // A PC's own rolls in the fight (initiative, death saves) go through the pass's table: asked at the table with

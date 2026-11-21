@@ -69,3 +69,27 @@ mostri:
     salva_come: {classe: guerriero, livello: 3}
     morale: 9
     testo: Lo sguardo pietrifica, salvezza contro la paralisi.
+  - id: formicone
+    nome: Formicone
+    manuale: "Big ant"
+    pagina: 6
+    difesa: 15
+    dadi_vita: "2"
+    attacchi:
+      - {id: morso, nome: Morso, danno: "1d6"}
+    per_round: [[morso]]
+    salva_come: {classe: guerriero, livello: 2}
+    morale: {prima: 4, dopo: 12}
+    testo: Timido alla prima vista, una volta in lotta combatte fino alla morte.
+  - id: capobanda
+    nome: Capobanda
+    manuale: "Raider chief"
+    pagina: 7
+    difesa: 13
+    dadi_vita: "2"
+    attacchi:
+      - {id: arma, nome: Spada, danno: "1d8"}
+    per_round: [[arma]]
+    salva_come: {classe: guerriero, livello: 2}
+    morale: 8
+    si_arrende: true

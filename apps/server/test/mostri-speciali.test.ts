@@ -61,8 +61,8 @@ describe('a hit\'s rider: the target saves, then the effect', () => {
   });
 
   it('manual rolls: the PC\'s save against the bite is asked at the table, in the monster\'s step', async () => {
-    // The Engine's dice: the snake's initiative 6 and the surprise die 6, its bite 20, 1 damage.
-    const m = motoreTana(new DadiCopiabili({ 6: [6, 6], 20: [20], 4: [1] }), { gregari: [] }, ['pg_bruna'], undefined, ['png_serpe']);
+    // The Engine's dice: the snake's initiative 6, the surprise die 6, its morale 1 + 1 (it holds), its bite 20, 1 damage.
+    const m = motoreTana(new DadiCopiabili({ 6: [6, 6, 1, 1], 20: [20], 4: [1] }), { gregari: [] }, ['pg_bruna'], undefined, ['png_serpe']);
     const d = await m.decidi(1, [azione('pg_bruna', 'Colpisco Serpe di Cenere con la spada')]);
     let inseriti = new Map<string, TiroInserito>();
     let chiesto: RichiestaTiroMaster | undefined;
@@ -81,10 +81,11 @@ describe('a hit\'s rider: the target saves, then the effect', () => {
 
 describe('a special action in the monster\'s step', () => {
   it('a breath reaches every PC standing, 1d8 per hit die, a made save halves it; one use spent, no breath next round', async () => {
-    // d6: the vial 1, Selva 1, Bruna 1, the drake 6, surprise 6; round 2 re-rolls (drake 6, Bruna 1, Selva 1). d20: the
+    // d6: the vial 1, Selva 1, Bruna 1, the drake 6, surprise 6, its morale 1 + 1 (it holds); round 2 re-rolls (drake 6,
+    // Bruna 1, Selva 1). d20: the
     // vial 20, Bruna's save 1, Selva's 20, the claws and the next vial 1. d8 2: 4 hit dice = 4d8 = 8; Bruna takes 8,
     // Selva half (4).
-    const m = contro('png_drago', ['pg_selva', 'pg_bruna'], { 6: [1, 1, 1, 6, 6, 6, 1, 1], 20: [20, 1, 20, 1, 1, 1], 8: [2], 4: [1] });
+    const m = contro('png_drago', ['pg_selva', 'pg_bruna'], { 6: [1, 1, 1, 6, 6, 1, 1, 6, 1, 1], 20: [20, 1, 20, 1, 1, 1], 8: [2], 4: [1] });
     const r = await m.risolvi(1, [azione('pg_selva', 'Lancio la fiala di gelo a Brina')]);
     expect(r.fatti.join(' ')).toMatch(/Brina usa Soffio di brina/);
     const danni = r.tiri.filter((t) => t.chi === 'png_drago' && t.etichetta === 'Soffio di brina').map((t) => [t.bersaglio?.id, t.danno?.totale]);

@@ -1224,10 +1224,14 @@ combattimento:
     - {id: paralizzato, nome: "Paralizzato", icona: "PA", effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio, fuori_combattimento], testo: "Cosciente ma immobile: non si muove, non agisce, non parla."}
     # Il non morto scacciato (p. 58) fugge e non attacca: conta come fuori dallo scontro.
     - {id: scacciato, nome: "Scacciato", icona: "SC", effetti: [perde_turno, fuori_combattimento], testo: "Fugge dal chierico e non torna per un po'."}
+    # Chi cede al morale e si arrende (p. 57): getta le armi, non combatte più per tutta la scena.
+    - {id: arreso, nome: "Arreso", icona: "AR", effetti: [perde_turno, fuori_combattimento], testo: "Si è arreso: non combatte più."}
   condizione_a_zero: svenuto
   # Sorpresa (p. 50): 1d6 per ogni parte che può essere sorpresa, con 1–2 perde il primo round. Il Motore la tira per la
   # parte attaccata quando lo scontro si apre con un attacco, per tutte e due quando lo apre il master.
   sorpresa: {dado: 6, fino_a: 2, condizione: sorpreso}
-  # Morale (p. 57): 2d6, con più del morale il mostro fugge o si arrende. Il manuale lo tira al primo scontro e a metà
-  # forze; il Motore al primo caduto e a metà caduti, contro il morale più basso tra chi resta in piedi.
-  fine: {morale: true}
+  # Morale (p. 57): 2d6, con più del morale il mostro fugge, o si arrende se è intelligente (`si_arrende` sulla scheda).
+  # Si tira quando i mostri incontrano la prima opposizione (il primo attacco di un PG a uno di loro) e a metà forze (per
+  # numero; un mostro solo a metà dei punti ferita); un tiro per la parte, letto contro il morale di ciascuno. Lo tira il
+  # master: la carta resta sul pannello. Chi dorme, è incantato o paralizzato conta come caduto.
+  fine: {morale: {quando: [prima_opposizione, meta], resa: {condizione: arreso}}}

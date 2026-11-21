@@ -80,6 +80,15 @@ export interface DipendenzeCombattimento {
   attacca: (png: string, pg: string, fase: Fase, turno: number, prossimo: () => string | null) => Array<AttaccoDelPng> | AttaccoDelPng | null;
   /** Morale del PNG (scheda `morale`), per il set con `fine.morale`. */
   morale: (png: string) => number | null;
+  /**
+   * An NPC's morale before and after it is engaged (a giant ant: 7, then 12) and whether it surrenders instead of fleeing
+   * when it breaks (`si_arrende` on its sheet). Absent or null = `morale` for both, flight.
+   */
+  moraleDi?: (png: string) => { prima: number; dopo: number; resa: boolean } | null;
+  /** A broken NPC surrenders (the set's `fine.morale.resa` condition, for the scene: prove/attivi.ts); its fact. */
+  arrende?: (png: string, condizione: string, fatti: string[]) => void;
+  /** Whether the table sees the morale roll, a Game Master's roll (`tiri_master`; `morale`: the lowest score read). */
+  mostraMorale?: (morale: number) => boolean;
   nuovoIdTiro: () => string;
   /**
    * A PC's own dice for one of the fight's rolls (manual rolls, docs/prove.md §8: initiative, a death save); null =
@@ -147,6 +156,10 @@ export class GestoreCombattimento {
   private ordineTirato: string[] | null = null;
   /** The combatants of the last fight that ended (until the next one starts). */
   private ultimiPartecipanti: Partecipante[] = [];
+  /** Cards rolled outside a step's own list (the morale roll), added to the turn's cards when it closes. */
+  private carteInPiu: TiroMostrato[] = [];
+  /** The turn being resolved (`dopoAzioni`), for the cards made deep inside it. */
+  private turnoInCorso = 0;
 
   constructor(private readonly d: DipendenzeCombattimento) {}
 
@@ -454,6 +467,8 @@ export class GestoreCombattimento {
     this.morte = [];
     this.persiNelTurno = new Map();
     this.fuggiti = [];
+    this.carteInPiu = [];
+    this.turnoInCorso = o.turno;
     // An order rolled at the Game Master's click (`inizia` from the panel, automatic rolls) is still to be said: it is
     // kept for this call's result, so the table hears it in the fight's first turn (A3 of docs/da-fare.md).
     let appenaIniziato = false;
@@ -478,6 +493,10 @@ export class GestoreCombattimento {
     // fall is recorded; nothing new is saved, the numbers are the participants'.
     const insieme = this.pariDelPassoGiocato(o.attacchi, appenaIniziato);
     for (const p of s.partecipanti) this.controllaZero(p, fatti);
+    // Morale when the monsters first meet opposition (a PC's attack or hostile power on one of them, Basic Fantasy
+    // p. 57), or when a lone one is down to half its hit points.
+    const opposizione = o.attacchi.some((a) => this.part(a.chi)?.lato === 'pg' && this.part(a.bersaglio)?.lato === 'png');
+    this.controllaMorale(fatti, opposizione);
     if (!this.aTurni) {
       // Senza iniziativa niente turni: solo la fine dello scontro.
       this.controllaFine(fatti, { turno: o.turno, tiri });
@@ -512,6 +531,8 @@ export class GestoreCombattimento {
   private chiudi(turno: number, fatti: string[], tiri: TiroMostrato[]): EsitoCombattimento {
     void turno;
     const { morte, fuggiti } = this;
+    tiri.push(...this.carteInPiu);
+    this.carteInPiu = [];
     // The order is said at the end of the turn: who died or fled in it since the roll is not in it (final round,
     // attempt 4, CM T24: «Livia muore.», then «Ordine del round: Livia, Nespola, Grosso.»).
     const fuori = new Set((this.s?.partecipanti ?? []).filter((p) => p.esito === 'morto' || p.esito === 'fuggito').map((p) => p.nome));
@@ -692,23 +713,70 @@ export class GestoreCombattimento {
     }
   }
 
-  /** B/X: dopo il primo PNG caduto e a metà caduti, 2d6 contro il morale più basso; sopra, fuggono. */
-  private controllaMorale(fatti: string[]): void {
+  /**
+   * Morale (B/X, Basic Fantasy p. 57). When: the set's `fine.quando` — the first opposition (a PC attacks one of them),
+   * the first of them down (the reading before R4, and `morale: true`'s), half of them down or a lone one at half its
+   * hit points; each once a fight. One 2d6 for the side, the Game Master's roll (hidden unless `tiri_master` shows it),
+   * read against each NPC's own morale — its `prima` at the fight's first check, `dopo` later (a giant ant's 7, then
+   * 12); 12 never fails. Higher breaks: it flees, or with `si_arrende` and the set's `resa` condition it surrenders
+   * (out of the fight for the scene). Asleep, charmed or held count as down.
+   */
+  private controllaMorale(fatti: string[], opposizione = false): void {
     const s = this.s;
     if (!s || !this.d.regole.fine.morale) return;
+    const quando = this.d.regole.fine.quando ?? ['primo_caduto', 'meta'];
     const png = s.partecipanti.filter((p) => p.lato === 'png');
-    const caduti = png.filter((p) => p.esito === 'morto' || p.esito === 'fuggito' || this.d.stato.aTerra(p.id) || this.fuoriPerCondizione(p.id)).length;
-    const soglia = caduti >= 1 && !s.moraleControllato.includes('primo') ? 'primo' : caduti * 2 >= png.length && !s.moraleControllato.includes('meta') ? 'meta' : null;
-    const vivi = png.filter((p) => p.esito === 'in_gioco' && !this.d.stato.aTerra(p.id) && !this.fuoriPerCondizione(p.id));
-    if (!soglia || !vivi.length) return;
+    const giu = (p: Partecipante): boolean => p.esito === 'morto' || p.esito === 'fuggito' || this.d.stato.aTerra(p.id) || this.fuoriPerCondizione(p.id);
+    const caduti = png.filter(giu).length;
+    const vivi = png.filter((p) => !giu(p));
+    if (!vivi.length) return;
+    const fatto = (k: string): boolean => s.moraleControllato.includes(k);
+    const pf = this.d.stato.puntiFerita(vivi[0]!.id);
+    const meta = png.length > 1 ? caduti * 2 >= png.length : !!pf && pf.attuali * 2 <= pf.massimi;
+    const soglia =
+      opposizione && quando.includes('prima_opposizione') && !fatto('opposizione') ? 'opposizione'
+      : quando.includes('primo_caduto') && caduti >= 1 && !fatto('primo') ? 'primo'
+      : quando.includes('meta') && meta && !fatto('meta') ? 'meta'
+      : null;
+    if (!soglia) return;
+    const primoControllo = !s.moraleControllato.length;
     s.moraleControllato.push(soglia);
-    const morale = Math.min(...vivi.map((p) => this.d.morale(p.id) ?? 7));
     const dadi = this.d.dadi();
-    const tiro = dadi.tira(6) + dadi.tira(6);
-    if (tiro > morale) {
-      for (const p of vivi) this.esce(p, 'fuggito');
-      fatti.push(testo('prove.combattimento.morale_cedono', { tiro, morale, nomi: vivi.map((p) => p.nome).join(', ') }));
-    } else fatti.push(testo('prove.combattimento.morale_tengono', { tiro, morale }));
+    const a = dadi.tira(6);
+    const b = dadi.tira(6);
+    const tiro = a + b;
+    const voci = vivi.map((p) => {
+      const m = this.d.moraleDi?.(p.id) ?? null;
+      const valore = m ? (primoControllo ? m.prima : m.dopo) : (this.d.morale(p.id) ?? 7);
+      return { p, valore, resa: !!m?.resa && !!this.d.regole.fine.resa };
+    });
+    const cedono = voci.filter((x) => tiro > x.valore);
+    const tengono = voci.filter((x) => tiro <= x.valore);
+    // The card: the Game Master's roll; the lowest morale is the number it is read against on the panel.
+    const minimo = Math.min(...voci.map((x) => x.valore));
+    const carta: TiroMostrato = { id: this.d.nuovoIdTiro(), turno: this.turnoInCorso, chi: vivi[0]!.id, nome: testo('prove.combattimento.morale_chi'), di_png: true, tipo: 'prova', etichetta: testo('prove.combattimento.morale_etichetta'), dadi: [a, b], dado: tiro, vantaggio: null, motivo_vantaggio: null, modificatore: 0, totale: tiro, contro: { tipo: 'soglia', valore: minimo, descrizione: null }, bersaglio: null, riuscita: !cedono.length, critico: false, fallimento_critico: false, danno: null, a_terra: false, privata: false, avversario: null, risoluzione: 'sotto_soglia', facce: 6, regola: testo('prove.combattimento.morale_regola', { tiro, morale: minimo }) };
+    if (!(this.d.mostraMorale?.(minimo) ?? false)) carta.nascosta = true;
+    this.carteInPiu.push(carta);
+    this.d.log.info({ quando: soglia, tiro, morale: voci.map((x) => ({ id: x.p.id, morale: x.valore })), cedono: cedono.map((x) => x.p.id), mostrata: !carta.nascosta }, 'combat: morale checked');
+    const uniforme = voci.every((x) => x.valore === voci[0]!.valore) && !cedono.some((x) => x.resa);
+    if (!cedono.length) {
+      fatti.push(uniforme ? testo('prove.combattimento.morale_tengono', { tiro, morale: minimo }) : testo('prove.combattimento.morale_misto', { tiro, tengono: testo('prove.combattimento.morale_tengono_chi', { nomi: tengono.map((x) => `${x.p.nome} (${x.valore})`).join(', ') }), cedono: '', arresi: '' }));
+      return;
+    }
+    const fuggono = cedono.filter((x) => !x.resa);
+    const arresi = cedono.filter((x) => x.resa);
+    for (const x of fuggono) this.esce(x.p, 'fuggito');
+    for (const x of arresi) this.d.arrende?.(x.p.id, this.d.regole.fine.resa!, fatti);
+    if (uniforme) fatti.push(testo('prove.combattimento.morale_cedono', { tiro, morale: minimo, nomi: fuggono.map((x) => x.p.nome).join(', ') }));
+    else
+      fatti.push(
+        testo('prove.combattimento.morale_misto', {
+          tiro,
+          tengono: tengono.length ? testo('prove.combattimento.morale_tengono_chi', { nomi: tengono.map((x) => `${x.p.nome} (${x.valore})`).join(', ') }) : '',
+          cedono: fuggono.length ? testo('prove.combattimento.morale_fuggono_chi', { nomi: fuggono.map((x) => `${x.p.nome} (${x.valore})`).join(', ') }) : '',
+          arresi: arresi.length ? testo('prove.combattimento.morale_arresi_chi', { nomi: arresi.map((x) => `${x.p.nome} (${x.valore})`).join(', ') }) : '',
+        }),
+      );
   }
 
   /** Set when the fight ends because every PC in it is out; read (and cleared) by chiudi. */

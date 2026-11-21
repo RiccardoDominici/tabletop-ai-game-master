@@ -306,8 +306,8 @@ function lineaDiMostro(s: SistemaRegole, a: DatiYaml, dove: string, avvisi: stri
  * of line ids), its morale (a number, or `{prima, dopo}`: before and after it is engaged), the attack bonus it prints,
  * the weapons that can hurt it (`colpito_solo_da`).
  */
-function mostroDellaScheda(s: SistemaRegole, o: DatiYaml, attacchi: SchedaGenerica['attacchi'], dove: string, avvisi: string[]): Pick<SchedaGenerica, 'perRound' | 'morale' | 'attacco' | 'colpitoSoloDa' | 'resistenze'> {
-  const out: Pick<SchedaGenerica, 'perRound' | 'morale' | 'attacco' | 'colpitoSoloDa' | 'resistenze'> = {};
+function mostroDellaScheda(s: SistemaRegole, o: DatiYaml, attacchi: SchedaGenerica['attacchi'], dove: string, avvisi: string[]): Pick<SchedaGenerica, 'perRound' | 'morale' | 'attacco' | 'colpitoSoloDa' | 'resistenze' | 'siArrende'> {
+  const out: Pick<SchedaGenerica, 'perRound' | 'morale' | 'attacco' | 'colpitoSoloDa' | 'resistenze' | 'siArrende'> = {};
   if (o['resistenze'] !== undefined) {
     const r = ogg(o['resistenze']);
     const ok = r && Object.values(r).every((v) => v === 'meta' || v === 'immune');
@@ -325,6 +325,10 @@ function mostroDellaScheda(s: SistemaRegole, o: DatiYaml, attacchi: SchedaGeneri
   if (intero(m) !== null && (m as number) >= 2 && (m as number) <= 12) out.morale = m as number;
   else if (ogg(m) && intero(ogg(m)!['prima']) !== null && intero(ogg(m)!['dopo']) !== null) out.morale = { prima: ogg(m)!['prima'] as number, dopo: ogg(m)!['dopo'] as number };
   else if (m !== undefined) avvisi.push(`${dove}.morale: un numero da 2 a 12, o {prima, dopo}`);
+  if (o['si_arrende'] !== undefined) {
+    if (typeof o['si_arrende'] === 'boolean') out.siArrende = o['si_arrende'];
+    else avvisi.push(`${dove}.si_arrende: true o false`);
+  }
   if (o['attacco'] !== undefined) {
     if (intero(o['attacco']) !== null) out.attacco = o['attacco'] as number;
     else avvisi.push(`${dove}.attacco: il bonus d'attacco del mostro, un intero`);

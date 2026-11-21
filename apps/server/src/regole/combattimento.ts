@@ -107,6 +107,14 @@ export interface Combattimento {
   fine: {
     /** Morale dei PNG (B/X): 2d6 contro il morale della scheda, dopo il primo caduto e a metà caduti. */
     morale: boolean;
+    /**
+     * When morale is checked (Basic Fantasy p. 57): `prima_opposizione` (the first time a PC attacks one of them),
+     * `primo_caduto` (the first of them down: the reading before R4, and `morale: true`'s), `meta` (half of them down,
+     * or a lone one at half its hit points). Absent = [primo_caduto, meta].
+     */
+    quando?: Array<'prima_opposizione' | 'primo_caduto' | 'meta'>;
+    /** A set condition (with `fuori_combattimento`) an NPC that surrenders gets for the scene; null = they only flee. */
+    resa?: string | null;
   };
   /**
    * Surprise (B/X, docs/combattimento.md §1): when a fight starts each side that can be surprised rolls `dado`; on
@@ -295,6 +303,24 @@ export function leggiCombattimento(v: unknown, base: Combattimento, caratteristi
   }
   const fine = ogg(d['fine']);
   if (fine && typeof fine['morale'] === 'boolean') out.fine.morale = fine['morale'];
+  // Morale as the manual times it (p. 57): {quando: [prima_opposizione, meta], resa: {condizione: arreso}}.
+  const mo = fine ? ogg(fine['morale']) : null;
+  if (mo) {
+    out.fine.morale = true;
+    const QUANDO = ['prima_opposizione', 'primo_caduto', 'meta'] as const;
+    if (mo['quando'] !== undefined) {
+      const q = Array.isArray(mo['quando']) ? mo['quando'] : [];
+      const ok = q.filter((x): x is (typeof QUANDO)[number] => (QUANDO as readonly unknown[]).includes(x));
+      if (!ok.length || ok.length !== q.length) errori.push(`combattimento.fine.morale.quando: a list of ${QUANDO.join(', ')}`);
+      else out.fine.quando = ok;
+    }
+    const resa = ogg(mo['resa']);
+    if (mo['resa'] !== undefined) {
+      const c = resa?.['condizione'];
+      if (typeof c !== 'string' || !out.condizioni.some((x) => x.id === c)) errori.push(`combattimento.fine.morale.resa.condizione: «${String(c)}» is not one of the set's conditions`);
+      else out.fine.resa = c;
+    }
+  }
   if (d['sorpresa'] !== undefined && d['sorpresa'] !== null) {
     const so = ogg(d['sorpresa']);
     const dado = so?.['dado'];

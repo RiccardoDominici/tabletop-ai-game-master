@@ -149,8 +149,19 @@ def controlla(r: dict, car: set[str], e: Esito, dove: str = "regole/regole.yaml"
     if cz is not None and cz not in ids:
         _err(e, dove, f"condizione_a_zero «{cz}» non è tra le condizioni")
     fine = c.get("fine")
-    if fine is not None and (_ogg(fine) is None or ("morale" in fine and not isinstance(fine["morale"], bool))):
-        _err(e, dove, "fine.morale: true o false")
+    mo = _ogg(fine).get("morale") if _ogg(fine) else None
+    if fine is not None and (_ogg(fine) is None or ("morale" in fine and not isinstance(mo, (bool, dict)))):
+        _err(e, dove, "fine.morale: true o false, o {quando, resa}")
+    elif isinstance(mo, dict):
+        # Morale as the manual times it (regole/combattimento.ts): when, and the condition of a surrender.
+        quando = mo.get("quando")
+        ammessi = {"prima_opposizione", "primo_caduto", "meta"}
+        if quando is not None and not (isinstance(quando, list) and quando and all(q in ammessi for q in quando)):
+            _err(e, dove, f"fine.morale.quando: un elenco tra {', '.join(sorted(ammessi))}")
+        resa = mo.get("resa")
+        ids = {x.get("id") for x in c.get("condizioni") or [] if isinstance(x, dict)}
+        if resa is not None and not (isinstance(resa, dict) and resa.get("condizione") in ids):
+            _err(e, dove, "fine.morale.resa.condizione: una condizione del set")
     # Surprise (B/X, docs/combattimento.md §1): {dado, fino_a, condizione}; the condition is one of the set's.
     so = c.get("sorpresa")
     if so is not None:

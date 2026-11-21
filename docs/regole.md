@@ -165,7 +165,9 @@ combattimento:                              # optional: without it, the full SRD
   condizioni:                               # [V] snake_case ids; effects from the closed list (docs/combattimento.md §2)
     - {id: prono, nome: "Prono", icona: "⬇", effetti: [svantaggio_attacchi, attacchi_contro_vantaggio], testo: "…"}
   condizione_a_zero: privo_di_sensi         # [V] among the conditions, or null
-  fine: {morale: true}                      # B/X morale: 2d6 against the NPCs' scheda.morale
+  fine: {morale: true}                      # B/X morale: 2d6 against the NPCs' scheda.morale (first down, half down)
+  # or [V] {morale: {quando: [prima_opposizione, primo_caduto, meta], resa: {condizione: arreso}}}: when it is checked, and
+  #   the condition a broken NPC with `si_arrende: true` gets for the scene (Basic Fantasy p. 57; docs/combattimento.md §3)
   sorpresa: {dado: 6, fino_a: 2, condizione: sorpreso}   # [V] B/X surprise: 1d6 per side, 1–2 loses round 1 (a set's condition)
 tiri_salvezza:                              # optional [V]: the manual's save categories, in the table's order
   colonne: [{id: morte, nome: "Raggio della morte o veleno"}, {id: incantesimi, nome: "Incantesimi"}]
@@ -438,6 +440,7 @@ scheda:
                                                 #   sheet's own win (below, «The bestiary in play»)
   per_round: [[artiglio, artiglio, morso]]      # optional [V]: a monster's attacks of a round (line ids, alternatives)
   colpito_solo_da: [argento, magica]            # optional [V]: only weapons with one of these `proprieta` hurt it
+  si_arrende: true                              # optional [V]: a broken morale makes it surrender, not flee
   resistenze: {fuoco: immune, freddo: meta}     # optional [V]: damage of these types does nothing or half
   # monster attack lines: colpendo: [paralisi_ghoul] (powers a hit applies, the target saves), potere: soffio_x (a special
   #   action instead of an attack roll), usi: 9 (a day, back with a rest), ricarica: 2 (at most every other round),
