@@ -1,0 +1,192 @@
+# Registro della sessione: estratto dall’archivio (sessioni.sqlite) dal server, senza modelli.
+# Ogni voce porta il turno da cui viene. Non si modifica a mano: si rigenera con scripts/registro.sh.
+# Contiene le azioni PRIVATE dei PG: solo per il master e il Preparatore, mai per i giocatori.
+formato: 1
+campagna: cripta
+titolo: La cripta del mulino
+sessione: 1
+archivio:
+  id: 2026-11-21T02:42:07.113Z
+  modo: improvvisa
+  creata: 2026-11-21T02:42:07.113Z
+  ultimo_evento: 2026-11-21T02:44:29.537Z
+  stato: in_corso
+  motivo_chiusura: null
+  eventi: 90
+  ultimo_turno: 14
+trascrizione:
+  file: trascrizione.yaml
+  voci: 42
+  turni: 15
+giocatori: []
+scene:
+  - id: scena_cripta
+    titolo: La cripta del mulino
+    dal_turno: 0
+    al_turno: 14
+    png_presenti:
+      - png_ossa
+      - png_putrido
+luoghi:
+  - id: scena_cripta
+    dal_turno: 0
+    causa: inizio
+situazioni: []
+orologi:
+  - id: o_ladri
+    nome: I ladri di tombe se ne vanno
+    segmenti: 4
+    pieni_all_inizio: 0
+    pieni_alla_fine: 0
+    completo: false
+    al_completo: I ladri di tombe sono spariti col bottino.
+    partito: true
+    partito_al_turno: null
+    segni: []
+    tolti: []
+indizi: []
+battute: null
+menzogne: []
+fatti_noti: []
+png_incontrati:
+  - id: png_putrido
+    nome: Putrido
+    primo_turno: 1
+    ultimo_turno: 1
+    battute: 1
+  - id: png_ossa
+    nome: Ossa
+    primo_turno: 14
+    ultimo_turno: 14
+    battute: 1
+pg:
+  - id: pg_tessa
+    nome: Tessa
+    azioni_pubbliche:
+      - id: a1
+        turno: 1
+        testo: Ascolto alla porta di ferro
+        esito: risolta
+        motivo: null
+      - id: a3
+        turno: 3
+        testo: Colpisco Putrido col pugnale
+        esito: risolta
+        motivo: null
+      - id: a6
+        turno: 6
+        testo: Colpisco Putrido col pugnale
+        esito: risolta
+        motivo: null
+      - id: a11
+        turno: 11
+        testo: Colpisco Ossa col pugnale
+        esito: risolta
+        motivo: null
+      - id: a13
+        turno: 13
+        testo: Infilo le monete nello zaino
+        esito: risolta
+        motivo: null
+    azioni_private: []
+  - id: pg_oreste
+    nome: Oreste
+    azioni_pubbliche:
+      - id: a2
+        turno: 2
+        testo: Scaccio i non morti col simbolo sacro
+        esito: risolta
+        motivo: null
+      - id: a4
+        turno: 4
+        testo: Colpisco Putrido con la mazza
+        esito: risolta
+        motivo: null
+      - id: a7
+        turno: 7
+        testo: Colpisco Putrido con la mazza
+        esito: risolta
+        motivo: null
+    azioni_private: []
+  - id: pg_gaia
+    nome: Gaia
+    azioni_pubbliche:
+      - id: a5
+        turno: 5
+        testo: Colpisco Putrido con la lancia
+        esito: risolta
+        motivo: null
+      - id: a8
+        turno: 8
+        testo: Colpisco Putrido con la lancia
+        esito: risolta
+        motivo: null
+      - id: a9
+        turno: 9
+        testo: Colpisco Putrido con la lancia
+        esito: risolta
+        motivo: null
+      - id: a10
+        turno: 10
+        testo: Colpisco Ossa con la lancia
+        esito: risolta
+        motivo: null
+      - id: a12
+        turno: 12
+        testo: Colpisco Ossa con la lancia
+        esito: risolta
+        motivo: null
+    azioni_private: []
+momenti: []
+note_del_master: []
+pg_alla_fine:
+  - id: pg_tessa
+    pf: 0
+    monete:
+      mo: 150
+    px: 69
+    livello: 1
+    pf_massimi: 4
+  - id: pg_oreste
+    pf: 6
+    px: 175
+    livello: 1
+    pf_massimi: 6
+  - id: pg_gaia
+    pf: 9
+    oggetti:
+      pozione_eroismo: 1
+    px: 75
+    livello: 1
+    pf_massimi: 9
+tempo_alla_fine:
+  giorno: 1
+  ora: 0
+  minuto: 21
+esperienza:
+  - turno: 8
+    fonte: sconfitto
+    motivo: Ossa
+    totale: 20
+    quote:
+      pg_tessa: 6
+      pg_oreste: 6
+      pg_gaia: 6
+  - turno: 8
+    fonte: sconfitto
+    motivo: Putrido
+    totale: 40
+    quote:
+      pg_tessa: 13
+      pg_oreste: 14
+      pg_gaia: 14
+  - turno: 13
+    fonte: tesoro
+    motivo: tesoro portato al sicuro
+    totale: 150
+    quote:
+      pg_tessa: 50
+      pg_oreste: 55
+      pg_gaia: 55
+avvisi:
+  - "Modalità A (improvvisa): indizi, menzogne e fatti noti vengono dalle righe [indizio], [menzogna], [fatto] del narratore controllate dal Motore; le battute non ci sono (null)."

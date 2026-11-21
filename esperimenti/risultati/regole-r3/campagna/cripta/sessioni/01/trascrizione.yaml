@@ -1,0 +1,217 @@
+# Trascrizione pubblica della sessione: ciò che il tavolo ha sentito e visto, turno per turno.
+# Estratta dall’archivio dal server; niente azioni private.
+formato: 1
+campagna: cripta
+sessione: 1
+archivio: 2026-11-21T02:42:07.113Z
+voci:
+  - turno: 0
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Siete scesi nella cripta sotto il mulino, dove qualcuno ha svegliato i morti. Lo scheletro e il morto putrido si alzano dalle nicchie. Dietro la porta di ferro qualcuno smette di parlare. Che fate?
+  - turno: 1
+    tipo: azione
+    chi: pg_tessa
+    nome: Tessa
+    testo: Ascolto alla porta di ferro
+  - turno: 1
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Il forno crepita in fondo alla sala. Qualcuno bussa due volte alla porta.
+  - turno: 1
+    tipo: battuta
+    chi: png_putrido
+    nome: Putrido
+    testo: Chi è a quest'ora? Rispondete, o non apro.
+  - turno: 1
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Il vento porta l'odore della neve. Cosa fate?
+  - turno: 2
+    tipo: azione
+    chi: pg_oreste
+    nome: Oreste
+    testo: Scaccio i non morti col simbolo sacro
+  - turno: 2
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: "Ordine del round: Tessa, Ossa, Oreste, Gaia, Putrido."
+  - turno: 2
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Cosa fate?
+  - turno: 3
+    tipo: azione
+    chi: pg_tessa
+    nome: Tessa
+    testo: Colpisco Putrido col pugnale
+  - turno: 3
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Putrido incassa il colpo.
+  - turno: 3
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Cosa fate?
+  - turno: 4
+    tipo: azione
+    chi: pg_oreste
+    nome: Oreste
+    testo: Colpisco Putrido con la mazza
+  - turno: 4
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Putrido incassa il colpo.
+  - turno: 4
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Cosa fate?
+  - turno: 5
+    tipo: azione
+    chi: pg_gaia
+    nome: Gaia
+    testo: Colpisco Putrido con la lancia
+  - turno: 5
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: "Ordine del round: Tessa, Ossa, Putrido, Oreste, Gaia."
+  - turno: 5
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Cosa fate?
+  - turno: 6
+    tipo: azione
+    chi: pg_tessa
+    nome: Tessa
+    testo: Colpisco Putrido col pugnale
+  - turno: 6
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Putrido incassa il colpo.
+  - turno: 6
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Tessa cade a terra.
+  - turno: 6
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Cosa fate?
+  - turno: 7
+    tipo: azione
+    chi: pg_oreste
+    nome: Oreste
+    testo: Colpisco Putrido con la mazza
+  - turno: 7
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Cosa fate?
+  - turno: 8
+    tipo: azione
+    chi: pg_gaia
+    nome: Gaia
+    testo: Colpisco Putrido con la lancia
+  - turno: 8
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Putrido cade a terra.
+  - turno: 8
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Cosa fate?
+  - turno: 9
+    tipo: azione
+    chi: pg_gaia
+    nome: Gaia
+    testo: Colpisco Putrido con la lancia
+  - turno: 9
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Cosa fate?
+  - turno: 10
+    tipo: azione
+    chi: pg_gaia
+    nome: Gaia
+    testo: Colpisco Ossa con la lancia
+  - turno: 10
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Ossa incassa il colpo.
+  - turno: 10
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Cosa fate?
+  - turno: 11
+    tipo: azione
+    chi: pg_tessa
+    nome: Tessa
+    testo: Colpisco Ossa col pugnale
+  - turno: 11
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Cosa fate?
+  - turno: 12
+    tipo: azione
+    chi: pg_gaia
+    nome: Gaia
+    testo: Colpisco Ossa con la lancia
+  - turno: 12
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Cosa fate?
+  - turno: 13
+    tipo: sistema
+    chi: sistema
+    nome: Sistema
+    testo: Tessa riceve 150 mo.
+  - turno: 13
+    tipo: azione
+    chi: pg_tessa
+    nome: Tessa
+    testo: Infilo le monete nello zaino
+  - turno: 13
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Cosa fate?
+  - turno: 14
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Il forno crepita in fondo alla sala. Qualcuno bussa due volte alla porta.
+  - turno: 14
+    tipo: battuta
+    chi: png_ossa
+    nome: Ossa
+    testo: Chi è a quest'ora? Rispondete, o non apro.
+  - turno: 14
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Il vento porta l'odore della neve. Cosa fate?
+  - turno: 14
+    tipo: sistema
+    chi: sistema
+    nome: Sistema
+    testo: "La serata è chiusa: alla prossima."

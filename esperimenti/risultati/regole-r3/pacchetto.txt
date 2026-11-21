@@ -1,0 +1,4 @@
+Scheletro di esperimenti/risultati/regole-r3/campagna/cripta/sessioni/02 dallo stato dopo la sessione 1:
+  pg_oreste sale al livello 2 (175 PX): i punti ferita (1d6) li tira il giocatore all'inizio della sessione; incantesimi al giorno [1]: scegli in pg_all_inizio.pg_oreste.incantesimi
+  scritto: esperimenti/risultati/regole-r3/campagna/cripta/sessioni/02/sessione.yaml
+  scritto: esperimenti/risultati/regole-r3/campagna/cripta/sessioni/02/repertorio/parole_segrete.yaml

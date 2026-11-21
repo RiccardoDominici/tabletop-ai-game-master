@@ -1,0 +1,24 @@
+# Invented fixture for the rules-engine work R3 (docs/regole.md §2: progression by class and level, XP, Game Master
+# rolls, Turn Undead): a crypt under a mill with two undead, a closed door with voices behind it and a sack of coins.
+# Generic: no campaign's content.
+id: cripta
+canone:
+- id: f_cripta
+  noto_ai_pg: true
+  testo: Sotto il mulino c'è una cripta con due nicchie e una porta di ferro in fondo.
+- id: f_voci
+  noto_ai_pg: false
+  testo: Dietro la porta di ferro due ladri di tombe contano il bottino a bassa voce.
+orologi:
+- id: o_ladri
+  nome: I ladri di tombe se ne vanno
+  segmenti: 4
+  segno_almeno_ogni: 3
+  pieni_all_inizio: 0
+  segni:
+  - Un tintinnio di monete dietro la porta.
+  - Una sedia che striscia.
+  - Passi verso l'uscita sul retro.
+  - Una porta che sbatte lontano.
+  al_completo: I ladri di tombe sono spariti col bottino.
+# This copy is the R3 live check's two-session campaign (esperimenti/risultati/regole-r3/rifai.sh).

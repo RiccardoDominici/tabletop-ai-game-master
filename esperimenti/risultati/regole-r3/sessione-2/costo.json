@@ -1,0 +1,21 @@
+{
+  "totale_usd": 0,
+  "preriscaldamento_usd": 0,
+  "per_turno_usd": [
+    0,
+    0
+  ],
+  "mediana_per_turno_usd": 0,
+  "token_cache_lettura": [
+    7359,
+    7359
+  ],
+  "token_ingresso": [
+    700,
+    710
+  ],
+  "token_uscita": [
+    76,
+    75
+  ]
+}

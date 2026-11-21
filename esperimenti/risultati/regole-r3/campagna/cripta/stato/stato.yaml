@@ -1,0 +1,11 @@
+# Stato dopo la sessione 1 (live check R3): scritto come lo scrive l'agente tra le sessioni, il minimo che serve a
+# strumenti/tra_sessioni.py pacchetto. I PG sono ancora al livello con cui hanno giocato; il pacchetto li fa salire.
+versione: 1
+dopo_sessione: 1
+fatti: []
+orologi:
+  o_ladri: {pieni: 0, fonte: {sessione: 1}}
+pg:
+  pg_tessa: {livello: 1, fonte: {sessione: 1}}
+  pg_oreste: {livello: 1, fonte: {sessione: 1}}
+  pg_gaia: {livello: 1, fonte: {sessione: 1}}

@@ -1,0 +1,25 @@
+id: scena_mulino
+nodo: n_mulino
+nome: Il mulino all'alba
+descrizione: La stanza delle macine, con la farina che vola nella luce dell'alba. Il sacco di monete dei ladri è sul tavolo; dalla botola sale ancora l'odore della cripta.
+domanda_drammatica: Il gruppo si rimetterà in sesto prima di inseguire i ladri di tombe?
+intensita: 2
+sensi:
+- L'odore della farina.
+- Il cigolio della ruota del mulino.
+- La luce dell'alba tra le assi.
+elementi_interattivi:
+- cosa: il sacco di monete
+  dove: sul tavolo
+  azioni: si conta
+- cosa: la botola
+  dove: nel pavimento
+  azioni: si apre
+png_presenti: []
+orologi_attivi:
+- o_ladri
+mossa_morbida_pronta: Dalla botola sale un rumore di passi.
+apertura: L'alba entra tra le assi del mulino. Il sacco di monete è sul tavolo. Che fate?
+musica:
+  tag: calma
+taglio: Si chiude quando il gruppo scende di nuovo nella cripta.

@@ -1,0 +1,26 @@
+# Live check of the rules-engine work R3, session 1 (docs/prove.md §12), on a two-session copy of the invented fixture
+# apps/server/test/fixtures/campagne/cripta (sessioni/01 from its scena.yaml): the thief listens at the iron door (a Game
+# Master roll: no request at the table, the card only on the panel), the cleric turns the undead (the player's d20, then
+# 2d6 hit dice), the fight's defeated are worth XP, the coins found count once the Game Master marks them safe.
+#   TAGM_PORTA=4991 TAGM_SEME_DADI=<hex> npx tsx apps/server/src/esperimenti/esegui.ts esperimenti/copioni/regole-r3/cripta-1.yaml \
+#     A --cartella esperimenti/risultati/regole-r3/campagna/cripta --finto --tiri manuale --seme-giocatori <hex> --chiudi --uscita regole-r3/sessione-1
+scena: scena_cripta
+pg: [pg_tessa, pg_oreste, pg_gaia]
+turni:
+  - - {pg: pg_tessa, azione: "Ascolto alla porta di ferro"}
+  - - {pg: pg_oreste, azione: "Scaccio i non morti col simbolo sacro"}
+  - - {pg: pg_gaia, azione: "Colpisco Putrido con la lancia"}
+  - - {pg: pg_tessa, azione: "Colpisco Putrido col pugnale"}
+  - - {pg: pg_oreste, azione: "Colpisco Putrido con la mazza"}
+  - - {pg: pg_gaia, azione: "Colpisco Putrido con la lancia"}
+  - - {pg: pg_tessa, azione: "Colpisco Putrido col pugnale"}
+  - - {pg: pg_oreste, azione: "Colpisco Putrido con la mazza"}
+  - - {pg: pg_gaia, azione: "Colpisco Putrido con la lancia"}
+  - - {pg: pg_gaia, azione: "Colpisco Ossa con la lancia"}
+  - - {pg: pg_tessa, azione: "Colpisco Ossa col pugnale"}
+  - - {pg: pg_gaia, azione: "Colpisco Ossa con la lancia"}
+  # The sack of coins by the door: found (the panel's coins control), then brought back to safety (XP for treasure,
+  # the set's optional rule with `quando: al_sicuro`).
+  - - {master: {tipo: inventario, id: pg_tessa, cosa: monete, monete: {mo: 150}}}
+    - {master: {tipo: esperienza, cosa: tesoro}}
+    - {pg: pg_tessa, azione: "Infilo le monete nello zaino"}

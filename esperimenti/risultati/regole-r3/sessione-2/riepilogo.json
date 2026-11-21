@@ -1,0 +1,192 @@
+{
+  "copione": "cripta-2",
+  "campagna": "cripta",
+  "modo": "improvvisa",
+  "porta": 4992,
+  "narratore_finto": true,
+  "sessione": "2026-11-21T02:44:39.277Z",
+  "nota_ambiente": null,
+  "codice": {
+    "commit": "03d35baddcf06ee083fd10d9c6370f8d4e921ab7",
+    "modificati": [],
+    "radice": "/Users/riccardo/Developer/cantastorie"
+  },
+  "turni": 2,
+  "turni_copione": 2,
+  "cambi_di_scena": [],
+  "fine_prima_del_copione": null,
+  "tiri_al_tavolo": {
+    "modo": "manuale",
+    "tiri": [
+      {
+        "pg": "pg_oreste",
+        "id": "r_lv_pg_oreste_2_punti_ferita",
+        "etichetta": "Punti ferita del 2° livello",
+        "dadi": "1d6",
+        "valori": [
+          3
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_oreste",
+        "id": "r_a1_danno",
+        "etichetta": "Cura ferite",
+        "dadi": "1d6",
+        "valori": [
+          1
+        ],
+        "ok": true
+      }
+    ]
+  },
+  "combattimento_copione": {
+    "in_attesa_del_turno": 0,
+    "passate": 0
+  },
+  "finale": null,
+  "orologi": {
+    "per_turno": [
+      {
+        "turno": 1,
+        "stato": {
+          "o_ladri": "0/4"
+        }
+      },
+      {
+        "turno": 2,
+        "stato": {
+          "o_ladri": "0/4"
+        }
+      }
+    ],
+    "massimo": {
+      "o_ladri": "0/4"
+    },
+    "completo_al_turno": {}
+  },
+  "azioni_private_copione": 0,
+  "voce": "mock",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 23.5,
+      "peggiore": 30,
+      "n": 2
+    },
+    "voce_sveglia": {
+      "mediana": null,
+      "peggiore": null,
+      "n": 0
+    },
+    "llm_primo_token": {
+      "mediana": 525.5,
+      "peggiore": 532,
+      "n": 2
+    },
+    "llm_prima_frase": {
+      "mediana": 1076,
+      "peggiore": 1389,
+      "n": 2
+    },
+    "voce_richiesta": {
+      "mediana": 1945.5,
+      "peggiore": 2502,
+      "n": 2
+    },
+    "voce_primo_audio": {
+      "mediana": 1140.5,
+      "peggiore": 2043,
+      "n": 2
+    },
+    "schermo_inizio_audio": {
+      "mediana": 1294,
+      "peggiore": 2197,
+      "n": 2
+    },
+    "llm_fine": {
+      "mediana": 1559.5,
+      "peggiore": 1568,
+      "n": 2
+    },
+    "audio_fine": {
+      "mediana": 8113.5,
+      "peggiore": 13363,
+      "n": 2
+    }
+  },
+  "buchi": {
+    "totale": 4,
+    "in_frase": 0,
+    "tra_frasi": 4,
+    "silenzio_ms": 1037,
+    "per_turno": [
+      4,
+      0
+    ]
+  },
+  "righe_prescritte": 0,
+  "righe_improvvisate": 3,
+  "quota_prescritte": 0,
+  "usa_rifiutati": 0,
+  "azioni_pubbliche": 2,
+  "azioni_senza_risposta": 2,
+  "riparazioni": 0,
+  "conferme_motore": 0,
+  "righe_segrete_fermate": 0,
+  "pg_dedotti": 0,
+  "battute_indicate": 0,
+  "battute_indicate_usate": 0,
+  "righe_png_assenti": 4,
+  "usa_rifiutati_per_motivo": {},
+  "rivelazioni_fuori_contesto": {
+    "totale": 0,
+    "elenco": []
+  },
+  "serata": {
+    "ore": null,
+    "consiglio_ai_turni": [],
+    "chiusura": null
+  },
+  "fughe": {
+    "nota": "Modo A: non ci sono id di battuta e gli indizi non sono tracciati, quindi conta solo «un giocatore l’ha scritta prima». È un conteggio GREZZO: le rivelazioni legittime (il PG spezza il pane e vede i chicchi) qui risultano fughe; vanno giudicate a mano.",
+    "improvvisate": 0,
+    "prescritte": 0,
+    "elenco": []
+  },
+  "battute_usate": 0,
+  "battute_mai_usate": [],
+  "costo_totale_usd": 0,
+  "costo_mediana_turno_usd": 0,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 4,
+      "pezzi": 66,
+      "secondi": 13.066666666666654,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 1,
+      "frasi": 6,
+      "pezzi": 61,
+      "secondi": 11.933333333333323,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 1037
+    },
+    {
+      "turno": 2,
+      "frasi": 1,
+      "pezzi": 4,
+      "secondi": 0.6666666666666667,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+# Live check of the rules-engine work R3, session 2: the package written by strumenti/tra_sessioni.py pacchetto from
+# session 1's log (sessioni/02/sessione.yaml): Oreste starts at the 2nd level; at the first closed window his player is
+# asked the new hit die (1d6 + Constitution), and his new 1st-level slot casts Cura ferite on Tessa.
+#   TAGM_PORTA=4992 TAGM_SESSIONE=2 TAGM_SEME_DADI=<hex> npx tsx apps/server/src/esperimenti/esegui.ts esperimenti/copioni/regole-r3/cripta-2.yaml \
+#     A --cartella esperimenti/risultati/regole-r3/campagna/cripta --finto --tiri manuale --seme-giocatori <hex> --uscita regole-r3/sessione-2
+scena: scena_mulino
+pg: [pg_tessa, pg_oreste, pg_gaia]
+turni:
+  - - {pg: pg_oreste, azione: "Uso cura ferite su Tessa"}
+  - - {pg: pg_oreste, azione: "Uso ancora cura ferite su Tessa"}

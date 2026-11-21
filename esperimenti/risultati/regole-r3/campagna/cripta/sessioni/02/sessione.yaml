@@ -1,0 +1,44 @@
+# Pacchetto della sessione 2: scheletro di strumenti/tra_sessioni.py. Da scrivere: riassunto_iniziale
+# (dai fatti dello stato), scene, repertorio; per ogni filo, come: ripreso o rimandato.
+# pg_all_inizio e tempo_all_inizio vengono dal registro (come sono finiti PG e orologio di gioco): cambia ciò che
+# il tempo tra le sessioni cambia (un riposo, gli acquisti in paese, un viaggio).
+# Completato come lo completa l'agente tra le sessioni (rifai.sh): riassunto, scena, due notti di riposo per Tessa
+# (pf 2), l'incantesimo che Oreste prepara nel posto nuovo del 2° livello, l'ora. Il livello, pf_massimi e pf_da_tirare
+# li ha scritti tra_sessioni.py: i punti ferita del livello li tira il giocatore al tavolo.
+riassunto_iniziale: Due notti dopo la cripta, Tessa si è rimessa in piedi e il gruppo è tornato al mulino con le
+  monete dei ladri di tombe.
+scene:
+- scena_mulino
+pieni_all_inizio:
+  o_ladri: 0
+pg_all_inizio:
+  pg_tessa:
+    pf: 2
+    monete:
+      mo: 150
+    px: 69
+    livello: 1
+    pf_massimi: 4
+  pg_oreste:
+    pf: 6
+    px: 175
+    livello: 2
+    pf_massimi: 6
+    pf_da_tirare:
+    - 2
+    incantesimi:
+    - cura_ferite
+  pg_gaia:
+    pf: 9
+    oggetti:
+      pozione_eroismo: 1
+    px: 75
+    livello: 1
+    pf_massimi: 9
+tempo_all_inizio:
+  giorno: 3
+  ora: 7
+  minuto: 0
+preparazione:
+  fili: []
+titolo: Il mulino all'alba

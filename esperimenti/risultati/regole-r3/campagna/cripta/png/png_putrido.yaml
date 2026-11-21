@@ -1,0 +1,35 @@
+id: png_putrido
+nome: Putrido
+pronuncia: Putrido
+alias: [putrido]
+livello: supporto
+ruolo: un non morto della cripta
+aspetto:
+  lettura: Un morto avvolto in un sudario sporco di terra.
+  invarianti: [sudario, terra]
+personalita:
+  superficie: [muto]
+  sotto_pressione: [avanza]
+  contraddizione: Sembra morto ma si muove.
+desiderio: Cacciare i vivi dalla cripta.
+voce:
+  tts: {voce_id: dario}
+  registro: tu
+  stile: Non parla.
+  battuta_campione: …
+sa: [f_cripta]
+non_sa: [f_voci]
+atteggiamento_pg:
+  pg_tessa: {stato: ostile, perche: viva, vuole: niente}
+  pg_oreste: {stato: ostile, perche: vivo, vuole: niente}
+  pg_gaia: {stato: ostile, perche: viva, vuole: niente}
+scheda:
+  caratteristiche: {forza: 12, destrezza: 9, costituzione: 12, intelligenza: 3, saggezza: 3}
+  dadi_vita: 2
+  tipo: [non_morto, putrido]
+  salva_come: {classe: guerriero, livello: 2}
+  pf: 11
+  difesa: 12
+  morale: 12
+  attacchi:
+  - {nome: Pugni, danno: "1d8", abilita: mischia}
