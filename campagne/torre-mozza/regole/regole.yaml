@@ -850,6 +850,32 @@ poteri:
 
 # Cadute (p. 59): 1d6 ogni 10 piedi (3 metri), al massimo 20d6, arrotondando all'altezza più vicina (da 1–4 piedi
 # niente, da 5–14 piedi 1d6: in metri, da un metro e mezzo si prende 1d6). Le altezze delle scene sono in metri.
+  # Le capacità speciali dei mostri (tipo mostro, p. 62–162): le usano le voci del bestiario (regole/mostri.yaml), con
+  # `colpendo` (dopo un colpo che ferisce: il bersaglio tira il suo salvezza) o come azione (`potere`, con `usi` al
+  # giorno e `ricarica`). Il soffio dei draghi fa 1d8 per dado vita del mostro (p. 79–80), metà con il salvezza.
+  - {id: veleno_mortale, nome: "Veleno", tipo: mostro, salvezza: {abilita: ts_veleno, esito: annulla}, effetti: [{tipo: morte}]}
+  - {id: veleno_mortale_debole, nome: "Veleno debole", tipo: mostro, salvezza: {abilita: ts_veleno, esito: annulla, modificatore: 2}, effetti: [{tipo: morte}]}
+  - {id: veleno_mortale_forte, nome: "Veleno forte", tipo: mostro, salvezza: {abilita: ts_veleno, esito: annulla, modificatore: -2}, effetti: [{tipo: morte}]}
+  - {id: veleno_mortale_fortissimo, nome: "Veleno fortissimo", tipo: mostro, salvezza: {abilita: ts_veleno, esito: annulla, modificatore: -4}, effetti: [{tipo: morte}]}
+  - {id: paralisi_ghoul, nome: "Paralisi del ghoul", tipo: mostro, salvezza: {abilita: ts_paralisi, esito: annulla}, effetti: [{tipo: condizione, condizione: paralizzato, durata: {turno: "2d8"}}]}
+  - {id: paralisi_breve, nome: "Paralisi", tipo: mostro, salvezza: {abilita: ts_paralisi, esito: annulla}, effetti: [{tipo: condizione, condizione: paralizzato, durata: {turno: "2d4"}}]}
+  - {id: pietrificazione, nome: "Pietrificazione", tipo: mostro, salvezza: {abilita: ts_paralisi, esito: annulla}, effetti: [{tipo: condizione, condizione: pietrificato, durata: permanente}]}
+  - {id: soffio_pietrificante, nome: "Soffio pietrificante", tipo: mostro, bersaglio: nemici, salvezza: {abilita: ts_paralisi, esito: annulla}, effetti: [{tipo: condizione, condizione: pietrificato, durata: permanente}]}
+  - {id: risucchio_1, nome: "Risucchio di un livello", tipo: mostro, effetti: [{tipo: drenaggio, livelli: 1}]}
+  - {id: risucchio_2, nome: "Risucchio di due livelli", tipo: mostro, effetti: [{tipo: drenaggio, livelli: 2}]}
+  - {id: soffio_fuoco, nome: "Soffio di fuoco", tipo: mostro, bersaglio: nemici, salvezza: {abilita: ts_soffio, esito: dimezza}, effetti: [{tipo: danno, dadi: "1d8", dadi_per_livello: {}, tipo_danno: fuoco}]}
+  - {id: soffio_fulmine, nome: "Soffio di fulmine", tipo: mostro, bersaglio: nemici, salvezza: {abilita: ts_soffio, esito: dimezza}, effetti: [{tipo: danno, dadi: "1d8", dadi_per_livello: {}, tipo_danno: fulmine}]}
+  - {id: soffio_gelo, nome: "Soffio di gelo", tipo: mostro, bersaglio: nemici, salvezza: {abilita: ts_soffio, esito: dimezza}, effetti: [{tipo: danno, dadi: "1d8", dadi_per_livello: {}, tipo_danno: freddo}]}
+  - {id: soffio_acido, nome: "Soffio di acido", tipo: mostro, bersaglio: nemici, salvezza: {abilita: ts_soffio, esito: dimezza}, effetti: [{tipo: danno, dadi: "1d8", dadi_per_livello: {}, tipo_danno: acido}]}
+  - {id: soffio_gas, nome: "Soffio di gas velenoso", tipo: mostro, bersaglio: nemici, salvezza: {abilita: ts_soffio, esito: dimezza}, effetti: [{tipo: danno, dadi: "1d8", dadi_per_livello: {}, tipo_danno: veleno}]}
+  - {id: soffio_vapore, nome: "Soffio di vapore", tipo: mostro, bersaglio: nemici, salvezza: {abilita: ts_soffio, esito: dimezza}, effetti: [{tipo: danno, dadi: "1d8", dadi_per_livello: {}, tipo_danno: vapore}]}
+  - {id: soffio_fuoco_segugio, nome: "Soffio di fuoco", tipo: mostro, bersaglio: nemici, salvezza: {abilita: ts_soffio, esito: dimezza}, effetti: [{tipo: danno, dadi: "1d6", dadi_per_livello: {}, tipo_danno: fuoco}]}
+  - {id: gas_mortale, nome: "Gas velenoso", tipo: mostro, bersaglio: nemici, salvezza: {abilita: ts_soffio, esito: annulla}, effetti: [{tipo: morte}]}
+  - {id: canto_ammaliante, nome: "Canto ammaliante", tipo: mostro, bersaglio: nemici, salvezza: {abilita: ts_charme, esito: annulla}, effetti: [{tipo: condizione, condizione: affascinato, durata: scena}]}
+  - {id: sguardo_ammaliante, nome: "Sguardo ammaliante", tipo: mostro, salvezza: {abilita: ts_charme, esito: annulla, modificatore: -2}, effetti: [{tipo: condizione, condizione: affascinato, durata: scena}]}
+  - {id: terrore, nome: "Terrore", tipo: mostro, bersaglio: nemici, salvezza: {abilita: ts_incantesimi, esito: annulla}, effetti: [{tipo: condizione, condizione: spaventato, durata: {round: "2d6"}}]}
+  - {id: stordimento, nome: "Stordimento", tipo: mostro, salvezza: {abilita: ts_morte, esito: annulla}, effetti: [{tipo: condizione, condizione: stordito, durata: {round: "1d4"}}]}
+
 cadute: {dadi: "1d6", ogni: 3, unita: "metri", arrotonda: vicino, massimo: 20}
 
 # Riposo (p. 59): un punto ferita per ogni giorno con il sonno normale; chi sta a letto tutto il giorno ne recupera uno
@@ -1243,6 +1269,10 @@ combattimento:
     - {id: paralizzato, nome: "Paralizzato", icona: "PA", effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio, fuori_combattimento], testo: "Cosciente ma immobile: non si muove, non agisce, non parla."}
     # Il non morto scacciato (p. 58) fugge e non attacca: conta come fuori dallo scontro.
     - {id: scacciato, nome: "Scacciato", icona: "SC", effetti: [perde_turno, fuori_combattimento], testo: "Fugge dal chierico e non torna per un po'."}
+    # Le condizioni delle capacità dei mostri: chi è di pietra o fugge in preda al terrore è fuori dallo scontro.
+    - {id: pietrificato, nome: "Pietrificato", icona: "PI", effetti: [perde_turno, non_si_muove, fuori_combattimento], testo: "Trasformato in pietra."}
+    - {id: spaventato, nome: "Spaventato", icona: "SP", effetti: [perde_turno, fuori_combattimento], testo: "Fugge in preda al terrore."}
+    - {id: stordito, nome: "Stordito", icona: "ST", effetti: [perde_turno, non_si_muove], testo: "Stordito: non può agire né muoversi."}
     # Chi cede al morale e si arrende (p. 57): getta le armi, non combatte più per tutta la scena.
     - {id: arreso, nome: "Arreso", icona: "AR", effetti: [perde_turno, fuori_combattimento], testo: "Si è arreso: non combatte più."}
   condizione_a_zero: svenuto

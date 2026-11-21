@@ -7,20 +7,15 @@ livello: comparsa
 ruolo: "hobgoblin, guardaspalle di Zirrà; un ostacolo che si può comprare con il cibo"
 fronte: fronte_torre
 scheda:
-  # Hobgoblin, un dado vita; umanoide per gli incantesimi che toccano solo le persone (charme, blocca persone).
+  # Hobgoblin del bestiario (p. 113, regole/mostri.yaml): Classe d'Armatura 14, un dado vita (bonus d'attacco +1 dalla
+  # tabella dei mostri), salva come guerriero di livello 1, morale 8, 25 PX. Suoi: i punti ferita (7, non tirati) e
+  # l'arma, la mazza ferrata (1d8 come l'arma del bestiario, la linea `arma` che il suo attacco a round nomina).
+  # Umanoide per gli incantesimi che toccano solo le persone (charme, blocca persone).
+  mostro: hobgoblin
   tipo: umanoide
-  salva_come: {classe: guerriero, livello: 1}
-  dadi_vita: 1
-  # Hobgoblin (p. 113): Classe d'Armatura 14 (pelli e scudo di legno), un dado vita, quindi bonus d'attacco +1 e
-  # 1d8 punti ferita (qui 7). Un'arma 1d8. Salva come guerriero di livello 1 (12, 13, 14, 15, 17). Morale 8.
-  # Punteggi scelti per il bonus che il PNG deve avere: la tabella del set (regole/regole.yaml) lo ricava.
-  caratteristiche: {forza: 10, intelligenza: 10, saggezza: 10, destrezza: 10, costituzione: 10, carisma: 10}
-  abilita: {mischia: 1, distanza: 1}
   pf: 7
-  difesa: 14
-  morale: 8
   attacchi:
-    - {nome: "Mazza ferrata", danno: "1d8", abilita: mischia}
+    - {id: arma, nome: "Mazza ferrata", danno: "1d8", abilita: mischia}
 aspetto:
   lettura: "Un hobgoblin alto come un uomo, con il muso color fango e mezzo orecchio mozzato. Porta una pelle d'orso sulle spalle e una mazza ferrata."
   invarianti: ["alto come un uomo e largo di spalle", "pelle color fango", "muso piatto con due zanne corte", "mezzo orecchio sinistro mozzato", "pelle d'orso sulle spalle", "mazza ferrata", "scudo di legno"]

@@ -141,7 +141,9 @@ def differenze_voce(e: dict, b: B.Blocco) -> list[str]:
     if bonus != e.get("attacco"):
         diverso("attacco", bonus, e.get("attacco"))
     n_att = attacchi_stampati(c.get("No. of Attacks", ""))
-    per_round = e.get("per_round") or []
+    # Lines marked `in_piu` (a gaze the manual describes but does not print among the attacks) are not counted.
+    extra = {x.get("id") for x in e.get("attacchi") or [] if x.get("in_piu")}
+    per_round = [[y for y in r if y not in extra] for r in e.get("per_round") or []]
     # «5 to 12 bites» (a hydra's heads): one entry per value, each with its own count within the range.
     rng_att = _intervallo(c.get("No. of Attacks", "")) if re.search(r"\d\s*to\s*\d", c.get("No. of Attacks", "")) else None
     if rng_att and per_round and all(rng_att[0] <= len(r) <= rng_att[1] for r in per_round):

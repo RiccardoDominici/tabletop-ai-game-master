@@ -518,6 +518,10 @@ own hit points and weapons. A monster needs no ability scores (the +0 value, no 
   or stop damage of a type (`tipo_danno` of a line or an effect), after the set's minimum damage. Immunity to sleep, charm
   or hold is the sheet's `immune` (powers or conditions), as before.
 
+A line the manual does not count among the printed attacks (a gaze described in the text, a siren's song) is marked
+`in_piu: true` (the PDF check leaves it out of the counts); in `per_round` the alternative with a special action comes
+first, so the monster uses its breath while it has uses, then bites.
+
 The validator mirrors it (strumenti/valida/regole_bestiario.py), merging the entry under the sheet as the Engine does. The
 numbers copied from a manual are checked against its PDF by `strumenti/regole/confronta_bestiario.py`, which reads the stat
 blocks by position (`strumenti/regole/blocchi_mostri.py`) and compares them both ways (every block has an entry, every entry a

@@ -446,3 +446,40 @@ describe('the bestiary (pp. 53–54, 62–162)', () => {
     expect(g).toMatchObject({ difesa: 14, dadiVita: 0, abilita: { mischia: 0, distanza: 0 }, pfDaTirare: { numero: 1, facce: 8, bonus: -1 }, morale: 7, px: 10 });
   });
 });
+
+describe('torre-mozza\'s monsters from the bestiary (the numbers they had)', () => {
+  it('Grosso is the hobgoblin entry with his own hit points and mace; Zirrà the goblin entry as a 3−3 hit dice warrior', () => {
+    const s = set();
+    const schede = caricaSchedeGeneriche(s, caricaCampagna(BF));
+    const g = schede.get('png_grosso')!;
+    expect(g).toMatchObject({ mostro: 'hobgoblin', difesa: 14, pf_massimi: 7, dadiVita: 1, morale: 8, salvaCome: { classe: 'guerriero', livello: 1 }, abilita: { mischia: 1, distanza: 1 } });
+    expect(g.pfDaTirare).toBeUndefined();
+    expect(g.attacchi.map((a) => [a.nome, `${a.danno.numero}d${a.danno.facce}`, a.abilita])).toEqual([['Mazza ferrata', '1d8', 'mischia']]);
+    const z = schede.get('png_zirra')!;
+    expect(z).toMatchObject({ mostro: 'goblin', difesa: 14, pf_massimi: 12, dadiVita: 3, morale: 7, salvaCome: { classe: 'guerriero', livello: 3 }, abilita: { mischia: 3, distanza: 3 } });
+    expect(z.attacchi.map((a) => [a.nome, `${a.danno.numero}d${a.danno.facce}`, a.abilita, a.distanza])).toEqual([['Spada corta', '1d6', 'mischia', false], ['Coltello lanciato', '1d4', 'distanza', true]]);
+    expect(pxDiScheda(s.esperienza, g)).toBe(25);
+    expect(pxDiScheda(s.esperienza, z)).toBe(145);
+    expect([...g.avvisi, ...z.avvisi]).toEqual([]);
+  });
+});
+
+describe('the bestiary\'s specials as typed data (pp. 62–162)', () => {
+  it('the ghoul paralyses, the wight drains, the mountain dragon breathes fire first, the troll regenerates, undead are undead', () => {
+    const s = set();
+    const m = (id: string) => s.mostri!.find((x) => x.id === id)!.dati as Record<string, unknown> & { attacchi: Array<Record<string, unknown>>; per_round: string[][] };
+    expect(m('ghoul').attacchi.map((a) => a['colpendo'])).toEqual([['paralisi_ghoul'], ['paralisi_ghoul']]);
+    expect(m('ghoul')['tipo']).toEqual(['non_morto', 'ghoul']);
+    expect(m('wight').attacchi[0]!['colpendo']).toEqual(['risucchio_1']);
+    expect(m('wight')['colpito_solo_da']).toEqual(['argento', 'magica']);
+    const drago = m('drago_montagna');
+    expect(drago.per_round[0]).toContain('soffio');
+    expect(drago.attacchi.find((a) => a['id'] === 'soffio')).toMatchObject({ potere: 'soffio_fuoco', usi: 10, ricarica: 2 });
+    expect(drago['resistenze']).toEqual({ fuoco: 'immune' });
+    expect(m('troll')['rigenera']).toEqual({ pf: 1, tranne: ['fuoco', 'acido'], a_zero: { round: '2d6' } });
+    // A sheet from the dragon's entry: its breath is a power of the set, 1d8 per hit die.
+    const sch = caricaSchedeGeneriche(s, { pg: [], png: [{ id: 'png_d', nome: 'Drago', dati: { scheda: { mostro: 'drago_montagna' } } } as never] }).get('png_d')!;
+    expect(sch.attacchi.find((a) => a.id === 'soffio')).toMatchObject({ potere: 'soffio_fuoco', usi: 10 });
+    expect(s.poteri!.find((p) => p.id === 'soffio_fuoco')).toMatchObject({ tipo: 'mostro', bersaglio: 'nemici', salvezza: { abilita: 'ts_soffio', esito: 'dimezza' } });
+  });
+});

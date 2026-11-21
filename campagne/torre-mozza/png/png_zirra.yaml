@@ -8,22 +8,21 @@ livello: principale
 ruolo: "guerriera goblin, capa della banda della Torre Mozza; la cattiva"
 fronte: fronte_torre
 scheda:
-  # Goblin guerriera, 3−3 dadi vita: per il sonno conta 3 (p. 54); umanoide per gli incantesimi che toccano solo le persone (charme, blocca persone).
+  # Goblin del bestiario (p. 104, regole/mostri.yaml): Classe d'Armatura 14 (cuoio e scudo), morale 7. Lei è una
+  # guerriera di 3−3 dadi vita, non di 1−1: i dadi vita, i punti ferita (3d8−3, qui 12, non tirati), il salva come
+  # guerriero di livello 3 e i suoi PX (145, la tabella per 3 dadi vita: quelli del goblin comune sono 10) sono suoi.
+  # Il bonus d'attacco +3 viene dalla tabella dei mostri per 3 dadi vita (p. 53). Un attacco a round: la spada corta,
+  # o il coltello lanciato. Umanoide per gli incantesimi che toccano solo le persone (charme, blocca persone).
+  mostro: goblin
   tipo: umanoide
+  dadi_vita: "3-3"
   salva_come: {classe: guerriero, livello: 3}
-  dadi_vita: 3
-  # Goblin, guerriera (p. 104): Classe d'Armatura 14 (cuoio e scudo), dadi vita 3-3, quindi bonus d'attacco +3
-  # e 3d8−3 punti ferita (qui 12). Salva come guerriero di livello 3 (11, 12, 14, 15, 16). Morale 7.
-  # Il manuale non dà caratteristiche ai mostri: valgono tutte zero.
-  # Punteggi scelti per il bonus che il PNG deve avere: la tabella del set (regole/regole.yaml) lo ricava.
-  caratteristiche: {forza: 10, intelligenza: 10, saggezza: 10, destrezza: 10, costituzione: 10, carisma: 10}
-  abilita: {mischia: 3, distanza: 3}
   pf: 12
-  difesa: 14
-  morale: 7
+  px: 145
   attacchi:
     - {nome: "Spada corta", danno: "1d6", abilita: mischia}
     - {nome: "Coltello lanciato", danno: "1d4", abilita: distanza, distanza: true}
+  per_round: [[spada_corta], [coltello_lanciato]]
 aspetto:
   lettura: "Una goblin piccola come un bambino, con la pelle grigioverde e gli occhi gialli. Porta uno scudo dipinto di rosso e una spada corta troppo grande per lei."
   invarianti: ["piccola come un bambino", "pelle grigioverde", "orecchie a punta", "occhi gialli", "scudo rotondo dipinto di rosso", "spada corta", "giubba di cuoio con le borchie"]

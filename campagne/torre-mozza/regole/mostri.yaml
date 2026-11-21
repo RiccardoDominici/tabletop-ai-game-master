@@ -20,6 +20,7 @@ mostri:
     numero: "Wild 2d4"
     salva_come: {classe: guerriero, livello: 2}
     morale: 7
+    tipo: [animale]
     px: 75
     testo: "Dromedario mostrato; il cammello battriano (movimento tra parentesi quadre) è più lento."
   - id: asino
@@ -35,6 +36,7 @@ mostri:
     numero: "Wild 2d4"
     salva_come: {classe: guerriero, livello: 2}
     morale: 7
+    tipo: [animale]
     px: 75
   - id: cavallo_da_tiro
     nome: "Cavallo da tiro"
@@ -49,6 +51,7 @@ mostri:
     numero: "domestic only"
     salva_come: {classe: guerriero, livello: 3}
     morale: 7
+    tipo: [animale]
     px: 145
   - id: cavallo_da_sella
     nome: "Cavallo da sella"
@@ -63,6 +66,7 @@ mostri:
     numero: "Wild 10d10"
     salva_come: {classe: guerriero, livello: 2}
     morale: 7
+    tipo: [animale]
     px: 75
   - id: cavallo_da_guerra
     nome: "Cavallo da guerra"
@@ -77,6 +81,7 @@ mostri:
     numero: "domestic only"
     salva_come: {classe: guerriero, livello: 3}
     morale: 9
+    tipo: [animale]
     px: 145
   - id: mulo
     nome: "Mulo"
@@ -92,6 +97,7 @@ mostri:
     numero: "domestic only"
     salva_come: {classe: guerriero, livello: 2}
     morale: 7
+    tipo: [animale]
     px: 75
   - id: pony
     nome: "Pony"
@@ -106,6 +112,7 @@ mostri:
     numero: "domestic only"
     salva_come: {classe: guerriero, livello: 1}
     morale: 6
+    tipo: [animale]
     px: 25
     testo: "Morale 9 per un pony da guerra; non può combattere mentre ha un cavaliere in sella."
   - id: formica_gigante
@@ -122,6 +129,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 4}
     morale: {prima: 7, dopo: 12}
     tesoro: "U or special"
+    tipo: [animale]
     px: 240
   - id: formica_grande_enorme
     nome: "Formica enorme"
@@ -137,6 +145,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 2}
     morale: {prima: 7, dopo: 12}
     tesoro: "U or special"
+    tipo: [animale]
     px: 75
   - id: formica_grossa
     nome: "Formica grande"
@@ -152,6 +161,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 1}
     morale: {prima: 7, dopo: 12}
     tesoro: "U or special"
+    tipo: [animale]
     px: 25
   - id: cervo
     nome: "Cervo"
@@ -167,6 +177,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 1}
     morale: 5
     tesoro: "None"
+    tipo: [animale]
     px: 25
     testo: "Morale 7 quando i maschi sono in presenza di femmine. Animale da mandria: 1d4 di danno con un colpo."
   - id: antilope
@@ -183,6 +194,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 2}
     morale: 5
     tesoro: "None"
+    tipo: [animale]
     px: 75
     testo: "Morale 7 quando i maschi sono in presenza di femmine. Animale da mandria: 1d6 di danno con un colpo."
   - id: wapiti
@@ -199,6 +211,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 3}
     morale: 5
     tesoro: "None"
+    tipo: [animale]
     px: 145
     testo: "Morale 7 quando i maschi sono in presenza di femmine. Animale da mandria: 1d6 di danno con un colpo."
   - id: alce
@@ -215,6 +228,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 4}
     morale: 5
     tesoro: "None"
+    tipo: [animale]
     px: 240
     testo: "Morale 7 quando i maschi sono in presenza di femmine. Animale da mandria: 1d8 di danno con un colpo."
   - id: scimmia_carnivora
@@ -231,6 +245,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 4}
     morale: 7
     tesoro: "None"
+    tipo: [animale]
     px: 240
   - id: barkling
     nome: "Barkling"
@@ -249,6 +264,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 0}
     morale: 7
     tesoro: "P, Q each; C, K in lair"
+    tipo: [umanoide]
     px: 10
     testo: "Morale 9 quando superano i nemici di 3 a 1 o più; +1 al morale con i capi. Armi piccole: 1d4 di danno con un colpo. Vedono al buio (30') e fiutano le prede."
   - id: basilisco_comune
@@ -259,7 +275,7 @@ mostri:
     dadi_vita: "6**"
     attacchi:
       - {id: morso, nome: "Morso", danno: "1d10"}
-      - {id: sguardo, nome: "Sguardo"}
+      - {id: sguardo, nome: "Sguardo", potere: pietrificazione}
     per_round: [[morso, sguardo]]
     movimento: "20' (10')"
     numero: "1d6, Wild 1d6, Lair 1d6"
@@ -275,8 +291,8 @@ mostri:
     difesa: 17
     dadi_vita: "8***"
     attacchi:
-      - {id: morso, nome: "Morso", danno: "1d12"}
-      - {id: sguardo, nome: "Sguardo"}
+      - {id: morso, nome: "Morso", danno: "1d12", colpendo: [veleno_mortale]}
+      - {id: sguardo, nome: "Sguardo", potere: pietrificazione}
     per_round: [[morso, sguardo]]
     movimento: "20' (10')"
     numero: "1"
@@ -300,6 +316,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 0}
     morale: 6
     tesoro: "None"
+    tipo: [animale]
     px: 10
     testo: "Sonar: vede al buio come con scurovisione. Ogni 10 pipistrelli nell'area rende confusa una creatura: -2 ai tiri per colpire e salvezza finché restano."
   - id: pipistrello_gigante
@@ -316,6 +333,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 2}
     morale: 8
     tesoro: "None"
+    tipo: [animale]
     px: 75
     testo: "Sonar: vede al buio come con scurovisione."
   - id: orso_bruno
@@ -334,6 +352,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 5}
     morale: 8
     tesoro: "None"
+    tipo: [animale]
     px: 360
     testo: "Se entrambe le zampe colpiscono: abbraccio in più. Continua ad agire per un round dopo aver perso tutti i punti ferita."
   - id: orso_nero
@@ -352,6 +371,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 4}
     morale: 7
     tesoro: "None"
+    tipo: [animale]
     px: 240
     testo: "Se entrambe le zampe colpiscono: abbraccio in più. Continua ad agire per un round dopo aver perso tutti i punti ferita."
   - id: orso_delle_caverne
@@ -370,6 +390,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 7}
     morale: 9
     tesoro: "None"
+    tipo: [animale]
     px: 670
     testo: "Se entrambe le zampe colpiscono: abbraccio in più. Continua ad agire per un round dopo aver perso tutti i punti ferita."
   - id: orso_polare
@@ -388,6 +409,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 6}
     morale: 8
     tesoro: "None"
+    tipo: [animale]
     px: 500
     testo: "Se entrambe le zampe colpiscono: abbraccio in più. Continua ad agire per un round dopo aver perso tutti i punti ferita."
   - id: ape_gigante
@@ -398,13 +420,14 @@ mostri:
     dadi_vita: "½*"
     pf: "1d4"
     attacchi:
-      - {id: puntura, nome: "Puntura", danno: "1d4"}
+      - {id: puntura, nome: "Puntura", danno: "1d4", colpendo: [veleno_mortale]}
     per_round: [[puntura]]
     movimento: "10' Fly 50'"
     numero: "1d6, Wild 1d6, Lair 5d6"
     salva_come: {classe: guerriero, livello: 1}
     morale: 9
     tesoro: "Special"
+    tipo: [animale]
     px: 13
     testo: "Veleno della puntura: tiro salvezza contro veleno o muore. Dopo aver punto, l'ape muore. Con la regina minacciata lo sciame combatte senza controllo morale (morale 12)."
   - id: coleottero_bombardiere_gigante
@@ -422,6 +445,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 2}
     morale: 8
     tesoro: "None"
+    tipo: [animale]
     px: 100
     testo: "Spruzzo di gas caldo: 2d6 a tutti in un cono di 10' x 10' (salvezza contro morte dimezza). Solo 5 volte al giorno, non più di una ogni 3 round; al posto del morso può girarsi e spruzzare."
   - id: coleottero_di_fuoco_gigante
@@ -438,6 +462,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 1}
     morale: 7
     tesoro: "None"
+    tipo: [animale]
     px: 25
     testo: "Le ghiandole rosse sotto gli occhi illuminano un raggio di 10'; restano luminose 1d6 giorni dopo la morte."
   - id: scarabeo_gigante_olio
@@ -455,6 +480,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 2}
     morale: 8
     tesoro: "None"
+    tipo: [animale]
     px: 100
     testo: "Spruzzo d'olio: serve un tiro per colpire; il colpito subisce -2 ai tiri per colpire per 24 ore. Cura ferite leggere lo rimuove, ma non ripristina i PF."
   - id: scarabeo_gigante_tigre
@@ -471,6 +497,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 3}
     morale: 9
     tesoro: "U"
+    tipo: [animale]
     px: 145
   - id: cane_saltatore
     nome: "Cane saltatore"
@@ -518,6 +545,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 3}
     morale: 9
     tesoro: "None"
+    tipo: [animale]
     px: 145
   - id: bugbear
     nome: "Bugbear"
@@ -534,6 +562,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 3}
     morale: 9
     tesoro: "Q, R each; B, L, M in lair"
+    tipo: [umanoide]
     px: 145
     testo: "Sorprende con 1-3 su 1d6 se indossa solo armatura di cuoio o pelle; infravisione 30'; +1 al danno per la forza."
   - id: cecilia_gigante
@@ -551,6 +580,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 3}
     morale: 9
     tesoro: "B"
+    tipo: [animale]
     px: 555
     testo: "Su un tiro naturale di 19 o 20 che colpisce, ingoia una creatura piccola: 1d8 danni a round dall'interno, con attacchi solo con armi piccole da taglio o da punta, senza modificatori. Poi tende a ritirarsi nella tana."
   - id: bestiame
@@ -568,6 +598,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 3}
     morale: 5
     tesoro: "None"
+    tipo: [animale]
     px: 75
     testo: "Se attaccato carica con le corna; in stampede travolge chi si trova sul percorso. Il morale tra parentesi (8) vale per i tori."
   - id: uro
@@ -585,6 +616,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 3}
     morale: 7
     tesoro: "None"
+    tipo: [animale]
     px: 145
     testo: "Il morale tra parentesi (9) vale per i tori, più coraggiosi e aggressivi."
   - id: bisonte
@@ -602,6 +634,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 4}
     morale: 7
     tesoro: "None"
+    tipo: [animale]
     px: 240
     testo: "Il morale tra parentesi (9) vale per i tori, più coraggiosi e aggressivi."
   - id: cavalletta_gigante_delle_caverne
@@ -620,6 +653,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 2}
     morale: 5
     tesoro: "None"
+    tipo: [animale]
     px: 125
     testo: "Sputo digestivo fino a 10', una volta per incontro: tiro per colpire contro CA 11; se colpisce, tiro salvezza contro veleno o non può agire per 3d6 round. Salta fino a 60' in orizzontale; l'urto fa 1d4 danni non letali."
   - id: centauro
@@ -647,13 +681,14 @@ mostri:
     dadi_vita: "½*"
     pf: "1d4"
     attacchi:
-      - {id: morso, nome: "Morso velenoso"}
+      - {id: morso, nome: "Morso velenoso", colpendo: [veleno_mortale_debole]}
     per_round: [[morso]]
     movimento: "40'"
     numero: "2d4, Wild 2d4, Lair 2d4"
     salva_come: {classe: guerriero, livello: 0}
     morale: 7
     tesoro: "None"
+    tipo: [animale]
     px: 13
     testo: "Veleno: chi è morso deve superare un tiro salvezza contro veleno o muore; il veleno è più debole, con +2 al tiro salvezza."
   - id: ghepardo
@@ -671,6 +706,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 2}
     morale: 7
     tesoro: "None"
+    tipo: [animale]
     px: 75
   - id: chimera
     nome: "Chimera"
@@ -700,7 +736,7 @@ mostri:
     difesa: 14
     dadi_vita: "5**"
     attacchi:
-      - {id: becco, nome: "Becco", danno: "1d6"}
+      - {id: becco, nome: "Becco", danno: "1d6", colpendo: [pietrificazione]}
     per_round: [[becco]]
     movimento: "30' Fly 60' (10')"
     numero: "1d4, Wild 1d8, Lair 1d8"
@@ -723,6 +759,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 3}
     morale: 7
     tesoro: "None"
+    tipo: [animale]
     px: 145
   - id: coccodrillo
     nome: "Coccodrillo"
@@ -738,7 +775,9 @@ mostri:
     salva_come: {classe: guerriero, livello: 2}
     morale: 7
     tesoro: "None"
+    tipo: [animale]
     px: 75
+    sorprende: 4
     testo: "Sorprende con 1-4 su 1d6 nel suo ambiente naturale."
   - id: coccodrillo_grande
     nome: "Coccodrillo grande"
@@ -754,7 +793,9 @@ mostri:
     salva_come: {classe: guerriero, livello: 6}
     morale: 8
     tesoro: "None"
+    tipo: [animale]
     px: 500
+    sorprende: 4
     testo: "Sorprende con 1-4 su 1d6 nel suo ambiente naturale."
   - id: coccodrillo_gigante
     nome: "Coccodrillo gigante"
@@ -771,7 +812,9 @@ mostri:
     salva_come: {classe: guerriero, livello: 15}
     morale: 9
     tesoro: "None"
+    tipo: [animale]
     px: 2850
+    sorprende: 4
     testo: "Sorprende con 1-4 su 1d6 nel suo ambiente naturale."
   - id: ingannatore_comune
     nome: "Ingannatore comune"
@@ -797,7 +840,7 @@ mostri:
     difesa: 16
     dadi_vita: "7**"
     attacchi:
-      - {id: serpente, nome: "Morso di serpente", danno: "1d6"}
+      - {id: serpente, nome: "Morso di serpente", danno: "1d6", colpendo: [veleno_mortale]}
       - {id: pantera, nome: "Morso di pantera", danno: "2d6"}
     per_round: [[serpente, serpente, pantera]]
     movimento: "40'"
@@ -821,6 +864,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 3}
     morale: 8
     tesoro: "None"
+    tipo: [animale]
     px: 145
   - id: pterodattilo
     nome: "Pterodattilo"
@@ -836,6 +880,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 1}
     morale: 7
     tesoro: "None"
+    tipo: [animale]
     px: 25
   - id: pteranodonte
     nome: "Pteranodonte"
@@ -851,6 +896,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 5}
     morale: 8
     tesoro: "None"
+    tipo: [animale]
     px: 360
   - id: stegosauro
     nome: "Stegosauro"
@@ -869,6 +915,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 6}
     morale: 7
     tesoro: "None"
+    tipo: [animale]
     px: 1575
     testo: "Pacifico: combatte solo per difendersi, con morso, coda o calpestio secondo la posizione dell'avversario. Non usa morso e coda nello stesso round, né morso o coda nel round in cui calpesta."
   - id: triceratopo
@@ -887,6 +934,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 7}
     morale: 8
     tesoro: "None"
+    tipo: [animale]
     px: 1575
     testo: "Travolge fino a 2 avversari adiacenti di taglia uomo o 4 più piccoli, con un tiro per colpire contro la CA di ciascuno. La cornata solo contro un bersaglio di taglia uomo o più grande."
   - id: tirannosauro
@@ -904,6 +952,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 18}
     morale: 11
     tesoro: "None"
+    tipo: [animale]
     px: 4000
   - id: djinn
     nome: "Djinn"
@@ -922,6 +971,7 @@ mostri:
     morale: 12
     tesoro: "None"
     px: 800
+    resistenze: {freddo: immune}
     testo: "Solo armi magiche; immune al freddo normale, metà danno da magia di freddo o vento. A volontà: invisibilità, forma di turbine. 1 volta al giorno: cibo per 2d6 persone, oggetti fino a 1000 libbre, forma gassosa per 1 ora. 3 volte al giorno: illusioni con suono. Fugge col morale 8."
   - id: cane
     nome: "Cane"
@@ -937,6 +987,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 1}
     morale: 9
     tesoro: "None"
+    tipo: [animale]
     px: 25
     testo: "Dopo il morso tiene la preda: 1d4 danni automatici a round finché la vittima muore o spende un attacco per liberarsi (tiro salvezza contro raggio della morte, con bonus di Forza)."
   - id: cane_da_sella
@@ -953,6 +1004,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 2}
     morale: 9
     tesoro: "None"
+    tipo: [animale]
     px: 75
     testo: "Tiene la preda come il cane normale. Di taglia grande, addestrabile alla guerra con bardatura; carico leggero fino a 150 libbre, pesante fino a 300."
   - id: doppelganger
@@ -984,7 +1036,7 @@ mostri:
       - {id: morso, nome: "Morso", danno: "6d6"}
       - {id: soffio, nome: "Soffio", danno: "6d6"}
       - {id: coda, nome: "Coda", danno: "2d4"}
-    per_round: [[artiglio, artiglio, morso, coda], [artiglio, artiglio, soffio, coda]]
+    per_round: [[artiglio, artiglio, soffio, coda], [artiglio, artiglio, morso, coda]]
     movimento: "30' Fly 80' (20')"
     numero: "1, Wild 1, Lair 1d4"
     salva_come: {classe: guerriero, livello: 11}
@@ -1002,15 +1054,17 @@ mostri:
     attacchi:
       - {id: artiglio, nome: "Artiglio", danno: "1d8"}
       - {id: morso, nome: "Morso", danno: "3d8"}
-      - {id: soffio, nome: "Soffio", danno: "3d8"}
+      - {id: soffio, nome: "Soffio", potere: soffio_fulmine, usi: 9, ricarica: 2}
       - {id: coda, nome: "Coda", danno: "1d8"}
-    per_round: [[artiglio, artiglio, morso, coda], [artiglio, artiglio, soffio, coda]]
+    per_round: [[artiglio, artiglio, soffio, coda], [artiglio, artiglio, morso, coda]]
     movimento: "30' Fly 80' (15')"
     numero: "1, Wild 1, Lair 1d4"
     salva_come: {classe: guerriero, livello: 9}
     morale: 9
     tesoro: "H"
     px: 1225
+    resistenze: {fulmine: immune}
+    sorprende: 4
     testo: "Soffio di fulmine a linea, 1d8 per DV (metà con salvezza contro soffio di drago). Immune al fulmine normale, metà danno da quello magico. In agguato sotto la sabbia sorprende con 1–4 su 1d6 entro 100'."
   - id: drago_foresta
     nome: "Drago della foresta (verde)"
@@ -1021,15 +1075,17 @@ mostri:
     attacchi:
       - {id: artiglio, nome: "Artiglio", danno: "1d6"}
       - {id: morso, nome: "Morso", danno: "3d8"}
-      - {id: soffio, nome: "Soffio", danno: "3d8"}
+      - {id: soffio, nome: "Soffio", potere: soffio_gas, usi: 8, ricarica: 2}
       - {id: coda, nome: "Coda", danno: "1d6"}
-    per_round: [[artiglio, artiglio, morso, coda], [artiglio, artiglio, soffio, coda]]
+    per_round: [[artiglio, artiglio, soffio, coda], [artiglio, artiglio, morso, coda]]
     movimento: "30' Fly 80' (15')"
     numero: "1, Wild 1, Lair 1d4"
     salva_come: {classe: guerriero, livello: 8}
     morale: 8
     tesoro: "H"
     px: 1015
+    resistenze: {veleno: immune}
+    immune: [veleno_mortale, veleno_mortale_debole, veleno_mortale_forte, veleno_mortale_fortissimo]
     testo: "Soffio di gas a nube, 1d8 per DV: chi è nell'area non muore col veleno, ma subisce danno pieno o metà con salvezza contro soffio di drago. Immune a tutti i veleni."
   - id: drago_ghiaccio
     nome: "Drago del ghiaccio (bianco)"
@@ -1040,15 +1096,17 @@ mostri:
     attacchi:
       - {id: artiglio, nome: "Artiglio", danno: "1d4"}
       - {id: morso, nome: "Morso", danno: "2d8"}
-      - {id: soffio, nome: "Soffio", danno: "2d8"}
+      - {id: soffio, nome: "Soffio", potere: soffio_gelo, usi: 6, ricarica: 2}
       - {id: coda, nome: "Coda", danno: "1d4"}
-    per_round: [[artiglio, artiglio, morso, coda], [artiglio, artiglio, soffio, coda]]
+    per_round: [[artiglio, artiglio, soffio, coda], [artiglio, artiglio, morso, coda]]
     movimento: "30' Fly 80' (10')"
     numero: "1, Wild 1, Lair 1d4"
     salva_come: {classe: guerriero, livello: 6}
     morale: 8
     tesoro: "H"
     px: 610
+    resistenze: {freddo: immune}
+    sorprende: 4
     testo: "Soffio di freddo a cono, 1d8 per DV (metà con salvezza contro soffio di drago). Immune al freddo normale, metà danno da freddo o ghiaccio magico. Nascosto nella neve sorprende con 1–4 su 1d6 entro 100'."
   - id: drago_montagna
     nome: "Drago della montagna (rosso)"
@@ -1060,15 +1118,16 @@ mostri:
     attacchi:
       - {id: artiglio, nome: "Artiglio", danno: "1d8"}
       - {id: morso, nome: "Morso", danno: "4d8"}
-      - {id: soffio, nome: "Soffio", danno: "4d8"}
+      - {id: soffio, nome: "Soffio", potere: soffio_fuoco, usi: 10, ricarica: 2}
       - {id: coda, nome: "Coda", danno: "1d8"}
-    per_round: [[artiglio, artiglio, morso, coda], [artiglio, artiglio, soffio, coda]]
+    per_round: [[artiglio, artiglio, soffio, coda], [artiglio, artiglio, morso, coda]]
     movimento: "30' Fly 80' (20')"
     numero: "1, Wild 1, Lair 1d4"
     salva_come: {classe: guerriero, livello: 10}
     morale: 8
     tesoro: "H"
     px: 1480
+    resistenze: {fuoco: immune}
     testo: "Soffio di fuoco a cono, 1d8 per DV (metà con salvezza contro soffio di drago). Immune al fuoco normale, metà danno da fuoco magico."
   - id: drago_pianura
     nome: "Drago della pianura (giallo)"
@@ -1079,15 +1138,17 @@ mostri:
     attacchi:
       - {id: artiglio, nome: "Artiglio", danno: "1d6"}
       - {id: morso, nome: "Morso", danno: "2d10"}
-      - {id: soffio, nome: "Soffio", danno: "2d10"}
+      - {id: soffio, nome: "Soffio", potere: soffio_fuoco, usi: 5, ricarica: 2}
       - {id: coda, nome: "Coda", danno: "1d8"}
-    per_round: [[artiglio, artiglio, morso, coda], [artiglio, artiglio, soffio, coda]]
+    per_round: [[artiglio, artiglio, soffio, coda], [artiglio, artiglio, morso, coda]]
     movimento: "50' Fly 80' (10')"
     numero: "1, Wild 1, Lair 1d6"
     salva_come: {classe: guerriero, livello: 5}
     morale: 8
     tesoro: "H"
     px: 450
+    resistenze: {fuoco: immune}
+    sorprende: 4
     testo: "Soffio di calore a cono, 1d8 per DV (metà con salvezza contro soffio di drago). In agguato nell'erba sorprende con 1–4 su 1d6; in volo, con 1–3."
   - id: drago_mare
     nome: "Drago del mare (grigio)"
@@ -1098,14 +1159,15 @@ mostri:
     attacchi:
       - {id: artiglio, nome: "Artiglio", danno: "1d6"}
       - {id: morso, nome: "Morso", danno: "3d8"}
-      - {id: soffio, nome: "Soffio", danno: "3d8"}
-    per_round: [[artiglio, artiglio, morso], [artiglio, artiglio, soffio]]
+      - {id: soffio, nome: "Soffio", potere: soffio_vapore, usi: 8, ricarica: 2}
+    per_round: [[artiglio, artiglio, soffio], [artiglio, artiglio, morso]]
     movimento: "10' Fly 60' (20') Swim 60' (15')"
     numero: "1, Wild 1, Lair 1d4"
     salva_come: {classe: guerriero, livello: 8}
     morale: 8
     tesoro: "H"
     px: 1015
+    resistenze: {vapore: immune}
     testo: "Soffio di vapore a nube, 1d8 per DV (metà con salvezza contro soffio di drago). Immune al vapore normale, metà danno da quello magico. Non ha coda; trattiene il fiato per 3 turni."
   - id: drago_palude
     nome: "Drago della palude (nero)"
@@ -1116,15 +1178,17 @@ mostri:
     attacchi:
       - {id: artiglio, nome: "Artiglio", danno: "1d6"}
       - {id: morso, nome: "Morso", danno: "2d10"}
-      - {id: soffio, nome: "Soffio", danno: "2d10"}
+      - {id: soffio, nome: "Soffio", potere: soffio_acido, usi: 7, ricarica: 2}
       - {id: coda, nome: "Coda", danno: "1d6"}
-    per_round: [[artiglio, artiglio, morso, coda], [artiglio, artiglio, soffio, coda]]
+    per_round: [[artiglio, artiglio, soffio, coda], [artiglio, artiglio, morso, coda]]
     movimento: "30' Fly 80' (15')"
     numero: "1, Wild 1, Lair 1d4"
     salva_come: {classe: guerriero, livello: 7}
     morale: 8
     tesoro: "H"
     px: 800
+    resistenze: {acido: immune}
+    sorprende: 4
     testo: "Soffio di acido a linea, 1d8 per DV (metà con salvezza contro soffio di drago). Immune a tutti i tipi di acido. Nascosto sott'acqua sorprende con 1–4 su 1d6 entro 100'; trattiene il fiato per 3 turni."
   - id: tartaruga_drago
     nome: "Tartaruga drago"
@@ -1178,6 +1242,7 @@ mostri:
     morale: 8
     tesoro: "None"
     px: 145
+    tipo: [animale]
   - id: aquila_gigante
     nome: "Aquila gigante"
     manuale: "Eagle, Giant"
@@ -1194,6 +1259,7 @@ mostri:
     morale: 7
     tesoro: "None"
     px: 240
+    tipo: [animale]
     testo: "Morale 12 quando difende il nido con uova o piccoli; i genitori combattono allora senza controllo del morale."
   - id: efreet
     nome: "Efreet"
@@ -1213,6 +1279,7 @@ mostri:
     morale: 12
     tesoro: "None"
     px: 1390
+    resistenze: {fuoco: immune}
     testo: "Solo armi magiche; immune al fuoco normale, metà danno da quello magico. Lancia fiamme fino a 60' per 1d8, una volta a round. A volontà: invisibilità, colonna di fuoco. Fugge col morale 9."
   - id: elementale_aria_bastone
     nome: "Elementale dell'aria (bastone)"
@@ -1286,6 +1353,7 @@ mostri:
     morale: 10
     tesoro: "None"
     px: 945
+    resistenze: {freddo: immune}
     testo: "Doppio danno dal fuoco (anche da elementali di fuoco). +1d8 danni contro creature di natura calda o infuocata e contro quelle di liquido o gelatina. Entro 5' infligge 1d6 a round, salvo immunità al freddo."
   - id: elementale_gelo_dispositivo
     nome: "Elementale del gelo (dispositivo)"
@@ -1304,6 +1372,7 @@ mostri:
     morale: 10
     tesoro: "None"
     px: 1975
+    resistenze: {freddo: immune}
     testo: "Doppio danno dal fuoco (anche da elementali di fuoco). +1d8 danni contro creature di natura calda o infuocata e contro quelle di liquido o gelatina. Entro 5' infligge 1d6 a round, salvo immunità al freddo."
   - id: elementale_gelo_incantesimo
     nome: "Elementale del gelo (incantesimo)"
@@ -1322,6 +1391,7 @@ mostri:
     morale: 10
     tesoro: "None"
     px: 3385
+    resistenze: {freddo: immune}
     testo: "Doppio danno dal fuoco (anche da elementali di fuoco). +1d8 danni contro creature di natura calda o infuocata e contro quelle di liquido o gelatina. Entro 5' infligge 1d6 a round, salvo immunità al freddo."
   - id: elementale_terra_bastone
     nome: "Elementale di terra (bastone)"
@@ -1392,6 +1462,7 @@ mostri:
     morale: 10
     tesoro: "None"
     px: 945
+    resistenze: {fuoco: immune}
     testo: "Doppio danno dall'acqua; +1d8 danni contro creature gelide o di ghiaccio. Non attraversa specchi d'acqua più larghi del suo diametro; incendia gli oggetti infiammabili su cui passa."
   - id: elementale_fuoco_dispositivo
     nome: "Elementale di fuoco (dispositivo)"
@@ -1410,6 +1481,7 @@ mostri:
     morale: 10
     tesoro: "None"
     px: 1975
+    resistenze: {fuoco: immune}
     testo: "Doppio danno dall'acqua; +1d8 danni contro creature gelide o di ghiaccio. Non attraversa specchi d'acqua più larghi del suo diametro; incendia gli oggetti infiammabili su cui passa."
   - id: elementale_fuoco_incantesimo
     nome: "Elementale di fuoco (incantesimo)"
@@ -1428,6 +1500,7 @@ mostri:
     morale: 10
     tesoro: "None"
     px: 3385
+    resistenze: {fuoco: immune}
     testo: "Doppio danno dall'acqua; +1d8 danni contro creature gelide o di ghiaccio. Non attraversa specchi d'acqua più larghi del suo diametro; incendia gli oggetti infiammabili su cui passa."
   - id: elementale_fulmine_bastone
     nome: "Elementale del fulmine (bastone)"
@@ -1446,6 +1519,7 @@ mostri:
     morale: 10
     tesoro: "None"
     px: 945
+    resistenze: {fulmine: immune}
     testo: "Attrae a sé i metalli come con telecinesi; +1d8 danni a chi tocca acqua o metallo senza stare su terreno solido. Doppio danno da aria, vento ed elementali del legno. Schianto: entro 30' tiro salvezza contro paralisi o sordità per 1d8 turni."
   - id: elementale_fulmine_dispositivo
     nome: "Elementale del fulmine (dispositivo)"
@@ -1465,6 +1539,7 @@ mostri:
     morale: 10
     tesoro: "None"
     px: 1975
+    resistenze: {fulmine: immune}
     testo: "Attrae a sé i metalli come con telecinesi; +1d8 danni a chi tocca acqua o metallo senza stare su terreno solido. Doppio danno da aria, vento ed elementali del legno. Schianto: entro 30' tiro salvezza contro paralisi o sordità per 1d8 turni."
   - id: elementale_fulmine_incantesimo
     nome: "Elementale del fulmine (incantesimo)"
@@ -1484,6 +1559,7 @@ mostri:
     morale: 10
     tesoro: "None"
     px: 3385
+    resistenze: {fulmine: immune}
     testo: "Attrae a sé i metalli come con telecinesi; +1d8 danni a chi tocca acqua o metallo senza stare su terreno solido. Doppio danno da aria, vento ed elementali del legno. Schianto: entro 30' tiro salvezza contro paralisi o sordità per 1d8 turni."
   - id: elementale_metallo_bastone
     nome: "Elementale di metallo (bastone)"
@@ -1662,6 +1738,7 @@ mostri:
     morale: 8
     tesoro: "special"
     px: 1075
+    tipo: [animale]
     testo: "Non più di 2 attacchi contro un bersaglio piccolo o medio; contro uno grande ne può usare 3. Può attaccare più avversari nell'area nello stesso round."
   - id: elefante_africano
     nome: "Elefante africano"
@@ -1681,6 +1758,7 @@ mostri:
     morale: 8
     tesoro: "special"
     px: 1300
+    tipo: [animale]
     testo: "Non più di 2 attacchi contro un bersaglio piccolo o medio; contro uno grande ne può usare 3. Può attaccare più avversari nell'area nello stesso round."
   - id: falco
     nome: "Falco"
@@ -1699,6 +1777,7 @@ mostri:
     morale: 8
     tesoro: "None"
     px: 10
+    tipo: [animale]
   - id: barracuda_enorme
     nome: "Barracuda enorme"
     manuale: "Fish, Giant Barracuda | Huge"
@@ -1714,6 +1793,8 @@ mostri:
     morale: 8
     tesoro: "None"
     px: 360
+    tipo: [animale]
+    sorprende: 3
     testo: "Sorprende con 1–3 su 1d6 e +2 all'iniziativa; attratta dagli oggetti lucenti."
   - id: barracuda_gigante
     nome: "Barracuda gigante"
@@ -1731,6 +1812,8 @@ mostri:
     morale: 10
     tesoro: "None"
     px: 1075
+    tipo: [animale]
+    sorprende: 3
     testo: "Sorprende con 1–3 su 1d6 e +2 all'iniziativa; attratta dagli oggetti lucenti. Appare sempre da solo e nel 50% dei casi interrompe l'attacco dopo 1d4 round se non ha ucciso la preda."
   - id: persico_gigante
     nome: "Persico gigante"
@@ -1747,6 +1830,7 @@ mostri:
     morale: 8
     tesoro: "None"
     px: 75
+    tipo: [animale]
     testo: "Con un 20 naturale inghiotte intera una creatura di taglia nano o più piccola, che subisce 2d4 danni a round fino alla morte. Ne può inghiottire una sola alla volta."
   - id: pesce_gatto_gigante
     nome: "Pesce gatto gigante"
@@ -1764,6 +1848,7 @@ mostri:
     morale: 8
     tesoro: "None"
     px: 875
+    tipo: [animale]
     testo: "Pinne velenose: se fallisce la salvezza contro veleno, per 3d10 round penalità cumulativa di -1 (max -5) a tiri per colpire e salvezze. Non può colpire due volte lo stesso bersaglio."
   - id: piranha_gigante
     nome: "Piranha gigante"
@@ -1780,6 +1865,7 @@ mostri:
     morale: 7
     tesoro: "None"
     px: 240
+    tipo: [animale]
     testo: "Morale 11 quando sente sangue nell'acqua."
   - id: mosca_gigante
     nome: "Mosca gigante"
@@ -1796,6 +1882,7 @@ mostri:
     morale: 8
     tesoro: "None"
     px: 75
+    tipo: [animale]
   - id: rana_gigante
     nome: "Rana gigante"
     manuale: "Frog, Giant (and Toad, Giant)"
@@ -1812,6 +1899,7 @@ mostri:
     morale: 6
     tesoro: "None"
     px: 75
+    tipo: [animale]
     testo: "Lingua: trascina la vittima fino a 15' e la colpisce automaticamente nei round seguenti; con 20 naturale la inghiotte intera (1d6 danni a round). Ne ingoia una sola alla volta."
   - id: gargoyle
     nome: "Gargoyle"
@@ -1831,6 +1919,7 @@ mostri:
     morale: 11
     tesoro: "C"
     px: 320
+    sorprende: 4
     testo: "Si mimetizza con le statue: sorprende con 1-4 su 1d6 se i nemici non sospettano di lui."
   - id: fantasma
     nome: "Fantasma"
@@ -1841,15 +1930,18 @@ mostri:
     dadi_vita: "10*"
     attacco: 9
     attacchi:
+      - {id: vista, nome: "Vista", potere: terrore, usi: 1, in_piu: true}
       - {id: tocco, nome: "Tocco", danno: "1d8"}
       - {id: possessione, nome: "Possessione"}
-    per_round: [[tocco], [possessione]]
+    per_round: [[vista, tocco], [vista, possessione]]
     movimento: "30'"
     numero: "1"
     salva_come: {classe: guerriero, livello: 10}
     morale: 10
     tesoro: "E, N, O"
     px: 1390
+    tipo: [non_morto, fantasma]
+    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
     testo: "Tocco: 1d8 danni, il fantasma recupera altrettanti PF e la vittima perde 1 Costituzione (salvezza vs. Raggio della morte per elfi e nani). Vista: salvezza vs. Incantesimi o fuga per 2d6 round. Possessione: salvezza vs. Incantesimi, altrimenti controlla il corpo. Telecinesi una volta a turno."
   - id: ghoul
     nome: "Ghoul"
@@ -1858,8 +1950,8 @@ mostri:
     difesa: 14
     dadi_vita: "2*"
     attacchi:
-      - {id: artiglio, nome: "Artiglio", danno: "1d4"}
-      - {id: morso, nome: "Morso", danno: "1d4"}
+      - {id: artiglio, nome: "Artiglio", danno: "1d4", colpendo: [paralisi_ghoul]}
+      - {id: morso, nome: "Morso", danno: "1d4", colpendo: [paralisi_ghoul]}
     per_round: [[artiglio, artiglio, morso]]
     movimento: "30'"
     numero: "1d6, Wild 2d8, Lair 2d8"
@@ -1867,6 +1959,9 @@ mostri:
     morale: 9
     tesoro: "B"
     px: 100
+    tipo: [non_morto, ghoul]
+    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    sorprende: 3
     testo: "Paralisi per 2d8 turni con morso o artiglio (salvezza vs. Paralisi; gli elfi sono immuni). Sorprende con 1-3 su 1d6. Chi muore per la febbre di ghoul risorge come ghoul."
   - id: ghast
     nome: "Ghast"
@@ -1875,8 +1970,8 @@ mostri:
     difesa: 15
     dadi_vita: "2**"
     attacchi:
-      - {id: artiglio, nome: "Artiglio", danno: "1d4"}
-      - {id: morso, nome: "Morso", danno: "1d4"}
+      - {id: artiglio, nome: "Artiglio", danno: "1d4", colpendo: [paralisi_ghoul]}
+      - {id: morso, nome: "Morso", danno: "1d4", colpendo: [paralisi_ghoul]}
     per_round: [[artiglio, artiglio, morso]]
     movimento: "30'"
     numero: "1d4, Wild 1d8, Lair 1d8"
@@ -1884,6 +1979,8 @@ mostri:
     morale: 9
     tesoro: "B"
     px: 125
+    tipo: [non_morto, ghoul]
+    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
     testo: "Paralisi per 2d8 turni con morso o artiglio (salvezza vs. Paralisi; gli elfi sono immuni). Fetore: entro 10' salvezza vs. Veleno o nausea per 2d6 round (-2 ai tiri per colpire)."
   - id: gigante_nuvole
     nome: "Gigante delle nuvole"
@@ -1903,6 +2000,7 @@ mostri:
     morale: 10
     tesoro: "E + 1d12x1,000 gp"
     px: 1975
+    tipo: [umanoide]
     testo: "Lancia massi fino a 200' per 3d6 danni. Il 5% lancia incantesimi come Utilizzatore di magia di livello 2-8 (2d4)."
   - id: gigante_ciclope
     nome: "Gigante ciclope"
@@ -1922,6 +2020,7 @@ mostri:
     morale: 9
     tesoro: "E + 1d8x1,000 gp"
     px: 2285
+    tipo: [umanoide]
     testo: "Lancia massi fino a 200' per 3d6 danni, con -2 al tiro per colpire. Una volta all'anno lancia maledizione (incantesimo inverso di rimuovi maledizione)."
   - id: gigante_fuoco
     nome: "Gigante del fuoco"
@@ -1941,6 +2040,8 @@ mostri:
     morale: 9
     tesoro: "E + 1d10x1,000 gp"
     px: 1670
+    tipo: [umanoide]
+    resistenze: {fuoco: immune}
     testo: "Lancia massi fino a 200' per 3d6 danni. Immune a tutti gli attacchi basati sul fuoco."
   - id: gigante_gelo
     nome: "Gigante del gelo"
@@ -1960,6 +2061,8 @@ mostri:
     morale: 9
     tesoro: "E + 1d10x1,000 gp"
     px: 1390
+    tipo: [umanoide]
+    resistenze: {freddo: immune}
     testo: "Lancia massi fino a 200' per 3d6 danni. Immune a tutti gli attacchi di ghiaccio o freddo."
   - id: gigante_collina
     nome: "Gigante della collina"
@@ -1977,6 +2080,7 @@ mostri:
     morale: 8
     tesoro: "E + 1d8x1,000 gp"
     px: 875
+    tipo: [umanoide]
   - id: gigante_montagna
     nome: "Gigante della montagna"
     manuale: "Giant, Mountain"
@@ -1996,6 +2100,7 @@ mostri:
     morale: 10
     tesoro: "E + 1d12x1,000 gp"
     px: 3250
+    tipo: [umanoide]
     testo: "Lancia massi fino a 240' per 4d6 danni. Con un'arma acquistata dai giganti delle tempeste fa 8d6 invece di 7d6."
   - id: gigante_pietra
     nome: "Gigante di pietra"
@@ -2015,6 +2120,7 @@ mostri:
     morale: 9
     tesoro: "E + 1d8x1,000 gp"
     px: 1075
+    tipo: [umanoide]
     testo: "Lancia massi fino a 300' per 3d6 danni."
   - id: gigante_tempesta
     nome: "Gigante delle tempeste"
@@ -2034,6 +2140,8 @@ mostri:
     morale: 10
     tesoro: "E + 1d20x1,000 gp"
     px: 3100
+    tipo: [umanoide]
+    resistenze: {fulmine: meta}
     testo: "Il fulmine funziona come una lancia di fulmine, usabile una volta ogni 5 round; salvezza vs. Incantesimi dimezza il danno. Resiste a fulmine ed elettricità (metà danno). Il 10% ha abilità di Utilizzatore di magia di livello 2-12 (2d6)."
   - id: gnoll
     nome: "Gnoll"
@@ -2051,6 +2159,7 @@ mostri:
     morale: 8
     tesoro: "Q, S each; D, K in lair"
     px: 75
+    tipo: [umanoide]
     testo: "Con un'arma infligge il danno dell'arma +1. Scurovisione 30'."
   - id: gnomo
     nome: "Gnomo"
@@ -2068,6 +2177,7 @@ mostri:
     morale: 8
     tesoro: "D"
     px: 25
+    tipo: [umanoide]
     testo: "Scurovisione 30'. Se attaccato in mischia da creature più grandi dell'uomo, +1 alla CA. Nella foresta sorprende con 1-4 su 1d6 se attacca da un'imboscata."
   - id: goblin
     nome: "Goblin"
@@ -2085,6 +2195,7 @@ mostri:
     morale: 7
     tesoro: "R each; C in lair"
     px: 10
+    tipo: [umanoide]
     testo: "Scurovisione 30'. Il morale sale di +1 se guidato da un guerriero e di +2 con il re goblin."
   - id: golem_ambra
     nome: "Golem d'ambra"
@@ -2104,6 +2215,7 @@ mostri:
     morale: 12
     tesoro: "None"
     px: 1390
+    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
     testo: "Rileva gli invisibili entro 60' e segue tracce con il 95% di precisione. Danni elettrici: cura 1 PF ogni 3 danni che avrebbe inflitto."
   - id: golem_osso
     nome: "Golem d'osso"
@@ -2121,6 +2233,7 @@ mostri:
     morale: 12
     tesoro: "None"
     px: 945
+    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
     testo: "Non è non morto e non può essere scacciato. Con due armi a due mani fa 2 attacchi a round, 1d10 o arma ciascuno."
   - id: golem_bronzo
     nome: "Golem di bronzo"
@@ -2141,6 +2254,7 @@ mostri:
     morale: 12
     tesoro: "None"
     px: 5650
+    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
     testo: "Calore: +1d10 danni a chi colpisce. Se viene colpito, metallo fuso spruzza l'attaccante per 2d6 (salvezza vs. Raggio della morte evita lo spruzzo)."
   - id: golem_argilla
     nome: "Golem d'argilla"
@@ -2159,6 +2273,7 @@ mostri:
     morale: 12
     tesoro: "None"
     px: 1765
+    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
     testo: "Le ferite non guariscono normalmente: la magia cura solo 1 PF per dado (i bonus si sommano). Una cura leggera cura 2 PF."
   - id: golem_carne
     nome: "Golem di carne"
@@ -2177,6 +2292,7 @@ mostri:
     morale: 12
     tesoro: "None"
     px: 1225
+    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
     testo: "Freddo o fuoco lo rallentano per 2d6 round, senza tiro salvezza. Fulmine o elettricità curano 1 PF ogni 3 danni e spezzano il rallentamento."
   - id: golem_ferro
     nome: "Golem di ferro"
@@ -2188,14 +2304,15 @@ mostri:
     attacco: 12
     attacchi:
       - {id: colpo, nome: "Colpo", danno: "4d10"}
-      - {id: soffio, nome: "Soffio di gas"}
-    per_round: [[colpo]]
+      - {id: soffio, nome: "Soffio di gas", potere: gas_mortale, usi: 3}
+    per_round: [[soffio], [colpo]]
     movimento: "20' (10')"
     numero: "1"
     salva_come: {classe: guerriero, livello: 9}
     morale: 12
     tesoro: "None"
     px: 3890
+    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
     testo: "Il gas velenoso riempie un cubo di 10' per 1 round: chi è nell'area deve salvare vs. Soffio di drago o morire (fino a 3 volte al giorno). Fulmine o elettricità lo rallentano per 1d6 round; il fuoco cura 1 PF ogni 3 danni. Ruggine: 2d6 danni per colpo."
   - id: golem_pietra
     nome: "Golem di pietra"
@@ -2215,6 +2332,7 @@ mostri:
     morale: 12
     tesoro: "None"
     px: 2730
+    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
     testo: "Ogni due round rallenta per 2d6 round (raggio 10'; salvezza vs. Incantesimi). Pietra in carne: per un round è vulnerabile alle armi normali (salvezza vs. Incantesimi)."
   - id: golem_di_legno
     nome: "Golem di legno"
@@ -2232,6 +2350,7 @@ mostri:
     morale: 12
     tesoro: "None"
     px: 100
+    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
     testo: "Subisce 1 danno extra per dado dal fuoco; -2 ai tiri salvezza contro effetti di fuoco. Penalità -1 all'Iniziativa."
   - id: gorgone
     nome: "Gorgone"
@@ -2241,8 +2360,8 @@ mostri:
     dadi_vita: "8*"
     attacchi:
       - {id: incornata, nome: "Incornata", danno: "2d6"}
-      - {id: soffio, nome: "Soffio pietrificante"}
-    per_round: [[incornata], [soffio]]
+      - {id: soffio, nome: "Soffio pietrificante", potere: soffio_pietrificante, usi: 8, ricarica: 2}
+    per_round: [[soffio], [incornata]]
     movimento: "40' (10')"
     numero: "Wild 1d4"
     salva_come: {classe: guerriero, livello: 8}
@@ -2289,10 +2408,11 @@ mostri:
     difesa: 13
     dadi_vita: "2*"
     attacchi:
+      - {id: canto_magico, nome: "Canto", potere: canto_ammaliante, usi: 1, in_piu: true}
       - {id: artiglio, nome: "Artiglio", danno: "1d4"}
       - {id: arma, nome: "Arma", danno: "1d6"}
       - {id: canto, nome: "Canto"}
-    per_round: [[artiglio, artiglio, arma], [artiglio, artiglio, canto]]
+    per_round: [[canto_magico, artiglio, artiglio, arma], [canto_magico, artiglio, artiglio, canto]]
     movimento: "20' Fly 50' (10')"
     numero: "1d6, Wild 2d4, Lair 2d4"
     salva_come: {classe: guerriero, livello: 2}
@@ -2317,6 +2437,7 @@ mostri:
     morale: 7
     tesoro: "None"
     px: 10
+    tipo: [animale]
   - id: falco_gigante
     nome: "Falco gigante"
     manuale: "Hawk | Giant"
@@ -2333,6 +2454,7 @@ mostri:
     morale: 8
     tesoro: "None"
     px: 240
+    tipo: [animale]
   - id: segugio_infernale_3
     nome: "Segugio infernale (3 DV)"
     manuale: "Hellhound"
@@ -2341,8 +2463,8 @@ mostri:
     dadi_vita: "3**"
     attacchi:
       - {id: morso, nome: "Morso", danno: "1d6"}
-      - {id: soffio, nome: "Soffio di fuoco"}
-    per_round: [[morso], [soffio]]
+      - {id: soffio, nome: "Soffio di fuoco", potere: soffio_fuoco_segugio, usi: 3, ricarica: 3}
+    per_round: [[soffio], [morso]]
     movimento: "40'"
     numero: "2d4, Wild 2d4, Lair 2d4"
     salva_come: {classe: guerriero, livello: 3}
@@ -2358,8 +2480,8 @@ mostri:
     dadi_vita: "4**"
     attacchi:
       - {id: morso, nome: "Morso", danno: "1d6"}
-      - {id: soffio, nome: "Soffio di fuoco"}
-    per_round: [[morso], [soffio]]
+      - {id: soffio, nome: "Soffio di fuoco", potere: soffio_fuoco_segugio, usi: 4, ricarica: 3}
+    per_round: [[soffio], [morso]]
     movimento: "40'"
     numero: "2d4, Wild 2d4, Lair 2d4"
     salva_come: {classe: guerriero, livello: 4}
@@ -2375,8 +2497,8 @@ mostri:
     dadi_vita: "5**"
     attacchi:
       - {id: morso, nome: "Morso", danno: "1d6"}
-      - {id: soffio, nome: "Soffio di fuoco"}
-    per_round: [[morso], [soffio]]
+      - {id: soffio, nome: "Soffio di fuoco", potere: soffio_fuoco_segugio, usi: 5, ricarica: 3}
+    per_round: [[soffio], [morso]]
     movimento: "40'"
     numero: "2d4, Wild 2d4, Lair 2d4"
     salva_come: {classe: guerriero, livello: 5}
@@ -2392,8 +2514,8 @@ mostri:
     dadi_vita: "6**"
     attacchi:
       - {id: morso, nome: "Morso", danno: "1d6"}
-      - {id: soffio, nome: "Soffio di fuoco"}
-    per_round: [[morso], [soffio]]
+      - {id: soffio, nome: "Soffio di fuoco", potere: soffio_fuoco_segugio, usi: 6, ricarica: 3}
+    per_round: [[soffio], [morso]]
     movimento: "40'"
     numero: "2d4, Wild 2d4, Lair 2d4"
     salva_come: {classe: guerriero, livello: 6}
@@ -2409,8 +2531,8 @@ mostri:
     dadi_vita: "7**"
     attacchi:
       - {id: morso, nome: "Morso", danno: "1d6"}
-      - {id: soffio, nome: "Soffio di fuoco"}
-    per_round: [[morso], [soffio]]
+      - {id: soffio, nome: "Soffio di fuoco", potere: soffio_fuoco_segugio, usi: 7, ricarica: 3}
+    per_round: [[soffio], [morso]]
     movimento: "40'"
     numero: "2d4, Wild 2d4, Lair 2d4"
     salva_come: {classe: guerriero, livello: 7}
@@ -2438,6 +2560,7 @@ mostri:
     nome: "Hobgoblin"
     manuale: "Hobgoblin"
     pagina: 113
+    tipo: [umanoide]
     difesa: 14
     difesa_senza_armatura: 11
     dadi_vita: "1"
@@ -2584,6 +2707,7 @@ mostri:
     nome: "Iena"
     manuale: "Hyena (and Hyenodon) | Hyena"
     pagina: 114
+    tipo: [animale]
     difesa: 13
     dadi_vita: "2+1"
     attacchi:
@@ -2599,6 +2723,7 @@ mostri:
     nome: "Ienodonte"
     manuale: "Hyena (and Hyenodon) | Hyenodon"
     pagina: 114
+    tipo: [animale]
     difesa: 13
     dadi_vita: "3+1"
     attacchi:
@@ -2614,6 +2739,7 @@ mostri:
     nome: "Sciame di insetti (2 DV)"
     manuale: "Insect Swarm"
     pagina: 114
+    tipo: [animale]
     controllo: {ignora: [difesa, salva_come], motivo: "il manuale non stampa un numero di CA (immune alle armi normali) e stampa N/A per il tiro salvezza"}
     dadi_vita: "2*"
     attacchi:
@@ -2629,6 +2755,7 @@ mostri:
     nome: "Sciame di insetti (3 DV)"
     manuale: "Insect Swarm"
     pagina: 114
+    tipo: [animale]
     controllo: {ignora: [difesa, salva_come], motivo: "il manuale non stampa un numero di CA (immune alle armi normali) e stampa N/A per il tiro salvezza"}
     dadi_vita: "3*"
     attacchi:
@@ -2644,6 +2771,7 @@ mostri:
     nome: "Sciame di insetti (4 DV)"
     manuale: "Insect Swarm"
     pagina: 114
+    tipo: [animale]
     controllo: {ignora: [difesa, salva_come], motivo: "il manuale non stampa un numero di CA (immune alle armi normali) e stampa N/A per il tiro salvezza"}
     dadi_vita: "4*"
     attacchi:
@@ -2691,6 +2819,7 @@ mostri:
     nome: "Giaguaro"
     manuale: "Jaguar"
     pagina: 116
+    tipo: [animale]
     difesa: 16
     dadi_vita: "4"
     attacchi:
@@ -2724,10 +2853,11 @@ mostri:
     nome: "Cubo gelatinoso"
     manuale: "Jelly, Glass (Gelatinous Cube)"
     pagina: 117
+    sorprende: 3
     difesa: 12
     dadi_vita: "4*"
     attacchi:
-      - {id: tocco, nome: "Tocco", danno: "2d4"}
+      - {id: tocco, nome: "Tocco", danno: "2d4", colpendo: [paralisi_breve]}
     per_round: [[tocco]]
     movimento: "20'"
     numero: "1"
@@ -2788,6 +2918,7 @@ mostri:
     nome: "Coboldo"
     manuale: "Kobold"
     pagina: 118
+    tipo: [umanoide]
     difesa: 13
     difesa_senza_armatura: 11
     dadi_vita: "½"
@@ -2806,6 +2937,7 @@ mostri:
     nome: "Sanguisuga gigante"
     manuale: "Leech, Giant"
     pagina: 119
+    tipo: [animale]
     difesa: 17
     dadi_vita: "6"
     attacchi:
@@ -2822,6 +2954,7 @@ mostri:
     nome: "Leopardo"
     manuale: "Leopard (Panther)"
     pagina: 120
+    tipo: [animale]
     difesa: 16
     dadi_vita: "4"
     attacchi:
@@ -2838,6 +2971,7 @@ mostri:
     nome: "Leone"
     manuale: "Lion"
     pagina: 120
+    tipo: [animale]
     difesa: 14
     dadi_vita: "5"
     attacchi:
@@ -2901,6 +3035,7 @@ mostri:
     nome: "Lucertola gigante draco"
     manuale: "Lizard, Giant Draco"
     pagina: 121
+    tipo: [animale]
     difesa: 15
     dadi_vita: "4+2"
     attacchi:
@@ -2917,6 +3052,7 @@ mostri:
     nome: "Lucertola gigante gecko"
     manuale: "Lizard, Giant Gecko"
     pagina: 121
+    tipo: [animale]
     difesa: 15
     dadi_vita: "3+1"
     attacchi:
@@ -2933,6 +3069,8 @@ mostri:
     nome: "Camaleonte cornuto gigante"
     manuale: "Lizard, Giant Horned Chameleon"
     pagina: 122
+    sorprende: 4
+    tipo: [animale]
     difesa: 18
     dadi_vita: "5"
     attacchi:
@@ -2950,6 +3088,7 @@ mostri:
     nome: "Lucertola gigante tuatara"
     manuale: "Lizard, Giant Tuatara"
     pagina: 122
+    tipo: [animale]
     difesa: 16
     dadi_vita: "6"
     attacchi:
@@ -2966,6 +3105,7 @@ mostri:
     nome: "Varano grande"
     manuale: "Lizard, Monitor | Large"
     pagina: 122
+    tipo: [animale]
     difesa: 12
     dadi_vita: "3*"
     attacchi:
@@ -2982,6 +3122,7 @@ mostri:
     nome: "Varano enorme"
     manuale: "Lizard, Monitor | Huge"
     pagina: 122
+    tipo: [animale]
     difesa: 14
     dadi_vita: "5*"
     attacchi:
@@ -2998,10 +3139,11 @@ mostri:
     nome: "Varano gigante"
     manuale: "Lizard, Monitor | Giant"
     pagina: 122
+    tipo: [animale]
     difesa: 16
     dadi_vita: "7*"
     attacchi:
-      - {id: morso, nome: "Morso", danno: "1d8"}
+      - {id: morso, nome: "Morso", danno: "1d8", colpendo: [veleno_mortale_debole]}
     per_round: [[morso]]
     movimento: "40' (special)"
     numero: "1d4, Wild 1d6"
@@ -3014,6 +3156,8 @@ mostri:
     nome: "Uomo lucertola comune"
     manuale: "Lizard Man | Common"
     pagina: 123
+    sorprende: 4
+    tipo: [umanoide]
     difesa: 15
     difesa_senza_armatura: 12
     dadi_vita: "2"
@@ -3031,6 +3175,8 @@ mostri:
     nome: "Uomo lucertola sotterraneo"
     manuale: "Lizard Man | Subterranean"
     pagina: 123
+    sorprende: 5
+    tipo: [umanoide]
     difesa: 15
     dadi_vita: "2"
     attacchi:
@@ -3138,6 +3284,7 @@ mostri:
     nome: "Mammut"
     manuale: "Mammoth (and Mastodon) | Mammoth"
     pagina: 126
+    tipo: [animale]
     difesa: 17
     dadi_vita: "15"
     attacco: 11
@@ -3157,6 +3304,7 @@ mostri:
     nome: "Mastodonte"
     manuale: "Mammoth (and Mastodon) | Mastodon"
     pagina: 126
+    tipo: [animale]
     difesa: 18
     dadi_vita: "13"
     attacco: 10
@@ -3197,9 +3345,9 @@ mostri:
     difesa: 12
     dadi_vita: "4**"
     attacchi:
-      - {id: morso, nome: "Morso di serpente", danno: "1d6"}
-      - {id: sguardo, nome: "Sguardo pietrificante"}
-    per_round: [[morso]]
+      - {id: morso, nome: "Morso di serpente", danno: "1d6", colpendo: [veleno_mortale]}
+      - {id: sguardo, nome: "Sguardo pietrificante", potere: pietrificazione, in_piu: true}
+    per_round: [[sguardo, morso]]
     movimento: "30'"
     numero: "1d3, Wild 1d4, Lair 1d4"
     salva_come: {classe: guerriero, livello: 4}
@@ -3215,7 +3363,8 @@ mostri:
     dadi_vita: "1*"
     attacchi:
       - {id: arma, nome: "Arma", danno: "1d6"}
-    per_round: [[arma]]
+      - {id: canto, nome: "Canto", potere: canto_ammaliante, usi: 1, in_piu: true}
+    per_round: [[canto, arma]]
     movimento: "Swim 40'"
     numero: "Wild 1d2 or 3d6 (see below)"
     salva_come: {classe: guerriero, livello: 1}
@@ -3246,6 +3395,7 @@ mostri:
     nome: "Leone di montagna"
     manuale: "Mountain Lion"
     pagina: 129
+    tipo: [animale]
     difesa: 14
     dadi_vita: "3+2"
     attacchi:
@@ -3262,6 +3412,8 @@ mostri:
     nome: "Mummia"
     manuale: "Mummy"
     pagina: 130
+    tipo: [non_morto, mummia]
+    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
     difesa: 17
     colpito_solo_da: [magica]
     dadi_vita: "5**"
@@ -3295,6 +3447,7 @@ mostri:
     nome: "Polpo gigante"
     manuale: "Octopus, Giant"
     pagina: 131
+    tipo: [animale]
     difesa: 19
     dadi_vita: "8"
     attacchi:
@@ -3312,6 +3465,7 @@ mostri:
     nome: "Ogre"
     manuale: "Ogre"
     pagina: 131
+    tipo: [umanoide]
     difesa: 15
     difesa_senza_armatura: 12
     dadi_vita: "4+1"
@@ -3329,6 +3483,7 @@ mostri:
     nome: "Orco"
     manuale: "Orc"
     pagina: 132
+    tipo: [umanoide]
     difesa: 14
     difesa_senza_armatura: 11
     dadi_vita: "1"
@@ -3346,6 +3501,7 @@ mostri:
     nome: "Struzzo"
     manuale: "Ostrich (and Emu) | Ostrich"
     pagina: 133
+    tipo: [animale]
     difesa: 14
     dadi_vita: "3"
     attacchi:
@@ -3361,6 +3517,7 @@ mostri:
     nome: "Emù"
     manuale: "Ostrich (and Emu) | Emu"
     pagina: 133
+    tipo: [animale]
     difesa: 14
     dadi_vita: "2"
     attacchi:
@@ -3376,6 +3533,7 @@ mostri:
     nome: "Civetta"
     manuale: "Owl"
     pagina: 133
+    tipo: [animale]
     difesa: 15
     dadi_vita: "1"
     attacchi:
@@ -3411,6 +3569,7 @@ mostri:
     nome: "Pappagallo"
     manuale: "Parrot (or Cockatoo)"
     pagina: 134
+    tipo: [animale]
     difesa: 11
     dadi_vita: "½"
     attacchi:
@@ -3462,7 +3621,7 @@ mostri:
     dadi_vita: "11*"
     attacchi:
       - {id: morso, nome: "Morso", danno: "2d8"}
-      - {id: pungiglione, nome: "Pungiglione", danno: "1d8"}
+      - {id: pungiglione, nome: "Pungiglione", danno: "1d8", colpendo: [veleno_mortale]}
     per_round: [[morso, pungiglione]]
     movimento: "20' (15') Burrow 20' (15')"
     numero: "1d2, Wild 1d4"
@@ -3479,7 +3638,7 @@ mostri:
     dadi_vita: "16*"
     attacchi:
       - {id: morso, nome: "Morso", danno: "3d8"}
-      - {id: pungiglione, nome: "Pungiglione", danno: "1d10"}
+      - {id: pungiglione, nome: "Pungiglione", danno: "1d10", colpendo: [veleno_mortale]}
     per_round: [[morso, pungiglione]]
     movimento: "20' (15') Burrow 20' (15')"
     numero: "1d2, Wild 1d4"
@@ -3492,6 +3651,7 @@ mostri:
     nome: "Ratto"
     manuale: "Rat (and Rat, Giant) | Normal"
     pagina: 136
+    tipo: [animale]
     difesa: 11
     dadi_vita: "½"
     pf: 1
@@ -3509,6 +3669,7 @@ mostri:
     nome: "Ratto gigante"
     manuale: "Rat (and Rat, Giant) | Giant"
     pagina: 136
+    tipo: [animale]
     difesa: 13
     dadi_vita: "½"
     attacchi:
@@ -3525,6 +3686,7 @@ mostri:
     nome: "Rhagodessa gigante"
     manuale: "Rhagodessa, Giant"
     pagina: 136
+    tipo: [animale]
     difesa: 16
     dadi_vita: "4"
     attacchi:
@@ -3542,6 +3704,7 @@ mostri:
     nome: "Rinoceronte nero"
     manuale: "Rhinoceros | Black"
     pagina: 137
+    tipo: [animale]
     difesa: 17
     dadi_vita: "8"
     attacchi:
@@ -3558,6 +3721,7 @@ mostri:
     nome: "Rinoceronte lanuto"
     manuale: "Rhinoceros | Woolly"
     pagina: 137
+    tipo: [animale]
     difesa: 19
     dadi_vita: "12"
     attacco: 10
@@ -3575,6 +3739,7 @@ mostri:
     nome: "Roc normale"
     manuale: "Roc | Normal"
     pagina: 137
+    tipo: [animale]
     difesa: 18
     dadi_vita: "6"
     attacchi:
@@ -3592,6 +3757,7 @@ mostri:
     nome: "Roc grande"
     manuale: "Roc | Large"
     pagina: 137
+    tipo: [animale]
     difesa: 18
     dadi_vita: "12"
     attacco: 10
@@ -3610,6 +3776,7 @@ mostri:
     nome: "Roc gigante"
     manuale: "Roc | Giant"
     pagina: 137
+    tipo: [animale]
     difesa: 18
     dadi_vita: "32"
     attacco: 16
@@ -3628,6 +3795,7 @@ mostri:
     nome: "Babbuino di roccia"
     manuale: "Rock Baboon"
     pagina: 138
+    tipo: [animale]
     difesa: 14
     dadi_vita: "2"
     attacchi:
@@ -3645,6 +3813,7 @@ mostri:
     nome: "Larva marcia"
     manuale: "Rot Grub"
     pagina: 138
+    tipo: [animale]
     difesa: 11
     dadi_vita: "½"
     pf: 1
@@ -3678,6 +3847,8 @@ mostri:
     nome: "Tigre dai denti a sciabola"
     manuale: "Sabre-Tooth Cat"
     pagina: 139
+    sorprende: 4
+    tipo: [animale]
     difesa: 14
     dadi_vita: "8"
     attacchi:
@@ -3695,6 +3866,7 @@ mostri:
     nome: "Salamandra di fuoco"
     manuale: "Salamander, Flame"
     pagina: 140
+    resistenze: {fuoco: immune}
     difesa: 19
     colpito_solo_da: [magica]
     dadi_vita: "8*"
@@ -3713,6 +3885,7 @@ mostri:
     nome: "Salamandra di gelo"
     manuale: "Salamander, Frost"
     pagina: 140
+    resistenze: {freddo: immune}
     difesa: 21
     colpito_solo_da: [magica]
     dadi_vita: "12*"
@@ -3733,6 +3906,7 @@ mostri:
     nome: "Salamandra di fulmine"
     manuale: "Salamander, Lightning"
     pagina: 141
+    resistenze: {fulmine: immune}
     difesa: 20
     colpito_solo_da: [magica]
     dadi_vita: "10*"
@@ -3757,7 +3931,7 @@ mostri:
     dadi_vita: "7*"
     attacco: 4
     attacchi:
-      - {id: morso, nome: "Morso", danno: "1d6"}
+      - {id: morso, nome: "Morso", danno: "1d6", colpendo: [pietrificazione]}
       - {id: trasformare, nome: "Trasformare in sabbia"}
     per_round: [[morso, trasformare]]
     movimento: "20'"
@@ -3771,11 +3945,12 @@ mostri:
     nome: "Scorpione gigante"
     manuale: "Scorpion, Giant"
     pagina: 142
+    tipo: [animale]
     difesa: 15
     dadi_vita: "4*"
     attacchi:
       - {id: artiglio, nome: "Artiglio", danno: "1d10"}
-      - {id: puntura, nome: "Puntura", danno: "1d6"}
+      - {id: puntura, nome: "Puntura", danno: "1d6", colpendo: [veleno_mortale]}
     per_round: [[artiglio, artiglio, puntura]]
     movimento: "50' (10')"
     numero: "1d6, Wild 1d6"
@@ -3788,6 +3963,7 @@ mostri:
     nome: "Serpente marino"
     manuale: "Sea Serpent"
     pagina: 142
+    tipo: [animale]
     difesa: 17
     dadi_vita: "6"
     attacchi:
@@ -3804,6 +3980,7 @@ mostri:
     nome: "Ombra"
     manuale: "Shadow"
     pagina: 142
+    immune: [sonno, charme_persone]
     difesa: 13
     colpito_solo_da: [magica]
     dadi_vita: "2*"
@@ -3821,6 +3998,7 @@ mostri:
     nome: "Squalo toro"
     manuale: "Shark, Bull"
     pagina: 143
+    tipo: [animale]
     difesa: 13
     dadi_vita: "2"
     attacchi:
@@ -3836,6 +4014,7 @@ mostri:
     nome: "Squalo bianco"
     manuale: "Shark, Great White"
     pagina: 143
+    tipo: [animale]
     difesa: 19
     dadi_vita: "8"
     attacchi:
@@ -3851,6 +4030,7 @@ mostri:
     nome: "Squalo mako"
     manuale: "Shark, Mako"
     pagina: 143
+    tipo: [animale]
     difesa: 15
     dadi_vita: "4"
     attacchi:
@@ -3866,6 +4046,7 @@ mostri:
     nome: "Toporagno gigante"
     manuale: "Shrew, Giant | Common"
     pagina: 144
+    tipo: [animale]
     difesa: 16
     dadi_vita: "1"
     attacchi:
@@ -3882,10 +4063,11 @@ mostri:
     nome: "Toporagno gigante velenoso"
     manuale: "Shrew, Giant | Venomous"
     pagina: 144
+    tipo: [animale]
     difesa: 16
     dadi_vita: "1*"
     attacchi:
-      - {id: morso, nome: "Morso", danno: "1d6"}
+      - {id: morso, nome: "Morso", danno: "1d6", colpendo: [veleno_mortale]}
     per_round: [[morso, morso]]
     movimento: "60'"
     numero: "1d4, Wild 1d8, Lair 1d8"
@@ -3914,6 +4096,8 @@ mostri:
     nome: "Scheletro"
     manuale: "Skeleton"
     pagina: 145
+    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    tipo: [non_morto, scheletro]
     difesa: 13
     dadi_vita: "1"
     attacchi:
@@ -3930,10 +4114,11 @@ mostri:
     nome: "Vipera a fossette"
     manuale: "Snake, Pit Viper (and Rattlesnake) | Normal"
     pagina: 145
+    tipo: [animale]
     difesa: 14
     dadi_vita: "1*"
     attacchi:
-      - {id: morso, nome: "Morso", danno: "1d4"}
+      - {id: morso, nome: "Morso", danno: "1d4", colpendo: [veleno_mortale]}
     per_round: [[morso]]
     movimento: "30'"
     numero: "1d4, Wild 1d4, Lair 1d4"
@@ -3946,10 +4131,11 @@ mostri:
     nome: "Vipera a fossette gigante"
     manuale: "Snake, Pit Viper (and Rattlesnake) | Giant"
     pagina: 145
+    tipo: [animale]
     difesa: 15
     dadi_vita: "2*"
     attacchi:
-      - {id: morso, nome: "Morso", danno: "1d8"}
+      - {id: morso, nome: "Morso", danno: "1d8", colpendo: [veleno_mortale]}
     per_round: [[morso]]
     movimento: "40'"
     numero: "1d2, Wild 1d2, Lair 1d2"
@@ -3962,6 +4148,7 @@ mostri:
     nome: "Pitone"
     manuale: "Snake, Python"
     pagina: 146
+    tipo: [animale]
     difesa: 14
     dadi_vita: "5*"
     attacchi:
@@ -3979,10 +4166,11 @@ mostri:
     nome: "Serpente marino"
     manuale: "Snake, Sea"
     pagina: 146
+    tipo: [animale]
     difesa: 14
     dadi_vita: "3*"
     attacchi:
-      - {id: morso, nome: "Morso", danno: "1"}
+      - {id: morso, nome: "Morso", danno: "1", colpendo: [veleno_mortale_fortissimo]}
     per_round: [[morso]]
     movimento: "10' Swim 30'"
     numero: "Wild 1d8"
@@ -3995,10 +4183,11 @@ mostri:
     nome: "Cobra sputante"
     manuale: "Snake, Spitting Cobra"
     pagina: 146
+    tipo: [animale]
     difesa: 13
     dadi_vita: "1*"
     attacchi:
-      - {id: morso, nome: "Morso", danno: "1d4"}
+      - {id: morso, nome: "Morso", danno: "1d4", colpendo: [veleno_mortale]}
       - {id: sputo, nome: "Sputo"}
     per_round: [[morso], [sputo]]
     movimento: "30'"
@@ -4012,11 +4201,13 @@ mostri:
     nome: "Spettro"
     manuale: "Spectre"
     pagina: 147
+    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    tipo: [non_morto, spettro]
     difesa: 17
     colpito_solo_da: [magica]
     dadi_vita: "6**"
     attacchi:
-      - {id: tocco, nome: "Tocco"}
+      - {id: tocco, nome: "Tocco", colpendo: [risucchio_2]}
     per_round: [[tocco]]
     movimento: "Fly 100'"
     numero: "1d4, Lair 1d8"
@@ -4029,10 +4220,11 @@ mostri:
     nome: "Ragno vedova nera gigante"
     manuale: "Spider, Giant Black Widow"
     pagina: 147
+    tipo: [animale]
     difesa: 14
     dadi_vita: "3*"
     attacchi:
-      - {id: morso, nome: "Morso", danno: "2d6"}
+      - {id: morso, nome: "Morso", danno: "2d6", colpendo: [veleno_mortale_forte]}
     per_round: [[morso]]
     movimento: "20' Web 40'"
     numero: "1d3, Wild 1d3, Lair 1d3"
@@ -4045,10 +4237,12 @@ mostri:
     nome: "Ragno granchio gigante"
     manuale: "Spider, Giant Crab"
     pagina: 147
+    sorprende: 4
+    tipo: [animale]
     difesa: 13
     dadi_vita: "2*"
     attacchi:
-      - {id: morso, nome: "Morso", danno: "1d8"}
+      - {id: morso, nome: "Morso", danno: "1d8", colpendo: [veleno_mortale]}
     per_round: [[morso]]
     movimento: "40'"
     numero: "1d4, Wild 1d4, Lair 1d4"
@@ -4061,6 +4255,7 @@ mostri:
     nome: "Ragno tarantola gigante"
     manuale: "Spider, Giant Tarantula"
     pagina: 148
+    tipo: [animale]
     difesa: 15
     dadi_vita: "4*"
     attacchi:
@@ -4095,6 +4290,7 @@ mostri:
     nome: "Calamaro gigante (maschio)"
     manuale: "Squid, Giant | Male"
     pagina: 149
+    tipo: [animale]
     difesa: 16
     dadi_vita: "6"
     attacchi:
@@ -4112,6 +4308,7 @@ mostri:
     nome: "Calamaro gigante (femmina)"
     manuale: "Squid, Giant | Female"
     pagina: 149
+    tipo: [animale]
     difesa: 17
     dadi_vita: "7"
     attacchi:
@@ -4129,6 +4326,7 @@ mostri:
     nome: "Stirge"
     manuale: "Stirge"
     pagina: 149
+    tipo: [animale]
     difesa: 13
     dadi_vita: "1*"
     attacchi:
@@ -4145,6 +4343,7 @@ mostri:
     nome: "Vite strangolatrice"
     manuale: "Strangle Vine"
     pagina: 150
+    sorprende: 4
     difesa: 15
     dadi_vita: "6"
     attacchi:
@@ -4161,10 +4360,11 @@ mostri:
     nome: "Verme tentacolare"
     manuale: "Tentacle Worm"
     pagina: 150
+    tipo: [animale]
     difesa: 13
     dadi_vita: "3*"
     attacchi:
-      - {id: tentacolo, nome: "Tentacolo"}
+      - {id: tentacolo, nome: "Tentacolo", colpendo: [paralisi_breve]}
     per_round: [[tentacolo, tentacolo, tentacolo, tentacolo, tentacolo, tentacolo]]
     movimento: "40'"
     numero: "1d3, Lair 1d3"
@@ -4177,6 +4377,7 @@ mostri:
     nome: "Tigre"
     manuale: "Tiger"
     pagina: 151
+    tipo: [animale]
     difesa: 14
     dadi_vita: "6"
     attacchi:
@@ -4193,6 +4394,7 @@ mostri:
     nome: "Titanotere"
     manuale: "Titanothere"
     pagina: 151
+    tipo: [animale]
     difesa: 15
     dadi_vita: "12"
     attacco: 10
@@ -4210,6 +4412,7 @@ mostri:
     nome: "Treant"
     manuale: "Treant"
     pagina: 151
+    sorprende: 4
     difesa: 19
     dadi_vita: "8*"
     attacchi:
@@ -4226,6 +4429,8 @@ mostri:
     nome: "Troll"
     manuale: "Troll (and Trollwife) | Troll"
     pagina: 152
+    rigenera: {pf: 1, tranne: [fuoco, acido], a_zero: {round: "2d6"}}
+    tipo: [umanoide]
     difesa: 16
     dadi_vita: "6*"
     attacchi:
@@ -4243,6 +4448,8 @@ mostri:
     nome: "Trollessa"
     manuale: "Troll (and Trollwife) | Trollwife"
     pagina: 152
+    rigenera: {pf: 1, tranne: [fuoco, acido], a_zero: {round: "2d6"}}
+    tipo: [umanoide]
     difesa: 17
     dadi_vita: "7*"
     attacchi:
@@ -4260,6 +4467,8 @@ mostri:
     nome: "Trollkin infante"
     manuale: "Trollkin | Infant"
     pagina: 153
+    rigenera: {pf: 1, tranne: [fuoco, acido], a_zero: {round: "2d6"}}
+    tipo: [umanoide]
     difesa: 14
     dadi_vita: "1*"
     attacchi:
@@ -4277,6 +4486,8 @@ mostri:
     nome: "Trollkin giovane"
     manuale: "Trollkin | Juvenile"
     pagina: 153
+    rigenera: {pf: 1, tranne: [fuoco, acido], a_zero: {round: "2d6"}}
+    tipo: [umanoide]
     difesa: 15
     dadi_vita: "3*"
     attacchi:
@@ -4294,6 +4505,8 @@ mostri:
     nome: "Trollkin adolescente"
     manuale: "Trollkin | Adolescent"
     pagina: 153
+    rigenera: {pf: 1, tranne: [fuoco, acido], a_zero: {round: "2d6"}}
+    tipo: [umanoide]
     difesa: 16
     dadi_vita: "5*"
     attacchi:
@@ -4311,6 +4524,8 @@ mostri:
     nome: "Tartaruga scatola"
     manuale: "Turtle or Tortoise | Box Turtle"
     pagina: 154
+    sorprende: 3
+    tipo: [animale]
     difesa: 15
     dadi_vita: "½"
     pf: "1d4"
@@ -4328,6 +4543,8 @@ mostri:
     nome: "Tartaruga azzannatrice"
     manuale: "Turtle or Tortoise | Snapping Turtle"
     pagina: 154
+    sorprende: 3
+    tipo: [animale]
     difesa: 16
     dadi_vita: "1"
     attacchi:
@@ -4378,6 +4595,8 @@ mostri:
     nome: "Urgoblin"
     manuale: "Urgoblin"
     pagina: 155
+    rigenera: {pf: 1, tranne: [fuoco, acido], a_zero: {round: "2d6"}}
+    tipo: [umanoide]
     difesa: 14
     difesa_senza_armatura: 11
     dadi_vita: "2*"
@@ -4395,13 +4614,16 @@ mostri:
     nome: "Vampiro"
     manuale: "Vampire"
     pagina: 155
+    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    tipo: [non_morto, vampiro]
     difesa: 18
     colpito_solo_da: [magica]
     dadi_vita: "7**"
     attacchi:
+      - {id: sguardo, nome: "Sguardo", potere: sguardo_ammaliante, in_piu: true}
       - {id: arma, nome: "Arma"}
-      - {id: morso, nome: "Morso"}
-    per_round: [[arma], [morso]]
+      - {id: morso, nome: "Morso", colpendo: [risucchio_1]}
+    per_round: [[sguardo, arma], [sguardo, morso]]
     movimento: "40' Fly 60' (as giant bat, see below)"
     numero: "1d6, Wild 1d6, Lair 1d6"
     salva_come: {classe: guerriero, livello: 7}
@@ -4413,6 +4635,7 @@ mostri:
     nome: "Termite acquatica gigante"
     manuale: "Water Termite, Giant"
     pagina: 157
+    tipo: [animale]
     difesa: 13
     dadi_vita: "1"
     attacchi:
@@ -4429,6 +4652,8 @@ mostri:
     nome: "Donnola"
     manuale: "Weasel, Normal and Giant (or Ferret) | Normal"
     pagina: 157
+    sorprende: 3
+    tipo: [animale]
     difesa: 14
     dadi_vita: "½"
     pf: "1d2"
@@ -4446,6 +4671,8 @@ mostri:
     nome: "Donnola gigante"
     manuale: "Weasel, Normal and Giant (or Ferret) | Giant"
     pagina: 157
+    sorprende: 3
+    tipo: [animale]
     difesa: 17
     dadi_vita: "5"
     attacchi:
@@ -4462,6 +4689,7 @@ mostri:
     nome: "Orca"
     manuale: "Whale, Killer"
     pagina: 157
+    tipo: [animale]
     difesa: 17
     dadi_vita: "6"
     attacchi:
@@ -4477,6 +4705,7 @@ mostri:
     nome: "Narvalo"
     manuale: "Whale, Narwhal"
     pagina: 158
+    tipo: [animale]
     difesa: 19
     attacco: 10
     dadi_vita: "12"
@@ -4493,13 +4722,14 @@ mostri:
     nome: "Capodoglio"
     manuale: "Whale, Sperm"
     pagina: 158
+    tipo: [animale]
     difesa: 22
     attacco: 16
     dadi_vita: "36*"
     attacchi:
       - {id: morso, nome: "Morso", danno: "3d20"}
-      - {id: soffio, nome: "Soffio sonoro"}
-    per_round: [[morso], [soffio]]
+      - {id: suono, nome: "Suono", potere: stordimento}
+    per_round: [[suono], [morso]]
     movimento: "Swim 60' (20')"
     numero: "Wild 1d3"
     salva_come: {classe: guerriero, livello: 8}
@@ -4511,11 +4741,13 @@ mostri:
     nome: "Wight"
     manuale: "Wight"
     pagina: 158
+    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    tipo: [non_morto, wight]
     difesa: 15
     colpito_solo_da: [argento, magica]
     dadi_vita: "3*"
     attacchi:
-      - {id: tocco, nome: "Tocco"}
+      - {id: tocco, nome: "Tocco", colpendo: [risucchio_1]}
     per_round: [[tocco]]
     movimento: "30'"
     numero: "1d6, Wild 1d8, Lair 1d8"
@@ -4528,6 +4760,7 @@ mostri:
     nome: "Lupo"
     manuale: "Wolf (and Wolf, Dire) | Normal"
     pagina: 159
+    tipo: [animale]
     difesa: 13
     dadi_vita: "2"
     attacchi:
@@ -4543,6 +4776,7 @@ mostri:
     nome: "Lupo crudele"
     manuale: "Wolf (and Wolf, Dire) | Dire"
     pagina: 159
+    tipo: [animale]
     difesa: 14
     dadi_vita: "4"
     attacchi:
@@ -4558,11 +4792,13 @@ mostri:
     nome: "Ombra spettrale"
     manuale: "Wraith"
     pagina: 159
+    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    tipo: [non_morto, wraith]
     difesa: 15
     colpito_solo_da: [magica]
     dadi_vita: "4**"
     attacchi:
-      - {id: tocco, nome: "Tocco", danno: "1d6"}
+      - {id: tocco, nome: "Tocco", danno: "1d6", colpendo: [risucchio_1]}
     per_round: [[tocco]]
     movimento: "Fly 80'"
     numero: "1d4, Lair 1d6"
@@ -4579,7 +4815,7 @@ mostri:
     dadi_vita: "7*"
     attacchi:
       - {id: morso, nome: "Morso", danno: "2d8"}
-      - {id: pungiglione, nome: "Pungiglione", danno: "1d6"}
+      - {id: pungiglione, nome: "Pungiglione", danno: "1d6", colpendo: [veleno_mortale]}
       - {id: artiglio, nome: "Artiglio", danno: "1d10"}
     per_round: [[morso, pungiglione], [artiglio, artiglio, pungiglione]]
     movimento: "30' (10') Fly 80' (15')"
@@ -4608,6 +4844,8 @@ mostri:
     nome: "Zombi"
     manuale: "Zombie"
     pagina: 161
+    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    tipo: [non_morto, zombi]
     difesa: 12
     dadi_vita: "2"
     attacchi:
@@ -4625,6 +4863,8 @@ mostri:
     nome: "Zombraire"
     manuale: "Zombraire (and Skeletaire) | Zombraire"
     pagina: 162
+    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    tipo: [non_morto]
     difesa: 12
     dadi_vita: "2*"
     attacchi:
@@ -4643,6 +4883,8 @@ mostri:
     nome: "Scheletraire"
     manuale: "Zombraire (and Skeletaire) | Skeletaire"
     pagina: 162
+    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    tipo: [non_morto]
     difesa: 13
     dadi_vita: "1*"
     attacchi:
