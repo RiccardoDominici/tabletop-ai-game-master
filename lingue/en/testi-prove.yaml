@@ -36,6 +36,8 @@ prove:
     perde: "LOSES"
     pari: "TIE: nobody prevails, the situation stays as it was"
   fatto:
+    # A missile that misses into a melee (Basic Fantasy p. 55): the Game Master rolls it at an engaged ally.
+    nella_mischia: " The shot goes into the melee, towards {nome}: {dettagli}"
     attacco: "attack with {arma}{verso}{vantaggio}: {confronto}{naturale} → {esito}{critico}{danno}{stato}."
     verso_attacco: " on {bersaglio}"
     uno_naturale: " (natural 1)"
@@ -218,6 +220,7 @@ prove:
     automatico: "Automatic attack: {arma} {dadi}{armatura}"
     # The set's situational modifiers that apply to an attack (regole.yaml → modificatori), after the roll's rule.
     situazioni: " (including: {elenco})"
+    condizioni: " (conditions: {elenco})"
     meno_armatura: " minus armor"
     colpisce: "Hits"
   esiti:

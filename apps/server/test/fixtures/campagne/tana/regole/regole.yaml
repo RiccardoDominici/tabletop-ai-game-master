@@ -94,6 +94,11 @@ esperienza:
     - {da: 3, px: 80, speciale: 15}
     - {da: 4, px: 120, speciale: 20}
 
+# Situational attack modifiers by the words of a PC's action (regole/modificatori.ts).
+modificatori:
+  - {id: da_dietro, nome: Da dietro, bonus: 2, parole: [alle spalle, da dietro]}
+  - {id: nemico_addosso, nome: Nemico addosso, bonus: -5, attacchi: distanza, parole: [a bruciapelo, mi sta addosso]}
+
 tempo:
   unita:
     - {id: round, nome: Round, plurale: round, secondi: 10}
@@ -163,8 +168,15 @@ combattimento:
     - {id: paralizzato, nome: Paralizzato, icona: PA, effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio, fuori_combattimento], testo: Immobile.}
     - {id: pietrificato, nome: Pietrificato, icona: PI, effetti: [perde_turno, non_si_muove, fuori_combattimento], testo: Di pietra.}
     - {id: arreso, nome: Arreso, icona: AR, effetti: [perde_turno, fuori_combattimento], testo: Si è arreso.}
+    # Conditions with numbers (docs/combattimento.md §2): to hit, to be hit, initiative, the surprise range; a blind
+    # attacker against an invisible target is −4 once (group «vista»).
+    - {id: accecato, nome: Accecato, icona: AC, valori: {attacchi: -4, contro: 4, iniziativa: -2, sorpresa: 4}, gruppo: vista, testo: Non vede.}
+    - {id: invisibile, nome: Invisibile, icona: IN, valori: {contro: -4}, gruppo: vista, testo: Non si vede.}
+    - {id: al_riparo, nome: Al riparo, icona: RI, valori: {contro: -4}, testo: Dietro un riparo solido.}
   condizione_a_zero: svenuto
   sorpresa: {dado: 6, fino_a: 2, condizione: sorpreso}
+  # A missile that misses an NPC engaged with other PCs may hit one of them (up to three, rolled by the Game Master).
+  nella_mischia: {alleati: 3}
   # Morale as Basic Fantasy times it (p. 57): at the first opposition and at half strength; a broken NPC with
   # `si_arrende` surrenders (out of the fight for the scene).
   fine: {morale: {quando: [prima_opposizione, meta], resa: {condizione: arreso}}}

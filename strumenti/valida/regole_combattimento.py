@@ -118,6 +118,17 @@ def _condizioni(cond, e: Esito, dove: str) -> set[str]:
         for eff in o.get("effetti") or []:
             if eff not in EFFETTI:
                 _err(e, dove, f"condizioni.{cid}: effetto «{eff}» non ammesso (elenco chiuso: {', '.join(EFFETTI)})")
+        # The numbers a condition carries (regole/combattimento.ts ValoriCondizione) and the group they do not stack in.
+        valori = o.get("valori")
+        if valori is not None and not isinstance(valori, dict):
+            _err(e, dove, f"condizioni.{cid}.valori: {{attacchi, contro, iniziativa, sorpresa}}")
+        for k, v in (valori or {}).items() if isinstance(valori, dict) else []:
+            if k not in ("attacchi", "contro", "iniziativa", "sorpresa"):
+                _err(e, dove, f"condizioni.{cid}.valori.{k}: attacchi, contro, iniziativa o sorpresa")
+            elif not (isinstance(v, int) and not isinstance(v, bool) and v != 0 and abs(v) <= 10 and (k != "sorpresa" or v >= 1)):
+                _err(e, dove, f"condizioni.{cid}.valori.{k}: un intero da −10 a 10, non 0 (sorpresa: una faccia da 1)")
+        if "gruppo" in o and not (isinstance(o["gruppo"], str) and o["gruppo"].strip()):
+            _err(e, dove, f"condizioni.{cid}.gruppo: una parola")
     return ids
 
 
@@ -162,6 +173,10 @@ def controlla(r: dict, car: set[str], e: Esito, dove: str = "regole/regole.yaml"
         ids = {x.get("id") for x in c.get("condizioni") or [] if isinstance(x, dict)}
         if resa is not None and not (isinstance(resa, dict) and resa.get("condizione") in ids):
             _err(e, dove, "fine.morale.resa.condizione: una condizione del set")
+    # Missiles that miss into a melee (Basic Fantasy p. 55): {alleati: n ≥ 1}.
+    nm = c.get("nella_mischia")
+    if nm is not None and not (isinstance(nm, dict) and isinstance(nm.get("alleati"), int) and not isinstance(nm.get("alleati"), bool) and nm["alleati"] >= 1):
+        _err(e, dove, "nella_mischia: {alleati: quanti alleati in mischia può colpire un tiro mancato, da 1}")
     # Surprise (B/X, docs/combattimento.md §1): {dado, fino_a, condizione}; the condition is one of the set's.
     so = c.get("sorpresa")
     if so is not None:

@@ -164,11 +164,17 @@ combattimento:                              # optional: without it, the full SRD
     # manual does not have them, like Basic Fantasy's «save vs. death»).
   condizioni:                               # [V] snake_case ids; effects from the closed list (docs/combattimento.md §2)
     - {id: prono, nome: "Prono", icona: "⬇", effetti: [svantaggio_attacchi, attacchi_contro_vantaggio], testo: "…"}
+    - {id: accecato, nome: "Accecato", valori: {attacchi: -4, contro: 4, iniziativa: -2, sorpresa: 4}, gruppo: vista}
+    # optional [V] valori: numbers instead of the ±advantage — to the bearer's attack rolls, to the rolls against it, to
+    #   its initiative; sorpresa = surprised on 1 to that face at least; gruppo: penalties of one sign in one group count
+    #   once on an attack (a blind attacker against an invisible target, Basic Fantasy p. 59)
   condizione_a_zero: privo_di_sensi         # [V] among the conditions, or null
   fine: {morale: true}                      # B/X morale: 2d6 against the NPCs' scheda.morale (first down, half down)
   # or [V] {morale: {quando: [prima_opposizione, primo_caduto, meta], resa: {condizione: arreso}}}: when it is checked, and
   #   the condition a broken NPC with `si_arrende: true` gets for the scene (Basic Fantasy p. 57; docs/combattimento.md §3)
   sorpresa: {dado: 6, fino_a: 2, condizione: sorpreso}   # [V] B/X surprise: 1d6 per side, 1–2 loses round 1 (a set's condition)
+  nella_mischia: {alleati: 3}               # optional [V]: a PC's missile that misses an NPC engaged in melee with other PCs is
+                                            #   rolled again by the Game Master at up to n of them, until one is hit (p. 55)
 tiri_salvezza:                              # optional [V]: the manual's save categories, in the table's order
   colonne: [{id: morte, nome: "Raggio della morte o veleno"}, {id: incantesimi, nome: "Incantesimi"}]
 classi:                                     # optional [V]: the classes and their level tables (regole/classi.ts)

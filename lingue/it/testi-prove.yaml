@@ -41,6 +41,8 @@ prove:
     pari: "PARI: nessuno prevale, la situazione resta com’era"
   # Righe di fatto per il narratore: l'esito è già deciso, ne racconta la conseguenza.
   fatto:
+    # A missile that misses into a melee (Basic Fantasy p. 55): the Game Master rolls it at an engaged ally.
+    nella_mischia: " Il colpo finisce nella mischia, verso {nome}: {dettagli}"
     attacco: "attacco con {arma}{verso}{vantaggio}: {confronto}{naturale} → {esito}{critico}{danno}{stato}."
     verso_attacco: " a {bersaglio}"
     uno_naturale: " (1 naturale)"
@@ -227,6 +229,7 @@ prove:
     meno_armatura: " meno l’armatura"
     # The set's situational modifiers that apply to an attack (regole.yaml → modificatori), after the roll's rule.
     situazioni: " (compresi: {elenco})"
+    condizioni: " (condizioni: {elenco})"
     colpisce: "Colpisce"
   # La sezione «Esiti dei tiri» del messaggio del narratore e del selettore.
   esiti:

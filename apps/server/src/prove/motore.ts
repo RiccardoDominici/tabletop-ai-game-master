@@ -870,7 +870,7 @@ export class MotoreProve {
       if (livelli.length) r.fatti.unshift(...livelli);
       // Combattimento: si entra con un attacco; poi i turni dei PNG e i tiri contro la morte fino al prossimo PG.
       // A hostile power on an NPC counts as an attack: it opens the fight and the NPC goes for its author.
-      const attacchi = [...r.tiri.filter((t) => t.tipo === 'attacco' && t.bersaglio).map((t) => ({ chi: t.chi, bersaglio: t.bersaglio!.id })), ...(r.ostili ?? [])];
+      const attacchi = [...r.tiri.filter((t) => t.tipo === 'attacco' && t.bersaglio).map((t) => ({ chi: t.chi, bersaglio: t.bersaglio!.id, mischia: !t.a_distanza && !t.automatico })), ...(r.ostili ?? [])];
       // Each PC's last target: an attack with no target named goes there (bersaglioImplicito).
       for (const a of attacchi) if (c.campagna.pg.some((p) => p.id === a.chi)) this.ultimoBersaglio.set(a.chi, a.bersaglio);
       // A check the Game Master asked (pseudo-action «m_…») is not the PC's action in the fight: it does not move whose turn it is.
@@ -980,6 +980,8 @@ export class MotoreProve {
       bonusAttivi: (id: string, a: 'difesa' | 'attacchi' | 'danni', contro: 'mischia' | 'distanza') => this.attivi.bonus(id, a, contro),
       ...(this.inventario ? { indossate: (id: string) => this.inventario!.penalita(id) } : {}),
       round: this.combattimento.round,
+      // Missiles that miss into a melee (the set's `nella_mischia`): the PCs engaged with the NPC, by the fight.
+      ...(this.regoleCombattimento().nellaMischia ? { nellaMischia: { alleati: this.regoleCombattimento().nellaMischia!.alleati, ingaggiati: (png: string) => this.combattimento.ingaggiatiCon(png) } } : {}),
       ...(this.o.tiriMaster ? { tiriMaster: this.o.tiriMaster } : {}),
       log: this.o.log.child({ turno }),
     };

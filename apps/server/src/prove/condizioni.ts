@@ -5,10 +5,35 @@
  */
 import type { Vantaggio } from '@tabletop-ai-gm/shared';
 import { testo } from '../lingua';
-import type { Effetto } from '../regole/combattimento';
+import type { Effetto, ValoriCondizione } from '../regole/combattimento';
 
-/** Condizioni attive di un personaggio (nome ed effetti). */
-export type CondizioniDi = (id: string) => ReadonlyArray<{ nome: string; effetti: readonly Effetto[] }>;
+/** Condizioni attive di un personaggio (nome ed effetti; the numbers some carry and their group). */
+export type CondizioniDi = (id: string) => ReadonlyArray<{ nome: string; effetti: readonly Effetto[]; valori?: ValoriCondizione; gruppo?: string }>;
+
+/**
+ * The numbers the conditions add to one attack (Basic Fantasy p. 59): the attacker's `attacchi` (blinded −4) and the
+ * target's `contro` (blinded +4, invisible −4). Penalties of one sign in one group count once, the strongest (a blind
+ * attacker against an invisible target: −4, not −8). Each with its condition's name, for the card.
+ */
+export function valoriAttacco(c: CondizioniDi | undefined, chi: string, bersaglio: string): Array<{ nome: string; valore: number }> {
+  if (!c) return [];
+  const voci = [
+    ...c(chi).flatMap((x) => (x.valori?.attacchi ? [{ nome: x.nome, valore: x.valori.attacchi, gruppo: x.gruppo }] : [])),
+    ...c(bersaglio).flatMap((x) => (x.valori?.contro ? [{ nome: x.nome, valore: x.valori.contro, gruppo: x.gruppo }] : [])),
+  ];
+  const out: Array<{ nome: string; valore: number }> = [];
+  const visti = new Map<string, { nome: string; valore: number }>();
+  for (const v of voci) {
+    if (!v.gruppo) {
+      out.push({ nome: v.nome, valore: v.valore });
+      continue;
+    }
+    const k = `${v.gruppo}|${Math.sign(v.valore)}`;
+    const prima = visti.get(k);
+    if (!prima || Math.abs(v.valore) > Math.abs(prima.valore)) visti.set(k, { nome: v.nome, valore: v.valore });
+  }
+  return [...out, ...visti.values()];
+}
 
 /** Il nome della prima condizione di `id` con quell'effetto, o null. */
 export function conEffetto(c: CondizioniDi | undefined, id: string, e: Effetto): string | null {

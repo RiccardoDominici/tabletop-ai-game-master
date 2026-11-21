@@ -31,10 +31,29 @@ export const EFFETTI = [
 ] as const;
 export type Effetto = (typeof EFFETTI)[number];
 
+/**
+ * The numbers a condition carries (Basic Fantasy p. 59: blinded −4 to attacks, −4 to AC, −2 initiative, surprised on
+ * 1–4): added to the bearer's attack rolls (`attacchi`), to the rolls of attacks against it (`contro`: −4 AC = +4),
+ * to its initiative; `sorpresa` raises its surprise range to at least that face. A condition with numbers is read by
+ * them; its advantage effects still apply, so a set writes one or the other.
+ */
+export interface ValoriCondizione {
+  attacchi?: number;
+  contro?: number;
+  iniziativa?: number;
+  sorpresa?: number;
+}
+
 export interface Condizione {
   id: string;
   nome: string;
   effetti: Effetto[];
+  valori?: ValoriCondizione;
+  /**
+   * Penalties of one group do not add up on one attack: a blind attacker and an invisible target are −4, not −8
+   * (Basic Fantasy p. 59, «do not apply this twice»). Of the same sign in a group, the strongest counts.
+   */
+  gruppo?: string;
   /** Testo del manuale (per narratore, telefono e pannello). */
   testo: string;
   /** Icona breve per proiettore e telefono (un emoji o due lettere). */
@@ -123,6 +142,12 @@ export interface Combattimento {
    * opens rolls for both. null = the set has no surprise roll (SRD 5.2 default: the Game Master decides, in the story).
    */
   sorpresa: { dado: number; finoA: number; condizione: string } | null;
+  /**
+   * Missiles that miss into a melee (Basic Fantasy p. 55): a PC's missile that misses an NPC engaged in melee with other
+   * PCs is rolled again, by the Game Master, against up to `alleati` of them (the shooter's bonus) until one hits.
+   * Absent = a miss is a miss.
+   */
+  nellaMischia?: { alleati: number } | null;
 }
 
 /**
@@ -291,7 +316,17 @@ export function leggiCombattimento(v: unknown, base: Combattimento, caratteristi
       }
       const eff = Array.isArray(o['effetti']) ? o['effetti'] : [];
       for (const e of eff) if (!(EFFETTI as readonly unknown[]).includes(e)) errori.push(`combattimento.condizioni.${id}: effetto sconosciuto «${String(e)}» (ammessi: ${EFFETTI.join(', ')})`);
-      cond.push({ id, nome: str(o['nome']) ?? id, effetti: eff.filter((e): e is Effetto => (EFFETTI as readonly unknown[]).includes(e)), testo: str(o['testo']) ?? '', icona: str(o['icona']) ?? id.slice(0, 2).toUpperCase() });
+      // The numbers it carries (blinded −4/−4, −2 initiative, surprised on 1–4) and the group they do not stack in.
+      const valori: ValoriCondizione = {};
+      const vo = ogg(o['valori']);
+      if (o['valori'] !== undefined && !vo) errori.push(`combattimento.condizioni.${id}.valori: {attacchi, contro, iniziativa, sorpresa}`);
+      for (const [k, v] of Object.entries(vo ?? {})) {
+        if (!['attacchi', 'contro', 'iniziativa', 'sorpresa'].includes(k)) errori.push(`combattimento.condizioni.${id}.valori.${k}: attacchi, contro, iniziativa or sorpresa`);
+        else if (typeof v !== 'number' || !Number.isInteger(v) || v === 0 || Math.abs(v) > 10 || (k === 'sorpresa' && v < 1)) errori.push(`combattimento.condizioni.${id}.valori.${k}: a whole number from −10 to 10, not 0 (sorpresa: a face from 1)`);
+        else valori[k as keyof ValoriCondizione] = v;
+      }
+      const gruppo = str(o['gruppo']);
+      cond.push({ id, nome: str(o['nome']) ?? id, effetti: eff.filter((e): e is Effetto => (EFFETTI as readonly unknown[]).includes(e)), testo: str(o['testo']) ?? '', icona: str(o['icona']) ?? id.slice(0, 2).toUpperCase(), ...(Object.keys(valori).length ? { valori } : {}), ...(gruppo ? { gruppo } : {}) });
     }
     out.condizioni = cond;
   }
@@ -320,6 +355,12 @@ export function leggiCombattimento(v: unknown, base: Combattimento, caratteristi
       if (typeof c !== 'string' || !out.condizioni.some((x) => x.id === c)) errori.push(`combattimento.fine.morale.resa.condizione: «${String(c)}» is not one of the set's conditions`);
       else out.fine.resa = c;
     }
+  }
+  if (d['nella_mischia'] !== undefined && d['nella_mischia'] !== null) {
+    const nm = ogg(d['nella_mischia']);
+    const n = nm?.['alleati'];
+    if (typeof n !== 'number' || !Number.isInteger(n) || n < 1) errori.push('combattimento.nella_mischia.alleati: how many engaged allies a missile that misses may hit, from 1');
+    else out.nellaMischia = { alleati: n };
   }
   if (d['sorpresa'] !== undefined && d['sorpresa'] !== null) {
     const so = ogg(d['sorpresa']);

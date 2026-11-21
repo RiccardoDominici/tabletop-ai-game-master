@@ -99,6 +99,8 @@ export interface TiroMostrato {
    * §9): only the Game Master panel lists it. Absent = shown as always.
    */
   nascosta?: boolean;
+  /** An attack with a missile or thrown line (R4: a melee blow engages; a missile that misses may hit an engaged ally). */
+  a_distanza?: boolean;
   /** Tiro di un'azione privata: solo sul telefono del suo giocatore. */
   privata: boolean;
   /** Prova contrapposta tra due PG: il tiro dell'altro. */

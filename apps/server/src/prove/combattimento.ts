@@ -16,7 +16,7 @@
 import type { EsitoMorte } from './fatti-dovuti';
 import type { CombattimentoPubblico, TiroMostrato } from '@tabletop-ai-gm/shared';
 import type { Logger } from '../logger';
-import type { Combattimento, Condizione, Effetto, Fase } from '../regole/combattimento';
+import type { Combattimento, Condizione, Effetto, Fase, ValoriCondizione } from '../regole/combattimento';
 import type { FonteDadi } from './dadi';
 import type { StatoProve } from './stato';
 import { testo } from '../lingua';
@@ -53,6 +53,8 @@ export interface StatoCombattimentoSalvato {
   passi: Passo[];
   moraleControllato: string[];
   ultimoPg: string | null;
+  /** NPC → the PCs engaged in melee with it (a melee blow either way), for missiles that miss into a melee. */
+  ingaggi?: Array<[string, string[]]>;
 }
 
 /**
@@ -206,14 +208,41 @@ export class GestoreCombattimento {
   }
 
   /** Condizioni attive di un personaggio, per i resolver (prove/condizioni.ts). */
-  condizioniDi(id: string): Array<{ nome: string; effetti: Effetto[] }> {
+  condizioniDi(id: string): Array<{ nome: string; effetti: Effetto[]; valori?: ValoriCondizione; gruppo?: string }> {
     const p = this.part(id);
     // The timed effects' conditions (prove/attivi.ts) count in and out of the fight, once each.
     const ids = [...new Set([...(p?.condizioni.map((c) => c.id) ?? []), ...(this.d.condizioniEsterne?.(id) ?? [])])];
     return ids.flatMap((c) => {
       const x = this.cond(c);
-      return x ? [{ nome: x.nome, effetti: x.effetti }] : [];
+      return x ? [{ nome: x.nome, effetti: x.effetti, ...(x.valori ? { valori: x.valori } : {}), ...(x.gruppo ? { gruppo: x.gruppo } : {}) }] : [];
     });
+  }
+
+  /** The sum of a number the character's conditions carry (initiative −2 when blinded); the largest for `sorpresa`. */
+  private valoreCondizioni(id: string, k: 'iniziativa' | 'sorpresa'): number {
+    const v = this.condizioniDi(id).map((c) => c.valori?.[k] ?? 0);
+    return k === 'sorpresa' ? Math.max(0, ...v) : v.reduce((a, b) => a + b, 0);
+  }
+
+  /**
+   * The PCs engaged in melee with an NPC (they struck it in melee, or it struck them, in this fight) and still standing:
+   * a missile that misses it may hit them (`combattimento.nella_mischia`, Basic Fantasy p. 55).
+   */
+  ingaggiatiCon(png: string): string[] {
+    const s = this.s;
+    if (!s) return [];
+    const di = new Set(s.ingaggi?.find(([id]) => id === png)?.[1] ?? []);
+    return s.partecipanti.filter((p) => p.lato === 'pg' && di.has(p.id) && p.esito === 'in_gioco' && !this.d.stato.aTerra(p.id)).map((p) => p.id);
+  }
+
+  private ingaggia(png: string, pg: string): void {
+    const s = this.s;
+    if (!s) return;
+    s.ingaggi ??= [];
+    const voce = s.ingaggi.find(([id]) => id === png);
+    if (voce) {
+      if (!voce[1].includes(pg)) voce[1].push(pg);
+    } else s.ingaggi.push([png, [pg]]);
   }
 
   /** Out of the fight by a condition (asleep, charmed): its end and morale count it as down; it does not act. */
@@ -286,7 +315,7 @@ export class GestoreCombattimento {
       nome: this.d.nome(c.id),
       lato: c.lato,
       mod: c.mod,
-      iniziativa: r.iniziativa.tipo === 'individuale' ? this.dadiIniziativa(c.id, c.lato, c.mod, dadi).tira(r.iniziativa.dado) + c.mod : null,
+      iniziativa: r.iniziativa.tipo === 'individuale' ? this.dadiIniziativa(c.id, c.lato, c.mod, dadi).tira(r.iniziativa.dado) + c.mod + this.valoreCondizioniFuori(c.id) : null,
       condizioni: [],
       tiriMorte: null,
       esito: 'in_gioco',
@@ -331,7 +360,8 @@ export class GestoreCombattimento {
       if (!membri.length) continue;
       const valore = dadi.tira(so.dado);
       // One die per side, read against each member's own range (a trait may lower it: the elf's −1).
-      const colti = membri.filter((p) => valore <= so.finoA + (this.d.sorpresaMod?.(p.id) ?? 0));
+      // A blinded or deafened one is surprised on more faces (`valori.sorpresa`: 1–4, 1–3; Basic Fantasy p. 59).
+      const colti = membri.filter((p) => valore <= Math.max(so.finoA + (this.d.sorpresaMod?.(p.id) ?? 0), this.valoreCondizioni(p.id, 'sorpresa')));
       const sorpresi = colti.length === membri.length;
       for (const p of colti) this.aggiungiCondizione(p.id, so.condizione, 1);
       this.d.log.info({ lato, dado: `d${so.dado}`, valore, fino_a: so.finoA, sorpresi: colti.map((p) => p.id), chi: membri.map((p) => p.id) }, 'combattimento: sorpresa');
@@ -340,6 +370,11 @@ export class GestoreCombattimento {
       else fatti.push(testo(sorpresi ? 'prove.combattimento.sorpresi' : 'prove.combattimento.non_sorpresi', { chi, valore, dado: so.dado, condizione: nomeCond.toLowerCase() }));
     }
     return fatti;
+  }
+
+  /** A blinded candidate's −2 initiative before the fight's participants exist (its timed conditions, prove/attivi.ts). */
+  private valoreCondizioniFuori(id: string): number {
+    return (this.d.condizioniEsterne?.(id) ?? []).reduce((n, c) => n + (this.cond(c)?.valori?.iniziativa ?? 0), 0);
   }
 
   /** The side of a candidate (null if not among them). */
@@ -364,7 +399,7 @@ export class GestoreCombattimento {
   private ritiraIndividuale(): string {
     const s = this.s!;
     const dadi = this.d.dadi();
-    for (const p of s.partecipanti) p.iniziativa = p.esito === 'morto' || p.esito === 'fuggito' ? p.iniziativa : this.dadiIniziativa(p.id, p.lato, p.mod, dadi).tira(this.d.regole.iniziativa.dado) + p.mod;
+    for (const p of s.partecipanti) p.iniziativa = p.esito === 'morto' || p.esito === 'fuggito' ? p.iniziativa : this.dadiIniziativa(p.id, p.lato, p.mod, dadi).tira(this.d.regole.iniziativa.dado) + p.mod + this.valoreCondizioni(p.id, 'iniziativa');
     GestoreCombattimento.ordina(s.partecipanti, this.d.regole.iniziativa.pari === 'simultanei');
     const vivi = s.partecipanti.filter((p) => p.esito !== 'morto' && p.esito !== 'fuggito');
     this.ordineTirato = vivi.map((p) => p.nome);
@@ -451,8 +486,8 @@ export class GestoreCombattimento {
    */
   dopoAzioni(o: {
     turno: number;
-    /** Gli attacchi del turno (PG → PNG e PNG → PG), per entrare in combattimento e per i bersagli. */
-    attacchi: Array<{ chi: string; bersaglio: string }>;
+    /** Gli attacchi del turno (PG → PNG e PNG → PG), per entrare in combattimento e per i bersagli; `mischia`: a melee blow. */
+    attacchi: Array<{ chi: string; bersaglio: string; mischia?: boolean }>;
     /** PG che hanno agito in questo turno. */
     autori: string[];
     candidati: () => Array<{ id: string; lato: Lato; mod: number }>;
@@ -486,6 +521,8 @@ export class GestoreCombattimento {
     for (const a of o.attacchi) {
       const b = this.part(a.bersaglio);
       if (b && this.part(a.chi)?.lato === 'pg') b.aggressore = a.chi;
+      // A melee blow engages the two (Basic Fantasy p. 51: within 5').
+      if (b && a.mischia && this.part(a.chi)?.lato === 'pg' && b.lato === 'png') this.ingaggia(b.id, a.chi);
     }
     if (o.autori.length) s.ultimoPg = o.autori.at(-1)!;
     // Simultaneous ties (`pari: simultanei`): the NPCs with the same number as the PC step just played act at that same
@@ -586,6 +623,8 @@ export class GestoreCombattimento {
     // Several attacks in one step (a monster's `per_round`): one fact each, numbered, so the narrator tells every blow.
     for (const [i, r] of rs.entries()) {
       tiri.push(r.t, ...(r.altri ?? []));
+      // A monster's melee blow engages it with its target (a missile at it that misses may hit that PC).
+      if (r.t.bersaglio && r.t.tipo === 'attacco' && !r.t.a_distanza && !r.frase) this.ingaggia(id, r.t.bersaglio.id);
       const chiave = insieme ? 'prove.combattimento.turno_png_insieme' : rs.length > 1 ? 'prove.combattimento.turno_png_piu' : 'prove.combattimento.turno_png';
       fatti.push(testo(chiave, { nome: p.nome, frase: r.frase ?? fraseAttaccoPng(r.t), dettagli: r.testo, n: i + 1, di: rs.length }));
       // Everyone the attack reached (a breath reaches several; a rider's own cards): who went to 0 now.

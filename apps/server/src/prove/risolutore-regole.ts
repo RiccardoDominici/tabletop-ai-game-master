@@ -46,7 +46,7 @@ import {
   tipoDanno,
 } from './testi';
 import type { AzioneRisolvibile } from './risolutore';
-import { conEffetto, fontiAttacco, type CondizioniDi } from './condizioni';
+import { conEffetto, fontiAttacco, valoriAttacco, type CondizioniDi } from './condizioni';
 import { modificatoriDellAttacco } from './modificatori';
 import { applicaEffetti, type ContestoEffetti } from './effetti';
 import { effettiSeFallisce } from '../campagna/prove-scena';
@@ -132,6 +132,8 @@ export interface OpzioniRisolutoreRegole {
   indossate?: (id: string) => Penalita & { motivi: string[] };
   /** The fight's current round (a crossbow's rate of fire), or null outside a fight. */
   round?: number | null;
+  /** Missiles that miss into a melee (`combattimento.nella_mischia`): how many allies, and who is engaged with an NPC. */
+  nellaMischia?: { alleati: number; ingaggiati: (png: string) => string[] } | null;
   /**
    * Whether the table sees the Game Master's rolls (campaign `regole.tiri_master`, prove/tiri-master.ts): an NPC's save
    * against a PC's power follows it. Absent = hidden. The set's secret abilities stay hidden whatever it says.
@@ -228,6 +230,20 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
         const r = attacca(a.autore, b, d.arma, fonti, a.privata, dadiDelPg(a, 'prova'), (x) => dadiDelPg(a, 'danno', x), a.testo)!;
         aggiungi(r.t);
         for (const t of r.altri ?? []) aggiungi(t);
+        // A missile that misses an NPC engaged with other PCs may hit one of them (Basic Fantasy p. 55): the Game Master
+        // rolls the same shot, with the shooter's bonus, against each in turn until one is hit.
+        if (r.esito && !r.esito.riuscita && r.distanza && o.nellaMischia) {
+          const alleati = o.nellaMischia.ingaggiati(b).filter((x) => x !== a.autore).slice(0, o.nellaMischia.alleati);
+          for (const alleato of alleati) {
+            const x = attacca(a.autore, alleato, d.arma, [], a.privata, o.dadi, () => o.dadi, a.testo, true);
+            if (!x) continue;
+            aggiungi(x.t);
+            for (const t of x.altri ?? []) aggiungi(t);
+            r.testo += testo('prove.fatto.nella_mischia', { nome: o.nome(alleato), dettagli: x.testo });
+            o.log.info({ chi: a.autore, bersaglio: b, alleato, riuscita: x.esito?.riuscita ?? null }, 'prove: a missile that missed goes into the melee');
+            if (x.esito?.riuscita) break;
+          }
+        }
         esito.riuscita = r.esito?.riuscita ?? null;
         if (r.esito) (r.esito.riuscita ? esito.riuscite : esito.fallite).push('attacco', r.t.etichetta);
         fatto = r.testo;
@@ -537,17 +553,19 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     dadiDanno?: (x: Pick<GruppoDadi, 'etichetta' | 'modificatore'>) => FonteDadi,
     /** The PC's action: the set's situational modifiers read it (from behind, a charge, range). Absent = none (NPCs). */
     azione?: string,
-  ): { t: TiroMostrato; testo: string; esito: EsitoTiroGenerico | null; altri?: TiroMostrato[] } | null {
+    /** The same shot rolled again at someone else (a missile that misses into a melee): nothing spent or marked again. */
+    gratis = false,
+  ): { t: TiroMostrato; testo: string; esito: EsitoTiroGenerico | null; altri?: TiroMostrato[]; distanza?: boolean } | null {
     const sa = o.schede.get(chi);
     const sb = o.schede.get(bersaglio);
     if (!sa || !sb) return null;
     let a = arma(sa, idArma);
     // Ammunition (`consuma`): one per attack, tracked by the Engine (prove/risorse.ts); the caller refuses at 0.
-    if (a.consuma && o.poteri?.risorse.restanti(chi, a.consuma) !== null) o.poteri?.risorse.spendi(chi, a.consuma);
+    if (!gratis && a.consuma && o.poteri?.risorse.restanti(chi, a.consuma) !== null) o.poteri?.risorse.spendi(chi, a.consuma);
     // Catalog ammunition (M2): one of the first kind the bearer still has; a shot takes that ammunition's damage when
     // the manual gives one (a sling stone 1d3), with the line's own bonus (the sling's Strength).
     const munizione = a.munizioni && o.poteri ? a.munizioni.find((m) => (o.poteri!.risorse.restanti(chi, chiaveOggetto(m)) ?? 0) > 0) : undefined;
-    if (munizione) {
+    if (munizione && !gratis) {
       o.poteri!.risorse.spendi(chi, chiaveOggetto(munizione));
       const m = voce(s.catalogo, munizione);
       if (m?.tipo === 'munizione' && m.danno) a = { ...a, danno: { numero: m.danno.numero, facce: m.danno.facce, bonus: a.danno.bonus + m.danno.bonus } };
@@ -555,12 +573,12 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     }
     // Rate of fire (a crossbow): the round of this shot, so the next one waits.
     // A shot that opens the fight comes before its first round (the Engine's round 1 starts with the order rolled).
-    if (a.ricarica && a.ricarica > 1) o.poteri?.risorse.segnaTiro(chi, a.id, o.round ?? 0);
+    if (!gratis && a.ricarica && a.ricarica > 1) o.poteri?.risorse.segnaTiro(chi, a.id, o.round ?? 0);
     // An ability usable once per target per fight (Basic Fantasy's sneak attack): spent on this target, the attack
     // falls back to the ability's `ripiego` (an ordinary melee attack), without its double damage.
     let nota = '';
     const speciale = a.abilita ? s.abilita.find((x) => x.id === a.abilita) : undefined;
-    if (speciale?.unaVoltaPerBersaglio && o.poteri) {
+    if (speciale?.unaVoltaPerBersaglio && o.poteri && !gratis) {
       if (o.poteri.risorse.giaUsato(chi, speciale.id, bersaglio)) {
         nota = testo('prove.poteri.una_volta', { abilita: speciale.nome, bersaglio: o.nome(bersaglio) });
         o.log.info({ chi, bersaglio, abilita: speciale.id, ripiego: speciale.ripiego ?? null }, 'resources: once-per-target ability already used on this target, an ordinary attack');
@@ -598,6 +616,8 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     const date = situazioni.length ? fontiDate.filter((f) => f.fonte !== 'arbitro') : fontiDate;
     if (situazioni.length) o.log.info({ chi, bersaglio, arma: a.id, modificatori: situazioni.map((m) => `${m.id} ${m.bonus}`), senza_vantaggio_arbitro: date.length !== fontiDate.length }, 'prove: situational modifiers of the set');
     const fonti = [...date, ...fontiAttacco(o.condizioni, chi, bersaglio)];
+    // The numbers of the conditions (blinded −4 to hit and +4 to be hit, invisible −4, cover): on the roll, said on the card.
+    const valori = valoriAttacco(o.condizioni, chi, bersaglio);
     const v = combinaVantaggi(fonti.map((f) => f.v));
     // d20 contro la difesa del bersaglio; gli altri tipi con la loro risoluzione (fasce, soglia).
     // The target's active AC bonus (Shield: +3 against melee, +6 against missiles) and the attacker's attack bonus.
@@ -607,7 +627,7 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     // Etichetta una volta sola: senza una mossa né un’abilità la «cosa» è l’arma stessa.
     const etichetta = cosa.etichetta === a.nome ? a.nome : `${a.nome}, ${cosa.etichetta}`;
     // A class or race restriction's penalty with this weapon (Basic Fantasy: a magic-user's sword, −5, p. 187).
-    const extra = situazioni.reduce((x, m) => x + m.bonus, 0) + (o.bonusAttivi?.(chi, 'attacchi', contro) ?? 0) + (a.penalita ?? 0) + (gittata?.fascia.bonus ?? 0);
+    const extra = situazioni.reduce((x, m) => x + m.bonus, 0) + valori.reduce((x, v) => x + v.valore, 0) + (o.bonusAttivi?.(chi, 'attacchi', contro) ?? 0) + (a.penalita ?? 0) + (gittata?.fascia.bonus ?? 0);
     const e = tiraCol(sist, dadiTiro, cosa.valore + extra, sist === s ? null : ID_DIFESA, v, etichetta, true);
     // A target that is always hit (asleep: Basic Fantasy p. 36) is hit whatever the die.
     const sempre = conEffetto(o.condizioni, bersaglio, 'colpito_automaticamente');
@@ -617,6 +637,8 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
       e.regola += testo('prove.attivi.sempre_colpito', { condizione: sempre.toLowerCase() });
     }
     if (situazioni.length) e.regola += testo('prove.regola.situazioni', { elenco: situazioni.map((m) => `${m.nome} ${m.bonus > 0 ? '+' : '−'}${Math.abs(m.bonus)}`).join(', ') });
+    if (valori.length) e.regola += testo('prove.regola.condizioni', { elenco: valori.map((v) => `${v.nome} ${v.valore > 0 ? '+' : '−'}${Math.abs(v.valore)}`).join(', ') });
+    if (valori.length) o.log.info({ chi, bersaglio, condizioni: valori }, 'prove: the numbers of the conditions on an attack');
     if (gittata) e.regola += testo(gittata.da === 'predefinita' ? 'prove.equipaggiamento.gittata_predefinita' : 'prove.equipaggiamento.gittata', { fascia: gittata.fascia.nome, bonus: gittata.fascia.bonus ? ` ${gittata.fascia.bonus > 0 ? '+' : '−'}${Math.abs(gittata.fascia.bonus)}` : '', distanza: gittata.distanza !== null ? ` ${gittata.distanza} ${s.catalogo!.gittate!.unita}` : '' });
     if (a.penalita) e.regola += testo('prove.equipaggiamento.penalita_arma', { valore: `−${Math.abs(a.penalita)}`, arma: a.nome });
     e.regola += nota;
@@ -626,13 +648,14 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
       o.log.info({ chi, arma: a.id }, 'gear: a weapon forbidden to the class, the spells of the day are lost');
     }
     const t = cartaDa(e, chi, 'attacco', a.nome, bersaglio, fonti.filter((f) => f.v === v).map((f) => f.motivo).join('; ') || null, privata);
-    if (!e.riuscita) return { t, testo: testo('prove.fatto.attacco_set', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, esito: esitoInParole(e, true) }), esito: e };
+    if (a.distanza) t.a_distanza = true;
+    if (!e.riuscita) return { t, testo: testo('prove.fatto.attacco_set', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, esito: esitoInParole(e, true) }), esito: e, distanza: a.distanza };
     const nonFerisce = nonFerisceCon(a, sb, munizione);
     const fatto = colpisci(t, a, sb, e.grado?.id === 'critico' || !!conEffetto(o.condizioni, bersaglio, 'critico_contro'), danno, situazioni.some((m) => m.danno === 'doppio') || doppioAbilita, nonFerisce);
     // A hit that hurt applies the line's riders (a ghoul's paralysis): the target saves, then the effects.
     const rider = nonFerisce ? { tiri: [], fatti: [] } : colpendo(a, chi, bersaglio, privata);
     const piu = rider.fatti.length ? ` ${rider.fatti.join(' ')}` : '';
-    return { t, testo: testo('prove.fatto.attacco_set_colpito', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, esito: esitoInParole(e, true), danno: fatto }) + piu, esito: e, ...(rider.tiri.length ? { altri: rider.tiri } : {}) };
+    return { t, testo: testo('prove.fatto.attacco_set_colpito', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, esito: esitoInParole(e, true), danno: fatto }) + piu, esito: e, distanza: a.distanza, ...(rider.tiri.length ? { altri: rider.tiri } : {}) };
   }
   /**
    * An attack's ammunition (`attacchi[].consuma`): the line that refuses it when the counter is at 0, or null (it can

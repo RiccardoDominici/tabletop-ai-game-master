@@ -46,6 +46,15 @@ combattimento:
   sorpresa: {dado: 6, fino_a: 2, condizione: sorpreso}   # B/X: see «Surprise» in §3; absent = no surprise roll
 ```
 
+- **Numbers** (`valori`, R4; Basic Fantasy p. 59): a condition may carry numbers instead of the advantage effects:
+  `attacchi` (to its bearer's attack rolls: blinded −4), `contro` (to the rolls against it: blinded +4, invisible −4, half
+  behind hard cover −4), `iniziativa` (blinded −2), `sorpresa` (surprised on 1 to that face: blinded 4, deafened 3). On an
+  attack they are added and named on the card's rule («… (condizioni: Accecato −4)»); a `gruppo` makes penalties of one
+  sign count once (a blind attacker against an invisible target is −4, not −8). Cover and concealment are conditions the
+  Game Master puts on a combatant from the panel during a fight.
+- **Missiles into a melee** (`nella_mischia`, p. 55): a PC's melee blow on an NPC, or the NPC's on a PC, engages the two for
+  the fight; a missile that misses an NPC engaged with other PCs is rolled again, with the shooter's bonus and the Engine's
+  dice (the Game Master's), at each of them in turn until one is hit, up to `alleati`.
 - **Effects** (closed list, the Engine applies them to the rolls): `svantaggio_attacchi`, `vantaggio_attacchi`,
   `svantaggio_prove`, `svantaggio_salvezze`, `attacchi_contro_vantaggio`, `attacchi_contro_svantaggio`,
   `critico_contro`, `fallisce_salvezze_forza_destrezza`, `perde_turno`, `non_si_muove`, `fuori_combattimento` (counts as
