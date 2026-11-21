@@ -173,8 +173,17 @@ test('manual rolls: the request without DC, the dice typed on the phone and ente
   await attendiFase(schermo, (s) => s.fase === 'finestra' && s.turno === 3, 120_000, 'terza finestra');
   await expect(master.getByTestId('master-tiri-carte')).toContainText('Percezione');
 
-  // A fight from the panel: the world's gate rolls on the Game Master's side; with «visibili» the table sees it.
+  // A fight from the panel: with manual rolls it starts at the next closed window, once the players have rolled their
+  // own initiative (6404c49, docs/combattimento.md §3.1: this spec still expected it at the click, and failed here
+  // since); then the world's gate rolls on the Game Master's side, and with «visibili» the table sees it.
   await master.getByTestId('master-combattimento-inizia').click();
+  await master.getByRole('button', { name: 'Risolvi ora' }).click();
+  for (const p of [ida, teo]) {
+    await expect(p.getByTestId('tiro-da-fare')).toBeVisible({ timeout: 30_000 });
+    await expect(p.getByTestId('tiro-etichetta')).toContainText('Iniziativa');
+    await p.getByTestId('tiro-dado-0').fill('10');
+    await p.getByTestId('tiro-invia').click();
+  }
   const cartaMaster = schermo.locator('[data-testid="carta-tiro"][data-png="true"]').filter({ hasText: 'Il master' });
   await expect(cartaMaster).toBeVisible({ timeout: 15_000 });
   await expect(cartaMaster).toContainText(/Sì|No/);

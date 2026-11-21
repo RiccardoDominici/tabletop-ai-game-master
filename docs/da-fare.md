@@ -194,6 +194,20 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
 - ~~**Presence decided by hand by the Game Master** (command `presenza`): it does not survive a server restart (it is lost with the in-memory state); to be saved in the session log if needed. It is also reset at scene change.~~
   **Done**: decisions go into the session snapshot and come back on resume; the scene change resets them (a4e360d).
 
+- **Two e2e specs reported failing since R2** (master.spec.ts at the subtitle after «chiudi finestra», tiri-manuali.spec.ts
+  at the Game Master's card; R4 brief, item 7, 21 November 2026):
+  - ~~tiri-manuali.spec.ts~~ **Fixed** (R4): the spec was older than 6404c49 (16 November), which made a fight opened from
+    the panel with manual rolls start at the next closed window, after the players roll their initiative; it still
+    expected the world's Game Master card at the click. It now closes the window («Risolvi ora») and enters both
+    initiatives first; it passes on a server started as its header says (port 5012).
+  - **master.spec.ts: not reproduced.** At R4's HEAD it passes twice on port 5011, with the header's line
+    (`TAGM_LLM=finto TAGM_TIRI_GIOCATORI=automatico scripts/avvio.sh --mock`) and with the line the earlier runs used
+    (`--mock --finto`, no `TAGM_TIRI_GIOCATORI`). No earlier trace was left in logs/e2e/ to compare. Likely the
+    environment of those runs (a server on that port still running another campaign, a `TAGM_CARTELLA_CAMPAGNA` left
+    from tiri-manuali, or a loaded machine: the subtitle waits 30 s); against the tiri-manuali fixture server it hangs.
+    To do if it comes back: keep the failing run's `logs/porta-<port>/server.out` and the trace, and check which
+    campaign the server loaded («campagna» in /api/salute).
+
 ## Later
 - **Gaps in the Basic Fantasy set from the final e2e** (docs/e2e-finale.md §2 and §7, «dadi» (dice)):
   ~~closed 11 November 2026 (HIDDEN/NASCOSTA marker in every language, death and natural d20 checks from the set, table-based modifiers, individual `ogni_round`, percentages and "x on 6", automatic weapons, the two validator checks)~~
