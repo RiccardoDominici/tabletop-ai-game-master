@@ -148,11 +148,11 @@ tiri_salvezza:
     - {id: soffio, nome: "Soffio del drago"}
     - {id: incantesimi, nome: "Incantesimi"}
 
-# Progressione (p. 3–4, 49, 53): il bonus d'attacco della tabella della classe va all'attacco in mischia, a distanza e a
-# quello furtivo (+4 in più, p. 9); ogni dado vita somma la Costituzione e dà almeno un punto (p. 4); da un'avventura non
+# Progressione (p. 3–4, 49, 53): il bonus d'attacco della tabella della classe va all'attacco in mischia, a distanza e,
+# per il ladro, a quello furtivo (+4 in più, p. 9); ogni dado vita somma la Costituzione e dà almeno un punto (p. 4); da un'avventura non
 # si sale più di un livello: i PX si fermano uno prima del livello dopo il prossimo (p. 49).
 progressione:
-  attacco: [mischia, distanza, {abilita: alle_spalle, piu: 4}]
+  attacco: [mischia, distanza, {abilita: alle_spalle, piu: 4, classi: [ladro]}]
   punti_ferita: {caratteristica: costituzione, minimo: 1}
   un_livello_per_avventura: true
 

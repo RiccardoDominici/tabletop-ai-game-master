@@ -368,7 +368,7 @@ describe('progression by class and level (pp. 7–9, 53, 57, 49)', () => {
 describe('progression as torre-mozza uses it (pp. 3–9, 49, 53, 57–58, 190)', () => {
   it('the set-level rules: attack bonus to melee, missile and the sneak attack (+4), Constitution on each die', () => {
     const s = set();
-    expect(s.progressione).toEqual({ attacco: [{ abilita: 'mischia', piu: 0 }, { abilita: 'distanza', piu: 0 }, { abilita: 'alle_spalle', piu: 4 }], puntiFerita: { caratteristica: 'costituzione', minimo: 1 }, unLivelloPerAvventura: true });
+    expect(s.progressione).toEqual({ attacco: [{ abilita: 'mischia', piu: 0, classi: [] }, { abilita: 'distanza', piu: 0, classi: [] }, { abilita: 'alle_spalle', piu: 4, classi: ['ladro'] }], puntiFerita: { caratteristica: 'costituzione', minimo: 1 }, unLivelloPerAvventura: true });
     // p. 190, the optional XP for treasure: 1 gp = 1 XP, only once back to safety.
     expect(s.esperienza!.tesoro).toEqual({ px: 1, moneta: 'mo', quando: 'al_sicuro' });
     const razza = (id: string) => s.razze!.find((r) => r.id === id)!.tratti;
@@ -397,6 +397,8 @@ describe('progression as torre-mozza uses it (pp. 3–9, 49, 53, 57–58, 190)',
       expect(sch.px, pg).toBe(0);
       expect(sch.abilita['mischia'], pg).toBe(1);
       expect(sch.abilita['distanza'], pg).toBe(1);
+      // The sneak attack is the thief's only (progressione.attacco.classi).
+      expect(sch.abilita['alle_spalle'], pg).toBe(pg === 'pg_nespola' ? 5 : undefined);
       expect(Object.keys(sch.abilitaScritte!).filter((k) => ['mischia', 'distanza', 'alle_spalle', 'scassinare', 'nascondersi'].includes(k)), pg).toEqual([]);
       expect(sch.avvisi, pg).toEqual([]);
     }

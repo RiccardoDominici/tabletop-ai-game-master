@@ -177,7 +177,8 @@ classi:                                     # optional [V]: the classes and thei
       scacciare_non_morti: [{da: 1, valori: [13, 17, null]}, {da: 8, valori: [T, 3, 7]}]   # rows, one cell per column:
                                             #   the number to reach, T (no roll), D (the stronger result), null (No)
 progressione:                               # optional [V]: how the class tables reach a sheet (regole/progressione.ts)
-  attacco: [mischia, distanza, {abilita: alle_spalle, piu: 4}]   # abilities whose value is the attack bonus (+ piu)
+  attacco: [mischia, distanza, {abilita: alle_spalle, piu: 4, classi: [ladro]}]   # abilities whose value is the attack
+                                            #   bonus (+ piu; with `classi`, only for those classes: the thief's sneak attack)
   punti_ferita: {caratteristica: costituzione, minimo: 1}       # each hit die adds its bonus; a die gives at least 1
   un_livello_per_avventura: true            # XP earned in one session stop one short of the level after next (p. 49)
 esperienza:                                 # optional [V]: XP in play (regole/esperienza.ts, prove/esperienza.ts)

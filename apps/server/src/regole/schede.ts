@@ -85,7 +85,7 @@ export function leggiSchedaGenerica(s: SistemaRegole, id: string, nome: string, 
  */
 export function derivaAbilita(s: SistemaRegole, sch: SchedaGenerica): Array<{ id: string; scritto: number; tabella: number }> {
   const classe = sch.classe ? (s.classi ?? []).find((c) => c.id === sch.classe) : undefined;
-  const tabella = valoriDaClasse(s.progressione, classe?.progressione ?? null, sch.livello ?? 1, trattiDi(s, sch));
+  const tabella = valoriDaClasse(s.progressione, classe?.progressione ?? null, sch.livello ?? 1, trattiDi(s, sch), sch.classe ?? null);
   const scritte = sch.abilitaScritte ?? sch.abilita;
   sch.abilita = { ...tabella, ...scritte };
   return Object.entries(tabella).flatMap(([id, n]) => (scritte[id] !== undefined && scritte[id] !== n ? [{ id, scritto: scritte[id]!, tabella: n }] : []));

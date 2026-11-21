@@ -8,7 +8,8 @@
  * arithmetic and a level-up between sessions changes everything at once.
  *
  *   progressione:
- *     attacco: [mischia, distanza, {abilita: alle_spalle, piu: 4}]   # abilities whose value is the class's attack bonus (+ piu)
+ *     attacco: [mischia, distanza, {abilita: alle_spalle, piu: 4, classi: [ladro]}]   # abilities whose value is the class's
+ *                                                                   #   attack bonus (+ piu; only those classes, if given)
  *     punti_ferita: {caratteristica: costituzione, minimo: 1}       # each hit die adds this bonus; a die gives at least 1
  *     un_livello_per_avventura: true                                # XP stop one short of the level after next (p. 49)
  *   classi:
@@ -50,8 +51,8 @@ export interface ProgressioneClasse {
 
 /** The set-level rules of progression (`progressione:`). */
 export interface Progressione {
-  /** Abilities whose value is the class's attack bonus, plus `piu` (the sneak attack's +4). */
-  attacco: Array<{ abilita: string; piu: number }>;
+  /** Abilities whose value is the class's attack bonus, plus `piu` (the sneak attack's +4); `classi`: only those (empty = all). */
+  attacco: Array<{ abilita: string; piu: number; classi: string[] }>;
   /** Each hit die adds this characteristic's bonus (null: none); a die gives at least `minimo`. */
   puntiFerita: { caratteristica: string | null; minimo: number };
   /** No character gains more than one level from one adventure: XP stop one short of the level after next. */
@@ -182,8 +183,9 @@ export function leggiProgressione(v: unknown, ctx: { abilita: ReadonlySet<string
     const e = typeof x === 'string' ? { abilita: x } : ogg(x);
     const ab = e?.['abilita'];
     const piu = e?.['piu'] ?? 0;
-    if (typeof ab !== 'string' || !ctx.abilita.has(ab) || !intero(piu)) errori.push(`progressione.attacco[${i + 1}]: an ability of the set, or {abilita, piu: a whole number}`);
-    else attacco.push({ abilita: ab, piu });
+    const classi = e?.['classi'] ?? [];
+    if (typeof ab !== 'string' || !ctx.abilita.has(ab) || !intero(piu) || !Array.isArray(classi) || !classi.every((c) => typeof c === 'string')) errori.push(`progressione.attacco[${i + 1}]: an ability of the set, or {abilita, piu: a whole number, classi: [class ids]}`);
+    else attacco.push({ abilita: ab, piu, classi: classi as string[] });
   }
   const pf = ogg(o['punti_ferita']) ?? {};
   const car = pf['caratteristica'] ?? null;
@@ -227,11 +229,11 @@ export function tettoPx(c: ProgressioneClasse, livello: number, unLivello: boole
  * `progressione.attacco` (plus their `piu`); the class's ability table gives its columns; a trait `almeno` (a race's own
  * threshold, the halfling's hiding) raises an ability to at least its number. Empty without a class or tables.
  */
-export function valoriDaClasse(p: Progressione | null | undefined, c: ProgressioneClasse | null, livello: number, tratti: readonly Tratto[]): Record<string, number> {
+export function valoriDaClasse(p: Progressione | null | undefined, c: ProgressioneClasse | null, livello: number, tratti: readonly Tratto[], classe: string | null = null): Record<string, number> {
   const out: Record<string, number> = {};
   if (c) {
     const bonus = rigaDi(c.attacco, livello)?.bonus;
-    if (bonus !== undefined && p) for (const a of p.attacco) out[a.abilita] = bonus + a.piu;
+    if (bonus !== undefined && p) for (const a of p.attacco) if (!a.classi.length || (classe && a.classi.includes(classe))) out[a.abilita] = bonus + a.piu;
     const r = c.abilita ? rigaDi(c.abilita.righe, livello) : null;
     if (c.abilita && r) for (const [i, id] of c.abilita.colonne.entries()) if (r.valori[i] !== undefined) out[id] = r.valori[i]!;
   }

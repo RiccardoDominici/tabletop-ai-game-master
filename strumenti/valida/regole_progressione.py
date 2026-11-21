@@ -146,7 +146,8 @@ def valori_da_classe(r: dict, s: dict) -> dict[str, int]:
         if riga and _intero(riga.get("bonus")):
             for a in prog.get("attacco") or []:
                 ab, piu = (a, 0) if isinstance(a, str) else ((a or {}).get("abilita"), (a or {}).get("piu", 0))
-                if isinstance(ab, str) and _intero(piu):
+                classi = [] if isinstance(a, str) else ((a or {}).get("classi") or [])
+                if isinstance(ab, str) and _intero(piu) and (not classi or s.get("classe") in classi):
                     out[ab] = riga["bonus"] + piu
         ta = _ogg(c.get("abilita")) or {}
         riga = riga_di(ta.get("righe") or [], livello)
@@ -229,10 +230,15 @@ def progressione_del_set(r: dict, abi: set[str], car: set[str], poteri: dict[str
         if o is None:
             _err(e, dove, "progressione: {attacco, punti_ferita, un_livello_per_avventura}")
             o = {}
+        ids_classi = {c.get("id") for c in r.get("classi") or [] if isinstance(c, dict)}
         for i, a in enumerate(o.get("attacco") or [], start=1):
             ab, piu = (a, 0) if isinstance(a, str) else ((_ogg(a) or {}).get("abilita"), (_ogg(a) or {}).get("piu", 0))
-            if ab not in abi or not _intero(piu):
-                _err(e, dove, f"progressione.attacco[{i}]: un'abilità del set, o {{abilita, piu: un intero}}")
+            classi = [] if isinstance(a, str) else ((_ogg(a) or {}).get("classi") or [])
+            if ab not in abi or not _intero(piu) or not isinstance(classi, list):
+                _err(e, dove, f"progressione.attacco[{i}]: un'abilità del set, o {{abilita, piu: un intero, classi: [id]}}")
+            for k in classi if isinstance(classi, list) else []:
+                if k not in ids_classi:
+                    _err(e, dove, f"progressione.attacco[{i}].classi: «{k}» non è una classe del set")
         pf = _ogg(o.get("punti_ferita")) or {}
         if pf.get("caratteristica") is not None and pf["caratteristica"] not in car:
             _err(e, dove, "progressione.punti_ferita.caratteristica: una caratteristica del set, o null")

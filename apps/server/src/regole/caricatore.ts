@@ -212,6 +212,7 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
   // Progression (M1): which abilities take the class's attack bonus, the hit dice's characteristic; the XP rules.
   const progressione = leggiProgressione(d['progressione'], { abilita: new Set(abilita.map((a) => a.id)), caratteristiche: idCar }, errori);
   const esperienza = leggiEsperienza(d['esperienza'], monete, errori);
+  for (const a of progressione?.attacco ?? []) for (const k of a.classi) if (!(classiEPoteri.classi ?? []).some((c) => c.id === k)) errori.push(`progressione.attacco.${a.abilita}.classi: «${k}» is not a class of the set`);
   for (const c of classiEPoteri.classi ?? []) {
     for (const k of Object.keys(c.progressione.tabelle)) if (!poteri.some((p) => p.id === k && p.tabella)) errori.push(`classi.${c.id}.tabelle.${k}: not a power of the set with a tabella`);
     if ((c.progressione.attacco.length || c.progressione.dadiVita.length) && !progressione) errori.push(`classi.${c.id}: attack or hit-dice rows need the set's progressione (which abilities, which characteristic)`);
