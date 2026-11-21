@@ -11,6 +11,7 @@ import type { StatoAttiviSalvato } from './attivi';
 import type { StatoMorentiSalvato } from './morte';
 import type { StatoTempoSalvato } from './tempo';
 import type { StatoEsperienzaSalvato } from './esperienza';
+import type { StatoLivelliSalvato } from './livelli';
 
 export interface StatoProveSalvato {
   seme: string;
@@ -38,6 +39,8 @@ export interface StatoProveSalvato {
   tempo?: StatoTempoSalvato;
   /** XP earned, creatures counted, treasure waiting for safety, this session's awards (prove/esperienza.ts). */
   esperienza?: StatoEsperienzaSalvato;
+  /** Each PC's level and maximum hit points, and the level-up's rolls still owed (prove/livelli.ts). */
+  livelli?: StatoLivelliSalvato;
 }
 
 /** Fuori gioco oltre ai PF: morto (finché il master non lo cura), fuggito (finché la scena non cambia). */

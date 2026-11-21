@@ -150,6 +150,12 @@ prove:
   # Saving throws pinned to their own number (regole/salvezze.ts).
   salvezze:
     tiro_salvezza: "saving throw"
+  # A level gained between sessions (prove/livelli.ts): the hit points rolled at the session's first window.
+  livelli:
+    etichetta: "Hit points of level {livello}"
+    dado: "level {livello}: {dado} {valore}{bonus} = {guadagno}"
+    fissi: "level {livello}: {guadagno} fixed"
+    sale: "{nome} reaches level {livello} ({dettagli}): {guadagno} more hit points, {massimi} in all."
   # Experience points counted by the Engine (prove/esperienza.ts): the panel's lines, never the narrator's.
   esperienza:
     tesoro: "treasure brought back to safety"

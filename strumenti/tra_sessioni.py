@@ -7,7 +7,8 @@ Ciò che non chiede giudizio lo fa il codice, così l'agente scrive solo ciò ch
   completo   il pacchetto di sessioni/<n+1>/ ha ciò che lo scheletro lascia all'agente: riassunto, scene con la
              loro scheda, un repertorio, e per ogni filo se è ripreso o rimandato;
   pacchetto  lo scheletro di sessioni/<n+1>/ dallo stato: pieni_all_inizio, pg_all_inizio e tempo_all_inizio (dal
-             registro: PF, equipaggiamento, monete, risorse dei PG e ora di gioco), i fili aperti da riprendere o
+             registro: PF, PX, livello, equipaggiamento, monete, risorse dei PG e ora di gioco; chi ha i PX del
+             livello dopo ci sale, coi punti ferita da tirare al tavolo), i fili aperti da riprendere o
              rimandare, le schede aggiornate dei PNG ricorrenti cambiati in gioco (sa, non_sa e atteggiamento
              dallo stato), le parole segrete senza quelle dei fatti che i PG ormai sanno.
 Non sovrascrive mai un file che esiste: si può rilanciare.
@@ -33,6 +34,7 @@ sys.path.insert(0, str(QUI))
 from valida import valida  # noqa: E402
 from valida.esito import Esito  # noqa: E402
 from valida.regole_stato import carica_registri, deriva  # noqa: E402
+from valida import regole_progressione as rp  # noqa: E402
 
 log = logging.getLogger("tra_sessioni")
 
@@ -155,6 +157,36 @@ def _parole_base(c, n: int) -> dict:
     return dict(c.parole_segrete or {})
 
 
+def sale_di_livello(c, pg_all_inizio: dict) -> list[str]:
+    """The level-up step (docs/strati.md; docs/prove.md §12): a PC whose XP reach a higher level by its class table
+    starts the next session at it, with the hit points of each level gained still to roll (`pf_da_tirare`: the player
+    rolls them at the table, at the session's first window). The new numbers and spell slots the Engine derives from
+    the tables. Writes into `pg_all_inizio` and returns one line per PC for the agent (the spells to choose)."""
+    r = c.regole or {}
+    righe: list[str] = []
+    for p in c.personaggi:
+        pid, scheda = p.get("id"), p.get("scheda") or {}
+        s = pg_all_inizio.get(pid)
+        classe = rp.classe_di(r, scheda.get("classe"))
+        if s is None or classe is None or not isinstance(s.get("px"), int):
+            continue
+        ora = s.get("livello", scheda.get("livello", 1))
+        nuovo = rp.livello_da_px(classe, s["px"])
+        if nuovo <= ora:
+            continue
+        s["livello"] = nuovo
+        s["pf_da_tirare"] = sorted({*(s.get("pf_da_tirare") or []), *range(ora + 1, nuovo + 1)})
+        dadi = []
+        for l in range(ora + 1, nuovo + 1):
+            x = rp.pf_del_livello(r, {**scheda, "livello": l}, l) or {}
+            dadi.append(f"1d{x['dado']}" if "dado" in x else f"+{x.get('fissi', 0)}")
+        slot = rp.riga_di(classe.get("incantesimi_al_giorno") or [], nuovo)
+        incantesimi = f"; incantesimi al giorno {slot.get('slot')}: scegli in pg_all_inizio.{pid}.incantesimi" if slot and slot.get("slot") else ""
+        righe.append(f"{pid} sale al livello {nuovo} ({s['px']} PX): i punti ferita ({', '.join(dadi)}) li tira il "
+                     f"giocatore all'inizio della sessione{incantesimi}")
+    return righe
+
+
 def pacchetto(cartella: Path, n: int) -> int:
     _, c = valida(cartella, contesto_b=False)
     stato = _yaml(c.cartella / "stato" / "stato.yaml")
@@ -176,6 +208,8 @@ def pacchetto(cartella: Path, n: int) -> int:
     pg_all_inizio = {x["id"]: {k: v for k, v in x.items() if k != "id"} for x in fine.get("pg_alla_fine") or []
                      if isinstance(x, dict) and isinstance(x.get("id"), str)}
     tempo = fine.get("tempo_alla_fine")
+    for riga in sale_di_livello(c, pg_all_inizio):
+        print(f"  {riga}")
     _scrivi(dest / "sessione.yaml", {
         "riassunto_iniziale": "",
         "scene": [],

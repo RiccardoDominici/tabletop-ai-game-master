@@ -186,8 +186,14 @@ scripts/tra-sessioni.sh campagne/<id> 1 --pacchetto
 1. It checks the state (validator, class `STATO`): with errors, it stops.
 2. It writes the skeleton of `sessioni/02/`, without overwriting anything:
    - `sessione.yaml`, with the clock ticks already full (`pieni_all_inizio`), where each PC starts (`pg_all_inizio`: hit
-     points, gear, coins, spell slots and other resources left at the end of the session played, from `registro.yaml →
-     pg_alla_fine`), the day and time of the game clock (`tempo_all_inizio`), and the open threads to decide;
+     points, experience points, level, gear, coins, spell slots and other resources left at the end of the session played,
+     from `registro.yaml → pg_alla_fine`), the day and time of the game clock (`tempo_all_inizio`), and the open threads to decide;
+   - **the level-up**: with a rule set that counts experience (such as Basic Fantasy), a character whose XP reach the next
+     level starts session 2 at it. The command says so («pg_fulco sale al livello 2 (1600 PX): i punti ferita (1d6) li tira
+     il giocatore all'inizio della sessione; incantesimi al giorno [1]…»): the new attack bonus, saving throws, thief
+     percentages and spell slots come from the class tables by themselves; the player rolls the new hit die at the table,
+     on the phone, at the first turn of session 2 (with automatic rolls the program rolls it); the agent chooses the spells
+     the new slots prepare (`incantesimi` in `pg_all_inizio`);
    - the whole character sheets of the recurring NPCs that changed in play, with what they know and their attitude, taken from the state;
    - the secret words still in use, without those of the facts the PCs now know.
 

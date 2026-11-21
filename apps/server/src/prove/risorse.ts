@@ -176,6 +176,34 @@ export class Risorse {
     return ignoti;
   }
 
+  /**
+   * The slot counters of `chi` at the maxima of `livello` (a package's level, before its counters are read): the keys of
+   * another level's row are dropped (prove/livelli.ts).
+   */
+  slotAlLivello(chi: string, livello: number): void {
+    const sch = this.schede.get(chi);
+    if (!sch) return;
+    const m = this.contatori.get(chi) ?? new Map<string, number>();
+    for (const k of [...m.keys()]) if (k.startsWith('slot_')) m.delete(k);
+    this.slotDi({ ...sch, livello }).forEach((n, i) => m.set(chiaveSlot(i + 1), n));
+    if (m.size) this.contatori.set(chi, m);
+  }
+
+  /** A level gained since `prima`: each spell level gets the slots the new row gives beyond the old one's, today too. */
+  guadagnaSlot(chi: string, prima: number): number[] {
+    const sch = this.schede.get(chi);
+    if (!sch) return [];
+    const nuovi = this.slotDi(sch);
+    const vecchi = this.slotDi({ ...sch, livello: prima });
+    const m = this.contatori.get(chi) ?? new Map<string, number>();
+    const guadagno = nuovi.map((n, i) => Math.max(0, n - (vecchi[i] ?? 0)));
+    guadagno.forEach((g, i) => {
+      if (g > 0 || !m.has(chiaveSlot(i + 1))) m.set(chiaveSlot(i + 1), (m.get(chiaveSlot(i + 1)) ?? 0) + g);
+    });
+    if (m.size) this.contatori.set(chi, m);
+    return guadagno;
+  }
+
   /** The fight round of a line's last shot (rate of fire), or null. */
   ultimoTiro(chi: string, linea: string): number | null {
     return this.ultimiTiri.get(`${chi}|${linea}`) ?? null;

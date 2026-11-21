@@ -80,9 +80,13 @@ does not exist):
   other keys the session applies, with a warning. The `sessione` block of campagna.yaml has no effect (the recap is
   in the package). They do not reach the narrator: `riassunto_iniziale`, `scene`, `titolo`, `pieni_all_inizio`,
   `preparazione` (of the campaign and of the session: for example `preparazione.fili`).
-- **pg_all_inizio** `{pg_x: {pf, oggetti, monete, indossati, contatori, incantesimi}}` and **tempo_all_inizio**
-  `{giorno, ora, minuto}`: where each PC and the game clock start this session (sessione/stato-pg.ts): the previous log's
-  `pg_alla_fine` and `tempo_alla_fine`, copied by `tra_sessioni.py pacchetto` and changed by the between-session work.
+- **pg_all_inizio** `{pg_x: {pf, px, livello, pf_massimi, pf_da_tirare, oggetti, monete, indossati, contatori,
+  incantesimi}}` and **tempo_all_inizio** `{giorno, ora, minuto}`: where each PC and the game clock start this session
+  (sessione/stato-pg.ts): the previous log's `pg_alla_fine` and `tempo_alla_fine`, copied by `tra_sessioni.py pacchetto`
+  and changed by the between-session work. **The level-up** is that step's too: a PC whose `px` reach a higher level by its
+  class table (docs/regole.md §2 «Progressione») gets `livello` raised and `pf_da_tirare` (the levels whose hit points the
+  player rolls at the table, at the session's first window: docs/prove.md §12); the Engine derives the new level's
+  numbers and gives its extra spell slots; the agent chooses the new prepared spells (`incantesimi`).
   A one-shot may write `tempo_all_inizio` (or `pg_all_inizio`) in campagna.yaml, for the hour its story starts at.
   The Engine applies them over the sheets at the start and at «Ricomincia» (a resumed session takes its snapshot); a PC
   id that is not in pg.yaml is an error, a counter the set does not track is logged and ignored. Not for the narrator.

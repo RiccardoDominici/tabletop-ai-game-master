@@ -858,6 +858,16 @@ the XP the party earns (prove/esperienza.ts), by the set's `esperienza`, never t
   level and «sale di livello alla prossima sessione» when it is reached, the treasure waiting, the award form and the
   session's awards. The narrator hears nothing of it (XP are out of the story). The snapshot keeps it; the session log
   writes each PC's total in `pg_alla_fine[].px` and the session's awards in `esperienza`.
+- **The level-up** (prove/livelli.ts) is the step between sessions: `tra_sessioni.py pacchetto` raises `livello` in the
+  next package for a PC whose XP reach it, with `pf_da_tirare` (the levels gained). The Engine starts the PC at that
+  level: the class tables give its attack bonus, thief values, saves and spells per day at once (derived again; a
+  hand-written override stays), the new row's extra slots are there today, and at the session's first closed window the
+  hit points of each level gained are rolled — the class die with the characteristic's bonus (at least the set's
+  `minimo`; a race's `dado_vita_massimo`), or the fixed points after name level — by the player (manual rolls: the
+  phone asks «Punti ferita del 2° livello», with its bonus) or the Engine (automatic). The maximum and the current hit
+  points grow by it; the narrator hears it first in that turn. The snapshot keeps the level, the maximum and whether the
+  roll is owed, so neither a resume nor the dry run of manual rolls asks it twice; «Ricomincia» starts the level-up again.
+  The log writes `pg_alla_fine[].livello` and `pf_massimi` for the session after.
 - **Not yet**: the SRD 5.2 has no XP data (its XP by challenge rating are not in the code's set); retainers.
 
 Tests: test/esperienza.test.ts (fixture cripta), test/progressione.test.ts and strumenti/test_valida_progressione.py (the

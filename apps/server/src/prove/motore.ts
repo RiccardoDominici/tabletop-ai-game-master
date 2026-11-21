@@ -60,6 +60,7 @@ import { secondiDi } from '../regole/tempo';
 import { voce } from '../regole/catalogo';
 import { Attivi } from './attivi';
 import { Esperienza, type VistaPxPg, type VoceEsperienza } from './esperienza';
+import { Livelli } from './livelli';
 import { Morenti } from './morte';
 import type { EsitoMorte } from './fatti-dovuti';
 import { danno as tiraDanno } from './regole';
@@ -222,6 +223,8 @@ export class MotoreProve {
   private luciSpente: Array<{ id: string; nome: string }> = [];
   /** The XP the party earns (prove/esperienza.ts). Null with the SRD path (its XP are not data yet). */
   readonly esperienza: Esperienza | null;
+  /** Each PC's level and maximum hit points, the level-up's rolls still owed (prove/livelli.ts). Null with the SRD. */
+  readonly livelli: Livelli | null;
   /** The turn being resolved, or the last one: what a panel command between two turns is dated with. */
   private turnoCorrente = 0;
   /** The enemies seen in the fight in progress: at its end those out of it count as defeated (prove/esperienza.ts). */
@@ -244,6 +247,7 @@ export class MotoreProve {
           log: o.log.child({ modulo: 'esperienza' }),
         })
       : null;
+    this.livelli = this.generico && sist && o.regole ? new Livelli({ sistema: sist, schede: this.generico.schede, stato: this.stato, originali: o.regole.schede, nome: (id) => this.nomeDi(this.o.contesto(), id), log: o.log.child({ modulo: 'livelli' }) }) : null;
     this.tempo = new TempoDiGioco(this.sistema.tempo ?? null, { nome: (id) => this.nomeDi(this.o.contesto(), id), nomeOggetto: (id) => voce(this.sistema.catalogo, id)?.nome ?? id, log: o.log.child({ modulo: 'tempo' }) }, o.allInizio?.tempo ?? null);
     this.attivi = new Attivi({
       nome: (id) => this.nomeDi(this.o.contesto(), id),
@@ -304,6 +308,10 @@ export class MotoreProve {
     const a = this.o.allInizio;
     if (!a) return;
     for (const [id, s] of Object.entries(a.pg)) {
+      // The level first (a level-up between sessions, prove/livelli.ts): its numbers, its maximum hit points, its slots.
+      const prima = this.livelli?.inizia(id, s) ?? null;
+      const sch = this.generico?.schede.get(id);
+      if (sch && this.risorse && (s.livello !== undefined || prima !== null)) this.risorse.slotAlLivello(id, prima ?? sch.livello ?? 1);
       if (s.pf !== undefined) {
         const p = this.stato.puntiFerita(id);
         if (p) {
@@ -314,6 +322,11 @@ export class MotoreProve {
       if (s.px !== undefined) this.esperienza?.imposta(id, s.px);
       const ignoti = this.risorse?.inizia(id, s) ?? [];
       if (ignoti.length) this.o.log.warn({ id, ignoti }, 'session: pg_all_inizio names counters the set does not track, ignored');
+      // A level gained since the last session: the new row's extra slots are there today.
+      if (prima !== null && this.risorse) {
+        const piu = this.risorse.guadagnaSlot(id, prima);
+        if (piu.some((n) => n > 0)) this.o.log.info({ id, da: prima, slot_in_piu: piu }, 'levels: the new level gives more spell slots');
+      }
     }
     this.inventario?.rideriva();
     this.o.log.info({ pg: Object.keys(a.pg), tempo: a.tempo }, 'session: the PCs and the clock start where the package says');
@@ -741,7 +754,7 @@ export class MotoreProve {
    * with no roll ask nothing.
    */
   richiesteGiocatori(d: DecisioniTurno, inseriti: ReadonlyMap<string, TiroInserito> = new Map()): RichiestaTiroMaster[] {
-    if (!this.attivo || (!d.azioni.length && !this.inCombattimento && !this.scontroChiesto)) return [];
+    if (!this.attivo || (!d.azioni.length && !this.inCombattimento && !this.scontroChiesto && !this.livelli?.inAttesa().length)) return [];
     const ombra = this.ombra();
     const tavolo = new DadiAlTavolo({ base: ombra.dadi, turno: d.turno, inseriti, anteprima: true, log: loggerMuto() });
     const { r } = ombra.esegui(d, tavolo);
@@ -805,6 +818,8 @@ export class MotoreProve {
     this.tavolo = tavolo;
     this.turnoCorrente = turno;
     try {
+      // A level-up between sessions: the hit points still owed, rolled by the PC at the session's first closed window.
+      const livelli = this.livelli?.inAttesa().length ? this.livelli.tira(tavolo, this.dadi).fatti : [];
       // Outside a fight a closed window costs game time (prove/tempo.ts): the set's `per_finestra`, longer actions by
       // their words, one round while someone is dying. It passes before the actions, so binding a dying friend in this
       // window still comes in time; the timed effects, the dying and the lights tick on it.
@@ -819,6 +834,7 @@ export class MotoreProve {
         r.fatti.unshift(...this.fattiInSospeso);
         this.fattiInSospeso = [];
       }
+      if (livelli.length) r.fatti.unshift(...livelli);
       // Combattimento: si entra con un attacco; poi i turni dei PNG e i tiri contro la morte fino al prossimo PG.
       // A hostile power on an NPC counts as an attack: it opens the fight and the NPC goes for its author.
       const attacchi = [...r.tiri.filter((t) => t.tipo === 'attacco' && t.bersaglio).map((t) => ({ chi: t.chi, bersaglio: t.bersaglio!.id })), ...(r.ostili ?? [])];
@@ -1665,10 +1681,12 @@ export class MotoreProve {
   // ------------------------------------------------------------------ sessione
 
   esporta(): StatoProveSalvato {
-    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta(), ...(this.tempo.mostrato ? { tempo: this.tempo.esporta() } : {}), ...(this.esperienza?.attiva ? { esperienza: this.esperienza.esporta() } : {}) };
+    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta(), ...(this.tempo.mostrato ? { tempo: this.tempo.esporta() } : {}), ...(this.esperienza?.attiva ? { esperienza: this.esperienza.esporta() } : {}), ...(this.livelli?.attivo ? { livelli: this.livelli.esporta() } : {}) };
   }
 
   importa(s: StatoProveSalvato): void {
+    // The levels and maximum hit points first: the hit points are read back against them.
+    this.livelli?.importa(s.livelli);
     this.stato.importa(s);
     this.combattimento.importa(s.combattimento ?? null);
     this.scontroChiesto = s.combattimento_chiesto === true;
@@ -1687,6 +1705,8 @@ export class MotoreProve {
 
   /** Ricomincia: PF pieni, dadi con un seme nuovo, niente carte. */
   azzera(): void {
+    // The sheets' own level and maximum first: hit points and slots are reset against them.
+    this.livelli?.azzera();
     this.stato.azzeraPf();
     this.combattimento.importa(null);
     this.scontroChiesto = false;

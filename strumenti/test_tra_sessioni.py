@@ -151,3 +151,27 @@ def test_pacchetto_porta_pg_e_tempo_dal_registro(giocata):
     sessione = yaml.safe_load((giocata / "sessioni" / "02" / "sessione.yaml").read_text())
     assert sessione["pg_all_inizio"] == {pg: {"pf": 3, "oggetti": {"torcia": 2}, "monete": {"mo": 7}, "contatori": {"slot_1": 0}}}
     assert sessione["tempo_all_inizio"] == {"giorno": 1, "ora": 21, "minuto": 40}
+
+
+def test_pacchetto_sale_di_livello(giocata, capsys):
+    """R3: a PC whose XP reach the next level by its class table starts session 2 at it, with that level's hit points
+    still to roll at the table (pf_da_tirare) and its new spell slots named for the agent."""
+    modifica_set = giocata / "regole" / "regole.yaml"
+    regole = yaml.safe_load((QUI.parent / "apps" / "server" / "test" / "fixtures" / "campagne" / "cripta" / "regole" / "regole.yaml").read_text(encoding="utf-8"))
+    modifica_set.parent.mkdir(exist_ok=True)
+    modifica_set.write_text(yaml.safe_dump(regole, allow_unicode=True, sort_keys=False), encoding="utf-8")
+    pgf = giocata / "pg.yaml"
+    pgd = yaml.safe_load(pgf.read_text(encoding="utf-8"))
+    pg = pgd["personaggi"][0]["id"]
+    pgd["personaggi"][0]["scheda"] = {"classe": "chierico", "livello": 1, "px": 100, "caratteristiche": {"costituzione": 13}, "pf": 6}
+    pgf.write_text(yaml.safe_dump(pgd, allow_unicode=True, sort_keys=False), encoding="utf-8")
+    f = giocata / "sessioni" / "01" / "registro.yaml"
+    d = yaml.safe_load(f.read_text(encoding="utf-8"))
+    d["pg_alla_fine"] = [{"id": pg, "pf": 4, "px": 162, "livello": 1, "pf_massimi": 6}]
+    f.write_text(yaml.safe_dump(d, allow_unicode=True, sort_keys=False), encoding="utf-8")
+    assert T.pacchetto(giocata, 1) == 0
+    sessione = yaml.safe_load((giocata / "sessioni" / "02" / "sessione.yaml").read_text())
+    assert sessione["pg_all_inizio"] == {pg: {"pf": 4, "px": 162, "livello": 2, "pf_massimi": 6, "pf_da_tirare": [2]}}
+    out = capsys.readouterr().out
+    assert f"{pg} sale al livello 2 (162 PX): i punti ferita (1d6) li tira il giocatore" in out
+    assert "incantesimi al giorno [1]" in out

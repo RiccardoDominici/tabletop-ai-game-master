@@ -21,6 +21,12 @@ export interface StatoPg {
   incantesimi?: string[];
   /** Experience points now (prove/esperienza.ts): the next package's level-up step reads them. */
   px?: number;
+  /** The level now (prove/livelli.ts); the package's may be higher: the level-up between sessions. */
+  livello?: number;
+  /** The maximum hit points at that level (the rolled ones: no table gives them). */
+  pf_massimi?: number;
+  /** Levels whose hit points are still to roll (the level-up, strumenti/tra_sessioni.py): the PC rolls them in play. */
+  pf_da_tirare?: number[];
 }
 
 /** The game clock as a day and a time of day (day 1 is the first). */
@@ -46,6 +52,7 @@ export function pgAllaFine(prove: StatoProveSalvato | undefined, pg: readonly st
   const preparati = new Map(prove.risorse?.preparati ?? []);
   const vestiti = new Map(prove.risorse?.indossati ?? []);
   const px = new Map(prove.esperienza?.px ?? []);
+  const livelli = new Map(prove.livelli?.pg ?? []);
   const out = pg.flatMap((id) => {
     const voci = contatori.get(id) ?? [];
     const per = (pref: string): Record<string, number> => Object.fromEntries(voci.filter(([k]) => k.startsWith(pref)).map(([k, n]) => [k.slice(pref.length), n]).sort(([a], [b]) => (a as string).localeCompare(b as string)));
@@ -58,6 +65,12 @@ export function pgAllaFine(prove: StatoProveSalvato | undefined, pg: readonly st
     if (Object.keys(altri).length) s.contatori = altri;
     if (preparati.has(id)) s.incantesimi = [...preparati.get(id)!];
     if (px.has(id)) s.px = px.get(id)!;
+    const lv = livelli.get(id);
+    if (lv) {
+      s.livello = lv.livello;
+      s.pf_massimi = lv.pfMassimi;
+      if (lv.daTirare.length) s.pf_da_tirare = [...lv.daTirare];
+    }
     return Object.keys(s).length > 1 ? [s] : [];
   });
   return out.length ? out : null;
