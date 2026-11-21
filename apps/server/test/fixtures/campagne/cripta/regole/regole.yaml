@@ -136,6 +136,13 @@ poteri:
     bersaglio: uno
     parole: [cura ferite, curo]
     effetti: [{tipo: cura, dadi: "1d6+1"}]
+  # A bonus by the round: drunk just before a fight, it must last into it (the window that opens a fight costs a round).
+  - id: pozione_eroismo
+    nome: Pozione di eroismo
+    tipo: oggetto
+    bersaglio: se_stesso
+    parole: [pozione, bevo]
+    effetti: [{tipo: bonus, a: attacchi, valore: 2, durata: {round: 6}}]
   - id: fasciare
     nome: Fasciare le ferite
     tipo: azione

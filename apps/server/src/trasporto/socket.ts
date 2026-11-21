@@ -71,6 +71,7 @@ export function creaUscite(io: ServerIo): { regia: UscitaRegia; audio: UscitaAud
       avviso: (livello, testo) => io.to(STANZA_TAVOLO).emit('avviso', { livello, testo }),
       privati: (id, esiti) => io.to(stanzaPg(id)).emit('privato:esiti', esiti),
       tiriRichiesti: (id, richieste) => io.to(stanzaPg(id)).emit('tiri:richiesti', richieste),
+      scorta: (id, scorta) => io.to(stanzaPg(id)).emit('pg:scorta', scorta),
     },
     audio: creaUscitaAudio(io),
   };
@@ -121,6 +122,7 @@ export function collegaSocket(io: ServerIo, regia: Regia, info: () => InfoServer
         socket.emit('azione:mia', regia.azioneDi(id_pg));
         socket.emit('privato:esiti', regia.esitiPrivati(id_pg));
         socket.emit('tiri:richiesti', regia.tiriRichiestiDi(id_pg));
+        socket.emit('pg:scorta', regia.scortaDi(id_pg));
         const scheda = regia.schedaPg(id_pg);
         if (scheda) socket.emit('pg:scheda', scheda);
       }

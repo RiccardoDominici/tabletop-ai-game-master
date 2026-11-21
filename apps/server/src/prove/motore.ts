@@ -825,7 +825,7 @@ export class MotoreProve {
       // Outside a fight a closed window costs game time (prove/tempo.ts): the set's `per_finestra`, longer actions by
       // their words, one round while someone is dying. It passes before the actions, so binding a dying friend in this
       // window still comes in time; the timed effects, the dying and the lights tick on it.
-      const finiti = this.combattimento.attivo ? [] : this.passaTempo(this.costoFinestra(azioni, c), 'finestra');
+      const finiti = this.combattimento.attivo ? [] : this.passaTempo(this.costoFinestra(azioni, c, decisioni), 'finestra');
       // A light lit or put out by the action's words («accendo la torcia»): before the resolver, so it burns from now.
       const luci = this.luciDalleAzioni(azioni);
       const r = this.passaRisolutore(turno, c, azioni, decisioni, { dadiDeiPg: tavolo });
@@ -1057,12 +1057,15 @@ export class MotoreProve {
 
   /**
    * What a closed window outside a fight costs on the clock: one round while a PC is dying (the table acts in the
-   * moment); otherwise the scene's `tempo_per_finestra` or the set's `per_finestra`, or longer when an action has the
+   * moment) or when the window opens a fight; otherwise the scene's `tempo_per_finestra` or the set's `per_finestra`, or longer when an action has the
    * words of one of the set's `tempo.azioni` (searching a room takes a turn).
    */
-  private costoFinestra(azioni: readonly AzionePerProve[], c: ContestoProve): number {
+  private costoFinestra(azioni: readonly AzionePerProve[], c: ContestoProve, decisioni: ReadonlyMap<string, Decisione | null> = new Map()): number {
     const t = this.tempo.regola;
     if (this.morenti.tutti().length) return this.tempo.secondiRound;
+    // A window that opens a fight (an attack, a hostile power, the panel's fight) is its first moment, not a turn of
+    // exploring: one round, so a bonus drunk or cast just before (Shield, a potion) is still on when the blows fall.
+    if (this.scontroChiesto || [...decisioni.values()].some((x) => x?.tipo === 'attacco' || (x?.tipo === 'potere' && !!(this.sistema.poteri ?? []).find((p) => p.id === (x as DecisioneRegole).potere)?.ostile))) return this.tempo.secondiRound;
     const errori: string[] = [];
     const daScena = c.campagna.scena.dati['tempo_per_finestra'];
     const base = daScena !== undefined ? (secondiDi(t.unita, daScena, 'scena.tempo_per_finestra', errori) ?? t.perFinestra) : t.perFinestra;

@@ -6,7 +6,7 @@
  * risincronizzano chiedendo `stato:richiedi` quando si riconnettono.
  */
 
-import type { CombattimentoPubblico, PuntiFerita, RichiestaTiro, ScortaScheda, TiroMostrato } from './prove';
+import type { CombattimentoPubblico, PuntiFerita, RichiestaTiro, TiroMostrato } from './prove';
 
 /** Fasi della scena, nell'ordine in cui normalmente si susseguono. */
 export type FaseScena =
@@ -39,11 +39,6 @@ export interface PgPubblico {
   telefoni: number;
   /** Punti ferita, se il PG ha una scheda numerica (docs/prove.md); assente o null = senza dadi. */
   pf?: PuntiFerita | null;
-  /**
-   * What the PC has (docs/prove.md §10): AC, gear, coins, spell slots and resources left, load and movement, lights lit
-   * (without the time left: a Game Master roll). Its own phone shows it on the sheet. Absent = no set catalog or counters.
-   */
-  scorta?: ScortaScheda | null;
 }
 
 /**

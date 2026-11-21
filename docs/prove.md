@@ -812,7 +812,11 @@ monsters), and R1 ticked its round durations once per closed window as a stopgap
 - **What moves it.** Each new round of a fight is one round. Each closed window outside a fight costs the scene's
   `tempo_per_finestra` or the set's `per_finestra` (Basic Fantasy: a turn, ten minutes, the pace of exploring), or more
   when an action has the words of one of `tempo.azioni`; while a PC is dying a window is one round (the table acts in
-  the moment), so binding a friend in the next window still comes in time. A rest takes its `durata` (a night: eight
+  the moment), so binding a friend in the next window still comes in time. A window that opens a fight (an attack, a
+  hostile power, the panel's fight) is one round too: it is the fight's first moment, so a bonus of a few rounds drunk
+  or cast just before (Shield, a potion) is still on when the blows fall (R3; before, the exploring turn passed first
+  and ended it). A talk scene says its own length (`tempo_per_finestra: {round: 6}`: torre-mozza's sheepfold and
+  charcoal pile), checked by the validator against the set's units. A rest takes its `durata` (a night: eight
   hours), after the healing. The Game Master moves it from the panel (command `tempo`: `avanza` by a duration, or a
   `viaggio`). A set without `tempo` keeps the old rule (a window is one round) and the panel shows no clock. The SRD 5.2 has its
   6-second round and 8-hour long rest as data but no window rule or start hour (`mostra: false`): its clock counts

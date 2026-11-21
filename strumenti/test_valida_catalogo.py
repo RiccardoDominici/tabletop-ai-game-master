@@ -61,3 +61,12 @@ def test_schede_con_equipaggiamento_rotto(tmp_path: Path) -> None:
     assert "scheda.monete: «dobloni» non è una moneta del set" in errori
     assert "equipaggiamento.spadone: vietato a «piccolo»" in errori
     assert "attacchi[2].arma: «zanne» non è un'arma del catalogo del set" in errori
+
+
+def test_tempo_per_finestra_della_scena(tmp_path: Path) -> None:
+    """A scene's own window length (a talk scene) is a duration in the set's clock units."""
+    dest = copia(BOTTEGA, tmp_path)
+    modifica(dest, "scena.yaml", lambda d: d.update(tempo_per_finestra={"round": 6}))
+    assert regole_di(dest) == []
+    modifica(dest, "scena.yaml", lambda d: d.update(tempo_per_finestra={"minuti": 1}))
+    assert any("tempo_per_finestra: una durata" in r for r in regole_di(dest))

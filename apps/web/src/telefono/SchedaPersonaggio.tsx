@@ -7,7 +7,6 @@
 import { t } from '../lingua';
 import { useEffect } from 'react';
 import { useTelefono } from '../store/telefono';
-import { useTavolo } from '../store/tavolo';
 import { ScortaPg } from './ScortaPg';
 
 export function SchedaPersonaggio() {
@@ -16,7 +15,8 @@ export function SchedaPersonaggio() {
   const aperta = useTelefono((s) => s.schedaAperta);
   const apriScheda = useTelefono((s) => s.apriScheda);
   // The PC's gear, coins and counters come with the table's state (they change in play).
-  const scorta = useTavolo((s) => s.stato?.pg.find((p) => p.id === idPg)?.scorta ?? null);
+  // My gear comes on my phone's own channel (`pg:scorta`), never in the table state every phone receives.
+  const scorta = useTelefono((s) => s.scorta);
 
   // Esc chiude (utile anche con una tastiera collegata al telefono o su desktop).
   useEffect(() => {

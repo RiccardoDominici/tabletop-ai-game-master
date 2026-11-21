@@ -68,5 +68,6 @@ personaggi:
     razza: umano
     pf: 9
     difesa: 16
+    oggetti: {pozione_eroismo: 1}
     attacchi:
     - {nome: Lancia, danno: "1d6+1", abilita: mischia}

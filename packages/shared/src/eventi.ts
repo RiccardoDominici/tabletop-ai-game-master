@@ -16,7 +16,7 @@
 import type { AzionePrivata, MisureTurno, SchedaPg, StatoTavolo } from './dominio';
 import type { ComandoMaster, EsitoEntrataMaster, StatoMaster } from './master';
 import type { RegolePubbliche, RispostaRegola } from './regole';
-import type { RichiestaTiro } from './prove';
+import type { RichiestaTiro, ScortaScheda } from './prove';
 
 /** Risposta standard agli eventi con conferma (ack). */
 export type Esito = { ok: true } | { ok: false; errore: string };
@@ -139,6 +139,11 @@ export interface EventiServerVersoClient {
    * change and when the PC is chosen. Empty = nothing to roll.
    */
   'tiri:richiesti': (richieste: RichiestaTiro[]) => void;
+  /**
+   * To that PC's phones only: its gear, coins, load and counters (docs/prove.md §10), at every change and when the PC is
+   * chosen. Never in the table state, which every phone and the projector receive. null = no gear view.
+   */
+  'pg:scorta': (scorta: ScortaScheda | null) => void;
   'metriche:turno': (misure: MisureTurno) => void;
   avviso: (avviso: { livello: 'info' | 'errore'; testo: string }) => void;
   'audio:frase': (frase: AudioFrase) => void;

@@ -24,6 +24,8 @@ elementi_interattivi:
   - {cosa: "sotto i rovi", dove: "dietro la carbonaia", azioni: "NASCOSTA: un arco basso di pietre squadrate, mezzo crollato, che porta alla cantina della torre"}
   - {cosa: "il mulo di Ugo", dove: "legato alla capanna", azioni: "si slega, si carica, si porta sul sentiero"}
 png_presenti: [png_ugo]
+# Una scena di parole: una finestra del tavolo è un minuto di gioco, non un turno di esplorazione (docs/prove.md §11).
+tempo_per_finestra: {round: 6}
 orologi_attivi: [o_mezzanotte]
 indizi:
   - id: i_impronte

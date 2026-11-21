@@ -29,6 +29,8 @@ elementi_interattivi:
   - {cosa: "sotto il mantello", dove: "dietro la porta di casa", azioni: "NASCOSTA: c'è l'avviso del balivo, con il sigillo rosso"}
   - {cosa: "il mulo di Ugo", dove: "al cancello del cortile", azioni: "porta due sacchi di carbone; si accarezza, si scarica"}
 png_presenti: [png_berta, png_ugo]
+# Una scena di parole: una finestra del tavolo è un minuto di gioco, non un turno di esplorazione (docs/prove.md §11).
+tempo_per_finestra: {round: 6}
 orologi_attivi: [o_mezzanotte]
 indizi:
   - id: i_giaciglio

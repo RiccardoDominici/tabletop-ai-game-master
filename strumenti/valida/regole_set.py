@@ -508,7 +508,14 @@ def controlla(c: Campagna, e: Esito) -> None:
     regole_progressione.esperienza_del_set(r, e, dove)
     catalogo = regole_catalogo.catalogo_del_set(r, car, abi, set(classi), set(razze), None, e, dove)
     regole_catalogo.carico_del_set(r, car, set(razze), catalogo, e, dove)
-    regole_catalogo.tempo_del_set(r, catalogo, e, dove)
+    unita_tempo = regole_catalogo.tempo_del_set(r, catalogo, e, dove)
+    # A scene's own window length (`tempo_per_finestra`, a talk scene): a duration in the set's clock units.
+    for nome, sc in c.scene:
+        if "tempo_per_finestra" in sc:
+            if unita_tempo is None:
+                e.avviso("REGOLE.tempo", nome, "tempo_per_finestra: il set non ha il tempo di gioco (tempo.unita): il Motore lo ignora")
+            else:
+                regole_catalogo.durata_in_unita(sc["tempo_per_finestra"], unita_tempo, "tempo_per_finestra", e, nome)
     regole_catalogo.viaggio_del_set(r, e, dove)
 
     def per_scheda(s: dict, d: str) -> None:

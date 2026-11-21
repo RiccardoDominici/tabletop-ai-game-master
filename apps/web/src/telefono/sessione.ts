@@ -11,7 +11,7 @@
  * rientra nella stanza player:<id_pg> e riceve di nuovo `azione:mia`.
  */
 import { t } from '../lingua';
-import type { AzionePrivata, Esito, EsitoPrivato, RichiestaTiro, SchedaPg, StatoTavolo } from '@tabletop-ai-gm/shared';
+import type { AzionePrivata, Esito, EsitoPrivato, RichiestaTiro, SchedaPg, ScortaScheda, StatoTavolo } from '@tabletop-ai-gm/shared';
 import { alRientro, chiedi, conEsito, esitoErrore, prendiSocket } from '../lib/socket';
 import { creaLog } from '../lib/log';
 import { tokenDispositivo } from '../lib/memoria';
@@ -56,6 +56,9 @@ const suScheda = (scheda: SchedaPg) => useTelefono.getState().impostaScheda(sche
 /** Gli esiti delle mie azioni private: l'elenco completo, a ogni novità e quando scelgo il PG. */
 const suPrivati = (esiti: EsitoPrivato[]) => useTelefono.getState().impostaEsitiPrivati(Array.isArray(esiti) ? esiti : []);
 /** My open roll requests (manual rolls, docs/prove.md §8): the whole list at every change. */
+/** My PC's gear (`pg:scorta`, only to this phone's PC room). */
+const suScorta = (scorta: ScortaScheda | null) => useTelefono.getState().impostaScorta(scorta ?? null);
+
 const suRichiesteTiro = (richieste: RichiestaTiro[]) => {
   const lista = Array.isArray(richieste) ? richieste : [];
   if (lista.length) log.info('Roll requested', { richieste: lista.map((r) => ({ id: r.id, cosa: r.etichetta, dadi: `${r.quanti}d${r.facce}` })) });
@@ -118,6 +121,7 @@ export function avviaTelefono(): () => void {
     s.on('pg:scheda', suScheda);
     s.on('privato:esiti', suPrivati);
     s.on('tiri:richiesti', suRichiesteTiro);
+    s.on('pg:scorta', suScorta);
     s.on('avviso', suAvviso);
     togliRientro = alRientro(() => void rientra());
   }
@@ -130,6 +134,7 @@ export function avviaTelefono(): () => void {
     s.off('pg:scheda', suScheda);
     s.off('privato:esiti', suPrivati);
     s.off('tiri:richiesti', suRichiesteTiro);
+    s.off('pg:scorta', suScorta);
     s.off('avviso', suAvviso);
     togliRientro?.();
     togliRientro = null;

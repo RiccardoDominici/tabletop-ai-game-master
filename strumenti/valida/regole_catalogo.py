@@ -391,6 +391,11 @@ def _durata(v, unita: dict[str, int], d: str, e: Esito, dove: str, obbligatoria:
         _err(e, dove, f"{d}: una durata {{unità di tempo.unita: quante}}, es. {{turno: 1}}")
 
 
+def durata_in_unita(v, unita, d: str, e: Esito, dove: str) -> None:
+    """A duration in the set's clock units (a scene's `tempo_per_finestra`): {unit: amount}."""
+    _durata(v, {u: 1 for u in unita} if not isinstance(unita, dict) else unita, d, e, dove, obbligatoria=True)
+
+
 def viaggio_del_set(r: dict, e: Esito, dove: str) -> None:
     """`viaggio` (Basic Fantasy p. 45; regole/tempo.ts): needs `tempo` and `movimento`."""
     v = r.get("viaggio")

@@ -3,7 +3,7 @@
  * comando. Lo stato del tavolo (pubblico) sta in `store/tavolo.ts`.
  */
 import { create } from 'zustand';
-import type { AzionePrivata, EsitoPrivato, RichiestaTiro, SchedaPg } from '@tabletop-ai-gm/shared';
+import type { AzionePrivata, EsitoPrivato, RichiestaTiro, SchedaPg, ScortaScheda } from '@tabletop-ai-gm/shared';
 import { CHIAVI, cancellaMemoria, leggiMemoria, scriviMemoria } from '../lib/memoria';
 
 interface StoreTelefono {
@@ -35,6 +35,8 @@ interface StoreTelefono {
   sceltaRimandata: string | null;
   /** My open roll requests (manual rolls, `tiri:richiesti`): the dice I must roll at the table, private ones included. */
   richiesteTiro: RichiestaTiro[];
+  /** My PC's gear, coins and counters (`pg:scorta`): only this phone gets them, never the table state. */
+  scorta: ScortaScheda | null;
 
   ricordaPg(idPg: string): void;
   dimenticaPg(): void;
@@ -48,6 +50,7 @@ interface StoreTelefono {
   apriScheda(aperta: boolean): void;
   rimandaScelta(chiave: string | null): void;
   impostaRichiesteTiro(richieste: RichiestaTiro[]): void;
+  impostaScorta(scorta: ScortaScheda | null): void;
 }
 
 export const useTelefono = create<StoreTelefono>()((set) => ({
@@ -62,6 +65,7 @@ export const useTelefono = create<StoreTelefono>()((set) => ({
   schedaAperta: false,
   sceltaRimandata: null,
   richiesteTiro: [],
+  scorta: null,
 
   ricordaPg: (idPg) => {
     scriviMemoria(CHIAVI.pg, idPg);
@@ -69,7 +73,7 @@ export const useTelefono = create<StoreTelefono>()((set) => ({
   },
   dimenticaPg: () => {
     cancellaMemoria(CHIAVI.pg);
-    set({ idPg: null, confermato: false, miaAzione: null, scheda: null, esitiPrivati: [], schedaAperta: false, richiesteTiro: [] });
+    set({ idPg: null, confermato: false, miaAzione: null, scheda: null, esitiPrivati: [], schedaAperta: false, richiesteTiro: [], scorta: null });
   },
   impostaConfermato: (confermato) => set({ confermato }),
   apriScelta: (sceltaAperta) => set({ sceltaAperta }),
@@ -81,4 +85,5 @@ export const useTelefono = create<StoreTelefono>()((set) => ({
   apriScheda: (schedaAperta) => set({ schedaAperta }),
   rimandaScelta: (sceltaRimandata) => set({ sceltaRimandata }),
   impostaRichiesteTiro: (richiesteTiro) => set({ richiesteTiro }),
+  impostaScorta: (scorta) => set({ scorta }),
 }));

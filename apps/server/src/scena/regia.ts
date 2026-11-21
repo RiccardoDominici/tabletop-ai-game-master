@@ -114,7 +114,7 @@ import { sezioneNoteRegia } from '../narrazione/messaggio';
 import { MotoreProve, type AzionePerProve } from '../prove/motore';
 import type { ArbitroProve, DecisioneProva, DecisioneRegole, EsitoTurnoProve } from '../prove/tipi';
 import type { RegoleCampagna, SchedaGenerica } from '../regole/tipi';
-import type { CoerenzaMaster, CombattimentoMaster, MondoMaster, RichiestaTiro, TiriMaster } from '@tabletop-ai-gm/shared';
+import type { CoerenzaMaster, CombattimentoMaster, MondoMaster, RichiestaTiro, ScortaScheda, TiriMaster } from '@tabletop-ai-gm/shared';
 import type { FonteDadi } from '../prove/dadi';
 import { regolaEsiti, titoloEsiti } from '../prove/testi';
 import { guardiaRifiuti } from '../narrazione/guardia-rifiuti';
@@ -285,6 +285,8 @@ export interface UscitaRegia {
   privati?(id_pg: string, esiti: EsitoPrivato[]): void;
   /** To that PC's phones: its open roll requests (manual rolls, private ones included), at every change. */
   tiriRichiesti?(id_pg: string, richieste: RichiestaTiro[]): void;
+  /** To that PC's phones only: its gear view (`pg:scorta`), at every change of state. */
+  scorta?(id_pg: string, scorta: ScortaScheda | null): void;
 }
 
 interface AttesaAudio {
@@ -2636,11 +2638,8 @@ export class Regia {
         nome: p.nome,
         descrizione: p.descrizione,
         telefoni: conteggio.get(p.id) ?? 0,
-        ...(this.prove?.attivo ? { pf: this.prove.stato.puntiFerita(p.id), ...(() => {
-          // The PC's gear, coins and counters for its own phone (lights without the time left: a hidden roll).
-          const scorta = this.prove!.scortaConLuci(p.id, false);
-          return scorta ? { scorta } : {};
-        })() } : {}),
+        // Hit points are public; the gear goes only to the PC's own phones (`pg:scorta`, scortaDi).
+        ...(this.prove?.attivo ? { pf: this.prove.stato.puntiFerita(p.id) } : {}),
       })),
       finestra: this.tavolo.finestraPubblica(),
       al_tavolo: this.tavolo.alTavolo(),
@@ -2671,6 +2670,8 @@ export class Regia {
     this.registroOra('stato');
     this.versioneStato += 1;
     this.uscita?.stato(this.stato());
+    // Each PC's gear to its own phones: a purse or a pack is not the table's business.
+    if (this.uscita?.scorta && this.prove?.attivo) for (const p of this.campagna.pg) this.uscita.scorta(p.id, this.scortaDi(p.id));
     for (const f of this.ascoltatori) f();
   }
 
@@ -3783,6 +3784,11 @@ export class Regia {
   /** One narrator line of a shown Game Master roll, in the turn being resolved (docs/prove.md §9). */
   private parlaFraseDelMaster(turno: number, testo: string, chiave: string): void {
     this.pipeline.accoda({ id_frase: `t${turno}-m${chiave}`, turno, indice: 650, parlante: ID_NARRATORE, nome: nomeNarratore(), voce_id: ID_NARRATORE, testo, testo_voce: this.pronuncia(testo) });
+  }
+
+  /** A PC's gear, coins and counters for its own phone (lights without the time left: a hidden roll); null = none. */
+  scortaDi(id_pg: string): ScortaScheda | null {
+    return this.prove?.attivo ? this.prove.scortaConLuci(id_pg, false) : null;
   }
 
   /** A PC's open requests (private ones included): for its phone when it (re)connects. */
