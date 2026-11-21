@@ -71,7 +71,8 @@ combattimento:
 
 ## 3. Flow (Engine: prove/combattimento.ts, prove/motore.ts)
 
-1. **Combat starts** when an attack roll touches a character with a sheet: a PC attacks an NPC, or an NPC reacts, or a PC
+1. **Combat starts** when an attack roll touches a character with a sheet (not when every foe is already out of the
+   fight by a condition — undead turned, an NPC that surrendered: the attack resolves, no fight opens): a PC attacks an NPC, or an NPC reacts, or a PC
    uses a hostile power of the set on an NPC (a damage spell; `poteri[].ostile`, docs/prove.md §10). Or with
    the Game Master's panel, «Inizia combattimento» (Start combat): at once with automatic rolls (the first turn after
    the click says the order and runs any NPC step at the head of it, before the actions written in that window, which
@@ -142,7 +143,9 @@ combattimento:
      at each new round and, outside a fight, at each closed window (the interim rule until the game clock), each round a
      fact («Ilaria sta morendo: restano 2 round…»); a power with `stabilizza` (binding wounds) makes it stable at 0,
      healing above 0 ends the window, and when it runs out the PC dies. A caster who survives loses its prepared spells.
-     With every PC down nobody can bind them: the dying die (`senzaSoccorso`). A PC dropped to 0 outside a fight (a
+     With every PC down nobody can bind them: the dying die (`senzaSoccorso`). A PC at 0 whose step had not come when the
+     fight ended rolls its save then, as outside a fight (in the same pass, the player's die with manual rolls; after the
+     panel's «Termina combattimento», at the next closed window, kept in the snapshot as `zero_da_tirare`). A PC dropped to 0 outside a fight (a
      trap, a fall) gets the set's rule at once: dead, or the single save rolled now; a rule of several saves (the SRD's
      three) leaves it down for the Game Master. The fall to 0, the save's outcome (dying, stable, dead), the binding and
      a death by the window are owed facts like the fight's (prove/fatti-dovuti.ts, `EsitoTurnoProve.morte`): the table

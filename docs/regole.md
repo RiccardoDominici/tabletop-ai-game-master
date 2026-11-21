@@ -597,8 +597,9 @@ The `significato` of bands and grades replaces it. With the SRD 5.2 the rule sta
   class requirements, combination classes); the ability-roll target that falls with the level (Basic Fantasy p. 189);
   a monster's attack bonus by hit dice (its sheet's, typed); retainers' half shares and treasure spent on training; the
   non-thief's 1 in 6 to listen (a d20 check); the thief's point allocation option; the SRD 5.2's XP and levels (its
-  sheets level by the brief, docs/strati.md); energy drain (negative levels). Found in its live check and left to the
-  death rule's owner: a PC at 0 when a fight ends before its turn never rolls its death save. Evidence:
+  sheets level by the brief, docs/strati.md); energy drain (negative levels: done by R4). Found in its live check and
+  fixed by R4: a PC at 0 when a fight ends before its turn now rolls its death save when the fight ends (or at the next
+  window, when the panel ended it), and an attack on undead already turned opens no fight. Evidence:
   esperimenti/risultati/regole-r3/.
 - **Subsystems** (`sottosistemi`) are text only. Conditions apply in the fight (docs/combattimento.md); damage, healing, falls and rest outside an attack are typed effects (above).
 - **Opposed checks** in a non-SRD set become normal checks. Saving throws are pinned to their own number (above), and a target rolls its own save against a PC's power (`salvezzaDelBersaglio`, the Game Master's side for an NPC).

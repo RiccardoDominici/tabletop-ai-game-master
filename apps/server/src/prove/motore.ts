@@ -240,6 +240,8 @@ export class MotoreProve {
   readonly livelli: Livelli | null;
   /** The turn being resolved, or the last one: what a panel command between two turns is dated with. */
   private turnoCorrente = 0;
+  /** PCs at 0 whose death save is owed since a fight the Game Master ended from the panel: rolled at the next window. */
+  private zeroDaTirare: string[] = [];
   /** The enemies seen in the fight in progress: at its end those out of it count as defeated (prove/esperienza.ts). */
   private readonly nemiciDelloScontro = new Set<string>();
 
@@ -325,6 +327,14 @@ export class MotoreProve {
       salvezzaMorte: (id, abilita) => this.salvezzaMorte(id, abilita),
       morente: (id, fatti) => this.iniziaMorente(id, fatti),
       tramortito: (id, fatti) => this.tramortisci(id, fatti),
+      // A PC at 0 whose death save the fight's end came before: the rule at zero now, with the player's die in a pass;
+      // from the panel (no pass) at the next closed window.
+      aZeroAFine: (ids, fatti) => {
+        const tiri: TiroMostrato[] = [];
+        if (this.tavolo) for (const id of ids) this.aZeroFuoriScontro(id, this.turnoCorrente, fatti, tiri);
+        else this.zeroDaTirare.push(...ids.filter((id) => !this.zeroDaTirare.includes(id)));
+        return tiri;
+      },
       siRialzera: (id, fatti) => this.aTerraRigenera(id, fatti),
       senzaSoccorso: (fatti) => {
         const ids = this.morenti.tutti();
@@ -880,9 +890,11 @@ export class MotoreProve {
         this.fattiInSospeso = [];
       }
       if (livelli.length) r.fatti.unshift(...livelli);
+      // A death save the panel's end of a fight left owed: rolled now, the player's die with manual rolls.
+      for (const id of this.zeroDaTirare.splice(0)) if (this.stato.fuoriGioco(id) === 'a_terra') this.aZeroFuoriScontro(id, turno, r.fatti, r.tiri);
       // Combattimento: si entra con un attacco; poi i turni dei PNG e i tiri contro la morte fino al prossimo PG.
       // A hostile power on an NPC counts as an attack: it opens the fight and the NPC goes for its author.
-      const attacchi = [...r.tiri.filter((t) => t.tipo === 'attacco' && t.bersaglio).map((t) => ({ chi: t.chi, bersaglio: t.bersaglio!.id, mischia: !t.a_distanza && !t.automatico })), ...(r.ostili ?? [])];
+      const attacchi = [...r.tiri.filter((t) => t.tipo === 'attacco' && t.bersaglio).map((t) => ({ chi: t.chi, bersaglio: t.bersaglio!.id, mischia: !t.a_distanza && !t.automatico })), ...(r.ostili ?? []).map((x) => ({ ...x, potere: true }))];
       // Each PC's last target: an attack with no target named goes there (bersaglioImplicito).
       for (const a of attacchi) if (c.campagna.pg.some((p) => p.id === a.chi)) this.ultimoBersaglio.set(a.chi, a.bersaglio);
       // A check the Game Master asked (pseudo-action «m_…») is not the PC's action in the fight: it does not move whose turn it is.
@@ -1893,7 +1905,7 @@ export class MotoreProve {
   // ------------------------------------------------------------------ sessione
 
   esporta(): StatoProveSalvato {
-    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta(), ...(this.tempo.mostrato ? { tempo: this.tempo.esporta() } : {}), ...(this.esperienza?.attiva ? { esperienza: this.esperienza.esporta() } : {}), ...(this.livelli?.attivo ? { livelli: this.livelli.esporta() } : {}), ...(this.drenaggi?.attivo ? { drenaggi: this.drenaggi.esporta() } : {}) };
+    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta(), ...(this.tempo.mostrato ? { tempo: this.tempo.esporta() } : {}), ...(this.esperienza?.attiva ? { esperienza: this.esperienza.esporta() } : {}), ...(this.livelli?.attivo ? { livelli: this.livelli.esporta() } : {}), ...(this.drenaggi?.attivo ? { drenaggi: this.drenaggi.esporta() } : {}), ...(this.zeroDaTirare.length ? { zero_da_tirare: [...this.zeroDaTirare] } : {}) };
   }
 
   importa(s: StatoProveSalvato): void {
@@ -1912,6 +1924,7 @@ export class MotoreProve {
     this.tempo.importa(s.tempo);
     this.esperienza?.importa(s.esperienza);
     this.drenaggi?.importa(s.drenaggi);
+    this.zeroDaTirare = Array.isArray(s.zero_da_tirare) ? s.zero_da_tirare.filter((x): x is string => typeof x === 'string') : [];
     if (!this.o.dadi && s.seme && /^[0-9a-f]{8,128}$/i.test(s.seme)) this.dadi = this.nuoviDadi(s.seme, s.contatore ?? 0);
     const ultimo = s.recenti?.at(-1)?.turno;
     this.ultimoTurno = ultimo !== undefined ? { turno: ultimo, tiri: (s.recenti ?? []).filter((t) => t.turno === ultimo) } : null;
@@ -1937,6 +1950,7 @@ export class MotoreProve {
     this.luciSpente = [];
     this.esperienza?.azzera();
     this.drenaggi?.azzera();
+    this.zeroDaTirare = [];
     this.nemiciDelloScontro.clear();
     this.applicaInizio();
     this.intestazione = null;

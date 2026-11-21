@@ -127,6 +127,11 @@ export interface DipendenzeCombattimento {
   tramortito?: (id: string, fatti: string[]) => void;
   /** At 0, a creature that regenerates (a troll) is down, not dead: true when the Engine keeps it so (prove/motore.ts). */
   siRialzera?: (id: string, fatti: string[]) => boolean;
+  /**
+   * The fight ended with PCs at 0 whose death save was still to come at their step (R3's live check): the set's rule at
+   * zero now, as outside a fight (prove/motore.ts). Returns their cards.
+   */
+  aZeroAFine?: (ids: string[], fatti: string[]) => TiroMostrato[];
   log: Logger;
 }
 
@@ -498,7 +503,7 @@ export class GestoreCombattimento {
   dopoAzioni(o: {
     turno: number;
     /** Gli attacchi del turno (PG → PNG e PNG → PG), per entrare in combattimento e per i bersagli; `mischia`: a melee blow. */
-    attacchi: Array<{ chi: string; bersaglio: string; mischia?: boolean }>;
+    attacchi: Array<{ chi: string; bersaglio: string; mischia?: boolean; potere?: boolean }>;
     /** PG che hanno agito in questo turno. */
     autori: string[];
     candidati: () => Array<{ id: string; lato: Lato; mod: number }>;
@@ -520,6 +525,14 @@ export class GestoreCombattimento {
     let appenaIniziato = false;
     if (!this.s) {
       if (!o.attacchi.length && !o.apri) return { ...VUOTO, morte: [], fuggiti: [] };
+      // An attack on foes all out of the fight by a condition (turned undead fleeing, a surrendered NPC): no fight that
+      // would close again at once (R3's live check); the attack itself was resolved.
+      const nemici = o.candidati().filter((c) => c.lato === 'png');
+      // A power that puts them out (Turn Undead) opens its fight as before: it ends at once and counts them for XP.
+      if (!o.apri && !o.attacchi.some((a) => a.potere) && nemici.length && nemici.every((c) => this.fuoriPerCondizione(c.id))) {
+        this.d.log.info({ nemici: nemici.map((c) => c.id) }, 'combat: every foe is out of the fight by a condition, no fight opens');
+        return { ...VUOTO, morte: [], fuggiti: [] };
+      }
       const dopo: string[] = [];
       // The side of whoever struck first: B/X surprise rolls only for the side attacked (the Game Master's fight with
       // no attack: both sides, as from the panel).
@@ -896,6 +909,8 @@ export class GestoreCombattimento {
 
   /** Fine dello scontro (anche dal master). Le condizioni a 0 restano; le altre finiscono. */
   termina(motivo: string, fatti: string[] = []): true {
+    // PCs at 0 whose death save was still to come at their step: it is rolled now, outside the fight (below).
+    const inSospeso = (this.s?.partecipanti ?? []).filter((p) => p.lato === 'pg' && p.esito === 'in_gioco' && p.tiriMorte && !p.tiriMorte.successi && !p.tiriMorte.fallimenti && this.d.stato.aTerra(p.id) && !this.d.stato.tramortito(p.id)).map((p) => p.id);
     if (this.s) {
       for (const p of this.s.partecipanti) p.condizioni = p.condizioni.filter((c) => c.id === this.d.regole.condizioneAZero && this.d.stato.aTerra(p.id));
       this.d.log.info({ motivo, round: this.s.round }, 'combattimento: finito');
@@ -904,6 +919,10 @@ export class GestoreCombattimento {
     this.ultimiPartecipanti = this.s ? [...this.s.partecipanti] : [];
     this.s = null;
     this.ordineTirato = null;
+    if (inSospeso.length && this.d.aZeroAFine) {
+      this.d.log.info({ pg: inSospeso }, 'combat: the fight ended before these PCs at 0 rolled their death save: now');
+      this.carteInPiu.push(...this.d.aZeroAFine(inSospeso, fatti));
+    }
     return true;
   }
 

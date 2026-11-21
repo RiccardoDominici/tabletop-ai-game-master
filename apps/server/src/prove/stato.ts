@@ -48,6 +48,8 @@ export interface StatoProveSalvato {
   riduzioni?: Array<[string, number]>;
   /** Negative levels by character (prove/drenaggio.ts). */
   drenaggi?: StatoDrenaggiSalvato;
+  /** PCs at 0 whose death save a fight ended from the panel left owed: rolled at the next closed window. */
+  zero_da_tirare?: string[];
   /** Damage taken by type, by character (a troll's fire and acid, which it cannot regenerate). */
   danni_per_tipo?: Array<[string, Array<[string, number]>]>;
 }
