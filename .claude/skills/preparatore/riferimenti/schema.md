@@ -330,7 +330,9 @@ code in `strumenti/valida/regole_schede.py`, tables in `srd.py`).
 - `scena.yaml` and `scene/*.yaml` → `prove`: a list of `{id: p_…, quando, abilita | caratteristica | salvezza, cd, indizio?, se_fallisce?, nome?, effetti_se_fallisce?}`.
   `effetti_se_fallisce` (typed effects, `docs/regole.md` §2) hits the PC who fails: a pit is `[{tipo: caduta, altezza: 3}]`
   in the unit of the set's `cadute`, a dart trap `[{tipo: attacco, bonus: 1, dadi: "1d4"}]`; `nome` names the hazard on
-  the card («Fossa coperta»).
+  the card («Fossa coperta»); `aggiustamento` (a manual's set: −100 to 100) is this check's situational points, added to
+  a threshold ability's threshold (the slimy wall's −20) or to a d20 check's roll. A scene may set its window length
+  (`tempo_per_finestra: {round: 6}` for a talk scene, in the set's clock units).
   The `quando` opens with the PC's action («un PG apre…»): the rules arbiter matches that word (or one of `parole`) as
   the intent, never shared nouns alone.
 - `scena.yaml` and `scene/*.yaml` → `domande`: world questions (shape in the scene sheet above). The odds (`tiro`) work

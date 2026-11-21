@@ -260,6 +260,27 @@ here only the order.
      bonus to initiative, to an ability, to some saves, an immunity, a smaller surprise range). Never hand-sum a save
      or a race bonus into a sheet: the sheet names `classe`, `livello`, `razza` (a monster `salva_come`), and the
      validator warns (strict: error) when a sheet writes its own bonus for a save its class table gives.
+   - **Progression by level as the manual's tables** (`docs/regole.md` §2, «Progressione»; every level of the manual,
+     with the page): each class's XP to reach each level (`classi[].px`), hit dice (`dadi_vita`: one die a level, then
+     the fixed points after name level), attack bonus (`attacco` rows), the abilities that grow with the level (the
+     thief's percentages: `abilita: {colonne, righe}`) and the rows of a power rolled against a class table
+     (`tabelle.<power>`: Turn Undead's cells, `T`, `D`, `null` for «No», never `No`); the set's `progressione` (which
+     abilities take the attack bonus, `{abilita, piu, classi}` for the sneak attack's +4, the hit dice's characteristic
+     and minimum, `un_livello_per_avventura`), the XP rules (`esperienza`: XP by hit dice and asterisks, the optional
+     treasure XP with `quando: al_sicuro` when the manual wants it back to safety) and the race traits they read
+     (`{tiro: esperienza, bonus: 10}`, `{dado_vita_massimo: 6}`, `{almeno: {nascondersi: 70}}`). A power the class
+     rolls against its table (`tabella`: the die, the columns by type or hit dice, `colpiti`, `distrugge`,
+     `dopo_fallimento`) is `ostile` when it starts a fight. **The PC's sheet writes `px` and no number a class table
+     gives** (no attack bonus, no thief percentage: the validator warns, strict, when one is copied by hand, because it
+     would not grow at the next level); its `pf` must be within what its hit dice can give. Monsters and NPCs give
+     `dadi_vita` and `speciali` (the asterisks) or their own `px` value.
+   - **The Game Master's secret rolls** (M9): an ability the manual says the GM rolls for the player (Basic Fantasy:
+     Listen, Find Traps, Move Silently, Hide) is `segreta: niente` (a failure notices nothing) or `segreta: riuscita`
+     (the character believes it worked); a failure band the manual names (pick pockets noticed above twice the target)
+     is `soglia.grave`; the manual's situational percentage points go on the difficulty rungs (`percentuale`) and on a
+     scene check that needs its own (`aggiustamento: -20`). A scene check of a secret ability writes its `se_fallisce`
+     as what the character perceives («dietro la porta non si sente niente»), never as a failure the player would
+     notice.
    - **Spells, potions and class actions as powers** (`poteri`): each with its class levels (`livello: {mago: 1}`),
      who it reaches (`bersaglio`, `dadi_vita_max`, `solo_tipi`, `immuni`), the target's save (`salvezza: {abilita,
      esito: annulla | dimezza}`) and its typed effects from the closed list (damage, healing, a condition with a
