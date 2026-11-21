@@ -1,0 +1,22 @@
+# Live check of R2 on torre-mozza (Basic Fantasy, the real set): Livia's shortbow against Zirrà with the manual's range
+# bands in metres (p. 11: 15/30/45 m), each shot a shortbow arrow; a shot at 50 metres refused; Fulco's sling with its
+# Strength bonus; a purchase in the village and the armor swap; the torch on the clock; a night's rest.
+#   TAGM_PORTA=4982 TAGM_SEME_DADI=<hex> npx tsx apps/server/src/esperimenti/esegui.ts esperimenti/copioni/regole-r2/torre-arco.yaml \
+#     A --campagna torre-mozza --finto --tiri manuale --seme-giocatori <hex> --uscita regole-r2/torre-mozza-manuale
+scena: scena_torre
+pg: [pg_livia, pg_fulco, pg_nespola, pg_eliandro]
+turni:
+  - - {master: {tipo: inventario, id: pg_livia, cosa: compra, oggetto: razioni}}
+    - {pg: pg_nespola, azione: "Accendo una torcia"}
+  - - {pg: pg_livia, azione: "Tiro con l'arco corto a Zirrà a 20 metri"}
+  - - {pg: pg_livia, azione: "Tiro con l'arco corto a Zirrà a 40 metri"}
+  - - {pg: pg_livia, azione: "Tiro con l'arco corto a Zirrà a 50 metri"}
+  - - {pg: pg_fulco, azione: "Tiro con la fionda a Zirrà da vicino"}
+  - - {master: {tipo: combattimento_termina}}
+    - {master: {tipo: inventario, id: pg_livia, cosa: togli, oggetto: scudo}}
+    - {pg: pg_eliandro, azione: "Guardo le pietre della torre"}
+  - - {master: {tipo: tempo, cosa: avanza, durata: {ora: 1}}}
+    - {pg: pg_nespola, azione: "Ascolto alla porta"}
+  - - {master: {tipo: combattimento_termina}}
+    - {master: {tipo: riposo, riposo: notte}}
+    - {pg: pg_livia, azione: "Mi sveglio e controllo le frecce"}

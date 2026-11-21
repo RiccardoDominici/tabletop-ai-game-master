@@ -1,0 +1,307 @@
+{
+  "copione": "bottega",
+  "campagna": "bottega",
+  "modo": "improvvisa",
+  "porta": 4981,
+  "narratore_finto": true,
+  "sessione": "2026-11-21T00:06:45.946Z",
+  "nota_ambiente": null,
+  "codice": {
+    "commit": "9f197a81e8fdcdf1aefebbb9be0036b62195fdda",
+    "modificati": [],
+    "radice": "/Users/riccardo/Developer/cantastorie"
+  },
+  "turni": 10,
+  "turni_copione": 10,
+  "cambi_di_scena": [],
+  "fine_prima_del_copione": null,
+  "tiri_al_tavolo": {
+    "modo": "automatico",
+    "tiri": []
+  },
+  "combattimento_copione": {
+    "in_attesa_del_turno": 1,
+    "passate": 0
+  },
+  "finale": null,
+  "orologi": {
+    "per_turno": [
+      {
+        "turno": 1,
+        "stato": {
+          "o_chiusura": "0/4"
+        }
+      },
+      {
+        "turno": 2,
+        "stato": {
+          "o_chiusura": "0/4"
+        }
+      },
+      {
+        "turno": 3,
+        "stato": {
+          "o_chiusura": "0/4"
+        }
+      },
+      {
+        "turno": 4,
+        "stato": {
+          "o_chiusura": "0/4"
+        }
+      },
+      {
+        "turno": 5,
+        "stato": {
+          "o_chiusura": "0/4"
+        }
+      },
+      {
+        "turno": 6,
+        "stato": {
+          "o_chiusura": "0/4"
+        }
+      },
+      {
+        "turno": 7,
+        "stato": {
+          "o_chiusura": "0/4"
+        }
+      },
+      {
+        "turno": 8,
+        "stato": {
+          "o_chiusura": "0/4"
+        }
+      },
+      {
+        "turno": 9,
+        "stato": {
+          "o_chiusura": "0/4"
+        }
+      },
+      {
+        "turno": 10,
+        "stato": {
+          "o_chiusura": "0/4"
+        }
+      }
+    ],
+    "massimo": {
+      "o_chiusura": "0/4"
+    },
+    "completo_al_turno": {}
+  },
+  "azioni_private_copione": 0,
+  "voce": "mock",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 13.5,
+      "peggiore": 44,
+      "n": 10
+    },
+    "voce_sveglia": {
+      "mediana": null,
+      "peggiore": null,
+      "n": 0
+    },
+    "llm_primo_token": {
+      "mediana": 508,
+      "peggiore": 538,
+      "n": 10
+    },
+    "llm_prima_frase": {
+      "mediana": 1376,
+      "peggiore": 1390,
+      "n": 10
+    },
+    "voce_richiesta": {
+      "mediana": 1376,
+      "peggiore": 1390,
+      "n": 10
+    },
+    "voce_primo_audio": {
+      "mediana": 2027.5,
+      "peggiore": 2042,
+      "n": 10
+    },
+    "schermo_inizio_audio": {
+      "mediana": 2179.5,
+      "peggiore": 2192,
+      "n": 10
+    },
+    "llm_fine": {
+      "mediana": 1507.5,
+      "peggiore": 1548,
+      "n": 10
+    },
+    "audio_fine": {
+      "mediana": 3937.5,
+      "peggiore": 13272,
+      "n": 10
+    }
+  },
+  "buchi": {
+    "totale": 9,
+    "in_frase": 0,
+    "tra_frasi": 9,
+    "silenzio_ms": 3245,
+    "per_turno": [
+      5,
+      0,
+      1,
+      1,
+      0,
+      1,
+      0,
+      0,
+      1,
+      0
+    ]
+  },
+  "righe_prescritte": 0,
+  "righe_improvvisate": 12,
+  "quota_prescritte": 0,
+  "usa_rifiutati": 0,
+  "azioni_pubbliche": 10,
+  "azioni_senza_risposta": 10,
+  "riparazioni": 0,
+  "conferme_motore": 0,
+  "righe_segrete_fermate": 0,
+  "pg_dedotti": 0,
+  "battute_indicate": 0,
+  "battute_indicate_usate": 0,
+  "righe_png_assenti": 0,
+  "usa_rifiutati_per_motivo": {},
+  "rivelazioni_fuori_contesto": {
+    "totale": 0,
+    "elenco": []
+  },
+  "serata": {
+    "ore": null,
+    "consiglio_ai_turni": [],
+    "chiusura": null
+  },
+  "fughe": {
+    "nota": "Modo A: non ci sono id di battuta e gli indizi non sono tracciati, quindi conta solo «un giocatore l’ha scritta prima». È un conteggio GREZZO: le rivelazioni legittime (il PG spezza il pane e vede i chicchi) qui risultano fughe; vanno giudicate a mano.",
+    "improvvisate": 0,
+    "prescritte": 0,
+    "elenco": []
+  },
+  "battute_usate": 0,
+  "battute_mai_usate": [],
+  "costo_totale_usd": 0,
+  "costo_mediana_turno_usd": 0,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 3,
+      "pezzi": 52,
+      "secondi": 10.266666666666662,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 1,
+      "frasi": 6,
+      "pezzi": 54,
+      "secondi": 10.466666666666663,
+      "buchi": 5,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 5,
+      "silenzio_ms": 1239
+    },
+    {
+      "turno": 2,
+      "frasi": 1,
+      "pezzi": 4,
+      "secondi": 0.6666666666666667,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 3,
+      "frasi": 2,
+      "pezzi": 19,
+      "secondi": 3.600000000000001,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 500
+    },
+    {
+      "turno": 4,
+      "frasi": 2,
+      "pezzi": 13,
+      "secondi": 2.3333333333333335,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 501
+    },
+    {
+      "turno": 5,
+      "frasi": 1,
+      "pezzi": 4,
+      "secondi": 0.6666666666666667,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 6,
+      "frasi": 2,
+      "pezzi": 13,
+      "secondi": 2.4,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 504
+    },
+    {
+      "turno": 7,
+      "frasi": 1,
+      "pezzi": 4,
+      "secondi": 0.6666666666666667,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 8,
+      "frasi": 1,
+      "pezzi": 4,
+      "secondi": 0.6666666666666667,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 9,
+      "frasi": 2,
+      "pezzi": 13,
+      "secondi": 2.4,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 501
+    },
+    {
+      "turno": 10,
+      "frasi": 1,
+      "pezzi": 4,
+      "secondi": 0.6666666666666667,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    }
+  ]
+}

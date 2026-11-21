@@ -1,0 +1,371 @@
+{
+  "copione": "torre-arco",
+  "campagna": "torre-mozza",
+  "modo": "improvvisa",
+  "porta": 4982,
+  "narratore_finto": true,
+  "sessione": "2026-11-21T00:07:56.077Z",
+  "nota_ambiente": null,
+  "codice": {
+    "commit": "9f197a81e8fdcdf1aefebbb9be0036b62195fdda",
+    "modificati": [],
+    "radice": "/Users/riccardo/Developer/cantastorie"
+  },
+  "turni": 7,
+  "turni_copione": 8,
+  "cambi_di_scena": [],
+  "fine_prima_del_copione": null,
+  "tiri_al_tavolo": {
+    "modo": "manuale",
+    "tiri": [
+      {
+        "pg": "pg_livia",
+        "id": "r_a2",
+        "etichetta": "Arco corto",
+        "dadi": "1d20",
+        "valori": [
+          10
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_t2_iniziativa_pg_livia_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          4
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_fulco",
+        "id": "r_t2_iniziativa_pg_fulco_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          4
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_t2_iniziativa_pg_nespola_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          5
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_eliandro",
+        "id": "r_t2_iniziativa_pg_eliandro_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          3
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_a3",
+        "etichetta": "Ascoltare",
+        "dadi": "1d100",
+        "valori": [
+          79
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_a4",
+        "etichetta": "Arco corto",
+        "dadi": "1d20",
+        "valori": [
+          10
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_fulco",
+        "id": "r_a5",
+        "etichetta": "Fionda",
+        "dadi": "1d20",
+        "valori": [
+          18
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_fulco",
+        "id": "r_a5_danno",
+        "etichetta": "Danni: Fionda",
+        "dadi": "1d4",
+        "valori": [
+          3
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_livia",
+        "id": "r_t4_iniziativa_pg_livia_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          1
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_fulco",
+        "id": "r_t4_iniziativa_pg_fulco_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          6
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_nespola",
+        "id": "r_t4_iniziativa_pg_nespola_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          4
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_eliandro",
+        "id": "r_t4_iniziativa_pg_eliandro_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          4
+        ],
+        "ok": true
+      }
+    ]
+  },
+  "combattimento_copione": {
+    "in_attesa_del_turno": 4,
+    "passate": 1
+  },
+  "finale": null,
+  "orologi": {
+    "per_turno": [
+      {
+        "turno": 1,
+        "stato": {}
+      },
+      {
+        "turno": 2,
+        "stato": {}
+      },
+      {
+        "turno": 3,
+        "stato": {}
+      },
+      {
+        "turno": 4,
+        "stato": {}
+      },
+      {
+        "turno": 5,
+        "stato": {}
+      },
+      {
+        "turno": 6,
+        "stato": {}
+      },
+      {
+        "turno": 7,
+        "stato": {}
+      }
+    ],
+    "massimo": {},
+    "completo_al_turno": {}
+  },
+  "azioni_private_copione": 0,
+  "voce": "mock",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 33,
+      "peggiore": 55,
+      "n": 7
+    },
+    "voce_sveglia": {
+      "mediana": null,
+      "peggiore": null,
+      "n": 0
+    },
+    "llm_primo_token": {
+      "mediana": 512,
+      "peggiore": 553,
+      "n": 7
+    },
+    "llm_prima_frase": {
+      "mediana": 1403,
+      "peggiore": 1411,
+      "n": 7
+    },
+    "voce_richiesta": {
+      "mediana": 1403,
+      "peggiore": 1741,
+      "n": 7
+    },
+    "voce_primo_audio": {
+      "mediana": 2054,
+      "peggiore": 2395,
+      "n": 7
+    },
+    "schermo_inizio_audio": {
+      "mediana": 2206,
+      "peggiore": 2217,
+      "n": 5
+    },
+    "llm_fine": {
+      "mediana": 1541,
+      "peggiore": 1593,
+      "n": 7
+    },
+    "audio_fine": {
+      "mediana": 5311,
+      "peggiore": 21393,
+      "n": 7
+    }
+  },
+  "buchi": {
+    "totale": 19,
+    "in_frase": 0,
+    "tra_frasi": 19,
+    "silenzio_ms": 5816,
+    "per_turno": [
+      4,
+      5,
+      2,
+      8,
+      0,
+      0,
+      0
+    ]
+  },
+  "righe_prescritte": 0,
+  "righe_improvvisate": 9,
+  "quota_prescritte": 0,
+  "usa_rifiutati": 0,
+  "azioni_pubbliche": 8,
+  "azioni_senza_risposta": 8,
+  "riparazioni": 0,
+  "conferme_motore": 0,
+  "righe_segrete_fermate": 0,
+  "pg_dedotti": 0,
+  "battute_indicate": 0,
+  "battute_indicate_usate": 0,
+  "righe_png_assenti": 4,
+  "usa_rifiutati_per_motivo": {},
+  "rivelazioni_fuori_contesto": {
+    "totale": 0,
+    "elenco": []
+  },
+  "serata": {
+    "ore": null,
+    "consiglio_ai_turni": [],
+    "chiusura": null
+  },
+  "fughe": {
+    "nota": "Modo A: non ci sono id di battuta e gli indizi non sono tracciati, quindi conta solo «un giocatore l’ha scritta prima». È un conteggio GREZZO: le rivelazioni legittime (il PG spezza il pane e vede i chicchi) qui risultano fughe; vanno giudicate a mano.",
+    "improvvisate": 0,
+    "prescritte": 0,
+    "elenco": []
+  },
+  "battute_usate": 0,
+  "battute_mai_usate": [],
+  "costo_totale_usd": 0,
+  "costo_mediana_turno_usd": 0,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 3,
+      "pezzi": 83,
+      "secondi": 16.26666666666664,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 1,
+      "frasi": 6,
+      "pezzi": 54,
+      "secondi": 10.466666666666663,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 1225
+    },
+    {
+      "turno": 2,
+      "frasi": 7,
+      "pezzi": 75,
+      "secondi": 14.39999999999998,
+      "buchi": 5,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 5,
+      "silenzio_ms": 1486
+    },
+    {
+      "turno": 3,
+      "frasi": 3,
+      "pezzi": 23,
+      "secondi": 4.2666666666666675,
+      "buchi": 2,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 2,
+      "silenzio_ms": 652
+    },
+    {
+      "turno": 4,
+      "frasi": 10,
+      "pezzi": 101,
+      "secondi": 19.399999999999967,
+      "buchi": 8,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 8,
+      "silenzio_ms": 2453
+    },
+    {
+      "turno": 5,
+      "frasi": 1,
+      "pezzi": 4,
+      "secondi": 0.6666666666666667,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 6,
+      "frasi": 1,
+      "pezzi": 4,
+      "secondi": 0.6666666666666667,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    },
+    {
+      "turno": 7,
+      "frasi": 1,
+      "pezzi": 4,
+      "secondi": 0.6666666666666667,
+      "buchi": 0,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 0,
+      "silenzio_ms": 0
+    }
+  ]
+}

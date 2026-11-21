@@ -1,0 +1,34 @@
+# Live check of the rules-engine work R2 (docs/prove.md §10–11) on the invented fixture
+# apps/server/test/fixtures/campagne/bottega: a purchase that makes the load heavy, an armor swap that changes the AC,
+# a bow fight that spends arrows with range bands (one shot beyond the long limit refused), a torch lit by the action's
+# words that burns out on the game clock, the Game Master's time, a rest that takes its eight hours.
+#   TAGM_PORTA=4981 TAGM_SEME_DADI=<hex> npx tsx apps/server/src/esperimenti/esegui.ts \
+#     esperimenti/copioni/regole-r2/bottega.yaml A --cartella apps/server/test/fixtures/campagne/bottega \
+#     --finto --tiri automatico --uscita regole-r2/bottega
+pg: [pg_aldo, pg_bice, pg_ciro]
+turni:
+  # In the shop: Aldo buys two ropes (heavy load: 6 → 3 metres a round), Bice a lantern and a flask of oil.
+  - - {master: {tipo: inventario, id: pg_aldo, cosa: compra, oggetto: corda, quante: 2}}
+    - {master: {tipo: inventario, id: pg_bice, cosa: compra, oggetto: lanterna}}
+    - {master: {tipo: inventario, id: pg_bice, cosa: compra, oggetto: olio}}
+    - {pg: pg_aldo, azione: "Accendo una torcia e scendo la botola"}
+  # (A purchase that cannot be paid is refused back to the panel, and this harness stops on a refusal: that case is
+  # in test/scorta-server.test.ts and e2e/scorta.spec.ts.) Bice lights her lantern, burning the flask.
+  - - {pg: pg_bice, azione: "Accendo la lanterna"}
+  # The bow fight: a long shot (−3), a close one (+2), one beyond the long limit (no shot): each shot spends an arrow.
+  - - {pg: pg_aldo, azione: "Tiro con l'arco alla guardia a 25 metri"}
+  - - {pg: pg_aldo, azione: "Tiro con l'arco alla guardia da vicino"}
+  - - {pg: pg_aldo, azione: "Tiro con l'arco alla guardia a 40 metri"}
+  # The fight ends; Aldo takes off the chain mail (AC 16 → 12) and is faster for it.
+  - - {master: {tipo: combattimento_termina}}
+    - {master: {tipo: inventario, id: pg_aldo, cosa: togli, oggetto: maglia}}
+    - {pg: pg_ciro, azione: "Frugo tra le casse della cantina"}
+  # Exploring: each window is a turn of ten minutes; the torch (1d4+2 turns) burns down.
+  - - {pg: pg_aldo, azione: "Avanzo lungo il muro della cantina"}
+  - - {pg: pg_aldo, azione: "Avanzo ancora lungo il muro"}
+  - - {master: {tipo: tempo, cosa: avanza, durata: {ora: 1}}}
+    - {pg: pg_bice, azione: "Guardo i mattoni chiari in fondo"}
+  # A night's sleep: one hit point back and eight hours on the clock.
+  - - {master: {tipo: combattimento_termina}}
+    - {master: {tipo: riposo, riposo: notte}}
+    - {pg: pg_aldo, azione: "Mi alzo e guardo la cantina"}

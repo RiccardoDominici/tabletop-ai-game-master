@@ -426,5 +426,11 @@ The `significato` of bands and grades replaces it. With the SRD 5.2 the rule sta
   data but no spells or slots yet; monster specials (poison riders, breath, paralysis on a hit) can use the typed
   effects but are not data of any set; carrying HP and resources from one session to the next is done by R2 (the log's
   `pg_alla_fine`, a package's `pg_all_inizio`, docs/strati.md); subdual damage is not modelled; spells of levels 3–6 of Basic Fantasy are not data yet.
+- **Rules-engine work R2 (20–21 November) leaves open**: the scene has no light state (darkness blinds nobody yet);
+  wandering monster checks, rations and water, forced march and getting lost do not use the clock yet; magic armor's
+  better movement row, two-handed weapons with a shield, container volume and capacity are not enforced; silver and
+  magic weapons against creatures only they hurt (P6-03) need an immunity rule; creation (starting money, the first
+  purchase) is the Preparer's; the SRD 5.2 has its round and rest durations as data but no equipment catalog (its
+  sheets keep the SRD path's own armor table). Evidence: esperimenti/risultati/regole-r2/.
 - **Subsystems** (`sottosistemi`) are text only. Conditions apply in the fight (docs/combattimento.md); damage, healing, falls and rest outside an attack are typed effects (above).
 - **Opposed checks** in a non-SRD set become normal checks. Saving throws are pinned to their own number (above), and a target rolls its own save against a PC's power (`salvezzaDelBersaglio`, the Game Master's side for an NPC).
