@@ -3,8 +3,10 @@
 #
 # Schede nel set di Basic Fantasy (regole/regole.yaml): ogni caratteristica scrive il suo punteggio da 3 a 18, e
 # il bonus lo dà la tabella del set (13–15 = +1…, p. 4); i tiri salvezza li dà la tabella della classe e del livello del
-# set (p. 61), con i tratti della razza; le abilità del ladro (percentuali) e le possibilità «x su 6» scrivono la soglia del loro
-# dado, d100 o d6, come nel manuale. Bonus d'attacco +1 a tutti al primo livello.
+# set (p. 61), con i tratti della razza; il bonus d'attacco (p. 53) e le abilità del ladro per livello (p. 9) li dà la tabella
+# della classe (regole.yaml, classi), per `classe` e `livello`: la scheda non li scrive, così salgono col livello. Le
+# possibilità «x su 6» che non vengono dalla classe (porte, pietra, porte segrete) scrivono la soglia del d6, come nel manuale.
+# `px`: i punti esperienza, 0 al primo livello (p. 3); i PX per il 2° li dice la tabella della classe.
 # Punti ferita: dado vita al massimo più la Costituzione (decisione nel brief).
 situazione_comune: "Siete arrivati a Spinalba all'imbrunire, ognuno per la sua strada, e la pastora Berta Benni vi ha chiamati al suo ovile. In paese dicono che la notte scorsa i goblin della Torre Mozza le hanno preso il figlio, e che vogliono la chiave di famiglia entro mezzanotte."
 personaggi:
@@ -31,8 +33,9 @@ personaggi:
       # Guerriera di primo livello: i salvezza (12, 13, 14, 15, 17) li dà la tabella del set. Porte bloccate: 3 su 6 con la Forza.
       classe: guerriero
       livello: 1
+      px: 0                      # 2.000 per il 2° livello (p. 7); da umana, +10% ai PX guadagnati
       razza: umano
-      abilita: {mischia: 1, distanza: 1, forzare: 3}
+      abilita: {forzare: 3}      # il bonus d'attacco +1 viene dalla tabella (p. 53)
       pf: 9                      # 1d8 al massimo, più 1 di Costituzione
       # Equipaggiamento dal catalogo del set (p. 10–11): la CA 17 viene da cotta di maglia 15, scudo +1, Destrezza +1;
       # gli attacchi dalle armi (spada lunga 1d8 più la Forza +2; arco corto 1d6, senza Forza, una freccia a tiro).
@@ -75,8 +78,9 @@ personaggi:
       # Il chierico lancia incantesimi dal secondo livello (p. 7): al primo non ne ha.
       classe: chierico
       livello: 1
+      px: 0                      # 1.500 per il 2° livello (p. 7)
       razza: nano
-      abilita: {mischia: 1, distanza: 1, forzare: 2, pietra: 2}
+      abilita: {forzare: 2, pietra: 2}
       pf: 7                      # 1d6 al massimo, più 1 di Costituzione
       # Equipaggiamento dal catalogo del set: la CA 15 viene da cotta di maglia 15, scudo +1, Destrezza −1; mazza 1d8 e
       # fionda 1d4 più la Forza +1 (la fionda somma la Forza al danno, p. 55: «sling bullets or stones do»).
@@ -115,13 +119,13 @@ personaggi:
       # Punteggi del manuale: il bonus lo dà la tabella del set (regole/regole.yaml, modificatore).
       caratteristiche: {forza: 9, intelligenza: 12, saggezza: 10, destrezza: 17, costituzione: 13, carisma: 13}
       # Ladra di primo livello (13, 14, 13, 16, 15, dalla tabella) con il bonus degli halfling (+4, e +3 al soffio).
-      # Abilità del ladro in percentuale; nascondersi al chiuso come halfling (70%).
-      # Il +1 degli halfling con le armi a distanza e all'iniziativa sono tratti della razza (regole.yaml). Attacco furtivo: +4.
+      # Abilità del ladro dalla tabella del 1° livello (p. 9: 25, 20, 30, 25, 80, 10, 30); nascondersi 70 al chiuso è
+      # dell'halfling (un tratto della razza, il migliore dei due). Il +1 degli halfling con le armi a distanza e
+      # all'iniziativa sono tratti della razza (regole.yaml). Attacco furtivo: il bonus d'attacco più 4.
       classe: ladro
       livello: 1
+      px: 0                      # 1.250 per il 2° livello (p. 8)
       razza: halfling
-      abilita: {mischia: 1, distanza: 1, alle_spalle: 5,
-                scassinare: 25, trappole: 20, borseggiare: 30, muoversi_in_silenzio: 25, scalare: 80, nascondersi: 70, ascoltare: 30}
       pf: 5                      # 1d4 al massimo, più 1 di Costituzione
       # Equipaggiamento dal catalogo del set: la CA 15 viene da armatura di cuoio 13 e Destrezza +2; spada corta 1d6 e
       # fionda 1d4 (Forza +0). Monete: 3d6 × 10 = 100 mo (p. 10) meno 61 mo spesi.
@@ -166,9 +170,10 @@ personaggi:
       # Un posto di primo livello al giorno (p. 8): prepara il dardo incantato. Leggere il magico lo conosce (è nel libro).
       classe: mago
       livello: 1
+      px: 0                      # 2.500 per il 2° livello (p. 8)
       razza: elfo
       incantesimi: [dardo_incantato]
-      abilita: {mischia: 1, distanza: 1, cercare: 3}
+      abilita: {cercare: 3}
       pf: 4                      # 1d4 al massimo
       # Equipaggiamento dal catalogo del set: la CA 12 viene da senza armatura 11 e Destrezza +1; il pugnale 1d4, anche
       # lanciato (Forza +0). Il mago non porta armature (p. 8). Monete: 3d6 × 10 = 90 mo (p. 10) meno 45 mo spesi.

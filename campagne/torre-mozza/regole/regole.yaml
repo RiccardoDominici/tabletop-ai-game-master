@@ -148,11 +148,38 @@ tiri_salvezza:
     - {id: soffio, nome: "Soffio del drago"}
     - {id: incantesimi, nome: "Incantesimi"}
 
+# Progressione (p. 3–4, 49, 53): il bonus d'attacco della tabella della classe va all'attacco in mischia, a distanza e a
+# quello furtivo (+4 in più, p. 9); ogni dado vita somma la Costituzione e dà almeno un punto (p. 4); da un'avventura non
+# si sale più di un livello: i PX si fermano uno prima del livello dopo il prossimo (p. 49).
+progressione:
+  attacco: [mischia, distanza, {abilita: alle_spalle, piu: 4}]
+  punti_ferita: {caratteristica: costituzione, minimo: 1}
+  un_livello_per_avventura: true
+
 # Classi (p. 7–8, 61): i tiri salvezza per livello (p. 61: una riga vale dal suo livello in su; NM, «normal man», è il
 # livello 0 del guerriero, per la gente comune) e gli incantesimi al giorno per livello d'incantesimo (1°…6°, p. 7–8).
 classi:
   - id: guerriero
     nome: "Guerriero"
+    # PX per arrivare a ogni livello, dal 1° al 20° (p. 7).
+    px: [0, 2000, 4000, 8000, 16000, 32000, 64000, 120000, 240000, 360000, 480000, 600000, 720000, 840000, 960000, 1080000, 1200000, 1320000, 1440000, 1560000]
+    # Dadi vita (p. 7): un dado a livello fino al 9°, poi punti fissi senza Costituzione.
+    dadi_vita:
+      - {da: 1, dado: "1d8"}
+      - {da: 10, fissi: 2}
+    # Bonus d'attacco (p. 53).
+    attacco:
+      - {da: 0, bonus: 0}
+      - {da: 1, bonus: 1}
+      - {da: 2, bonus: 2}
+      - {da: 4, bonus: 3}
+      - {da: 5, bonus: 4}
+      - {da: 7, bonus: 5}
+      - {da: 8, bonus: 6}
+      - {da: 11, bonus: 7}
+      - {da: 13, bonus: 8}
+      - {da: 16, bonus: 9}
+      - {da: 18, bonus: 10}
     tiri_salvezza:
       - {da: 0, valori: [13, 14, 15, 16, 18]}
       - {da: 1, valori: [12, 13, 14, 15, 17]}
@@ -168,6 +195,46 @@ classi:
       - {da: 20, valori: [5, 6, 8, 9, 10]}
   - id: chierico
     nome: "Chierico"
+    # PX per arrivare a ogni livello, dal 1° al 20° (p. 7).
+    px: [0, 1500, 3000, 6000, 12000, 24000, 48000, 90000, 180000, 270000, 360000, 450000, 540000, 630000, 720000, 810000, 900000, 990000, 1080000, 1170000]
+    # Dadi vita (p. 7): un dado a livello fino al 9°, poi punti fissi senza Costituzione.
+    dadi_vita:
+      - {da: 1, dado: "1d6"}
+      - {da: 10, fissi: 1}
+    # Bonus d'attacco (p. 53).
+    attacco:
+      - {da: 1, bonus: 1}
+      - {da: 3, bonus: 2}
+      - {da: 5, bonus: 3}
+      - {da: 7, bonus: 4}
+      - {da: 9, bonus: 5}
+      - {da: 12, bonus: 6}
+      - {da: 15, bonus: 7}
+      - {da: 18, bonus: 8}
+    # Chierici contro non morti (p. 57): il d20 da fare per livello e tipo, T scacciato senza tiro, D danneggiato,
+    # null = impossibile («No»). Colonne: scheletro, zombi, ghoul, wight, wraith, mummia, spettro, vampiro, fantasma.
+    tabelle:
+      scacciare_non_morti:
+        - {da: 1, valori: [13, 17, 19, null, null, null, null, null, null]}
+        - {da: 2, valori: [11, 15, 18, 20, null, null, null, null, null]}
+        - {da: 3, valori: [9, 13, 17, 19, null, null, null, null, null]}
+        - {da: 4, valori: [7, 11, 15, 18, 20, null, null, null, null]}
+        - {da: 5, valori: [5, 9, 13, 17, 19, null, null, null, null]}
+        - {da: 6, valori: [3, 7, 11, 15, 18, 20, null, null, null]}
+        - {da: 7, valori: [2, 5, 9, 13, 17, 19, null, null, null]}
+        - {da: 8, valori: [T, 3, 7, 11, 15, 18, 20, null, null]}
+        - {da: 9, valori: [T, 2, 5, 9, 13, 17, 19, null, null]}
+        - {da: 10, valori: [T, T, 3, 7, 11, 15, 18, 20, null]}
+        - {da: 11, valori: [D, T, 2, 5, 9, 13, 17, 19, null]}
+        - {da: 12, valori: [D, T, T, 3, 7, 11, 15, 18, 20]}
+        - {da: 13, valori: [D, D, T, 2, 5, 9, 13, 17, 19]}
+        - {da: 14, valori: [D, D, T, T, 3, 7, 11, 15, 18]}
+        - {da: 15, valori: [D, D, D, T, 2, 5, 9, 13, 17]}
+        - {da: 16, valori: [D, D, D, T, T, 3, 7, 11, 15]}
+        - {da: 17, valori: [D, D, D, D, T, 2, 5, 9, 13]}
+        - {da: 18, valori: [D, D, D, D, T, T, 3, 7, 11]}
+        - {da: 19, valori: [D, D, D, D, D, T, 2, 5, 9]}
+        - {da: 20, valori: [D, D, D, D, D, T, T, 3, 7]}
     tiri_salvezza:
       - {da: 1, valori: [11, 12, 14, 16, 15]}
       - {da: 2, valori: [10, 11, 13, 15, 14]}
@@ -204,6 +271,21 @@ classi:
       - {da: 20, slot: [6, 5, 5, 4, 3, 3]}
   - id: mago
     nome: "Mago"
+    # PX per arrivare a ogni livello, dal 1° al 20° (p. 8).
+    px: [0, 2500, 5000, 10000, 20000, 40000, 80000, 150000, 300000, 450000, 600000, 750000, 900000, 1050000, 1200000, 1350000, 1500000, 1650000, 1800000, 1950000]
+    # Dadi vita (p. 8): un dado a livello fino al 9°, poi punti fissi senza Costituzione.
+    dadi_vita:
+      - {da: 1, dado: "1d4"}
+      - {da: 10, fissi: 1}
+    # Bonus d'attacco (p. 53).
+    attacco:
+      - {da: 1, bonus: 1}
+      - {da: 4, bonus: 2}
+      - {da: 6, bonus: 3}
+      - {da: 9, bonus: 4}
+      - {da: 13, bonus: 5}
+      - {da: 16, bonus: 6}
+      - {da: 19, bonus: 7}
     tiri_salvezza:
       - {da: 1, valori: [13, 14, 13, 16, 15]}
       - {da: 2, valori: [13, 14, 13, 15, 14]}
@@ -240,6 +322,46 @@ classi:
       - {da: 20, slot: [6, 5, 5, 4, 4, 3]}
   - id: ladro
     nome: "Ladro"
+    # PX per arrivare a ogni livello, dal 1° al 20° (p. 8).
+    px: [0, 1250, 2500, 5000, 10000, 20000, 40000, 75000, 150000, 225000, 300000, 375000, 450000, 525000, 600000, 675000, 750000, 825000, 900000, 975000]
+    # Dadi vita (p. 8): un dado a livello fino al 9°, poi punti fissi senza Costituzione.
+    dadi_vita:
+      - {da: 1, dado: "1d4"}
+      - {da: 10, fissi: 2}
+    # Bonus d'attacco (p. 53).
+    attacco:
+      - {da: 1, bonus: 1}
+      - {da: 3, bonus: 2}
+      - {da: 5, bonus: 3}
+      - {da: 7, bonus: 4}
+      - {da: 9, bonus: 5}
+      - {da: 12, bonus: 6}
+      - {da: 15, bonus: 7}
+      - {da: 18, bonus: 8}
+    # Abilità del ladro per livello (p. 9), in percentuale.
+    abilita:
+      colonne: [scassinare, trappole, borseggiare, muoversi_in_silenzio, scalare, nascondersi, ascoltare]
+      righe:
+        - {da: 1, valori: [25, 20, 30, 25, 80, 10, 30]}
+        - {da: 2, valori: [30, 25, 35, 30, 81, 15, 34]}
+        - {da: 3, valori: [35, 30, 40, 35, 82, 20, 38]}
+        - {da: 4, valori: [40, 35, 45, 40, 83, 25, 42]}
+        - {da: 5, valori: [45, 40, 50, 45, 84, 30, 46]}
+        - {da: 6, valori: [50, 45, 55, 50, 85, 35, 50]}
+        - {da: 7, valori: [55, 50, 60, 55, 86, 40, 54]}
+        - {da: 8, valori: [60, 55, 65, 60, 87, 45, 58]}
+        - {da: 9, valori: [65, 60, 70, 65, 88, 50, 62]}
+        - {da: 10, valori: [68, 63, 74, 68, 89, 53, 65]}
+        - {da: 11, valori: [71, 66, 78, 71, 90, 56, 68]}
+        - {da: 12, valori: [74, 69, 82, 74, 91, 59, 71]}
+        - {da: 13, valori: [77, 72, 86, 77, 92, 62, 74]}
+        - {da: 14, valori: [80, 75, 90, 80, 93, 65, 77]}
+        - {da: 15, valori: [83, 78, 94, 83, 94, 68, 80]}
+        - {da: 16, valori: [84, 79, 95, 85, 95, 69, 83]}
+        - {da: 17, valori: [85, 80, 96, 87, 96, 70, 86]}
+        - {da: 18, valori: [86, 81, 97, 89, 97, 71, 89]}
+        - {da: 19, valori: [87, 82, 98, 91, 98, 72, 92]}
+        - {da: 20, valori: [88, 83, 99, 93, 99, 73, 95]}
     tiri_salvezza:
       - {da: 1, valori: [13, 14, 13, 16, 15]}
       - {da: 2, valori: [12, 14, 12, 15, 14]}
@@ -260,6 +382,8 @@ classi:
 razze:
   - id: umano
     nome: "Umano"
+    tratti:
+      - {tiro: esperienza, bonus: 10}          # +10% ai PX guadagnati (p. 6)
   - id: nano
     nome: "Nano"
     tratti:
@@ -272,6 +396,7 @@ razze:
       - {tiro: salvezza, colonne: [bacchette, incantesimi], bonus: 2}
       - {sorpresa: -1}
       - {immune: [paralisi_ghoul]}
+      - {dado_vita_massimo: 6}                  # mai un dado vita più grande di un d6 (p. 5)
   - id: halfling
     nome: "Halfling"
     tratti:
@@ -279,6 +404,10 @@ razze:
       - {tiro: salvezza, colonne: [soffio], bonus: 3}
       - {tiro: iniziativa, bonus: 1}
       - {tiro: abilita, abilita: [distanza], bonus: 1}
+      # Nascosti e fermi, gli halfling si scoprono solo il 30% delle volte al chiuso (p. 6): nascondersi almeno 70 (il
+      # 90% nel bosco è un aggiustamento del master); un halfling ladro tira una volta sola, col migliore dei due.
+      - {almeno: {nascondersi: 70}}
+      - {dado_vita_massimo: 6}                  # mai un dado vita più grande di un d6 (p. 6)
 
 # Incantesimi (p. 15): il mago e il chierico preparano ogni mattina un incantesimo per posto; lanciato, se ne va fino al
 # riposo successivo (Basic Fantasy, alla vecchia maniera).
@@ -683,6 +812,33 @@ poteri:
     parole: [fascio, fasciare, bendo, benda, tampono]
     effetti: [{tipo: stabilizza}]
     pagina: 188
+  # Scacciare i non morti (p. 57–58): il giocatore tira 1d20 contro la tabella del livello del chierico e del tipo di non
+  # morto (classi.chierico.tabelle); T scacciato senza tiro, D danneggiato (1d8 per livello del chierico, un tiro per
+  # tutti: chi va a zero è distrutto, gli altri sono scacciati). Riuscito, 2d6 dadi vita di non morti, dal più debole,
+  # almeno uno; gli scacciati fuggono e stanno lontani 2d4 turni. Fallito (anche in parte), niente per un turno intero.
+  - id: scacciare_non_morti
+    nome: "Scacciare i non morti"
+    tipo: azione
+    bersaglio: nemici
+    solo_tipi: [non_morto]
+    parole: [scaccio, scacciare, scacciarli, "simbolo sacro", "non morti"]
+    tabella:
+      dado: "1d20"
+      colonne:
+        - {id: scheletro, nome: "Scheletro", dadi_vita: 1}
+        - {id: zombi, nome: "Zombi", dadi_vita: 2}
+        - {id: ghoul, nome: "Ghoul", dadi_vita: 3}
+        - {id: wight, nome: "Wight", dadi_vita: 4}
+        - {id: wraith, nome: "Wraith", dadi_vita: 5}
+        - {id: mummia, nome: "Mummia", dadi_vita: 6}
+        - {id: spettro, nome: "Spettro", dadi_vita: 7}
+        - {id: vampiro, nome: "Vampiro", dadi_vita: 8}
+        - {id: fantasma, nome: "Fantasma", dadi_vita: 9}
+      colpiti: "2d6"
+      distrugge: {dadi: "1d8", per_livello: true}
+      dopo_fallimento: {turno: 1}
+    effetti: [{tipo: condizione, condizione: scacciato, durata: {turno: "2d4"}}]
+    pagina: 57
 
 # Cadute (p. 59): 1d6 ogni 10 piedi (3 metri), al massimo 20d6, arrotondando all'altezza più vicina (da 1–4 piedi
 # niente, da 5–14 piedi 1d6: in metri, da un metro e mezzo si prende 1d6). Le altezze delle scene sono in metri.
@@ -693,6 +849,41 @@ cadute: {dadi: "1d6", ogni: 3, unita: "metri", arrotonda: vicino, massimo: 20}
 riposo:
   - {id: notte, nome: "Una notte di sonno", cura: 1, durata: {ora: 8}}
   - {id: a_letto, nome: "Un giorno di riposo a letto", cura: 2, durata: {giorno: 1}}
+
+# Punti esperienza (p. 49): il valore di un mostro sconfitto per dadi vita (da: 0 = meno di 1), più `speciale` per ogni
+# asterisco; oltre i 25 dadi vita, +750 e +25 per ogni dado in più.
+esperienza:
+  per_dadi_vita:
+    - {da: 0, px: 10, speciale: 3}
+    - {da: 1, px: 25, speciale: 12}
+    - {da: 2, px: 75, speciale: 25}
+    - {da: 3, px: 145, speciale: 30}
+    - {da: 4, px: 240, speciale: 40}
+    - {da: 5, px: 360, speciale: 45}
+    - {da: 6, px: 500, speciale: 55}
+    - {da: 7, px: 670, speciale: 65}
+    - {da: 8, px: 875, speciale: 70}
+    - {da: 9, px: 1075, speciale: 75}
+    - {da: 10, px: 1300, speciale: 90}
+    - {da: 11, px: 1575, speciale: 95}
+    - {da: 12, px: 1875, speciale: 100}
+    - {da: 13, px: 2175, speciale: 110}
+    - {da: 14, px: 2500, speciale: 115}
+    - {da: 15, px: 2850, speciale: 125}
+    - {da: 16, px: 3250, speciale: 135}
+    - {da: 17, px: 3600, speciale: 145}
+    - {da: 18, px: 4000, speciale: 160}
+    - {da: 19, px: 4500, speciale: 175}
+    - {da: 20, px: 5250, speciale: 200}
+    - {da: 21, px: 6000, speciale: 225}
+    - {da: 22, px: 6750, speciale: 250}
+    - {da: 23, px: 7500, speciale: 275}
+    - {da: 24, px: 8250, speciale: 300}
+    - {da: 25, px: 9000, speciale: 325}
+  oltre: {px: 750, speciale: 25}
+  # Regola facoltativa (p. 190), scelta del set come il salvezza contro la morte: 1 PX per moneta d'oro di tesoro, solo
+  # quando torna al sicuro (il master lo dice dal pannello).
+  tesoro: {px: 1, per: mo, quando: al_sicuro}
 
 # Tempo di gioco (p. 42): un turno è circa dieci minuti, un round dieci secondi (sessanta round fanno un turno).
 # Esplorando, ogni giro di azioni del tavolo è un turno (il movimento e le ricerche si contano a turni, p. 42–44; le
@@ -932,6 +1123,7 @@ condizioni:
   - {id: addormentato, nome: "Addormentato", effetto: "Dorme per magia: si colpisce sempre, e un colpo lo sveglia (p. 36)."}
   - {id: affascinato, nome: "Affascinato", effetto: "Vede in chi l'ha incantato un caro amico (p. 18)."}
   - {id: paralizzato, nome: "Paralizzato", effetto: "Cosciente ma immobile: non si muove, non agisce, non parla (p. 25)."}
+  - {id: scacciato, nome: "Scacciato", effetto: "Un non morto scacciato fugge dal chierico e non torna per 2d4 turni (p. 58)."}
 
 sottosistemi:
   - id: incantesimi
@@ -939,7 +1131,7 @@ sottosistemi:
     testo: "Il mago di primo livello conosce leggere il magico e un incantesimo di primo livello, e ne lancia uno al giorno: il Motore conta gli incantesimi preparati e i posti del giorno, e li ridà col riposo. Il chierico lancia incantesimi solo dal secondo livello."
   - id: scacciare
     nome: "Scacciare i non morti"
-    testo: "Il chierico mostra il simbolo sacro e tira un d20 contro la tabella del suo livello e del tipo di non morto: al primo livello 13 per gli scheletri, 17 per gli zombi, 19 per i ghoul (p. 57)."
+    testo: "Il chierico mostra il simbolo sacro e tira un d20 contro la tabella del suo livello e del tipo di non morto: al primo livello 13 per gli scheletri, 17 per gli zombi, 19 per i ghoul (p. 57). Il Motore lo tira col potere «Scacciare i non morti»: i dadi vita scacciati, i distrutti, un turno di attesa dopo un fallimento."
   - id: sorpresa
     nome: "Sorpresa"
     testo: "Prima di uno scontro si tira 1d6 per ogni parte che può essere sorpresa: con 1–2 è sorpresa e perde il primo round (p. 50). Il Motore tira per la parte attaccata quando lo scontro si apre con un attacco, per tutte e due quando lo apre il master."
@@ -998,6 +1190,8 @@ combattimento:
     - {id: addormentato, nome: "Addormentato", icona: "ZZ", effetti: [perde_turno, non_si_muove, fuori_combattimento, colpito_automaticamente], testo: "Dorme per magia: si colpisce sempre, e un colpo lo sveglia."}
     - {id: affascinato, nome: "Affascinato", icona: "AF", effetti: [fuori_combattimento], testo: "Vede in chi l'ha incantato un caro amico e non lo combatte."}
     - {id: paralizzato, nome: "Paralizzato", icona: "PA", effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio, fuori_combattimento], testo: "Cosciente ma immobile: non si muove, non agisce, non parla."}
+    # Il non morto scacciato (p. 58) fugge e non attacca: conta come fuori dallo scontro.
+    - {id: scacciato, nome: "Scacciato", icona: "SC", effetti: [perde_turno, fuori_combattimento], testo: "Fugge dal chierico e non torna per un po'."}
   condizione_a_zero: svenuto
   # Sorpresa (p. 50): 1d6 per ogni parte che può essere sorpresa, con 1–2 perde il primo round. Il Motore la tira per la
   # parte attaccata quando lo scontro si apre con un attacco, per tutte e due quando lo apre il master.

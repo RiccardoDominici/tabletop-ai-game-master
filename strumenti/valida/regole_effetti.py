@@ -57,7 +57,12 @@ def controlla_durata(v, dove: str, e: Esito, codice: str) -> None:
     if v is None or v in DURATE:
         return
     o = _ogg(v)
-    if o and "turni" in o:
+    # A duration in a unit of the set's clock, as regole/effetti.ts reads it: {turni: 3} (the unit `turno`) or
+    # {<unit id>: amount}, one key; without a clock that has the unit the Engine lets it last the scene.
+    unita = [k for k in o or {} if k not in ("round", "round_per_livello")]
+    if o and len(unita) == 1 and "round" not in o and "round_per_livello" not in o:
+        if not (re.match(r"^[a-z0-9_]+$", unita[0]) and formula_valida(o[unita[0]])):
+            e.errore(codice, dove, f"{unita[0]}: una quantità, un numero o una formula come 2d8")
         return
     if o and ("round" in o or "round_per_livello" in o):
         if "round" in o and not formula_valida(o["round"]):
@@ -65,7 +70,7 @@ def controlla_durata(v, dove: str, e: Esito, codice: str) -> None:
         if "round_per_livello" in o and (not _intero(o["round_per_livello"]) or o["round_per_livello"] < 0):
             e.errore(codice, dove, "round_per_livello: un intero da 0 in su")
         return
-    e.errore(codice, dove, "durata: istantanea, scena, riposo, permanente, {round, round_per_livello} o {turni}")
+    e.errore(codice, dove, "durata: istantanea, scena, riposo, permanente, {round, round_per_livello} o {turni} (un'unità del tempo del set)")
 
 
 def controlla_effetti(v, dove: str, e: Esito, codice: str, condizioni: set[str] | None) -> list[dict]:

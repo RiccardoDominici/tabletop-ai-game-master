@@ -17,6 +17,8 @@ import { limitiDi } from '../src/regole/carico';
 import { Risorse } from '../src/prove/risorse';
 import { Inventario } from '../src/prove/inventario';
 import { loggerMuto } from '../src/logger';
+import { rigaDi } from '../src/regole/progressione';
+import { pxDiScheda } from '../src/regole/esperienza';
 
 const BF = path.join(import.meta.dirname, '..', '..', '..', 'campagne', 'torre-mozza');
 
@@ -266,5 +268,151 @@ describe('time, light and travel (pp. 42, 45)', () => {
     expect(12 * s.viaggio!.perMovimento).toBe(24);
     expect(s.viaggio!.oreAlGiorno).toBe(8);
     expect(s.viaggio!.terreni.map((t) => t.per)).toEqual([0.333, 0.667, 1, 1.333]);
+  });
+});
+
+
+describe('progression by class and level (pp. 7–9, 53, 57, 49)', () => {
+  const cl = (s: SistemaRegole, id: string) => s.classi!.find((c) => c.id === id)!.progressione;
+
+  it('experience points to reach levels 1, 2, 9, 10, 20 (pp. 7–8)', () => {
+    const s = set();
+    // p. 7 Fighter: 0, 2,000, 240,000 (level 9), 360,000 (level 10), 1,560,000 (level 20).
+    expect(cl(s, 'guerriero').px[0]).toBe(0);
+    expect(cl(s, 'guerriero').px[1]).toBe(2000);
+    expect(cl(s, 'guerriero').px[8]).toBe(240000);
+    expect(cl(s, 'guerriero').px[9]).toBe(360000);
+    expect(cl(s, 'guerriero').px[19]).toBe(1560000);
+    // p. 7 Cleric: 0, 1,500, 180,000 (level 9), 270,000 (level 10), 1,170,000 (level 20).
+    expect(cl(s, 'chierico').px[1]).toBe(1500);
+    expect(cl(s, 'chierico').px[8]).toBe(180000);
+    expect(cl(s, 'chierico').px[9]).toBe(270000);
+    expect(cl(s, 'chierico').px[19]).toBe(1170000);
+    // p. 8 Magic-User: 0, 2,500, 300,000 (level 9), 450,000 (level 10), 1,950,000 (level 20).
+    expect(cl(s, 'mago').px[1]).toBe(2500);
+    expect(cl(s, 'mago').px[8]).toBe(300000);
+    expect(cl(s, 'mago').px[9]).toBe(450000);
+    expect(cl(s, 'mago').px[19]).toBe(1950000);
+    // p. 8 Thief: 0, 1,250, 150,000 (level 9), 225,000 (level 10), 975,000 (level 20).
+    expect(cl(s, 'ladro').px[1]).toBe(1250);
+    expect(cl(s, 'ladro').px[8]).toBe(150000);
+    expect(cl(s, 'ladro').px[9]).toBe(225000);
+    expect(cl(s, 'ladro').px[19]).toBe(975000);
+  });
+
+  it('hit dice: one die a level to the 9th, then fixed points (p. 7–8)', () => {
+    const s = set();
+    expect(cl(s, 'guerriero').dadiVita).toEqual([
+      { da: 1, dado: { numero: 1, facce: 8, bonus: 0 }, fissi: null },
+      { da: 10, dado: null, fissi: 2 },
+    ]);
+    expect(cl(s, 'chierico').dadiVita[0]).toMatchObject({ da: 1, dado: { facce: 6 } });
+    expect(cl(s, 'chierico').dadiVita[1]).toMatchObject({ da: 10, fissi: 1 });
+    expect(cl(s, 'mago').dadiVita[0]).toMatchObject({ da: 1, dado: { facce: 4 } });
+    expect(cl(s, 'mago').dadiVita[1]).toMatchObject({ da: 10, fissi: 1 });
+    expect(cl(s, 'ladro').dadiVita[0]).toMatchObject({ da: 1, dado: { facce: 4 } });
+    expect(cl(s, 'ladro').dadiVita[1]).toMatchObject({ da: 10, fissi: 2 });
+  });
+
+  it('attack bonus by level (p. 53): Fighter with NM, Cleric and Thief share a column, Magic-User its own', () => {
+    const s = set();
+    const at = (id: string, l: number) => rigaDi(cl(s, id).attacco, l)!.bonus;
+    // Fighter: NM 0; level 1 +1; 2–3 +2; 4 +3; 5–6 +4; 7 +5; 8–10 +6; 11–12 +7; 13–15 +8; 16–17 +9; 18–20 +10.
+    expect([0, 1, 2, 3, 4, 9, 12, 20].map((l) => at('guerriero', l))).toEqual([0, 1, 2, 2, 3, 6, 7, 10]);
+    // Cleric or Thief: 1–2 +1; 3–4 +2; 5–6 +3; 7–8 +4; 9–11 +5; 12–14 +6; 15–17 +7; 18–20 +8.
+    expect([1, 2, 3, 4, 9, 12, 20].map((l) => at('chierico', l))).toEqual([1, 1, 2, 2, 5, 6, 8]);
+    expect([1, 2, 3, 4, 9, 12, 20].map((l) => at('ladro', l))).toEqual([1, 1, 2, 2, 5, 6, 8]);
+    // Magic-User: 1–3 +1; 4–5 +2; 6–8 +3; 9–12 +4; 13–15 +5; 16–18 +6; 19–20 +7.
+    expect([1, 2, 3, 4, 9, 12, 20].map((l) => at('mago', l))).toEqual([1, 1, 1, 2, 4, 4, 7]);
+  });
+
+  it('thief abilities (p. 9): seven values per row, levels 1, 9, 10, 15, 16, 20', () => {
+    const s = set();
+    const ab = cl(s, 'ladro').abilita!;
+    expect(ab.colonne).toEqual(['scassinare', 'trappole', 'borseggiare', 'muoversi_in_silenzio', 'scalare', 'nascondersi', 'ascoltare']);
+    for (const r of ab.righe) expect(r.valori).toHaveLength(7);
+    const v = (l: number) => rigaDi(ab.righe, l)!.valori;
+    expect(v(1)).toEqual([25, 20, 30, 25, 80, 10, 30]);
+    expect(v(9)).toEqual([65, 60, 70, 65, 88, 50, 62]);
+    expect(v(10)).toEqual([68, 63, 74, 68, 89, 53, 65]);
+    expect(v(15)).toEqual([83, 78, 94, 83, 94, 68, 80]);
+    expect(v(16)).toEqual([84, 79, 95, 85, 95, 69, 83]);
+    expect(v(20)).toEqual([88, 83, 99, 93, 99, 73, 95]);
+  });
+
+  it('turn undead (p. 57): rows at levels 1, 7, 8, 11, 12, 20; nine cells each', () => {
+    const s = set();
+    const rows = cl(s, 'chierico').tabelle['scacciare_non_morti']!;
+    for (const r of rows) expect(r.valori).toHaveLength(9);
+    const v = (l: number) => rigaDi(rows, l)!.valori;
+    expect(v(1)).toEqual([13, 17, 19, null, null, null, null, null, null]);
+    expect(v(7)).toEqual([2, 5, 9, 13, 17, 19, null, null, null]);
+    expect(v(8)).toEqual(['T', 3, 7, 11, 15, 18, 20, null, null]);
+    expect(v(11)).toEqual(['D', 'T', 2, 5, 9, 13, 17, 19, null]);
+    expect(v(12)).toEqual(['D', 'T', 'T', 3, 7, 11, 15, 18, 20]);
+    expect(v(20)).toEqual(['D', 'D', 'D', 'D', 'D', 'T', 'T', 3, 7]);
+  });
+
+  it('XP by monster hit dice (p. 49): rows 0, 1, 9, 25 and the extra per die above 25', () => {
+    const s = set();
+    const e = s.esperienza!;
+    expect(rigaDi(e.perDadiVita, 0)).toEqual({ da: 0, px: 10, speciale: 3 });
+    expect(rigaDi(e.perDadiVita, 1)).toEqual({ da: 1, px: 25, speciale: 12 });
+    expect(rigaDi(e.perDadiVita, 9)).toEqual({ da: 9, px: 1075, speciale: 75 });
+    expect(rigaDi(e.perDadiVita, 25)).toEqual({ da: 25, px: 9000, speciale: 325 });
+    // Over 25 dice: +750 XP and +25 special per die (p. 49).
+    expect(e.oltre).toEqual({ px: 750, speciale: 25 });
+  });
+});
+
+describe('progression as torre-mozza uses it (pp. 3–9, 49, 53, 57–58, 190)', () => {
+  it('the set-level rules: attack bonus to melee, missile and the sneak attack (+4), Constitution on each die', () => {
+    const s = set();
+    expect(s.progressione).toEqual({ attacco: [{ abilita: 'mischia', piu: 0 }, { abilita: 'distanza', piu: 0 }, { abilita: 'alle_spalle', piu: 4 }], puntiFerita: { caratteristica: 'costituzione', minimo: 1 }, unLivelloPerAvventura: true });
+    // p. 190, the optional XP for treasure: 1 gp = 1 XP, only once back to safety.
+    expect(s.esperienza!.tesoro).toEqual({ px: 1, moneta: 'mo', quando: 'al_sicuro' });
+    const razza = (id: string) => s.razze!.find((r) => r.id === id)!.tratti;
+    expect(razza('umano')).toContainEqual({ tipo: 'esperienza', bonus: 10 });
+    expect(razza('elfo')).toContainEqual({ tipo: 'dado_vita', facce: 6 });
+    expect(razza('halfling')).toContainEqual({ tipo: 'dado_vita', facce: 6 });
+    expect(razza('halfling')).toContainEqual({ tipo: 'almeno', valori: { nascondersi: 70 } });
+  });
+
+  it('Turn Undead is a power rolled against the cleric’s table (pp. 57–58)', () => {
+    const p = set().poteri!.find((x) => x.id === 'scacciare_non_morti')!;
+    expect(p.tabella!.dado).toEqual({ numero: 1, facce: 20, bonus: 0 });
+    expect(p.tabella!.colonne.map((c) => c.dadiVita)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    expect(p.tabella!.colpiti).toEqual({ numero: 2, facce: 6, bonus: 0 });
+    expect(p.tabella!.distrugge).toEqual({ dadi: { numero: 1, facce: 8, bonus: 0 }, perLivello: true });
+    expect(p.tabella!.dopoFallimento).toMatchObject({ tipo: 'tempo', unita: 'turno', dadi: { bonus: 1 } });
+    expect(p.soloTipi).toEqual(['non_morto']);
+    expect(p.effetti[0]).toMatchObject({ tipo: 'condizione', condizione: 'scacciato', durata: { tipo: 'tempo', unita: 'turno', dadi: { numero: 2, facce: 4 } } });
+  });
+
+  it('the four PCs keep today’s numbers, now from their class and level: no hand-typed attack bonus or thief percentage', () => {
+    const s = set();
+    const schede = caricaSchedeGeneriche(s, caricaCampagna(BF));
+    for (const pg of ['pg_livia', 'pg_fulco', 'pg_nespola', 'pg_eliandro']) {
+      const sch = schede.get(pg)!;
+      expect(sch.px, pg).toBe(0);
+      expect(sch.abilita['mischia'], pg).toBe(1);
+      expect(sch.abilita['distanza'], pg).toBe(1);
+      expect(Object.keys(sch.abilitaScritte!).filter((k) => ['mischia', 'distanza', 'alle_spalle', 'scassinare', 'nascondersi'].includes(k)), pg).toEqual([]);
+      expect(sch.avvisi, pg).toEqual([]);
+    }
+    // Nespola: the thief's level-1 row and the halfling's 70 for hiding; the sneak attack +1 +4.
+    expect(schede.get('pg_nespola')!.abilita).toMatchObject({ alle_spalle: 5, scassinare: 25, trappole: 20, borseggiare: 30, muoversi_in_silenzio: 25, scalare: 80, nascondersi: 70, ascoltare: 30 });
+    // What is not a class table stays the sheet's: stuck doors, stonework, secret doors.
+    expect(schede.get('pg_livia')!.abilita['forzare']).toBe(3);
+    expect(schede.get('pg_fulco')!.abilita).toMatchObject({ forzare: 2, pietra: 2 });
+    expect(schede.get('pg_eliandro')!.abilita['cercare']).toBe(3);
+  });
+
+  it('what the NPCs are worth when defeated, by their hit dice (p. 49)', () => {
+    const s = set();
+    const schede = caricaSchedeGeneriche(s, caricaCampagna(BF));
+    expect(pxDiScheda(s.esperienza, schede.get('png_grosso')!)).toBe(25);
+    expect(pxDiScheda(s.esperienza, schede.get('png_zirra')!)).toBe(145);
+    expect(pxDiScheda(s.esperienza, schede.get('png_berta')!)).toBe(10);
   });
 });
