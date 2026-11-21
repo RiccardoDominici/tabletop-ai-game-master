@@ -108,7 +108,11 @@ combattimento:
      invitation. The others may write, but their action stays queued (`TavoloAzioni.rinvia`) and is resolved on their
      turn. No timer: the fast pace applies only if the scene asks for it.
    - **NPC step**: resolved by the Engine, with no extra calls. It attacks a standing PC, in the right phase. The target,
-     deterministic, is the PC who hit it; otherwise the one who acted last; otherwise the first one standing.
+     deterministic, is the PC who hit it; otherwise the one who acted last; otherwise the first one standing. A monster
+     with several attacks a round (`per_round` of its sheet or its bestiary entry, docs/regole.md §2: a ghoul's claw,
+     claw, bite) makes them all in its step, the first alternative it can fully use, each with its card and a numbered
+     fact («Turno di Artiglio Nero, attacco 2 di 3: …», `prove.combattimento.turno_png_piu`); when its target drops, the
+     next attack goes to the next target by the same rule (audit P6-07: before, the first weapon only).
    - Consecutive NPC steps are resolved together. The narrator narrates them in the same reply, after the PC's action.
 3. **At 0**:
    - the set's condition «Privo di sensi» (Unconscious);

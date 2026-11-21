@@ -22,6 +22,7 @@ from . import regole_classi
 from . import regole_progressione
 from . import regole_poteri
 from . import regole_catalogo
+from . import regole_bestiario
 from .regole_effetti import controlla_cadute, controlla_effetti, controlla_riposo
 from .regole_repertorio import blocchi_richiede
 from .lingua import generiche_in
@@ -350,9 +351,11 @@ def _file_del_set(c: Campagna, e: Esito, dove_base: Path) -> None:
 
 
 def _schede(c: Campagna, e: Esito, car: set[str], abi: set[str], dadi: bool, tabella: list[tuple[int, int]] | None = None,
-            soglie: dict[str, int] | None = None, per_scheda=None) -> None:
-    """Le schede di PG e PNG seguono il set: caratteristiche tutte e sole quelle del set, abilità, PF, attacchi."""
+            soglie: dict[str, int] | None = None, per_scheda=None, mostri: dict[str, dict] | None = None) -> None:
+    """Le schede di PG e PNG seguono il set: caratteristiche tutte e sole quelle del set, abilità, PF, attacchi. Una
+    scheda con `mostro:` si controlla con le chiavi del mostro del bestiario sotto le sue (regole_bestiario)."""
     soglie = soglie or {}
+    mostri = mostri or {}
     da_controllare = [(f"pg.yaml {p.get('id', '?')}", p) for p in c.personaggi if "scheda" in p]
     da_controllare += [(nome, d) for _, (nome, d) in c.png.items() if "scheda" in d]
     for p in c.personaggi:
@@ -363,10 +366,15 @@ def _schede(c: Campagna, e: Esito, car: set[str], abi: set[str], dadi: bool, tab
             e.errore("SCHEDA.mancante", nome, "manca la scheda (caratteristiche del set, pf, attacchi)")
     for dove, dati in da_controllare:
         s = _ogg(dati.get("scheda")) or {}
+        if "mostro" in s and s["mostro"] not in mostri:
+            e.errore("REGOLE.bestiario", dove, f"scheda.mostro: «{s['mostro']}» non è un mostro del bestiario del set")
+        s, da_mostro = regole_bestiario.scheda_con_mostro(s, mostri)
         if per_scheda:
             per_scheda(s, dove)
         cars = _ogg(s.get("caratteristiche"))
-        if cars is None:
+        if cars is None and da_mostro:
+            pass  # a monster has no ability scores (Basic Fantasy p. 62): the +0 value, as the Engine reads it
+        elif cars is None:
             _err(e, "scheda", dove, "scheda.caratteristiche: una mappa con le caratteristiche del set")
         else:
             mancanti, in_piu = sorted(car - set(cars)), sorted(set(cars) - car)
@@ -386,12 +394,14 @@ def _schede(c: Campagna, e: Esito, car: set[str], abi: set[str], dadi: bool, tab
                 _err(e, "scheda", dove, f"abilita.{k}: un numero intero")
             elif k in soglie and not 0 <= v <= soglie[k]:
                 _err(e, "scheda", dove, f"abilita.{k} = {v}: è una soglia sul d{soglie[k]}, da 0 a {soglie[k]}")
-        if not (_intero(s.get("pf")) and s["pf"] > 0):
-            _err(e, "scheda", dove, "pf: un numero intero maggiore di zero")
+        # Hit points: written, a formula rolled once by the Engine («1d2»), or none with hit dice (rolled by the bestiary).
+        pf_ok = (_intero(s.get("pf")) and s["pf"] > 0) or (isinstance(s.get("pf"), str) and regole_bestiario.formula(s["pf"]))
+        if not pf_ok and not ("pf" not in s and regole_bestiario.dadi_vita_validi(s.get("dadi_vita"))):
+            _err(e, "scheda", dove, "pf: un numero intero maggiore di zero (o, con i dadi vita, niente: li tira il Motore)")
         for campo in ("difesa", "armatura"):
             if s.get(campo) is not None and not _intero(s[campo]):
                 _err(e, "scheda", dove, f"{campo}: un numero intero")
-        if "morale" in s and not (_intero(s["morale"]) and 2 <= s["morale"] <= 12):
+        if "morale" in s and not regole_bestiario.morale_valido(s["morale"]):
             _err(e, "scheda", dove, "morale: un numero da 2 a 12 (2d6 contro il morale, docs/combattimento.md)")
         for i, at in enumerate(s.get("attacchi") or [], start=1):
             o = _ogg(at) or {}
@@ -500,6 +510,8 @@ def controlla(c: Campagna, e: Esito) -> None:
     tabelle = {o["id"] for o in r.get("classi") or [] if isinstance(o, dict) and o.get("tiri_salvezza")}
     salvezze = {o["id"] for o in r.get("abilita") or [] if isinstance(o, dict) and o.get("salvezza")}
     poteri = regole_poteri.poteri_del_set(r, salvezze, classi, condizioni_del_set(r), e, dove)
+    regole_bestiario.bestiario_del_set(r, abi, e, dove)
+    mostri = regole_bestiario.mostri_del_set(c.cartella / "regole", r, set(classi), set(poteri), e)
     risorse = regole_poteri.risorse_del_set(r, e, dove)
     regole_poteri.abilita_d_attacco(r, e, dove)
 
@@ -523,7 +535,7 @@ def controlla(c: Campagna, e: Esito) -> None:
         regole_poteri.controlla_scheda(s, d, r, poteri, risorse, e)
         regole_catalogo.controlla_scheda(s, d, r, catalogo, e)
         regole_progressione.controlla_scheda(s, d, r, e, di_png=not d.startswith("pg.yaml"))
-    _schede(c, e, car, abi, dadi_attivi(c), tabella_modificatori(r), soglie_abilita(r), per_scheda=per_scheda)
+    _schede(c, e, car, abi, dadi_attivi(c), tabella_modificatori(r), soglie_abilita(r), per_scheda=per_scheda, mostri=mostri)
     _prove_di_scena(c, e, car, abi, mosse, diff, condizioni_del_set(r))
     controlla_cadute(r, e, dove)
     controlla_riposo(r, e, dove)

@@ -20,6 +20,7 @@ import type { RegolaCarico, RegolaMovimento } from './carico';
 import type { RegolaTempo, RegolaViaggio } from './tempo';
 import type { Progressione } from './progressione';
 import type { RegolaEsperienza } from './esperienza';
+import type { Mostro, RegolaBestiario } from './bestiario';
 
 export interface Voce {
   id: string;
@@ -204,6 +205,10 @@ export interface SistemaRegole {
   progressione?: Progressione | null;
   /** XP of defeated creatures and of treasure (regole.yaml → esperienza; regole/esperienza.ts). */
   esperienza?: RegolaEsperienza | null;
+  /** How a monster's stat block becomes a sheet: hit die, attack bonus by hit dice (regole.yaml → bestiario). */
+  bestiario?: RegolaBestiario | null;
+  /** The manual's stat blocks (regole.yaml → mostri, regole/mostri.yaml; regole/bestiario.ts): a sheet's `mostro:`. */
+  mostri?: Mostro[];
 }
 
 /** Un passo del manuale (regole/estratti/*.md), per l'arbitro e per «Chiedi una regola». */
@@ -264,6 +269,12 @@ export interface SchedaGenerica {
     penalita?: number;
     /** Attacking with it empties the bearer's spells of the day (a cleric's edged weapon). */
     perdeIncantesimi?: boolean;
+    /** Powers of the set a hit applies to the target, each with the target's save (a ghoul's paralysis, a poison bite). */
+    colpendo?: string[];
+    /** A special action instead of an attack roll: this power of the set (a dragon's breath, a gaze). */
+    potere?: string;
+    /** How many times a day the line can be used (a breath: as many as the hit dice); counted by prove/risorse.ts. */
+    usi?: number;
   }>;
   /** Starting counters of the set's resources (`scheda.risorse`: arrows, coins). */
   risorse?: Record<string, number>;
@@ -294,6 +305,21 @@ export interface SchedaGenerica {
   abilitaScritte?: Record<string, number>;
   /** The sheet's own traits (`scheda.tratti`), besides its race's and class's (regole/tratti.ts). */
   tratti?: Tratto[];
+  /** The bestiary entry the sheet takes its stat block from (`scheda.mostro`, regole/bestiario.ts). */
+  mostro?: string;
+  /**
+   * The attacks of one round, as lists of its line ids, alternatives in order (`per_round`: a ghoul's «2 claws, 1 bite»
+   * = [[artiglio, artiglio, morso]]): the NPC's step uses the first one it can (prove/motore.ts). Absent = one attack.
+   */
+  perRound?: string[][];
+  /** Hit points to roll once per creature with the session's seed (prove/bestiario.ts); `pf_massimi` is their average until then. */
+  pfDaTirare?: FormulaDadi;
+  /** Morale (2–12, Basic Fantasy p. 57), or one before and one after the creature is engaged (a giant ant: 7, then 12). */
+  morale?: number | { prima: number; dopo: number };
+  /** The attack bonus a stat block prints when it differs from its hit dice (Basic Fantasy p. 62, «in parentheses»). */
+  attacco?: number;
+  /** Only weapons of these kinds hurt it (`colpito_solo_da`: argento, magica; Basic Fantasy's (s) and (m), p. 62). */
+  colpitoSoloDa?: string[];
   /** The set's class id and level (`scheda.classe`, `scheda.livello`): they pick the rows of the class tables. */
   classe?: string | null;
   livello?: number | null;

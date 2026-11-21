@@ -13,6 +13,7 @@ import re
 
 from .esito import Esito
 from .regole_effetti import controlla_effetti
+from .regole_bestiario import dadi_vita_validi
 
 TIPI_POTERE = ("incantesimo", "oggetto", "azione", "pericolo")
 BERSAGLI_POTERE = ("se_stesso", "uno", "nemici", "alleati")
@@ -173,8 +174,8 @@ def controlla_scheda(s: dict, dove: str, r: dict, poteri: dict[str, dict], risor
                         e.errore("REGOLE.scheda", dove, f"scheda.incantesimi: {quanti} di {liv}° livello preparati, la classe ne dà {posti} al giorno")
     if "slot" in s and not (isinstance(s["slot"], list) and all(_intero(n) and n >= 0 for n in s["slot"])):
         e.errore("REGOLE.scheda", dove, "scheda.slot: incantesimi al giorno per livello, interi da 0 in su")
-    if "dadi_vita" in s and not (_intero(s["dadi_vita"]) and s["dadi_vita"] >= 0):
-        e.errore("REGOLE.scheda", dove, "scheda.dadi_vita: un intero (i più e i meno non contano)")
+    if "dadi_vita" in s and not dadi_vita_validi(s["dadi_vita"]):
+        e.errore("REGOLE.scheda", dove, "scheda.dadi_vita: un intero, o come li stampa il manuale («3+2*», «1-1», «½»)")
     for k in ("tipo", "immune"):
         v = s.get(k)
         if v is not None and not (isinstance(v, str) or (isinstance(v, list) and all(isinstance(x, str) for x in v))):

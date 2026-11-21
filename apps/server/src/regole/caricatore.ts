@@ -32,6 +32,7 @@ import { leggiMagia, leggiRisorse } from './risorse';
 import { leggiCatalogo, leggiMonete } from './catalogo';
 import { leggiCarico, leggiMovimento } from './carico';
 import { leggiTempo, leggiViaggio, secondiDi } from './tempo';
+import { leggiFileMostri, leggiMostri, leggiRegolaBestiario } from './bestiario';
 
 export const CARTELLA_REGOLE = 'regole';
 const TIPI: readonly TipoRisoluzione[] = ['d20_cd', '2d6_fasce', 'sotto_soglia'];
@@ -57,8 +58,11 @@ function voci(v: unknown, dove: string, errori: string[]): Voce[] {
   return out;
 }
 
-/** Legge e controlla regole.yaml. Gli errori rendono il set inutilizzabile (si torna all'SRD). */
-export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaRegole | null {
+/**
+ * Legge e controlla regole.yaml. Gli errori rendono il set inutilizzabile (si torna all'SRD). `fileMostri`: the entries of
+ * the set folder's regole/mostri.yaml (the bestiary, regole/bestiario.ts), read by caricaRegole.
+ */
+export function leggiSistema(d: D, errori: string[], avvisi: string[], fileMostri?: unknown): SistemaRegole | null {
   const id = str(d['id']);
   if (!id || !/^[a-z0-9][a-z0-9.-]*$/.test(id)) errori.push('id: serve un id come «pbta-2d6» (minuscole, cifre, - e .)');
   if (id === ID_SRD) return sistemaSrd();
@@ -227,6 +231,9 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     if ((c.progressione.attacco.length || c.progressione.dadiVita.length) && !progressione) errori.push(`classi.${c.id}: attack or hit-dice rows need the set's progressione (which abilities, which characteristic)`);
   }
   if (viaggio && (!tempo || !movimento)) errori.push('viaggio: travel needs the set\'s tempo and movimento');
+  // The bestiary (P6-00): the rules that turn a stat block into a sheet, and the entries (inline, then regole/mostri.yaml).
+  const bestiario = leggiRegolaBestiario(d['bestiario'], new Set(abilita.map((a) => a.id)), errori);
+  const mostri = leggiMostri([{ v: d['mostri'], dove: 'mostri' }, { v: fileMostri, dove: 'regole/mostri.yaml' }], errori);
   const riposo = leggiRiposo(d['riposo'], errori);
   for (const [i, x] of (Array.isArray(d['riposo']) ? d['riposo'] : []).entries()) {
     const durata = ogg(x)?.['durata'];
@@ -291,6 +298,8 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     ...(viaggio ? { viaggio } : {}),
     ...(progressione ? { progressione } : {}),
     ...(esperienza ? { esperienza } : {}),
+    ...(bestiario ? { bestiario } : {}),
+    ...(mostri.length ? { mostri } : {}),
   };
 }
 
@@ -354,7 +363,7 @@ export function caricaRegole(cartellaCampagna: string, log?: Logger): RegoleCamp
     return srdBase('regole.yaml non valido');
   }
   const errori: string[] = [];
-  const sistema = leggiSistema(dati, errori, avvisi);
+  const sistema = leggiSistema(dati, errori, avvisi, leggiFileMostri(cartella, errori));
   if (!sistema || errori.length) {
     log?.error({ file, errori }, 'regole: set non valido, si gioca con l’SRD 5.2');
     return srdBase('set non valido');

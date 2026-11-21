@@ -18,7 +18,7 @@ from __future__ import annotations
 import copy
 import re
 
-from . import regole_schede, regole_set
+from . import regole_bestiario, regole_schede, regole_set
 from .carica import Campagna
 from .esito import Esito
 
@@ -117,7 +117,11 @@ def _scheda_del_set(c: Campagna, e: Esito, dove: str, tipo: str, scheda: dict) -
     vista = copy.copy(c)
     vista.pg = {"personaggi": []}
     vista.png = {f"gregario {tipo}": (dove, {"scheda": scheda})}
-    regole_set._schede(vista, e, car, abi, regole_schede.dadi_attivi(c), regole_set.tabella_modificatori(r), regole_set.soglie_abilita(r))
+    # A type may point to a stat block of the set's bestiary (`mostro:`): its ids, read without reporting (regole_set does).
+    poteri = {p["id"] for p in r.get("poteri") or [] if isinstance(p, dict) and isinstance(p.get("id"), str)}
+    classi = {k["id"] for k in r.get("classi") or [] if isinstance(k, dict) and isinstance(k.get("id"), str)}
+    mostri = regole_bestiario.mostri_del_set(c.cartella / "regole", r, classi, poteri, scarto)
+    regole_set._schede(vista, e, car, abi, regole_schede.dadi_attivi(c), regole_set.tabella_modificatori(r), regole_set.soglie_abilita(r), mostri=mostri)
 
 
 def _inoltra(e: Esito, grezza: Esito, dove: str) -> None:

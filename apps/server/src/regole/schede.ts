@@ -18,20 +18,28 @@ import { leggiTratti, type Tratto } from './tratti';
 import { voce } from './catalogo';
 import { applicaDotazione, dotazioneIniziale } from './equipaggiamento';
 import { valoriDaClasse } from './progressione';
+import { attaccoDaDadiVita, dadiVitaEffettivi, formulaPuntiFerita, leggiDadiVita, schedaConMostro } from './bestiario';
 
 const ogg = (v: unknown): DatiYaml | null => (v !== null && typeof v === 'object' && !Array.isArray(v) ? (v as DatiYaml) : null);
 const intero = (v: unknown): number | null => (typeof v === 'number' && Number.isInteger(v) ? v : null);
 
 export function leggiSchedaGenerica(s: SistemaRegole, id: string, nome: string, di_png: boolean, grezza: unknown): SchedaGenerica | null {
-  const o = ogg(grezza);
-  if (!o) return null;
+  const scritta = ogg(grezza);
+  if (!scritta) return null;
   const avvisi: string[] = [];
   const dove = `${id}.scheda`;
+  // A sheet that points to a stat block of the set's bestiary (`mostro:`, regole/bestiario.ts): the entry's keys first,
+  // the sheet's own laid over them (an NPC's own hit points, a different weapon).
+  const idMostro = typeof scritta['mostro'] === 'string' ? scritta['mostro'] : null;
+  const mostro = idMostro ? (s.mostri ?? []).find((m) => m.id === idMostro) : undefined;
+  if (idMostro && !mostro) avvisi.push(`${dove}.mostro: «${idMostro}» non è un mostro del bestiario del set ${s.id}`);
+  const o = mostro ? schedaConMostro(mostro, scritta) : scritta;
   const caratteristiche: Record<string, number> = {};
   const car = ogg(o['caratteristiche']) ?? {};
   for (const c of s.caratteristiche) {
     const v = intero(car[c.id]);
-    if (v === null) avvisi.push(`${dove}.caratteristiche: manca ${c.id} (vale ${caratteristicaPredefinita(s)})`);
+    // A monster has no ability scores in most manuals (Basic Fantasy p. 62): the +0 value, without a warning.
+    if (v === null && !mostro) avvisi.push(`${dove}.caratteristiche: manca ${c.id} (vale ${caratteristicaPredefinita(s)})`);
     caratteristiche[c.id] = v ?? caratteristicaPredefinita(s);
   }
   for (const k of Object.keys(car)) if (!s.caratteristiche.some((c) => c.id === k)) avvisi.push(`${dove}.caratteristiche: «${k}» non è del set ${s.id}`);
@@ -41,7 +49,14 @@ export function leggiSchedaGenerica(s: SistemaRegole, id: string, nome: string, 
     else if (intero(v) === null) avvisi.push(`${dove}.abilita.${k}: un numero intero`);
     else abilita[k] = v as number;
   }
-  const pf = intero(o['pf']) ?? intero(o['pf_massimi']);
+  // Hit points: a number the sheet writes; a formula («1d2») rolled once by the Engine; none, with hit dice, the hit dice
+  // rolled by the bestiary's die (prove/bestiario.ts). The maximum until then is the formula's average.
+  const dv = leggiDadiVita(o['dadi_vita']);
+  if (o['dadi_vita'] !== undefined && !dv) avvisi.push(`${dove}.dadi_vita: «${String(o['dadi_vita'])}» non è un numero di dadi vita come 3, "3+2", "1-1", "½", "2*"`);
+  const pfFormula = typeof o['pf'] === 'string' ? leggiFormula(o['pf']) : null;
+  const pfDaTirare = pfFormula && pfFormula.numero > 0 ? pfFormula : intero(o['pf']) === null && intero(o['pf_massimi']) === null && dv ? formulaPuntiFerita(dv, s.bestiario ?? null) : null;
+  const media = (f: { numero: number; facce: number; bonus: number }): number => Math.max(1, Math.floor((f.numero * (f.facce + 1)) / 2) + f.bonus);
+  const pf = intero(o['pf']) ?? intero(o['pf_massimi']) ?? (pfFormula && !pfFormula.numero ? pfFormula.bonus : null) ?? (pfDaTirare ? media(pfDaTirare) : null);
   if (pf === null || pf < 1) avvisi.push(`${dove}: mancano i punti ferita (pf), uso 1`);
   const attacchi = (Array.isArray(o['attacchi']) ? o['attacchi'] : []).flatMap((x, i) => {
     const a = ogg(x);
@@ -54,20 +69,30 @@ export function leggiSchedaGenerica(s: SistemaRegole, id: string, nome: string, 
     const armaCat = typeof a['arma'] === 'string' ? a['arma'] : null;
     if (armaCat && voce(s.catalogo, armaCat)?.tipo !== 'arma') avvisi.push(`${dove}.attacchi[${i + 1}].arma: «${armaCat}» non è un'arma del catalogo del set`);
     const danno = leggiFormula(a['danno']);
-    if (!danno && !armaCat) avvisi.push(`${dove}.attacchi[${i + 1}]: danno «${String(a['danno'])}» non è una formula come 1d6 (uso 1d4)`);
+    if (!danno && !armaCat && typeof a['potere'] !== 'string') avvisi.push(`${dove}.attacchi[${i + 1}]: danno «${String(a['danno'])}» non è una formula come 1d6 (uso 1d4)`);
     const c = typeof a['caratteristica'] === 'string' && s.caratteristiche.some((x) => x.id === a['caratteristica']) ? (a['caratteristica'] as string) : null;
     const ab = typeof a['abilita'] === 'string' && s.abilita.some((x) => x.id === a['abilita']) ? (a['abilita'] as string) : null;
     if (a['automatico'] !== undefined && typeof a['automatico'] !== 'boolean') avvisi.push(`${dove}.attacchi[${i + 1}].automatico: true o false`);
     // `consuma`: a resource of the set each attack spends (ammunition); refused when it is at 0 (prove/risorse.ts).
     const consuma = typeof a['consuma'] === 'string' && (s.risorse ?? []).some((r) => r.id === a['consuma']) ? { consuma: a['consuma'] as string } : {};
     if (typeof a['consuma'] === 'string' && !('consuma' in consuma)) avvisi.push(`${dove}.attacchi[${i + 1}].consuma: «${a['consuma']}» non è una risorsa del set`);
-    return [{ id: chiave(n), nome: n, danno: danno ?? { numero: 1, facce: 4, bonus: 0 }, caratteristica: c, abilita: ab, tipo_danno: typeof a['tipo_danno'] === 'string' ? a['tipo_danno'] : null, distanza: a['distanza'] === true, ...(a['automatico'] === true ? { automatico: true } : {}), ...consuma, ...(armaCat ? { arma: armaCat } : {}) }];
+    // A monster's line (regole/bestiario.ts): its own id (per_round names it), the powers a hit applies (`colpendo`: a
+    // ghoul's paralysis), a special action instead of an attack roll (`potere`: a breath), its uses per day and rate.
+    const extra = lineaDiMostro(s, a, `${dove}.attacchi[${i + 1}]`, avvisi);
+    return [{ id: typeof a['id'] === 'string' && a['id'] ? chiave(a['id']) : chiave(n), nome: n, danno: danno ?? { numero: 1, facce: 4, bonus: 0 }, caratteristica: c, abilita: ab ?? (c || extra.potere || !di_png ? null : bestiaAbilita(s, a)), tipo_danno: typeof a['tipo_danno'] === 'string' ? a['tipo_danno'] : null, distanza: a['distanza'] === true, ...(a['automatico'] === true ? { automatico: true } : {}), ...consuma, ...(armaCat ? { arma: armaCat } : {}), ...extra }];
   });
   const difesa = intero(o['difesa']) ?? intero(o['ca']);
-  const sch: SchedaGenerica = { id, nome, di_png, caratteristiche, abilita, pf_massimi: pf && pf > 0 ? pf : 1, difesa, armatura: intero(o['armatura']) ?? 0, attacchi, ...classeDellaScheda(s, o, dove, avvisi), ...risorseDellaScheda(s, o, dove, avvisi), ...equipaggiamentoDellaScheda(s, o, dove, avvisi), ...esperienzaDellaScheda(o, dove, avvisi), avvisi };
+  const sch: SchedaGenerica = { id, nome, di_png, caratteristiche, abilita, pf_massimi: pf && pf > 0 ? pf : 1, difesa, armatura: intero(o['armatura']) ?? 0, attacchi, ...classeDellaScheda(s, o, dove, avvisi), ...risorseDellaScheda(s, o, dove, avvisi), ...equipaggiamentoDellaScheda(s, o, dove, avvisi), ...esperienzaDellaScheda(o, dove, avvisi), ...mostroDellaScheda(s, o, attacchi, dove, avvisi), avvisi };
+  if (idMostro && mostro) sch.mostro = idMostro;
+  if (pfDaTirare && (pfFormula || intero(o['pf']) === null)) sch.pfDaTirare = pfDaTirare;
+  // Hit dice as the manual prints them («3+2*»): the number a table reads, and the asterisks unless the sheet counts them.
+  if (dv) {
+    sch.dadiVita = dadiVitaEffettivi(dv, s.bestiario ?? null);
+    if (o['speciali'] === undefined && dv.asterischi) sch.speciali = dv.asterischi;
+  }
   // The class tables give the abilities that grow with the level (M1); a value the sheet writes stays, as an override.
   sch.abilitaScritte = { ...abilita };
-  for (const x of derivaAbilita(s, sch)) avvisi.push(`${dove}.abilita.${x.id}: ${x.scritto} scritto a mano, la tabella della classe dà ${x.tabella} al livello ${sch.livello ?? 1}: vale quello della scheda`);
+  for (const x of derivaAbilita(s, sch)) avvisi.push(`${dove}.abilita.${x.id}: ${x.scritto} scritto a mano, ${sch.classe ? `la tabella della classe dà ${x.tabella} al livello ${sch.livello ?? 1}` : `la tabella dei mostri dà ${x.tabella} per ${sch.dadiVita ?? 0} dadi vita`}: vale quello della scheda`);
   // Gear from the catalog: the AC and the attack lines come from it (the sheet's own lines stay after the weapons').
   if (sch.equipaggiamento) {
     sch.attacchiPropri = attacchi;
@@ -85,7 +110,7 @@ export function leggiSchedaGenerica(s: SistemaRegole, id: string, nome: string, 
  */
 export function derivaAbilita(s: SistemaRegole, sch: SchedaGenerica): Array<{ id: string; scritto: number; tabella: number }> {
   const classe = sch.classe ? (s.classi ?? []).find((c) => c.id === sch.classe) : undefined;
-  const tabella = valoriDaClasse(s.progressione, classe?.progressione ?? null, sch.livello ?? 1, trattiDi(s, sch), sch.classe ?? null);
+  const tabella = { ...attaccoDiMostro(s, sch), ...valoriDaClasse(s.progressione, classe?.progressione ?? null, sch.livello ?? 1, trattiDi(s, sch), sch.classe ?? null) };
   const scritte = sch.abilitaScritte ?? sch.abilita;
   sch.abilita = { ...tabella, ...scritte };
   return Object.entries(tabella).flatMap(([id, n]) => (scritte[id] !== undefined && scritte[id] !== n ? [{ id, scritto: scritte[id]!, tabella: n }] : []));
@@ -190,9 +215,9 @@ function risorseDellaScheda(s: SistemaRegole, o: DatiYaml, dove: string, avvisi:
   if (tipo) out.tipo = tipo;
   const immune = lista('immune');
   if (immune) out.immune = immune;
+  // Hit dice: a whole number here; the manual's form («3+2*», «½») is read by leggiSchedaGenerica (regole/bestiario.ts).
   const dv = intero(o['dadi_vita']);
-  if (o['dadi_vita'] !== undefined && (dv === null || dv < 0)) avvisi.push(`${dove}.dadi_vita: un intero (i più e i meno non contano, Basic Fantasy p. 54)`);
-  else if (dv !== null) out.dadiVita = dv;
+  if (dv !== null && dv >= 0) out.dadiVita = dv;
   return out;
 }
 
@@ -225,6 +250,83 @@ function classeDellaScheda(s: SistemaRegole, o: DatiYaml, dove: string, avvisi: 
     if (sc && typeof sc['classe'] === 'string' && classi.has(sc['classe']) && lv !== null && lv >= 0) out.salvaCome = { classe: sc['classe'], livello: lv };
     else avvisi.push(`${dove}.salva_come: {classe: una classe del set, livello: un intero}`);
   }
+  return out;
+}
+
+/**
+ * A monster sheet's attack bonus by its hit dice (regole/bestiario.ts, Basic Fantasy p. 53): for the bestiary's attack
+ * abilities, the stat block's own bracket (`attacco`) or the set's table. Only a sheet with hit dice and no class (a
+ * class's attack rows are the class tables'). Empty without the set's `bestiario.attacco`.
+ */
+export function attaccoDiMostro(s: SistemaRegole, sch: SchedaGenerica): Record<string, number> {
+  const b = s.bestiario;
+  if (!b?.attacco.length || sch.classe || ((sch.dadiVita === null || sch.dadiVita === undefined) && sch.attacco === undefined)) return {};
+  const bonus = sch.attacco ?? attaccoDaDadiVita(b, sch.dadiVita ?? 0);
+  return Object.fromEntries(b.abilita.map((a) => [a, bonus]));
+}
+
+/**
+ * The ability a monster's natural attack line rolls with when it names none: the bestiary's first attack ability (melee),
+ * its second for a missile line (`distanza: true`). Null without a bestiary (as before: the line rolls with nothing).
+ */
+function bestiaAbilita(s: SistemaRegole, a: DatiYaml): string | null {
+  const ab = s.bestiario?.abilita ?? [];
+  return (a['distanza'] === true ? (ab[1] ?? ab[0]) : ab[0]) ?? null;
+}
+
+/** A monster line's extras (regole/bestiario.ts): powers on a hit, a special action, uses per day, rate. */
+function lineaDiMostro(s: SistemaRegole, a: DatiYaml, dove: string, avvisi: string[]): Pick<SchedaGenerica['attacchi'][number], 'colpendo' | 'potere' | 'usi' | 'ricarica'> {
+  const out: Pick<SchedaGenerica['attacchi'][number], 'colpendo' | 'potere' | 'usi' | 'ricarica'> = {};
+  const poteri = new Set((s.poteri ?? []).map((p) => p.id));
+  const lista = Array.isArray(a['colpendo']) ? a['colpendo'] : typeof a['colpendo'] === 'string' ? [a['colpendo']] : null;
+  if (lista) {
+    const ok = lista.filter((x): x is string => typeof x === 'string' && poteri.has(x));
+    for (const x of lista) if (!ok.includes(x as string)) avvisi.push(`${dove}.colpendo: «${String(x)}» non è un potere del set`);
+    if (ok.length) out.colpendo = ok;
+  }
+  if (typeof a['potere'] === 'string') {
+    if (poteri.has(a['potere'])) out.potere = a['potere'];
+    else avvisi.push(`${dove}.potere: «${a['potere']}» non è un potere del set`);
+  }
+  if (a['usi'] !== undefined) {
+    if (intero(a['usi']) !== null && (a['usi'] as number) > 0) out.usi = a['usi'] as number;
+    else avvisi.push(`${dove}.usi: quante volte al giorno, un intero da 1 in su`);
+  }
+  if (a['ricarica'] !== undefined) {
+    if (intero(a['ricarica']) !== null && (a['ricarica'] as number) > 1) out.ricarica = a['ricarica'] as number;
+    else avvisi.push(`${dove}.ricarica: una volta ogni quanti round, un intero da 2 in su`);
+  }
+  return out;
+}
+
+/**
+ * What a monster's stat block adds to a sheet (regole/bestiario.ts): its attacks per round (`per_round`, alternatives
+ * of line ids), its morale (a number, or `{prima, dopo}`: before and after it is engaged), the attack bonus it prints,
+ * the weapons that can hurt it (`colpito_solo_da`).
+ */
+function mostroDellaScheda(s: SistemaRegole, o: DatiYaml, attacchi: SchedaGenerica['attacchi'], dove: string, avvisi: string[]): Pick<SchedaGenerica, 'perRound' | 'morale' | 'attacco' | 'colpitoSoloDa'> {
+  const out: Pick<SchedaGenerica, 'perRound' | 'morale' | 'attacco' | 'colpitoSoloDa'> = {};
+  if (o['per_round'] !== undefined) {
+    const righe = Array.isArray(o['per_round']) ? o['per_round'] : null;
+    const ids = new Set(attacchi.map((a) => a.id));
+    const giro = righe?.map((r) => (Array.isArray(r) ? r.map((x) => (typeof x === 'string' ? chiave(x) : '')) : []));
+    if (!giro || !giro.length || giro.some((r) => !r.length || r.some((x) => !ids.has(x)))) avvisi.push(`${dove}.per_round: liste di id delle sue linee d'attacco (${[...ids].join(', ') || 'nessuna'})`);
+    else out.perRound = giro;
+  }
+  const m = o['morale'];
+  if (intero(m) !== null && (m as number) >= 2 && (m as number) <= 12) out.morale = m as number;
+  else if (ogg(m) && intero(ogg(m)!['prima']) !== null && intero(ogg(m)!['dopo']) !== null) out.morale = { prima: ogg(m)!['prima'] as number, dopo: ogg(m)!['dopo'] as number };
+  else if (m !== undefined) avvisi.push(`${dove}.morale: un numero da 2 a 12, o {prima, dopo}`);
+  if (o['attacco'] !== undefined) {
+    if (intero(o['attacco']) !== null) out.attacco = o['attacco'] as number;
+    else avvisi.push(`${dove}.attacco: il bonus d'attacco del mostro, un intero`);
+  }
+  if (o['colpito_solo_da'] !== undefined) {
+    const v = Array.isArray(o['colpito_solo_da']) ? o['colpito_solo_da'].filter((x): x is string => typeof x === 'string') : [];
+    if (!v.length) avvisi.push(`${dove}.colpito_solo_da: le armi che lo feriscono, [argento, magica] o [magica]`);
+    else out.colpitoSoloDa = v;
+  }
+  void s;
   return out;
 }
 

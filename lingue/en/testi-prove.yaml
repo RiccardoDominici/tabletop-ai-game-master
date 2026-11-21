@@ -272,6 +272,8 @@ prove:
     prima_png: "NPCs first"
     png_non_agisce: "{nome}'s turn: is {condizione}, does not act."
     turno_png: "{nome}'s turn: {frase} Details: {dettagli}"
+    # A monster with several attacks a round (per_round, regole/bestiario.ts): one fact per attack, numbered.
+    turno_png_piu: "{nome}'s turn, attack {n} of {di}: {frase} Details: {dettagli}"
     # Simultaneous ties (combattimento.iniziativa.pari: simultanei): the NPC strikes at the same moment it is dropped.
     turno_png_insieme: "{nome}'s turn, at the same moment they fall (tied initiative): {frase} Details: {dettagli}"
     morte_venti: "natural twenty: regains consciousness with 1 hit point"

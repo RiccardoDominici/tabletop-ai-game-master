@@ -1,0 +1,34 @@
+id: scena_tana
+nodo: n_tana
+nome: La tana sotto la collina
+descrizione: Una tana bassa scavata nella terra, con radici che pendono dal soffitto. Una bestia artigliata dorme su un mucchio di ossa; tre predoni contano un bottino accanto al fuoco. In fondo un passaggio scende nel buio.
+domanda_drammatica: Il gruppo caccerà i predoni prima che scappino col bottino?
+intensita: 3
+sensi:
+- Odore di terra e di fumo.
+- Il crepitio del fuoco.
+- Il respiro pesante della bestia.
+elementi_interattivi:
+- cosa: il passaggio in fondo
+  dove: dietro il fuoco
+  azioni: si scende
+png_presenti:
+- png_artigliatore
+gregari:
+- {tipo: predone, quanti: 3}
+orologi_attivi:
+- o_predoni
+indizi:
+- id: i_bottino
+  conclusione: r_predoni
+  tipo: dialogo
+  nodo: n_tana
+  essenziale: false
+  tiro: nessuno
+  modi: 1
+  come_si_trova: Accanto al fuoco c'è un sacco pieno di monete rubate.
+mossa_morbida_pronta: La bestia apre un occhio giallo.
+apertura: La bestia artigliata alza la testa dalle ossa. Tre predoni si voltano verso di voi. Che fate?
+musica:
+  tag: tensione
+taglio: Si chiude quando i predoni sono a terra o fuggiti.

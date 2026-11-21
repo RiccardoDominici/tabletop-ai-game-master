@@ -310,6 +310,31 @@ carico:                                     # optional [V]: load bands (mechanis
   limiti: [{da: 3, valori: [25, 60]}, {da: 9, valori: [60, 150]}]   # [V] rows from the lowest score, one limit per band
   per_razza: {halfling: [{da: 3, valori: [20, 40]}]}                 # a race's own rows
   peso_armatura: {halfling: 0.25}           # a race's armor weighs this fraction
+bestiario:                                  # optional [V]: how a monster's stat block becomes a sheet (regole/bestiario.ts)
+  dado_vita: 8                              # [V] 4, 6, 8, 10, 12: a monster's hit die (Basic Fantasy p. 62)
+  mezzo: "1d4"                              # [V] the hit points of «½» hit dice
+  attacco: [{da: 0, bonus: 0}, {da: 1, bonus: 1}, {da: 8, bonus: 8}]   # [V] attack bonus by hit dice (p. 53), `da` growing;
+                                            #   da 0 = less than one hit die
+  abilita: [mischia, distanza]              # [V] the set's attack abilities that take it
+  uno_meno_meno_di_uno: true                # «1−1» hit dice or less count as less than one (p. 54)
+mostri:                                     # optional [V]: the manual's stat blocks; also in regole/mostri.yaml (`mostri:` there)
+  - id: ghoul                               # [V] snake_case, unique across both places
+    nome: "Ghoul"
+    manuale: "Ghoul (and Ghast) | Ghoul"    # the printed block it was copied from (strumenti/regole/confronta_bestiario.py)
+    pagina: 97
+    difesa: 14
+    dadi_vita: "2*"                         # [V] as printed: 3, "3+2", "1-1", "½", asterisks = special-ability XP bonus
+    attacco: 8                              # the bracket after the hit dice, when the attack bonus differs from them
+    attacchi: [{id: artiglio, nome: "Artiglio", danno: "1d3"}, {id: morso, nome: "Morso", danno: "1d3"}]
+    per_round: [[artiglio, artiglio, morso]]   # [V] the attacks of a round, by line id; alternatives in order
+    salva_come: {classe: guerriero, livello: 2}
+    morale: 9                               # [V] 2–12, or {prima: 7, dopo: 12} (a giant ant, p. 64)
+    px: 100
+    movimento: "30'"                        # printed text for the Preparer and the narrator: movimento, numero, tesoro,
+    numero: "1d6, Wild 2d8"                 #   testo (the special abilities in short), difesa_senza_armatura; the Engine
+    tesoro: "B"                             #   does not read them
+    testo: "…"
+    # any other key of an NPC sheet (tipo, immune, tratti, caratteristiche…) is the sheet's, under the sheet's own
 movimento:                                  # optional [V]: movement per round by the worn armor's category and the band
   unita: metri
   per_turno: 3                              # exploring, a turn covers this many times the round's rate
@@ -406,7 +431,10 @@ scheda:
     - spada_lunga
     - {id: freccia, quante: 20}
   monete: {mo: 12, ma: 5}                       # optional [V]: coins by the set's coin ids
-  attacchi: [{nome: "Spada", danno: "1d8", caratteristica: vigore}]   # or abilita: combattere
+  mostro: ghoul                                 # optional [V]: a stat block of the set's bestiary: its keys first, the
+                                                #   sheet's own win (below, «The bestiary in play»)
+  per_round: [[artiglio, artiglio, morso]]      # optional [V]: a monster's attacks of a round (line ids, alternatives)
+  attacchi: [{nome: "Spada", danno: "1d8", caratteristica: vigore}]   # or abilita: combattere; `id` names a line for per_round
                                                 # with equipaggiamento: only the special lines, e.g.
                                                 # {nome: "Spada corta alle spalle", arma: spada_corta, abilita: alle_spalle}
                                                 # automatico: true = the weapon always hits, only the damage
@@ -423,6 +451,27 @@ intended exception, logged by the Engine too); equal to it, a strict warning, si
 with the level. The sheet's `pf` is its maximum at its level: strict warning outside what the class's hit dice can give
 (each die with the characteristic's bonus, at least `minimo`; fixed rows exactly). A PC's `px` must give its `livello`
 by the class's `px` row (strict warning). Saves and spells per day already come from the class tables (above).
+
+**The bestiary in play** (regole/bestiario.ts, regole/schede.ts, prove/bestiario.ts; audit P5-20, P5-21, P6-00 to P6-07). An
+NPC's or a minion type's sheet writes `mostro: <id>` and the entry's keys come under its own: Zirrà can be a goblin with her
+own hit points and weapons. A monster needs no ability scores (the +0 value, no warning). From the printed hit dice:
+- the **attack bonus** of the bestiary's `abilita` comes from `bestiario.attacco` by the effective hit dice (the plus or minus
+  ignored, ½ and «1−1» = 0), or from the entry's bracket `attacco`; a written `abilita.mischia` stays as an override (a
+  warning when it differs). A line that names no ability rolls with the first (melee) or, `distanza: true`, the second;
+- the **XP** asterisks (`speciali`), unless the sheet counts them;
+- the **hit points**: a written `pf` stands; a formula (`pf: "1d2"`) or no `pf` with hit dice (the hit dice × `dado_vita`
+  plus the bonus, ½ = `mezzo`) is rolled once per creature when the session starts, from the session seed and the creature's
+  id (each raider of a band its own). The roll does not draw from the session's dice, so the manual-roll dry run, a resume and
+  a fixed `TAGM_SEME_DADI` see the same numbers; «Ricomincia» draws a new seed and the monsters roll again.
+- **several attacks a round** (`per_round`): in its step the monster uses the first alternative whose lines it can all use now
+  (in the phase, with ammunition) and makes every attack, each with its card and its fact («Turno di Artiglio Nero, attacco
+  2 di 3: …»); when its target drops, the next attack goes to the next target the fight picks. Without `per_round` it makes
+  one attack, as before.
+
+The validator mirrors it (strumenti/valida/regole_bestiario.py), merging the entry under the sheet as the Engine does. The
+numbers copied from a manual are checked against its PDF by `strumenti/regole/confronta_bestiario.py`, which reads the stat
+blocks by position (`strumenti/regole/blocchi_mostri.py`) and compares them both ways (every block has an entry, every entry a
+block).
 
 With the SRD 5.2 the sheets remain those of docs/prove.md §2 (scores, proficiencies, calculated AC).
 

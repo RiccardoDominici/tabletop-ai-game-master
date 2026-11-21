@@ -1,0 +1,16 @@
+# The rest of the fixture's invented bestiary (regole/bestiario.ts): the file the loader reads next to regole.yaml.
+mostri:
+  - id: predone
+    nome: Predone
+    manuale: "Raider"
+    pagina: 2
+    difesa: 12
+    dadi_vita: "1-1"
+    attacchi:
+      - {id: arma, nome: Mazza, danno: "1d6"}
+    per_round: [[arma]]
+    movimento: "9 m"
+    numero: "2d4"
+    salva_come: {classe: guerriero, livello: 0}
+    morale: 7
+    px: 5

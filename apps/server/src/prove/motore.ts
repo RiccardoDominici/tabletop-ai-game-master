@@ -67,6 +67,7 @@ import { danno as tiraDanno } from './regole';
 import { sistemaSrd } from '../regole/srd';
 import { leggiEffetto } from '../regole/effetti';
 import type { SistemaRegole } from '../regole/tipi';
+import { tiraPuntiFeritaMostri } from './bestiario';
 
 /** Decisione dell'arbitro: SRD 5.2, o col vocabolario del set del manuale. */
 type Decisione = DecisioneProva | DecisioneRegole;
@@ -264,13 +265,18 @@ export class MotoreProve {
       },
     });
     this.dadi = o.dadi ?? this.nuoviDadi(o.seme);
+    // Monsters without written hit points roll them once, from this session's seed (prove/bestiario.ts).
+    if (this.tiraMostri(this.dadi.seme)) this.stato.azzeraPf();
     this.combattimento = new GestoreCombattimento({
       regole: this.regoleCombattimento(),
       stato: this.stato,
       dadi: () => this.dadi,
       nome: (id) => this.nomeDi(this.o.contesto(), id),
-      attacca: (png, pg, fase, turno) => this.attaccaPng(png, pg, fase, turno),
+      attacca: (png, pg, fase, turno, prossimo) => this.attaccaPng(png, pg, fase, turno, prossimo),
       morale: (png) => {
+        // The live sheet's (a bestiary entry's merged in, regole/schede.ts), then the minion type's, then the raw card's.
+        const m = this.generico?.schede.get(png)?.morale;
+        if (m !== undefined) return typeof m === 'number' ? m : m.prima;
         const g = this.gregari.get(png);
         if (g) return g.morale;
         const sch = this.o.contesto().campagna.png.find((p) => p.id === png)?.dati['scheda'] as DatiYaml | undefined;
@@ -1441,19 +1447,40 @@ export class MotoreProve {
     return [...pg, ...png];
   }
 
-  /** Un PNG attacca un PG nel suo turno, con l'arma adatta alla fase (B/X: proiettili o mischia). */
-  private attaccaPng(png: string, pg: string, fase: Fase, turno: number): { t: TiroMostrato; testo: string } | null {
+  /**
+   * Un PNG attacca un PG nel suo turno, con l'arma adatta alla fase (B/X: proiettili o mischia). A monster with several
+   * attacks a round (`per_round`, regole/bestiario.ts) uses the first alternative whose lines it can all use now (in
+   * the phase, with ammunition), in the data's order, and makes every attack of it: a ghoul's claw, claw, bite. When its
+   * target drops, the next attack goes to `prossimo` (the fight's next choice), or stops.
+   */
+  private attaccaPng(png: string, pg: string, fase: Fase, turno: number, prossimo: () => string | null = () => null): Array<{ t: TiroMostrato; testo: string }> {
     const c = this.o.contesto();
     const g = this.generico;
     const armi = (g ? g.schede.get(png)?.attacchi : this.o.schede.get(png)?.attacchi) ?? null;
-    if (!armi) return null;
+    if (!armi) return [];
     // B/X: nella fase dei proiettili solo chi ha un'arma a distanza, in mischia solo le armi da mischia.
     // A weapon out of ammunition (`consuma`, prove/risorse.ts) is not used: the NPC takes the next one that fits.
     const conMunizioni = (a: (typeof armi)[number]): boolean => !('consuma' in a) || !a.consuma || !this.risorse || (this.risorse.restanti(png, a.consuma) ?? 1) > 0;
-    const adatte = armi.filter((a) => (fase.png === 'attacco_distanza' ? a.distanza : fase.png === 'attacco_mischia' ? !a.distanza : true) && conMunizioni(a));
-    if (fase.png !== 'attacco' && !adatte.length) return null;
-    if (g) return strumentiRegole(this.opzioniRegole(turno, c, g)).attacca(png, pg, adatte[0]?.id ?? null, [], false);
-    return attaccoPngSrd(this.opzioniSrd(turno, c), png, pg, false, adatte[0]?.id ?? null);
+    const adatta = (a: (typeof armi)[number]): boolean => (fase.png === 'attacco_distanza' ? a.distanza : fase.png === 'attacco_mischia' ? !a.distanza : true) && conMunizioni(a);
+    const adatte = armi.filter(adatta);
+    if (!g) {
+      if (fase.png !== 'attacco' && !adatte.length) return [];
+      const r = attaccoPngSrd(this.opzioniSrd(turno, c), png, pg, false, adatte[0]?.id ?? null);
+      return r ? [r] : [];
+    }
+    const sch = g.schede.get(png);
+    const giro = sch?.perRound?.find((r) => r.every((id) => armi.some((a) => a.id === id && adatta(a))));
+    const linee: Array<string | null> = giro ?? (fase.png !== 'attacco' && !adatte.length ? [] : [adatte[0]?.id ?? null]);
+    const strumenti = strumentiRegole(this.opzioniRegole(turno, c, g));
+    const out: Array<{ t: TiroMostrato; testo: string }> = [];
+    let bersaglio: string | null = pg;
+    for (const id of linee) {
+      if (bersaglio && this.stato.fuoriGioco(bersaglio)) bersaglio = prossimo();
+      if (!bersaglio) break;
+      const r = strumenti.attacca(png, bersaglio, id, [], false);
+      if (r) out.push(r);
+    }
+    return out;
   }
 
   /**
@@ -1708,7 +1735,9 @@ export class MotoreProve {
   }
 
   importa(s: StatoProveSalvato): void {
-    // The levels and maximum hit points first: the hit points are read back against them.
+    // The levels and maximum hit points first: the hit points are read back against them. A monster's maximum comes
+    // from the session seed the snapshot brings back (prove/bestiario.ts).
+    this.tiraMostri(!this.o.dadi && s.seme && /^[0-9a-f]{8,128}$/i.test(s.seme) ? s.seme : this.dadi.seme);
     this.livelli?.importa(s.livelli);
     this.stato.importa(s);
     this.combattimento.importa(s.combattimento ?? null);
@@ -1728,6 +1757,9 @@ export class MotoreProve {
 
   /** Ricomincia: PF pieni, dadi con un seme nuovo, niente carte. */
   azzera(): void {
+    // A new seed first: the monsters roll their hit points again (prove/bestiario.ts), before the hit points are reset.
+    if (!this.o.dadi) this.dadi = this.nuoviDadi(this.o.seme);
+    this.tiraMostri(this.dadi.seme);
     // The sheets' own level and maximum first: hit points and slots are reset against them.
     this.livelli?.azzera();
     this.stato.azzeraPf();
@@ -1747,6 +1779,11 @@ export class MotoreProve {
     this.cache.clear();
     this.ultimi.clear();
     this.ultimoTurno = null;
-    if (!this.o.dadi) this.dadi = this.nuoviDadi(this.o.seme);
+  }
+
+  /** Roll the hit points of the sheets that write none (a bestiary's monsters) from `seme`; true if any. */
+  private tiraMostri(seme: string): boolean {
+    const g = this.generico;
+    return !!g && tiraPuntiFeritaMostri(g.schede, seme, this.o.log.child({ modulo: 'bestiario' })).length > 0;
   }
 }

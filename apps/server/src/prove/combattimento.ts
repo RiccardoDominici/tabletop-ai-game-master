@@ -61,8 +61,12 @@ export interface DipendenzeCombattimento {
   stato: StatoProve;
   dadi: () => FonteDadi;
   nome: (id: string) => string;
-  /** Un PNG attacca un PG nella fase (`png` della fase): carta + testo, già con i danni; null = niente. */
-  attacca: (png: string, pg: string, fase: Fase, turno: number) => { t: TiroMostrato; testo: string } | null;
+  /**
+   * Un PNG attacca un PG nella fase (`png` della fase): carte + testi, già con i danni; vuoto = niente. A monster with
+   * several attacks a round (`per_round`, a ghoul's claw, claw, bite) makes them all, each with its card; when the target
+   * drops, `prossimo` gives the next one (null = nobody left standing).
+   */
+  attacca: (png: string, pg: string, fase: Fase, turno: number, prossimo: () => string | null) => Array<{ t: TiroMostrato; testo: string }> | { t: TiroMostrato; testo: string } | null;
   /** Morale del PNG (scheda `morale`), per il set con `fine.morale`. */
   morale: (png: string) => number | null;
   nuovoIdTiro: () => string;
@@ -545,13 +549,18 @@ export class GestoreCombattimento {
     if (!fase.png) return;
     const bersaglio = this.bersaglioDi(p);
     if (!bersaglio) return;
-    const r = this.d.attacca(id, bersaglio, fase, turno);
-    if (!r) return;
-    tiri.push(r.t);
-    fatti.push(testo(insieme ? 'prove.combattimento.turno_png_insieme' : 'prove.combattimento.turno_png', { nome: p.nome, frase: fraseAttaccoPng(r.t), dettagli: r.testo }));
-    if (insieme) this.d.log.info({ png: id, bersaglio, iniziativa: p.iniziativa }, 'combat: a tied NPC strikes at the same moment it falls');
-    const b = this.part(bersaglio);
-    if (b) this.controllaZero(b, fatti);
+    const r0 = this.d.attacca(id, bersaglio, fase, turno, () => this.bersaglioDi(p));
+    const rs = Array.isArray(r0) ? r0 : r0 ? [r0] : [];
+    // Several attacks in one step (a monster's `per_round`): one fact each, numbered, so the narrator tells every blow.
+    for (const [i, r] of rs.entries()) {
+      tiri.push(r.t);
+      const chiave = insieme ? 'prove.combattimento.turno_png_insieme' : rs.length > 1 ? 'prove.combattimento.turno_png_piu' : 'prove.combattimento.turno_png';
+      fatti.push(testo(chiave, { nome: p.nome, frase: fraseAttaccoPng(r.t), dettagli: r.testo, n: i + 1, di: rs.length }));
+      const b = r.t.bersaglio ? this.part(r.t.bersaglio.id) : undefined;
+      if (b) this.controllaZero(b, fatti);
+    }
+    if (insieme && rs.length) this.d.log.info({ png: id, bersaglio, iniziativa: p.iniziativa }, 'combat: a tied NPC strikes at the same moment it falls');
+    if (rs.length > 1) this.d.log.info({ png: id, attacchi: rs.map((r) => ({ linea: r.t.etichetta, bersaglio: r.t.bersaglio?.id ?? null, riuscita: r.t.riuscita })) }, 'combat: a monster makes its attacks of the round');
   }
 
   /** Bersaglio del PNG: chi lo ha attaccato, se no il PG che ha agito per ultimo, se no il primo in piedi. */

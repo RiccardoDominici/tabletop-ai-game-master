@@ -285,6 +285,8 @@ prove:
     prima_png: "prima i PNG"
     png_non_agisce: "Turno di {nome}: è {condizione}, non agisce."
     turno_png: "Turno di {nome}: {frase} Dettagli: {dettagli}"
+    # A monster with several attacks a round (per_round, regole/bestiario.ts): one fact per attack, numbered.
+    turno_png_piu: "Turno di {nome}, attacco {n} di {di}: {frase} Dettagli: {dettagli}"
     # Simultaneous ties (combattimento.iniziativa.pari: simultanei): the NPC strikes at the same moment it is dropped.
     turno_png_insieme: "Turno di {nome}, nello stesso istante in cui cade (iniziativa pari): {frase} Dettagli: {dettagli}"
     morte_venti: "venti naturale: torna in sé con 1 punto ferita"
