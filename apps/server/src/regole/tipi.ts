@@ -18,6 +18,8 @@ import type { Razza, Tratto } from './tratti';
 import type { Catalogo, Monete } from './catalogo';
 import type { RegolaCarico, RegolaMovimento } from './carico';
 import type { RegolaTempo, RegolaViaggio } from './tempo';
+import type { Progressione } from './progressione';
+import type { RegolaEsperienza } from './esperienza';
 
 export interface Voce {
   id: string;
@@ -182,6 +184,10 @@ export interface SistemaRegole {
   tempo?: RegolaTempo | null;
   /** Overland travel: distance per day by movement and terrain (regole.yaml → viaggio; regole/tempo.ts). */
   viaggio?: RegolaViaggio | null;
+  /** How the class tables reach a sheet: attack bonus, hit dice, one level a time (regole.yaml → progressione; M1). */
+  progressione?: Progressione | null;
+  /** XP of defeated creatures and of treasure (regole.yaml → esperienza; regole/esperienza.ts). */
+  esperienza?: RegolaEsperienza | null;
 }
 
 /** Un passo del manuale (regole/estratti/*.md), per l'arbitro e per «Chiedi una regola». */
@@ -257,6 +263,19 @@ export interface SchedaGenerica {
   immune?: string[];
   /** Hit dice, for powers limited by them (`scheda.dadi_vita`); a PC's are its level. */
   dadiVita?: number | null;
+  /**
+   * Experience points (`scheda.px`): a PC's total (absent = the threshold of its level); an NPC's or a minion's worth
+   * when defeated (absent = the set's table by hit dice, regole/esperienza.ts).
+   */
+  px?: number | null;
+  /** Special-ability asterisks of a monster's hit dice (`scheda.speciali`: 2 for «2**»), for its XP value. */
+  speciali?: number;
+  /**
+   * The ability values the sheet writes by hand (`scheda.abilita`), kept apart from what the class tables give
+   * (regole/progressione.ts): `abilita` is the two merged, the written ones winning (an override), and it is derived
+   * again when the level changes. Absent on sheets read before M1 (tests building sheets by hand).
+   */
+  abilitaScritte?: Record<string, number>;
   /** The sheet's own traits (`scheda.tratti`), besides its race's and class's (regole/tratti.ts). */
   tratti?: Tratto[];
   /** The set's class id and level (`scheda.classe`, `scheda.livello`): they pick the rows of the class tables. */

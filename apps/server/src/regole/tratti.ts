@@ -12,6 +12,10 @@
  *         - {tiro: salvezza, colonne: [morte, bacchette], bonus: 4}       # added to saves of those table columns
  *         - {immune: [paralisi_ghoul]}                                    # powers or conditions it ignores
  *         - {sorpresa: -1}                                                # its surprise range (1d6 ≤ the side's): −1
+ *         - {almeno: {nascondersi: 70}}                                   # an ability at least this value (M1: the class
+ *                                                                         #   table's or this, the better; the halfling's hiding)
+ *         - {dado_vita_massimo: 6}                                        # never a hit die bigger than a d6 (elves, halflings)
+ *         - {tiro: esperienza, bonus: 10}                                 # +10% to every XP earned (humans, p. 6)
  */
 import type { Voce } from './tipi';
 
@@ -20,7 +24,10 @@ export type Tratto =
   | { tipo: 'abilita'; abilita: string[]; bonus: number }
   | { tipo: 'salvezza'; colonne: string[]; bonus: number }
   | { tipo: 'immune'; a: string[] }
-  | { tipo: 'sorpresa'; modificatore: number };
+  | { tipo: 'sorpresa'; modificatore: number }
+  | { tipo: 'almeno'; valori: Record<string, number> }
+  | { tipo: 'dado_vita'; facce: number }
+  | { tipo: 'esperienza'; bonus: number };
 
 export interface Razza extends Voce {
   tratti: Tratto[];
@@ -54,12 +61,27 @@ export function leggiTratti(v: unknown, dove: string, ctx: { abilita: ReadonlySe
       else errori.push(`${d}.sorpresa: a whole number, not 0 (−1: surprised one face less)`);
       continue;
     }
+    if (o && o['almeno'] !== undefined) {
+      const a = ogg(o['almeno']);
+      const voci = Object.entries(a ?? {});
+      const ignote = voci.filter(([k]) => !ctx.abilita.has(k)).map(([k]) => k);
+      if (!a || !voci.length || !voci.every(([, n]) => intero(n) && n >= 0) || ignote.length) errori.push(`${d}.almeno: {ability of the set: a whole number}${ignote.length ? ` (not: ${ignote.join(', ')})` : ''}`);
+      else out.push({ tipo: 'almeno', valori: Object.fromEntries(voci) as Record<string, number> });
+      continue;
+    }
+    if (o && o['dado_vita_massimo'] !== undefined) {
+      const f = o['dado_vita_massimo'];
+      if (intero(f) && [2, 3, 4, 6, 8, 10, 12, 20].includes(f)) out.push({ tipo: 'dado_vita', facce: f });
+      else errori.push(`${d}.dado_vita_massimo: the faces of the largest hit die (6 = never more than a d6)`);
+      continue;
+    }
     const bonus = o?.['bonus'];
     if (!o || !intero(bonus) || bonus === 0) {
-      errori.push(`${d}: {tiro: iniziativa | abilita | salvezza, bonus: n}, {immune: [...]} or {sorpresa: n}`);
+      errori.push(`${d}: {tiro: iniziativa | abilita | salvezza | esperienza, bonus: n}, {immune: [...]}, {sorpresa: n}, {almeno: {...}} or {dado_vita_massimo: n}`);
       continue;
     }
     if (o['tiro'] === 'iniziativa') out.push({ tipo: 'iniziativa', bonus });
+    else if (o['tiro'] === 'esperienza') out.push({ tipo: 'esperienza', bonus });
     else if (o['tiro'] === 'abilita') {
       const a = ids(o['abilita']);
       const ignote = a?.filter((x) => !ctx.abilita.has(x)) ?? [];
@@ -70,7 +92,7 @@ export function leggiTratti(v: unknown, dove: string, ctx: { abilita: ReadonlySe
       const ignote = c?.filter((x) => !ctx.colonne.has(x)) ?? [];
       if (!c || ignote.length) errori.push(`${d}.colonne: columns of tiri_salvezza${ignote.length ? ` (not: ${ignote.join(', ')})` : ''}`);
       else out.push({ tipo: 'salvezza', colonne: c, bonus });
-    } else errori.push(`${d}.tiro: iniziativa, abilita or salvezza`);
+    } else errori.push(`${d}.tiro: iniziativa, abilita, salvezza or esperienza`);
   }
   return out;
 }
@@ -94,6 +116,11 @@ export function leggiRazze(v: unknown, ctx: { abilita: ReadonlySet<string>; colo
     out.push({ id, nome: typeof o['nome'] === 'string' ? o['nome'] : id, tratti: leggiTratti(o['tratti'], `razze.${id}.tratti`, ctx, errori) });
   }
   return out;
+}
+
+/** The percentage added to the XP a character earns (the humans' +10%, Basic Fantasy p. 6). */
+export function bonusEsperienza(tratti: readonly Tratto[]): number {
+  return tratti.reduce((n, t) => (t.tipo === 'esperienza' ? n + t.bonus : n), 0);
 }
 
 /** The sum of the traits' bonuses of one kind for a roll. */

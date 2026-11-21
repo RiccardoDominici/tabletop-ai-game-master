@@ -165,6 +165,26 @@ classi:                                     # optional [V]: the classes and thei
     nome: "Mago"
     tiri_salvezza: [{da: 1, valori: [13, 15]}, {da: 4, valori: [12, 13]}]   # [V] one value per column; `da` grows
     incantesimi_al_giorno: [{da: 1, slot: [1]}, {da: 3, slot: [2, 1]}]      # [V] spells per day by spell level
+    # Progression (M1, regole/progressione.ts), all optional [V]; rows hold from their `da` up, `da` growing:
+    px: [0, 2500, 5000, 10000]              # [V] XP to reach level 1, 2, 3… (growing); the level an XP total reaches
+    dadi_vita: [{da: 1, dado: "1d4"}, {da: 10, fissi: 1}]   # [V] what each level adds: one die (with progressione's
+                                            #   characteristic, at least its minimo), or fixed HP without it (after 9th)
+    attacco: [{da: 1, bonus: 1}, {da: 4, bonus: 2}]   # [V] the attack bonus, given to progressione.attacco's abilities
+    abilita:                                # [V] ability values by level (the thief's percentages): set ability ids
+      colonne: [scassinare, ascoltare]
+      righe: [{da: 1, valori: [25, 30]}, {da: 2, valori: [30, 34]}]   # one value per column
+    tabelle:                                # [V] a power rolled against a class table (poteri[].tabella): power id →
+      scacciare_non_morti: [{da: 1, valori: [13, 17, null]}, {da: 8, valori: [T, 3, 7]}]   # rows, one cell per column:
+                                            #   the number to reach, T (no roll), D (the stronger result), null (No)
+progressione:                               # optional [V]: how the class tables reach a sheet (regole/progressione.ts)
+  attacco: [mischia, distanza, {abilita: alle_spalle, piu: 4}]   # abilities whose value is the attack bonus (+ piu)
+  punti_ferita: {caratteristica: costituzione, minimo: 1}       # each hit die adds its bonus; a die gives at least 1
+  un_livello_per_avventura: true            # XP earned in one session stop one short of the level after next (p. 49)
+esperienza:                                 # optional [V]: XP in play (regole/esperienza.ts, prove/esperienza.ts)
+  per_dadi_vita: [{da: 0, px: 10, speciale: 3}, {da: 1, px: 25, speciale: 12}]   # a defeated creature's worth by hit dice
+  oltre: {px: 750, speciale: 25}            #   (0 = less than 1) and per asterisk; each hit die above the last row
+  tesoro: {px: 1, per: mo, quando: al_sicuro}   # optional: XP per coin of treasure; trovato (when found) | al_sicuro
+                                            #   (when the Game Master marks it back to safety, Basic Fantasy p. 190)
 razze:                                      # optional [V]: races and their traits (regole/tratti.ts)
   - id: halfling
     nome: "Halfling"
@@ -174,6 +194,9 @@ razze:                                      # optional [V]: races and their trai
       - {tiro: salvezza, colonne: [morte, incantesimi], bonus: 4}  # to the saves of those table columns
       - {immune: [paralisi_ghoul]}          #   powers or conditions it ignores
       - {sorpresa: -1}                      #   its own surprise range (the side's die read against each member's)
+      - {almeno: {nascondersi: 70}}         #   an ability at least this value (the class table's or this, the better)
+      - {dado_vita_massimo: 6}              #   never a hit die bigger than a d6 (Basic Fantasy's elves and halflings)
+      - {tiro: esperienza, bonus: 10}       #   +10% to the XP it earns (humans)
 magia: {preparazione: vanciana}             # optional [V]: vanciana (each prepared copy is one cast, back at a rest)
                                             #   | slot (the sheet's spells are known; a cast spends a slot of its level)
 risorse:                                    # optional [V]: per-character counters (prove/risorse.ts), in the snapshot
@@ -192,6 +215,18 @@ poteri:                                     # optional [V]: spells, items, class
     effetti: [{tipo: condizione, condizione: addormentato, durata: {round_per_livello: 5}, finisce_se_ferito: true}]
     ostile: true                            # opens a fight on an NPC (default: it deals damage or attacks)
     descrittivo: false                      # true and no effetti: the cost is spent, the narrator tells the rest
+  - id: scacciare_non_morti                 # a power rolled against the author's class table (Turn Undead)
+    tipo: azione
+    bersaglio: nemici
+    solo_tipi: [non_morto]
+    tabella:                                # [V] the cells are the class rows `classi[].tabelle.<this id>`
+      dado: "1d20"                          #   the author's roll, once for the whole group
+      colonne: [{id: scheletro, nome: "Scheletro", dadi_vita: 1}, {id: zombi, nome: "Zombi", dadi_vita: 2}]
+                                            #   a target's sheet `tipo` names its column, else its hit dice pick it
+      colpiti: "2d6"                        #   hit dice affected on a success, weakest first, at least one creature
+      distrugge: {dadi: "1d8", per_livello: true}   # a D cell: this damage rolled once for all (× the author's level)
+      dopo_fallimento: {turno: 1}           #   no new attempt for this long after a failed or partly failed roll
+    effetti: [{tipo: condizione, condizione: scacciato, durata: {turno: "2d4"}}]   # each target affected
 cadute: {dadi: "1d6", ogni: 10, unita: "piedi", arrotonda: vicino, massimo: 20}   # optional [V]: falling damage
   # (Basic Fantasy p. 59): `dadi` per step of `ogni` (in `unita`, said on the card); `vicino` rounds to the nearest step
   # (1–4 feet nothing, 5–14 feet 1d6), `giu` counts full steps only (SRD 5.2); at most `massimo` steps. Without it a fall
@@ -352,7 +387,10 @@ scheda:
   risorse: {frecce: 20, monete: 35}             # optional [V]: the starting counters of the set's resources
   tipo: umanoide                                # optional: creature types, read by a power's immuni / solo_tipi
   immune: [sonno]                               # optional: powers or conditions it ignores
-  dadi_vita: 3                                  # optional [V]: hit dice, for powers limited by them
+  dadi_vita: 3                                  # optional [V]: hit dice, for powers limited by them and an NPC's XP
+  px: 0                                         # optional [V]: a PC's XP total (strict: it matches `livello` by the class
+                                                #   table); an NPC's or a minion's worth when defeated (else by dadi_vita)
+  speciali: 1                                   # optional [V]: a monster's special-ability asterisks («1**» = 2), for its XP
   equipaggiamento:                              # optional [V]: catalog ids carried; the first armor and shield are worn
     - cotta_di_maglia                           #   (unless {id, indossato: false}); AC and attack lines come from them
     - spada_lunga
@@ -364,6 +402,17 @@ scheda:
                                                 # automatico: true = the weapon always hits, only the damage
                                                 # consuma: frecce = each attack spends one; refused at 0 [V]
 ```
+
+**Progression** (M1, regole/progressione.ts; the validator's mirror is strumenti/valida/regole_progressione.py, which
+strumenti/tra_sessioni.py also uses). With a class that has `attacco` rows and `abilita` tables, a sheet writes no attack
+bonus and no thief percentages: the Engine derives them from its `classe` and `livello` (the abilities of
+`progressione.attacco` get the row's bonus plus their `piu`; the class's ability table gives its columns; a trait
+`almeno` raises one to at least its number), and derives them again when the level changes (a level-up between
+sessions). A value the sheet writes by hand stays, as an override: different from the table it is a warning (an
+intended exception, logged by the Engine too); equal to it, a strict warning, since a hand-written number would not grow
+with the level. The sheet's `pf` is its maximum at its level: strict warning outside what the class's hit dice can give
+(each die with the characteristic's bonus, at least `minimo`; fixed rows exactly). A PC's `px` must give its `livello`
+by the class's `px` row (strict warning). Saves and spells per day already come from the class tables (above).
 
 With the SRD 5.2 the sheets remain those of docs/prove.md §2 (scores, proficiencies, calculated AC).
 

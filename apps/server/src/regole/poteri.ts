@@ -20,13 +20,38 @@
  *       ostile: true                   # opens a fight on an NPC (default: when it deals damage or attacks)
  *       descrittivo: true              # no typed effects: it spends its cost, the narrator tells the rest
  *       pagina: 36
+ *     - id: scacciare_non_morti        # a power rolled against a class table (Turn Undead, Basic Fantasy p. 57–58)
+ *       tipo: azione
+ *       bersaglio: nemici
+ *       solo_tipi: [non_morto]
+ *       tabella:                       # the author's class rows `classi[].tabelle.<this id>`, one cell per column
+ *         dado: "1d20"                 # the author's roll, once for the whole group
+ *         colonne:                     # a target's sheet `tipo` names its column, else its hit dice pick it (9 = 9+)
+ *           - {id: scheletro, nome: "Scheletro", dadi_vita: 1}
+ *         colpiti: "2d6"               # hit dice affected on a success, weakest first, at least one creature
+ *         distrugge: {dadi: "1d8", per_livello: true}   # a «D» cell: this damage, rolled once for all (× level)
+ *         dopo_fallimento: {turno: 1}  # no new attempt for this long after a failure (a partial one too)
+ *       effetti: [{tipo: condizione, condizione: scacciato, durata: {turno: "2d4"}}]   # each target affected
  */
-import { leggiEffetti, type EffettoTipato } from './effetti';
+import { leggiFormula, type FormulaDadi } from '../campagna/regole-srd';
+import { leggiDurata, leggiEffetti, type Durata, type EffettoTipato } from './effetti';
 
 export const TIPI_POTERE = ['incantesimo', 'oggetto', 'azione', 'pericolo'] as const;
 export type TipoPotere = (typeof TIPI_POTERE)[number];
 export const BERSAGLI_POTERE = ['se_stesso', 'uno', 'nemici', 'alleati'] as const;
 export type BersaglioPotere = (typeof BERSAGLI_POTERE)[number];
+
+/** A power rolled against a class table (`poteri[].tabella`): the columns, the dice, what a D cell does. */
+export interface TabellaPotere {
+  dado: FormulaDadi;
+  colonne: Array<{ id: string; nome: string; dadiVita: number }>;
+  /** Hit dice affected on a success (null = every target that succeeds). */
+  colpiti: FormulaDadi | null;
+  /** A «D» cell: damage rolled once for all the targets, times the author's level with `perLivello`. */
+  distrugge: { dadi: FormulaDadi; perLivello: boolean } | null;
+  /** After a failed (or partly failed) attempt the author cannot try again for this long. */
+  dopoFallimento: Durata | null;
+}
 
 export interface Potere {
   id: string;
@@ -47,6 +72,39 @@ export interface Potere {
   /** No typed effect: the cost is spent and the narrator tells what it does (the manual's text). */
   descrittivo: boolean;
   pagina: number | null;
+  /** Rolled against the author's class table (Turn Undead); null for every other power. */
+  tabella?: TabellaPotere | null;
+}
+
+/** `poteri[].tabella` (Turn Undead): null when absent or malformed (reported). */
+function leggiTabella(v: unknown, dove: string, errori: string[]): TabellaPotere | null {
+  if (v === undefined || v === null) return null;
+  const o = ogg(v);
+  const dado = leggiFormula(o?.['dado']);
+  if (!o || !dado || !dado.numero) {
+    errori.push(`${dove}.tabella.dado: the author's roll («1d20»)`);
+    return null;
+  }
+  const colonne: TabellaPotere['colonne'] = [];
+  for (const [i, x] of (Array.isArray(o['colonne']) ? o['colonne'] : []).entries()) {
+    const c = ogg(x);
+    const id = c?.['id'];
+    const dv = c?.['dadi_vita'];
+    if (typeof id !== 'string' || !ID.test(id) || !intero(dv) || dv < 0) errori.push(`${dove}.tabella.colonne[${i + 1}]: {id, nome, dadi_vita}`);
+    else colonne.push({ id, nome: typeof c!['nome'] === 'string' ? (c!['nome'] as string) : id, dadiVita: dv });
+  }
+  if (!colonne.length) errori.push(`${dove}.tabella.colonne: at least one column`);
+  const colpiti = o['colpiti'] === undefined ? null : leggiFormula(o['colpiti']);
+  if (o['colpiti'] !== undefined && !colpiti) errori.push(`${dove}.tabella.colpiti: a dice formula («2d6»)`);
+  let distrugge: TabellaPotere['distrugge'] = null;
+  if (o['distrugge'] !== undefined) {
+    const d = ogg(o['distrugge']);
+    const f = leggiFormula(d?.['dadi']);
+    if (!d || !f) errori.push(`${dove}.tabella.distrugge: {dadi: «1d8», per_livello: true}`);
+    else distrugge = { dadi: f, perLivello: d['per_livello'] === true };
+  }
+  const dopoFallimento = o['dopo_fallimento'] === undefined ? null : leggiDurata(o['dopo_fallimento'], `${dove}.tabella.dopo_fallimento`, errori);
+  return { dado, colonne, colpiti, distrugge, dopoFallimento };
 }
 
 type D = Record<string, unknown>;
@@ -122,6 +180,7 @@ export function leggiPoteri(v: unknown, ctx: { salvezze: ReadonlySet<string>; cl
       ostile: typeof o['ostile'] === 'boolean' ? o['ostile'] : effetti.some((e) => e.tipo === 'danno' || e.tipo === 'attacco'),
       descrittivo,
       pagina: intero(o['pagina']) ? o['pagina'] : null,
+      ...(o['tabella'] !== undefined ? { tabella: leggiTabella(o['tabella'], dove, errori) } : {}),
     });
   }
   return out;

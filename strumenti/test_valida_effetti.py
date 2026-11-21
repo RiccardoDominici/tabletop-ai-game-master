@@ -200,7 +200,7 @@ def test_razze_e_tratti(tmp_path: Path) -> None:
     modifica(dest, "regole/regole.yaml", rompi)
     modifica(dest, "pg.yaml", lambda d: d["personaggi"][2]["scheda"].update(razza="drago"))
     errori = " | ".join(regole_di(dest))
-    assert "tiro: iniziativa, abilita o salvezza" in errori
+    assert "tiro: iniziativa, abilita, salvezza o esperienza" in errori
     assert "abilita: abilità del set (non: volare)" in errori
     assert "colonne: colonne di tiri_salvezza (non: fulmini)" in errori
     assert "sorpresa: un intero diverso da 0" in errori

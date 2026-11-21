@@ -15,10 +15,13 @@
  *       incantesimi_al_giorno:                   # spells per day by spell level (1st, 2nd…), from `da` up
  *         - {da: 1, slot: [1]}
  *         - {da: 3, slot: [2, 1]}
+ *       px: [0, 2500, 5000]                      # and the progression tables (regole/progressione.ts, M1): XP,
+ *       dadi_vita: [{da: 1, dado: "1d4"}]        #   hit dice, attack bonus, ability values, power tables by level
  */
 import type { TiriSalvezza } from './salvezze';
 import type { Voce } from './tipi';
 import { leggiTratti, type Tratto } from './tratti';
+import { leggiProgressioneClasse, type ProgressioneClasse } from './progressione';
 
 export interface Classe extends Voce {
   /** Save rows (one value per column of `tiri_salvezza.colonne`); empty = the class has none. */
@@ -27,6 +30,8 @@ export interface Classe extends Voce {
   incantesimiAlGiorno: Array<{ da: number; slot: number[] }>;
   /** The class's traits (regole/tratti.ts). */
   tratti: Tratto[];
+  /** XP, hit dice, attack bonus, ability values and power tables by level (regole/progressione.ts, M1). */
+  progressione: ProgressioneClasse;
 }
 
 type D = Record<string, unknown>;
@@ -94,7 +99,7 @@ export function leggiClassi(v: unknown, colonne: number | null, errori: string[]
     if (out.some((c) => c.id === id)) errori.push(`classi: id repeated «${id}»`);
     const ts = righe(o['tiri_salvezza'], 'valori', `classi.${id}.tiri_salvezza`, errori, colonne);
     if (ts.length && colonne === null) errori.push(`classi.${id}.tiri_salvezza: the set has no tiri_salvezza.colonne`);
-    out.push({ id, nome: typeof o['nome'] === 'string' ? o['nome'] : id, tiriSalvezza: ts, incantesimiAlGiorno: righe(o['incantesimi_al_giorno'], 'slot', `classi.${id}.incantesimi_al_giorno`, errori, null), tratti: leggiTratti(o['tratti'], `classi.${id}.tratti`, ctx, errori) });
+    out.push({ id, nome: typeof o['nome'] === 'string' ? o['nome'] : id, tiriSalvezza: ts, incantesimiAlGiorno: righe(o['incantesimi_al_giorno'], 'slot', `classi.${id}.incantesimi_al_giorno`, errori, null), tratti: leggiTratti(o['tratti'], `classi.${id}.tratti`, ctx, errori), progressione: leggiProgressioneClasse(o, id, ctx, errori) });
   }
   return out;
 }

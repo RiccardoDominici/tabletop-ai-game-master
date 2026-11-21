@@ -128,7 +128,8 @@ def controlla_scheda(s: dict, dove: str, classi: set[str], colonne_abilita: dict
 
 
 def controlla_tratti(v, dove: str, abilita: set[str], colonne: set[str], e: Esito) -> None:
-    """A list of traits (regole/tratti.ts): {tiro: iniziativa | abilita | salvezza, bonus}, {immune: [...]}, {sorpresa}."""
+    """A list of traits (regole/tratti.ts): {tiro: iniziativa | abilita | salvezza | esperienza, bonus}, {immune: [...]},
+    {sorpresa}, {almeno: {ability: n}}, {dado_vita_massimo: n}."""
     if v is None:
         return
     if not isinstance(v, list):
@@ -145,8 +146,19 @@ def controlla_tratti(v, dove: str, abilita: set[str], colonne: set[str], e: Esit
             if not (_intero(o["sorpresa"]) and o["sorpresa"] != 0):
                 _err(e, d, "sorpresa: un intero diverso da 0")
             continue
+        if "almeno" in o:
+            al = _ogg(o["almeno"]) or {}
+            ignote = [a for a in al if a not in abilita]
+            if not al or not all(_intero(n) and n >= 0 for n in al.values()) or ignote:
+                _err(e, d, f"almeno: {{abilità del set: un intero}}{' (non: ' + ', '.join(map(str, ignote)) + ')' if ignote else ''}")
+            continue
+        if "dado_vita_massimo" in o:
+            if o["dado_vita_massimo"] not in (2, 3, 4, 6, 8, 10, 12, 20):
+                _err(e, d, "dado_vita_massimo: le facce del dado vita più grande (6 = mai più di un d6)")
+            continue
         if not (_intero(o.get("bonus")) and o["bonus"] != 0):
-            _err(e, d, "{tiro: iniziativa | abilita | salvezza, bonus: n}, {immune: [...]} o {sorpresa: n}")
+            _err(e, d, "{tiro: iniziativa | abilita | salvezza | esperienza, bonus: n}, {immune: [...]}, {sorpresa: n}, "
+                 "{almeno: {...}} o {dado_vita_massimo: n}")
             continue
         tiro = o.get("tiro")
         if tiro == "abilita":
@@ -157,8 +169,8 @@ def controlla_tratti(v, dove: str, abilita: set[str], colonne: set[str], e: Esit
             ignote = [c for c in o.get("colonne") or [] if c not in colonne]
             if not o.get("colonne") or ignote:
                 _err(e, d, f"colonne: colonne di tiri_salvezza{' (non: ' + ', '.join(map(str, ignote)) + ')' if ignote else ''}")
-        elif tiro != "iniziativa":
-            _err(e, d, "tiro: iniziativa, abilita o salvezza")
+        elif tiro not in ("iniziativa", "esperienza"):
+            _err(e, d, "tiro: iniziativa, abilita, salvezza o esperienza")
 
 
 def razze_del_set(r: dict, abilita: set[str], colonne: set[str], e: Esito, dove: str) -> set[str]:

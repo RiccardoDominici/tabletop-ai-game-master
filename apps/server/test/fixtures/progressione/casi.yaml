@@ -1,0 +1,61 @@
+# Invented progression tables (not any manual's) and the numbers they must give, read by BOTH the Engine's test
+# (apps/server/test/progressione.test.ts) and the validator's (strumenti/test_valida_progressione.py): the level maths
+# has a TypeScript and a Python copy (strumenti/tra_sessioni.py uses the Python one), and this file keeps them equal.
+# `set` is merged over the bx fixture's regole.yaml (modificatore srd: Forza 14 gives +2).
+set:
+  abilita:
+    - {id: colpo, nome: "Colpo", caratteristica: forza}
+    - {id: tiro, nome: "Tiro", caratteristica: destrezza}
+    - {id: pugnalata, nome: "Pugnalata", caratteristica: forza}
+    - {id: origliare, nome: "Origliare", caratteristica: null, soglia: {dado: 100}}
+    - {id: sgattaiolare, nome: "Sgattaiolare", caratteristica: null, soglia: {dado: 100}}
+  progressione:
+    attacco: [colpo, tiro, {abilita: pugnalata, piu: 3}]
+    punti_ferita: {caratteristica: forza, minimo: 1}
+    un_livello_per_avventura: true
+  classi:
+    - id: lama
+      nome: "Lama"
+      px: [0, 100, 300, 700]
+      dadi_vita: [{da: 1, dado: "1d10"}, {da: 3, fissi: 2}]
+      attacco: [{da: 0, bonus: 0}, {da: 1, bonus: 1}, {da: 3, bonus: 3}]
+    - id: ombra
+      nome: "Ombra"
+      px: [0, 50, 150]
+      dadi_vita: [{da: 1, dado: "1d6"}]
+      attacco: [{da: 1, bonus: 1}]
+      abilita:
+        colonne: [origliare, sgattaiolare]
+        righe: [{da: 1, valori: [20, 15]}, {da: 2, valori: [28, 22]}]
+  razze:
+    - {id: piccolo, nome: "Piccolo", tratti: [{almeno: {sgattaiolare: 60}}, {dado_vita_massimo: 6}]}
+    - {id: comune, nome: "Comune", tratti: [{tiro: esperienza, bonus: 10}]}
+  monete: {base: oro, tagli: [{id: oro, nome: "Oro", vale: 10}, {id: rame, nome: "Rame", vale: 1}]}
+  esperienza:
+    per_dadi_vita: [{da: 0, px: 5, speciale: 1}, {da: 1, px: 20, speciale: 10}, {da: 3, px: 90, speciale: 20}]
+    oltre: {px: 100, speciale: 5}
+    tesoro: {px: 1, per: oro, quando: al_sicuro}
+# What a sheet of this class, level and race gets (abilita), and the bounds of its maximum hit points (pf).
+schede:
+  - scheda: {classe: ombra, livello: 2, caratteristiche: {forza: 14}}
+    abilita: {colpo: 1, tiro: 1, pugnalata: 4, origliare: 28, sgattaiolare: 22}
+    pf: [6, 16]
+  - scheda: {classe: lama, livello: 3, caratteristiche: {forza: 7}}
+    abilita: {colpo: 3, tiro: 3, pugnalata: 6}
+    pf: [4, 18]
+  - scheda: {classe: lama, livello: 0, caratteristiche: {forza: 10}}
+    abilita: {colpo: 0, tiro: 0, pugnalata: 3}
+    pf: null
+  - scheda: {classe: lama, livello: 1, razza: piccolo, caratteristiche: {forza: 10}}
+    abilita: {colpo: 1, tiro: 1, pugnalata: 4, sgattaiolare: 60}
+    pf: [1, 6]
+  - scheda: {classe: ombra, livello: 1, razza: piccolo, caratteristiche: {forza: 10}}
+    abilita: {colpo: 1, tiro: 1, pugnalata: 4, origliare: 20, sgattaiolare: 60}
+    pf: [1, 6]
+# The level an XP total reaches, and the cap of one level per adventure for a character of that level.
+livelli:
+  - {classe: lama, px: 0, livello: 1, tetto: 299}
+  - {classe: lama, px: 299, livello: 2, tetto: 699}
+  - {classe: lama, px: 300, livello: 3, tetto: null}
+  - {classe: lama, px: 99999, livello: 4, tetto: null}
+  - {classe: ombra, px: 149, livello: 2, tetto: null}

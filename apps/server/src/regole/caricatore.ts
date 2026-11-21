@@ -26,6 +26,8 @@ import { leggiCadute, leggiRiposo } from './salute';
 import { leggiClassi, leggiColonneSalvezza } from './classi';
 import { leggiPoteri } from './poteri';
 import { leggiRazze } from './tratti';
+import { leggiProgressione } from './progressione';
+import { leggiEsperienza } from './esperienza';
 import { leggiMagia, leggiRisorse } from './risorse';
 import { leggiCatalogo, leggiMonete } from './catalogo';
 import { leggiCarico, leggiMovimento } from './carico';
@@ -207,6 +209,13 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
   // Game time (P4-01): the units, and what a rest takes on the clock (`riposo[].durata`).
   const tempo = leggiTempo(d['tempo'], errori);
   const viaggio = leggiViaggio(d['viaggio'], errori);
+  // Progression (M1): which abilities take the class's attack bonus, the hit dice's characteristic; the XP rules.
+  const progressione = leggiProgressione(d['progressione'], { abilita: new Set(abilita.map((a) => a.id)), caratteristiche: idCar }, errori);
+  const esperienza = leggiEsperienza(d['esperienza'], monete, errori);
+  for (const c of classiEPoteri.classi ?? []) {
+    for (const k of Object.keys(c.progressione.tabelle)) if (!poteri.some((p) => p.id === k && p.tabella)) errori.push(`classi.${c.id}.tabelle.${k}: not a power of the set with a tabella`);
+    if ((c.progressione.attacco.length || c.progressione.dadiVita.length) && !progressione) errori.push(`classi.${c.id}: attack or hit-dice rows need the set's progressione (which abilities, which characteristic)`);
+  }
   if (viaggio && (!tempo || !movimento)) errori.push('viaggio: travel needs the set\'s tempo and movimento');
   const riposo = leggiRiposo(d['riposo'], errori);
   for (const [i, x] of (Array.isArray(d['riposo']) ? d['riposo'] : []).entries()) {
@@ -270,6 +279,8 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     ...(movimento ? { movimento } : {}),
     ...(tempo ? { tempo } : {}),
     ...(viaggio ? { viaggio } : {}),
+    ...(progressione ? { progressione } : {}),
+    ...(esperienza ? { esperienza } : {}),
   };
 }
 

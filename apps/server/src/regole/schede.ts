@@ -17,6 +17,7 @@ import type { SchedaGenerica, SistemaRegole } from './tipi';
 import { leggiTratti, type Tratto } from './tratti';
 import { voce } from './catalogo';
 import { applicaDotazione, dotazioneIniziale } from './equipaggiamento';
+import { valoriDaClasse } from './progressione';
 
 const ogg = (v: unknown): DatiYaml | null => (v !== null && typeof v === 'object' && !Array.isArray(v) ? (v as DatiYaml) : null);
 const intero = (v: unknown): number | null => (typeof v === 'number' && Number.isInteger(v) ? v : null);
@@ -63,7 +64,10 @@ export function leggiSchedaGenerica(s: SistemaRegole, id: string, nome: string, 
     return [{ id: chiave(n), nome: n, danno: danno ?? { numero: 1, facce: 4, bonus: 0 }, caratteristica: c, abilita: ab, tipo_danno: typeof a['tipo_danno'] === 'string' ? a['tipo_danno'] : null, distanza: a['distanza'] === true, ...(a['automatico'] === true ? { automatico: true } : {}), ...consuma, ...(armaCat ? { arma: armaCat } : {}) }];
   });
   const difesa = intero(o['difesa']) ?? intero(o['ca']);
-  const sch: SchedaGenerica = { id, nome, di_png, caratteristiche, abilita, pf_massimi: pf && pf > 0 ? pf : 1, difesa, armatura: intero(o['armatura']) ?? 0, attacchi, ...classeDellaScheda(s, o, dove, avvisi), ...risorseDellaScheda(s, o, dove, avvisi), ...equipaggiamentoDellaScheda(s, o, dove, avvisi), avvisi };
+  const sch: SchedaGenerica = { id, nome, di_png, caratteristiche, abilita, pf_massimi: pf && pf > 0 ? pf : 1, difesa, armatura: intero(o['armatura']) ?? 0, attacchi, ...classeDellaScheda(s, o, dove, avvisi), ...risorseDellaScheda(s, o, dove, avvisi), ...equipaggiamentoDellaScheda(s, o, dove, avvisi), ...esperienzaDellaScheda(o, dove, avvisi), avvisi };
+  // The class tables give the abilities that grow with the level (M1); a value the sheet writes stays, as an override.
+  sch.abilitaScritte = { ...abilita };
+  for (const x of derivaAbilita(s, sch)) avvisi.push(`${dove}.abilita.${x.id}: ${x.scritto} scritto a mano, la tabella della classe dà ${x.tabella} al livello ${sch.livello ?? 1}: vale quello della scheda`);
   // Gear from the catalog: the AC and the attack lines come from it (the sheet's own lines stay after the weapons').
   if (sch.equipaggiamento) {
     sch.attacchiPropri = attacchi;
@@ -72,6 +76,31 @@ export function leggiSchedaGenerica(s: SistemaRegole, id: string, nome: string, 
     if (difesa !== null && sch.difesa !== difesa) avvisi.push(`${dove}: difesa ${difesa} diversa da quella dell'equipaggiamento (${sch.difesa}, ${da}): vale quella dell'equipaggiamento`);
   }
   return sch;
+}
+
+/**
+ * The abilities a sheet's class and level give (regole/progressione.ts), merged under the ones it writes by hand
+ * (`abilitaScritte`, which win: an override). Called when a sheet is read and again when its level changes (a level-up
+ * between sessions, prove/livelli.ts). Returns the overrides that disagree with the table, for the log and the validator.
+ */
+export function derivaAbilita(s: SistemaRegole, sch: SchedaGenerica): Array<{ id: string; scritto: number; tabella: number }> {
+  const classe = sch.classe ? (s.classi ?? []).find((c) => c.id === sch.classe) : undefined;
+  const tabella = valoriDaClasse(s.progressione, classe?.progressione ?? null, sch.livello ?? 1, trattiDi(s, sch));
+  const scritte = sch.abilitaScritte ?? sch.abilita;
+  sch.abilita = { ...tabella, ...scritte };
+  return Object.entries(tabella).flatMap(([id, n]) => (scritte[id] !== undefined && scritte[id] !== n ? [{ id, scritto: scritte[id]!, tabella: n }] : []));
+}
+
+/** The sheet's XP (`px`: a PC's total, an NPC's worth) and a monster's special-ability asterisks (`speciali`). */
+function esperienzaDellaScheda(o: DatiYaml, dove: string, avvisi: string[]): Pick<SchedaGenerica, 'px' | 'speciali'> {
+  const out: Pick<SchedaGenerica, 'px' | 'speciali'> = {};
+  for (const k of ['px', 'speciali'] as const) {
+    if (o[k] === undefined) continue;
+    const n = intero(o[k]);
+    if (n === null || n < 0) avvisi.push(`${dove}.${k}: un intero da 0 in su`);
+    else out[k] = n;
+  }
+  return out;
 }
 
 /**

@@ -57,7 +57,7 @@ describe('traits as data', () => {
     expect(bonusTratti(t, { tipo: 'salvezza', colonna: null })).toBe(0);
     leggiTratti([{ tiro: 'fortuna', bonus: 1 }, { tiro: 'abilita', abilita: ['volare'], bonus: 2 }, { sorpresa: 0 }, { tiro: 'iniziativa' }], 'y', { abilita: new Set(), colonne: new Set() }, errori);
     const msg = errori.join(' | ');
-    expect(msg).toMatch(/y\[1\]\.tiro: iniziativa, abilita or salvezza/);
+    expect(msg).toMatch(/y\[1\]\.tiro: iniziativa, abilita, salvezza or esperienza/);
     expect(msg).toMatch(/y\[2\]\.abilita: abilities of the set \(not: volare\)/);
     expect(msg).toMatch(/y\[3\]\.sorpresa: a whole number, not 0/);
     expect(msg).toMatch(/y\[4\]: \{tiro: iniziativa/);
