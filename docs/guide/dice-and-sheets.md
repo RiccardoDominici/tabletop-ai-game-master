@@ -49,6 +49,18 @@ A campaign chooses it when it is created: `regole.tiri_giocatori` in `campagna.y
 - **`automatico`.** The program rolls for the players, as before. The cards still show no DC.
 - **The number to beat is never shown at the table, in either mode.** No card on the projector or on the phones has the DC, the AC or the threshold: not a player's check or attack, not an NPC's attack against your armour, not a death save. The cards show the dice, the bonus, the total and the outcome; the Game Master panel has the numbers. A campaign that wants them at the table sets `regole: {mostra_cd: true}` in `campagna.yaml`.
 - **The Game Master's own rolls.** When the world leaves something to chance (a clock's gate with `tiro` in the campaign: does the front advance, does the news spread; a world question of the scene: is the guard awake, does the NPC on the stairs notice the noise — see [World questions](#world-questions)), the program rolls, never the narrator. `regole.tiri_master` in `campagna.yaml` decides whether the table sees it: `nascosti` (hidden, the default: only the panel has it), `a_volte` (sometimes: when the odds are close, from one in three to two in three), `visibili` (always). A roll the table sees is a card «Il master» with the die and «Sì» or «No», and one line of the narrator («Il master tira i dadi.»); what it was for stays with the Game Master. Test override: `TAGM_TIRI_MASTER`.
+- **Rolls the manual gives to the Game Master.** Some rule sets say a roll must stay secret even from the player who
+  makes it: in Basic Fantasy the thief's Listen, Find and Remove Traps, Move Silently and Hide (the thief «always believes
+  they are being successful», p. 9). The rule set marks them (`segreta`), and the program rolls them itself, even when the
+  players roll their own dice: no request on the phone, no card on the projector or the phones; the Game Master panel
+  shows the card marked «solo al master». The narrator is told the outcome and how to tell a failure as the character
+  perceives it: nothing heard, nothing found, or «it seems to have worked» (and the guard who heard the steps will show
+  it). This holds whatever `tiri_master` says. An NPC's saving throw against a player's spell is a Game Master roll too:
+  hidden by default, shown at the table with `tiri_master: visibili` (or `a_volte` when the odds are close).
+- **Situational adjustments** to a percentage (the slimy wall's −20%): a scene's check can carry its own
+  (`aggiustamento: -20` in `scena.yaml → prove`), and the rule set's difficulties can give d100 skills percentage points
+  (`percentuale`), so a check the program rates «difficile» (hard) takes them. A failure band can have a name too: in
+  Basic Fantasy a pick-pocket that fails by more than twice the target, or on 00, is noticed, and the narrator is told.
 - **The Game Master can ask for a check** from the panel («Chiedi una prova», [the Game Master panel](master-panel.md#rolls)): it goes through the same path, rolled by the player or by the program depending on the campaign.
 
 ```yaml

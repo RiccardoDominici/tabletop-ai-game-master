@@ -875,6 +875,8 @@ export class Regia {
           ...(po.gregari?.length ? { gregari: po.gregari } : {}),
           // Where the PCs and the clock start this session (a package's pg_all_inizio, docs/strati.md).
           ...(this.campagna.statoAllInizio ? { allInizio: this.campagna.statoAllInizio } : {}),
+          // An NPC's save is a Game Master roll: hidden or shown by `regole.tiri_master` (prove/tiri-master.ts).
+          tiriMaster: () => po.tiri?.master ?? 'nascosti',
         })
       : null;
     if (this.prove) opzioni.log.info({ dadi: this.prove.attivo, seme: this.prove.attivo ? this.prove.seme : null }, 'prove: Motore delle prove pronto');

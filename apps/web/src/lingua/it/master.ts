@@ -438,6 +438,7 @@ export const master = {
   'master.tiri.master_visibili': 'tiri del master sempre visibili',
   'master.tiri.nessuno': 'Nessun tiro in questo turno.',
   'master.tiri.privata': 'privata',
+  'master.tiri.solo_master': 'solo al master (il tavolo non la vede)',
   'master.tiri.vantaggio': 'vantaggio',
   'master.tiri.svantaggio': 'svantaggio',
   'master.tiri.inseriti': 'dadi {valori}',

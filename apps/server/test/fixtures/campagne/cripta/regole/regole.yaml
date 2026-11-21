@@ -37,14 +37,14 @@ abilita:
   - {id: ts_morte, nome: Salvezza contro la morte, caratteristica: null, salvezza: morte}
   - {id: ts_magia, nome: Salvezza contro la magia, caratteristica: null, salvezza: magia}
   # The thief's values by level come from the class table; the Game Master rolls some in secret (see below).
-  - {id: origliare, nome: Origliare, caratteristica: null, soglia: {dado: 100}}
-  - {id: trappole, nome: Trovare trappole, caratteristica: null, soglia: {dado: 100}}
-  - {id: sgattaiolare, nome: Sgattaiolare, caratteristica: null, soglia: {dado: 100}}
-  - {id: borseggiare, nome: Borseggiare, caratteristica: null, soglia: {dado: 100}}
+  - {id: origliare, nome: Origliare, caratteristica: null, soglia: {dado: 100}, segreta: niente}
+  - {id: trappole, nome: Trovare trappole, caratteristica: null, soglia: {dado: 100}, segreta: niente}
+  - {id: sgattaiolare, nome: Sgattaiolare, caratteristica: null, soglia: {dado: 100}, segreta: riuscita}
+  - {id: borseggiare, nome: Borseggiare, caratteristica: null, soglia: {dado: 100, grave: {oltre_volte: 2, col_massimo: true, nome: "la vittima se ne accorge"}}}
 difficolta:
-  - {id: facile, nome: Facile, valore: 11}
+  - {id: facile, nome: Facile, valore: 11, percentuale: 20}
   - {id: normale, nome: Normale, valore: 15}
-  - {id: difficile, nome: Difficile, valore: 18}
+  - {id: difficile, nome: Difficile, valore: 18, percentuale: -20}
 difficolta_predefinita: normale
 vantaggio:
   tipo: bonus

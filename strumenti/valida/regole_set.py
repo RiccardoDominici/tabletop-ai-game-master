@@ -149,6 +149,9 @@ def _difficolta(r: dict, tipo: str | None, e: Esito, dove: str) -> list[str]:
             _err(e, "difficolta", dove, f"difficolta.{o['id']}: serve valore (la CD)")
         if tipo == "sotto_soglia" and not (_intero(o.get("divisore")) and o["divisore"] >= 1):
             _err(e, "difficolta", dove, f"difficolta.{o['id']}: serve divisore (1 = normale)")
+        # M9: the percentage points a d100 threshold gets at this rung (the slimy wall's −20).
+        if "percentuale" in o and not (_intero(o["percentuale"]) and -100 <= o["percentuale"] <= 100):
+            _err(e, "difficolta", dove, f"difficolta.{o['id']}.percentuale: punti percentuali da −100 a 100 per le soglie su d100")
     if not ids:
         return ids
     pred = r.get("difficolta_predefinita")
@@ -244,6 +247,14 @@ def _abilita(r: dict, car: set[str], e: Esito, dove: str) -> set[str]:
             pred = so.get("predefinita") if so else None
             if not so or so.get("dado") not in (6, 20, 100) or (pred is not None and not (_intero(pred) and 0 <= pred <= so["dado"])):
                 _err(e, "abilita", dove, f"abilita.{o['id']}.soglia: {{dado: 6 | 20 | 100, predefinita: da 0 al dado o vuota}}")
+            # A failure band (M9): a failed roll above oltre_volte × the threshold (or the top face) is a bad failure.
+            gr = (so or {}).get("grave")
+            if gr is not None and not (isinstance(gr, dict) and isinstance(gr.get("oltre_volte"), (int, float)) and gr["oltre_volte"] >= 1
+                                       and isinstance(gr.get("nome"), str) and gr["nome"].strip()):
+                _err(e, "abilita", dove, f"abilita.{o['id']}.soglia.grave: {{oltre_volte: 2, col_massimo: true, nome: \"…\"}}")
+        # A roll the Game Master makes in secret (M9): how a failure is told.
+        if "segreta" in o and o["segreta"] not in ("niente", "riuscita"):
+            _err(e, "abilita", dove, f"abilita.{o['id']}.segreta: niente (non nota niente) o riuscita (crede di esserci riuscito)")
     return ids
 
 
@@ -444,6 +455,9 @@ def _prove_di_scena(c: Campagna, e: Esito, car: set[str], abi: set[str], mosse: 
                 _err(e, "prove", dove, f"caratteristica «{o['caratteristica']}» non è del set")
             if o.get("difficolta") is not None and o["difficolta"] not in diff:
                 _err(e, "prove", dove, f"difficolta «{o['difficolta']}» non è una difficoltà del set")
+            # M9: a situational adjustment of this check (points of the threshold, or of the d20 roll).
+            if "aggiustamento" in o and not (_intero(o["aggiustamento"]) and -100 <= o["aggiustamento"] <= 100):
+                _err(e, "prove", dove, "aggiustamento: un intero da −100 a 100 (punti della soglia, o del tiro)")
 
 
 def controlla(c: Campagna, e: Esito) -> None:

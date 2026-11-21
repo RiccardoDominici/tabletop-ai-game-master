@@ -868,6 +868,21 @@ the XP the party earns (prove/esperienza.ts), by the set's `esperienza`, never t
   points grow by it; the narrator hears it first in that turn. The snapshot keeps the level, the maximum and whether the
   roll is owed, so neither a resume nor the dry run of manual rolls asks it twice; «Ricomincia» starts the level-up again.
   The log writes `pg_alla_fine[].livello` and `pf_massimi` for the session after.
+- **The Game Master's secret rolls** (M9; Basic Fantasy p. 8–9: the GM rolls Listen, Remove Traps, Move Silently and
+  Hide, the thief «always believes they are being successful»). An ability marked `segreta` (docs/regole.md §2) is
+  rolled with the Engine's dice even with manual rolls (no request at the table, the dry run asks nothing), its card is
+  `nascosta` (the panel shows it «solo al master»; the projector, the phones and the stall counter never see it), and
+  the fact tells the narrator it is secret and, on a failure, how the character perceives it: `niente` («nothing to
+  notice: tell it as if there were nothing, without saying the roll failed») or `riuscita` («believes it went well; whoever
+  should not have noticed did»). The outcome gates (`richiede.prova`) stay true to the dice. This is so whatever
+  `tiri_master` says: those rolls are the manual's secret, not the world's.
+- **Situational points** on a threshold: a scene check's `aggiustamento` (points of the threshold; on a d20 check, of the
+  roll) and a difficulty rung's `percentuale` for d100 thresholds (Basic Fantasy's set: facile +20, difficile −20, ardua
+  −40), said in the fact; a **failure band** (`soglia.grave`): a failed roll above `oltre_volte` × the threshold, or the
+  die's top face, adds «Fallimento grave: …» to the fact (pick pockets noticed).
+- **An NPC's save** against a PC's power is a Game Master roll by `tiri_master` too (R1 kept it always hidden): hidden by
+  default, a normal card at the table with `visibili`, and with `a_volte` when its odds are between one in three and two
+  in three.
 - **Not yet**: the SRD 5.2 has no XP data (its XP by challenge rating are not in the code's set); retainers.
 
 Tests: test/esperienza.test.ts (fixture cripta), test/progressione.test.ts and strumenti/test_valida_progressione.py (the

@@ -68,6 +68,13 @@ abilita:                      # optional; caratteristica = an existing id [V]
   - {id: persuadere, nome: "Persuadere", caratteristica: potere}
   - {id: scalare, nome: "Scalare pareti", caratteristica: null, soglia: {dado: 100}}               # optional [V]:
   - {id: porte, nome: "Porte segrete", caratteristica: null, soglia: {dado: 6, predefinita: 1}}   #   rolled separately
+  - {id: ascoltare, nome: "Ascoltare", caratteristica: null, soglia: {dado: 100}, segreta: niente}   # optional [V]: the Game
+    # Master rolls it in secret (M9): the Engine's dice even with manual rolls, the card only on the panel; the narrator
+    # hears how a failure is told: `niente` (nothing to notice: listening, finding traps) or `riuscita` (the character
+    # believes it worked: moving silently, hiding)
+  - {id: borseggiare, nome: "Borseggiare", caratteristica: null, soglia: {dado: 100, grave: {oltre_volte: 2, col_massimo: true, nome: "la vittima se ne accorge"}}}
+    # optional [V]: a failure band: a failed roll above oltre_volte × the threshold (or the die's top face) is a bad
+    # failure, named in the fact (Basic Fantasy's pick pockets, p. 9)
   - {id: alle_spalle, nome: "Attacco furtivo", caratteristica: forza, danno: doppio, una_volta_per_bersaglio: true, ripiego: mischia}
     # optional [V]: an attack ability that doubles the weapon's damage roll, usable once per target per fight; then the
     # attack rolls with `ripiego` (Basic Fantasy's sneak attack, p. 9)
@@ -87,6 +94,8 @@ modificatore:
     - {da: 13, mod: 1}        #   first row, the first applies; the validator warns (strict: error) for a score below
 difficolta:                   # [V] d20_cd: the CD (difficulty class) value required; sotto_soglia: divisor (1 = normal);
   - {id: normale, nome: "Normale", modificatore: 0}          #     2d6_fasce: roll modifier (0 if missing)
+  - {id: difficile, nome: "Difficile", valore: 19, percentuale: -20}   # optional [V]: percentage points a d100 threshold
+                                                             #   ability gets at this rung (a slimy wall: −20, M9)
   - {id: rischiosa, nome: "Rischiosa", modificatore: -1}
 difficolta_predefinita: normale   # [V] among the difficulties; if missing, the middle one
 vantaggio:
@@ -418,7 +427,9 @@ by the class's `px` row (strict warning). Saves and spells per day already come 
 With the SRD 5.2 the sheets remain those of docs/prove.md §2 (scores, proficiencies, calculated AC).
 
 **Checks of the scene** with a non-SRD set, in `scena.yaml → prove`:
-`{id: p_…, quando, mossa | abilita | caratteristica (set id), difficolta (set id), se_fallisce, parole}`.
+`{id: p_…, quando, mossa | abilita | caratteristica (set id), difficolta (set id), se_fallisce, parole, aggiustamento}`.
+`aggiustamento` (optional [V], −100 to 100): situational points of this check, added to a threshold ability's threshold
+(the slimy wall's −20) or to a d20 check's roll.
 `parole` (optional, also with the SRD) are the words that call the check for the rules arbiter, in addition to `quando`.
 
 **Repertoire.** `richiede.prova` with a non-SRD set also accepts the set's ids (moves, skills, characteristics):

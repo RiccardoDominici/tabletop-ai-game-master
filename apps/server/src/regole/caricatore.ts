@@ -82,6 +82,10 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     if (sv !== undefined && typeof sv !== 'boolean' && typeof sv !== 'string') errori.push(`abilita.${v.id}.salvezza: true o false, o una colonna di tiri_salvezza`);
     const salvezza = { ...(sv === true ? { salvezza: true } : typeof sv === 'string' && sv ? { salvezza: sv } : {}), ...attaccoSpeciale(ogg(x) ?? {}, v.id, errori) };
     // Un'abilità che il manuale tira a parte: percentuale (d100) o «x su 6» (d6), sotto la soglia della scheda.
+    // A roll the Game Master makes in secret (M9): how a failure is told (nothing noticed, or it seems to work).
+    const seg = ogg(x)?.['segreta'];
+    if (seg !== undefined && seg !== 'niente' && seg !== 'riuscita') errori.push(`abilita.${v.id}.segreta: niente (nothing noticed) or riuscita (it seems to work)`);
+    if (seg === 'niente' || seg === 'riuscita') Object.assign(salvezza, { segreta: seg });
     const so = ogg(ogg(x)?.['soglia']);
     if (ogg(x)?.['soglia'] === undefined) return [{ ...v, caratteristica: car, ...salvezza }];
     const dado = num(so?.['dado']);
@@ -90,7 +94,11 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
       errori.push(`abilita.${v.id}.soglia: {dado: 6 | 20 | 100, predefinita: …}`);
       return [{ ...v, caratteristica: car, ...salvezza }];
     }
-    return [{ ...v, caratteristica: car, soglia: { dado: dado as 6 | 20 | 100, predefinita }, ...salvezza }];
+    // A failure band: a failed roll above `oltre_volte` × the threshold (or the die's top face) is a bad failure.
+    const gr = so['grave'] === undefined ? null : ogg(so['grave']);
+    if (so['grave'] !== undefined && (!gr || !(typeof gr['oltre_volte'] === 'number' && gr['oltre_volte'] >= 1) || typeof gr['nome'] !== 'string')) errori.push(`abilita.${v.id}.soglia.grave: {oltre_volte: 2, col_massimo: true, nome: "…"}`);
+    const grave = gr && typeof gr['oltre_volte'] === 'number' && gr['oltre_volte'] >= 1 && typeof gr['nome'] === 'string' ? { grave: { oltreVolte: gr['oltre_volte'], colMassimo: gr['col_massimo'] !== false, nome: gr['nome'] } } : {};
+    return [{ ...v, caratteristica: car, soglia: { dado: dado as 6 | 20 | 100, predefinita, ...grave }, ...salvezza }];
   });
   const modTipo = (ogg(d['modificatore'])?.['tipo'] ?? (tipo === 'sotto_soglia' ? 'soglia' : tipo === '2d6_fasce' ? 'diretto' : 'srd')) as SistemaRegole['modificatore'];
   if (!['srd', 'diretto', 'soglia', 'tabella'].includes(modTipo)) errori.push('modificatore.tipo: srd, diretto, soglia o tabella');
@@ -142,7 +150,8 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[]): SistemaR
     const [v] = voci([x], `difficolta[${i + 1}]`, errori);
     if (!v) continue;
     const o = ogg(x)!;
-    const dd: Difficolta = { ...v, valore: num(o['valore']), divisore: num(o['divisore']), modificatore: num(o['modificatore']) };
+    const dd: Difficolta = { ...v, valore: num(o['valore']), divisore: num(o['divisore']), modificatore: num(o['modificatore']), ...(o['percentuale'] !== undefined ? { percentuale: num(o['percentuale']) } : {}) };
+    if (o['percentuale'] !== undefined && dd.percentuale === null) errori.push(`difficolta.${v.id}.percentuale: percentage points (−20) added to a d100 threshold at this rung`);
     if (tipo === 'd20_cd' && dd.valore === null) errori.push(`difficolta.${v.id}: serve valore (la CD)`);
     if (tipo === 'sotto_soglia' && dd.divisore === null) dd.divisore = 1;
     if (tipo === '2d6_fasce' && dd.modificatore === null) dd.modificatore = 0;

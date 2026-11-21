@@ -10,7 +10,7 @@ import type { TiroInserito } from '../src/prove/richieste';
 import type { RichiestaTiroMaster } from '@tabletop-ai-gm/shared';
 import { bersaglioSalvezza } from '../src/regole/salvezze';
 import { pgAllaFine } from '../src/sessione/stato-pg';
-import { azione, motoreCripta } from './esperienza.test';
+import { azione, motoreCripta } from './aiuti/cripta';
 
 const pacchetto = (pg: Record<string, Record<string, unknown>>) => ({ allInizio: { pg: pg as never, tempo: null } });
 const oreste2 = { pg_oreste: { px: 162, livello: 2, pf_massimi: 6, pf: 4, pf_da_tirare: [2] } };

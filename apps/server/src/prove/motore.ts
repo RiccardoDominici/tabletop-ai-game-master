@@ -27,7 +27,7 @@ import { frasiDi } from './difficolta';
 import type { Gregario } from '../campagna/gregari';
 import { normalizza } from '../azioni/regole';
 import { cartaPerIlTavolo, richiestaDaCarta, richiestaDaGruppo, type TiroInserito } from './richieste';
-import { mostraCdAlTavolo } from './modalita';
+import { mostraCdAlTavolo, type TiriMaster } from './modalita';
 import { loggerMuto, type Logger } from '../logger';
 import { risolviTurno, type Atteggiamento, type AzioneRisolvibile } from './risolutore';
 import { StatoProve, type StatoProveSalvato } from './stato';
@@ -144,6 +144,8 @@ export interface OpzioniMotoreProve {
    * top of the sheets at the start and at «Ricomincia»; a resumed session takes its snapshot instead.
    */
   allInizio?: Campagna['statoAllInizio'];
+  /** Whether the table sees the Game Master's rolls (`regole.tiri_master`): an NPC's save follows it. Absent = hidden. */
+  tiriMaster?: () => TiriMaster;
 }
 
 interface VoceCache {
@@ -941,6 +943,7 @@ export class MotoreProve {
       bonusAttivi: (id: string, a: 'difesa' | 'attacchi' | 'danni', contro: 'mischia' | 'distanza') => this.attivi.bonus(id, a, contro),
       ...(this.inventario ? { indossate: (id: string) => this.inventario!.penalita(id) } : {}),
       round: this.combattimento.round,
+      ...(this.o.tiriMaster ? { tiriMaster: this.o.tiriMaster } : {}),
       log: this.o.log.child({ turno }),
     };
   }

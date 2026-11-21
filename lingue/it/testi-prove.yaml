@@ -86,6 +86,8 @@ prove:
     scambio: " Scambio: {frase} Dettagli: {dettagli}"
     # Set di regole non SRD (prove/risolutore-regole.ts).
     prova_set: "{regola}{vantaggio}: {valore} → {esito}."
+    aggiustamento: " (aggiustamento {n})."
+    fallimento_grave: " Fallimento grave: {nome}."
     esito_mossa: " Esito della mossa «{mossa}»: {esito}"
     armatura: " (armatura −{armatura})"
     danno_set: "{danno}{armatura}; {nome} {stato}"
@@ -156,6 +158,12 @@ prove:
   # Saving throws pinned to their own number (regole/salvezze.ts).
   salvezze:
     tiro_salvezza: "tiro salvezza"
+  # The Game Master's secret rolls (M9: abilita[].segreta): the card stays on the panel; the narrator tells it as the
+  # character perceives it.
+  segreta:
+    tiro: "Tiro segreto del master (il giocatore non vede il dado né l'esito): "
+    fallita_niente: " {nome} non nota niente: raccontalo come se non ci fosse niente da notare, senza dire che il tiro è fallito."
+    fallita_riuscita: " {nome} pensa che sia andata bene: raccontalo così, senza dire che il tiro è fallito; chi doveva non accorgersene se ne accorge, e si vedrà dai fatti."
   # A level gained between sessions (prove/livelli.ts): the hit points rolled at the session's first window.
   livelli:
     etichetta: "Punti ferita del {livello}° livello"

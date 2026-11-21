@@ -438,6 +438,7 @@ export const master = {
   'master.tiri.master_visibili': 'Game Master rolls always shown',
   'master.tiri.nessuno': 'No roll this turn.',
   'master.tiri.privata': 'private',
+  'master.tiri.solo_master': 'Game Master only (the table does not see it)',
   'master.tiri.vantaggio': 'advantage',
   'master.tiri.svantaggio': 'disadvantage',
   'master.tiri.inseriti': 'dice {valori}',

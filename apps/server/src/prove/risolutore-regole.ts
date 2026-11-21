@@ -15,6 +15,8 @@ import type { SchedaGenerica, SistemaRegole } from '../regole/tipi';
 import { voce, type Penalita } from '../regole/catalogo';
 import { chiaveOggetto } from './risorse';
 import { gittataDelTiro } from './gittate';
+import { mostraTiroDelMaster } from './tiri-master';
+import type { TiriMaster } from './modalita';
 import type { FonteDadi } from './dadi';
 import type { DadiDeiPg, GruppoDadi } from './dadi-tavolo';
 import { combinaVantaggi, danno as tiraDanno } from './regole';
@@ -66,6 +68,11 @@ export interface ProvaScenaRegole {
   nome: string | null;
   /** Typed effects applied to the PC who fails (`effetti_se_fallisce`, regole/effetti.ts). */
   effetti: EffettoTipato[];
+  /**
+   * A situational adjustment the Preparer wrote for this check (`aggiustamento`: −20 on the slimy wall, Basic Fantasy
+   * p. 8): added to a threshold roll's threshold, or to a d20 check's roll. 0 = none.
+   */
+  aggiustamento: number;
 }
 
 /** Le prove della scena per un set non SRD: id del set, difficoltà per id (non la CD dell'SRD). */
@@ -76,7 +83,7 @@ export function proveScenaRegole(s: SistemaRegole, c: Campagna): ProvaScenaRegol
     const d = g as DatiYaml;
     if (typeof d?.['id'] !== 'string') return [];
     const pick = (k: string, ammessi: Array<{ id: string }>): string | null => (typeof d[k] === 'string' && ammessi.some((x) => x.id === d[k]) ? (d[k] as string) : null);
-    return [{ id: d['id'], quando: typeof d['quando'] === 'string' ? d['quando'] : '', caratteristica: pick('caratteristica', s.caratteristiche), abilita: pick('abilita', s.abilita), mossa: pick('mossa', s.mosse), difficolta: pick('difficolta', s.difficolta), se_fallisce: typeof d['se_fallisce'] === 'string' ? d['se_fallisce'] : null, parole: Array.isArray(d['parole']) ? (d['parole'] as unknown[]).filter((p): p is string => typeof p === 'string') : [], nome: typeof d['nome'] === 'string' && d['nome'].trim() ? d['nome'].trim() : null, effetti: effettiSeFallisce(d, `prove[${d['id']}]`) }];
+    return [{ id: d['id'], quando: typeof d['quando'] === 'string' ? d['quando'] : '', caratteristica: pick('caratteristica', s.caratteristiche), abilita: pick('abilita', s.abilita), mossa: pick('mossa', s.mosse), difficolta: pick('difficolta', s.difficolta), se_fallisce: typeof d['se_fallisce'] === 'string' ? d['se_fallisce'] : null, parole: Array.isArray(d['parole']) ? (d['parole'] as unknown[]).filter((p): p is string => typeof p === 'string') : [], nome: typeof d['nome'] === 'string' && d['nome'].trim() ? d['nome'].trim() : null, effetti: effettiSeFallisce(d, `prove[${d['id']}]`), aggiustamento: typeof d['aggiustamento'] === 'number' && Number.isInteger(d['aggiustamento']) ? d['aggiustamento'] : 0 }];
   });
 }
 
@@ -125,6 +132,11 @@ export interface OpzioniRisolutoreRegole {
   indossate?: (id: string) => Penalita & { motivi: string[] };
   /** The fight's current round (a crossbow's rate of fire), or null outside a fight. */
   round?: number | null;
+  /**
+   * Whether the table sees the Game Master's rolls (campaign `regole.tiri_master`, prove/tiri-master.ts): an NPC's save
+   * against a PC's power follows it. Absent = hidden. The set's secret abilities stay hidden whatever it says.
+   */
+  tiriMaster?: () => TiriMaster;
   log: Logger;
 }
 
@@ -159,7 +171,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
     const d = o.decisioni.get(a.id);
     if (d?.tipo === 'aiuto' && d.aiuta && ids.has(d.aiuta) && d.aiuta !== a.id) aiutanti.set(d.aiuta, [...(aiutanti.get(d.aiuta) ?? []), o.nome(a.autore)]);
   }
-  const { cheCosa, cartaDa, attacca, bersaglioDiSalvezza, salvezzaDelBersaglio, munizioni } = strumentiRegole(o);
+  const { cheCosa, cartaDa, attacca, bersaglioDiSalvezza, salvezzaDelBersaglio, munizioni, aggiustamentoDi } = strumentiRegole(o);
   // The PC's own dice for one roll of an action (manual rolls), or the Engine's.
   const dadiDelPg = (a: AzioneRisolvibile, per: 'prova' | 'danno', extra: Pick<GruppoDadi, 'etichetta' | 'modificatore'> = {}): FonteDadi =>
     o.dadiDeiPg?.fonte({ pg: a.autore, per, azione: a.id, privata: a.privata, ...extra }) ?? o.dadi;
@@ -257,13 +269,27 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
         if (condSv) fonti.push({ v: 'svantaggio', motivo: condSv.toLowerCase() });
         const v = combinaVantaggi(fonti.map((f) => f.v));
         const sistTiro = cosa.soglia ? sistemaSoglia(s, cosa.soglia) : fisso ? sistemaSalvezza(s, fisso.contro) : s;
-        const e = tiraCol(sistTiro, dadiDelPg(a, 'prova'), fisso ? fisso.modificatore : cosa.valore, cosa.soglia ? null : fisso ? ID_SALVEZZA : (ps?.difficolta ?? d.difficolta), v, cosa.etichetta, false, !!cosa.salvezza);
+        // The ability's own rules (M9): a roll the Game Master makes in secret, a failure band, situational points.
+        const def = s.abilita.find((x) => x.id === ((ps ?? d).abilita ?? ''));
+        const segreta = def?.segreta ?? null;
+        const aggiustamento = aggiustamentoDi(cosa, ps, ps?.difficolta ?? d.difficolta);
+        const valore = cosa.soglia ? Math.max(0, Math.min(cosa.soglia, cosa.valore + aggiustamento)) : (fisso ? fisso.modificatore : cosa.valore) + aggiustamento;
+        // A secret roll uses the Engine's dice, never the player's (no request at the table, even with manual rolls).
+        const e = tiraCol(sistTiro, segreta ? o.dadi : dadiDelPg(a, 'prova'), valore, cosa.soglia ? null : fisso ? ID_SALVEZZA : (ps?.difficolta ?? d.difficolta), v, cosa.etichetta, false, !!cosa.salvezza);
         const b = d.bersaglio && o.esiste(d.bersaglio) && d.bersaglio !== a.autore ? d.bersaglio : null;
-        aggiungi(cartaDa(e, a.autore, fisso ? 'salvezza' : 'prova', cosa.etichetta, b, fonti.filter((f) => f.v === v).map((f) => f.motivo).join('; ') || null, a.privata, sistTiro));
+        const t = cartaDa(e, a.autore, fisso ? 'salvezza' : 'prova', cosa.etichetta, b, fonti.filter((f) => f.v === v).map((f) => f.motivo).join('; ') || null, a.privata, sistTiro);
+        // Its card is the Game Master's: on the panel, never on the projector or the phones (`tiri_master` aside).
+        if (segreta) t.nascosta = true;
+        aggiungi(t);
         esito.riuscita = e.riuscita;
         // Prove riuscite per il cancello `richiede.prova`: anche gli id del set (mossa, abilità, caratteristica).
         (e.riuscita ? esito.riuscite : esito.fallite).push(...new Set(['prova', ...[d.abilita, d.caratteristica, d.mossa, ps?.id, ps?.mossa, ps?.abilita, ps?.caratteristica, cosa.mossa?.id, cosa.mossa?.caratteristica].filter((x): x is string => !!x)]));
-        fatto = testo('prove.fatto.prova_set', { regola: e.regola, vantaggio: conVantaggio(e.vantaggio), valore: s.risoluzione.tipo === 'sotto_soglia' ? e.dado : e.totale, esito: esitoInParole(e) });
+        fatto = (segreta ? testo('prove.segreta.tiro') : '') + testo('prove.fatto.prova_set', { regola: e.regola, vantaggio: conVantaggio(e.vantaggio), valore: s.risoluzione.tipo === 'sotto_soglia' ? e.dado : e.totale, esito: esitoInParole(e) });
+        if (aggiustamento) fatto += testo('prove.fatto.aggiustamento', { n: aggiustamento > 0 ? `+${aggiustamento}` : `−${-aggiustamento}` });
+        if (segreta) o.log.info({ azione: a.id, autore: a.autore, abilita: def?.id, dado: e.dado, soglia: valore, riuscita: e.riuscita }, 'secret roll: the Game Master rolls it, the card stays on the panel');
+        // A failure band (pick pockets noticed): a failed roll above n times the threshold, or the die's top face.
+        const grave = cosa.soglia && !e.riuscita ? def?.soglia?.grave : null;
+        if (grave && cosa.soglia && (e.dado > grave.oltreVolte * valore || (grave.colMassimo && e.dado >= cosa.soglia))) fatto += testo('prove.fatto.fallimento_grave', { nome: grave.nome });
         if (cosa.mossa) {
           const esitoMossa = e.grado?.id === 'parziale' ? (cosa.mossa.esiti.parziale ?? cosa.mossa.esiti.successo) : e.riuscita ? cosa.mossa.esiti.successo : cosa.mossa.esiti.fallimento;
           fatto += testo('prove.fatto.esito_mossa', { mossa: cosa.mossa.nome, esito: esitoMossa });
@@ -275,8 +301,10 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
           for (const t of x.tiri) aggiungi(t);
           if (x.fatti.length) fatto += ` ${x.fatti.join(' ')}`;
         }
-        // Che cosa NON succede (la carta e la storia d'accordo, D2); una mossa ha già il suo esito scritto.
-        if (!e.riuscita && !cosa.mossa) fatto += fattoNonOttiene(ps?.quando ?? a.testo, a.privata ? a.autore : null);
+        // Che cosa NON succede (la carta e la storia d'accordo, D2); una mossa ha già il suo esito scritto. A secret roll
+        // that failed is told the way the player perceives it: nothing to notice, or it seems to have worked.
+        if (!e.riuscita && segreta) fatto += testo(`prove.segreta.fallita_${segreta}`, { nome: o.nome(a.autore) });
+        else if (!e.riuscita && !cosa.mossa) fatto += fattoNonOttiene(ps?.quando ?? a.testo, a.privata ? a.autore : null);
       }
     }
     // Reazione del PNG: dopo l'azione, se la condizione vale.
@@ -361,6 +389,15 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     return null;
   }
 
+  /**
+   * The situational points of a check (M9): the scene check's `aggiustamento`, and for a d100 threshold the difficulty
+   * rung's `percentuale` (the arbiter's «difficile» on a slimy wall: −20). 0 = none.
+   */
+  function aggiustamentoDi(cosa: { soglia?: 6 | 20 | 100 }, ps: ProvaScenaRegole | null, difficolta: string | null): number {
+    const rung = cosa.soglia === 100 && difficolta ? (s.difficolta.find((x) => x.id === difficolta)?.percentuale ?? 0) : 0;
+    return (ps?.aggiustamento ?? 0) + rung;
+  }
+
   /** A sheet's save with the set's save ability: its number to reach and its bonus (traits and active effects added). */
   function bersaglioDiSalvezza(sch: SchedaGenerica, abilita: string): BersaglioSalvezza | null {
     return bersaglioSalvezza(s, sch, abilita, o.extraSalvezza?.(sch.id, abilita) ?? 0);
@@ -382,7 +419,9 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     const etichetta = nomeAbil(abilita);
     const e = tiraCol(sist, dadi, b.modificatore + modificatore, ID_SALVEZZA, v, etichetta, false, true);
     const t = cartaDa(e, chi, 'salvezza', etichetta, null, fonti ? fonti.toLowerCase() : null, privata, sist);
-    if (chi.startsWith('png_')) t.nascosta = true;
+    // An NPC's save is the Game Master's roll: hidden, or shown by the campaign's `tiri_master` (visibili; a_volte when
+    // the odds are close), like the world's rolls (prove/tiri-master.ts).
+    if (chi.startsWith('png_')) t.nascosta = !mostraTiroDelMaster(o.tiriMaster?.() ?? 'nascosti', { visibile: false, dado: 20, almeno: Math.max(1, b.contro - (b.modificatore + modificatore)) }).mostra;
     o.log.info({ chi, abilita, dadi: e.dadi, modificatore: e.modificatore, contro: b.contro, fonte: b.fonte, riuscita: e.riuscita }, 'saves: a target rolls its own save');
     return { e, t };
   }
@@ -577,5 +616,5 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     o.log.info({ chi, arma: a.id, risorsa: a.consuma }, 'resources: out of ammunition, no attack');
     return testo('prove.poteri.senza_munizioni', { nome: o.nome(chi), risorsa: (s.risorse ?? []).find((r) => r.id === a.consuma)?.nome.toLowerCase() ?? a.consuma, arma: a.nome });
   }
-  return { cheCosa, cartaDa, colpisci, attacca, bersaglioDiSalvezza, salvezzaDelBersaglio, munizioni };
+  return { cheCosa, cartaDa, colpisci, attacca, bersaglioDiSalvezza, salvezzaDelBersaglio, munizioni, aggiustamentoDi };
 }

@@ -223,6 +223,7 @@ function RigaCarta({ c, senzaSpoiler }: { c: TiroMostrato; senzaSpoiler: boolean
       <span className={c.riuscita ? 'text-muschio' : 'text-brace'}>{t(c.riuscita ? 'master.tiri.riuscita' : 'master.tiri.fallita')}</span>
       {c.manuale && <span className="text-cenere"> · {t(`master.tiri.da_${c.manuale}`)}</span>}
       {c.privata && <span className="text-cenere"> · {t('master.tiri.privata')}</span>}
+      {c.nascosta && <span className="text-candela" data-testid={`master-carta-${c.id}-segreta`}> · {t('master.tiri.solo_master')}</span>}
     </span>
   );
 }

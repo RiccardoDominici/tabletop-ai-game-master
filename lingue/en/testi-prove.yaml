@@ -80,6 +80,8 @@ prove:
     reazione: "Then {nome} reacts. {frase} Details: {dettagli}"
     scambio: " Exchange: {frase} Details: {dettagli}"
     prova_set: "{regola}{vantaggio}: {valore} → {esito}."
+    aggiustamento: " (adjustment {n})."
+    fallimento_grave: " A bad failure: {nome}."
     esito_mossa: " Outcome of the move “{mossa}”: {esito}"
     armatura: " (armor −{armatura})"
     danno_set: "{danno}{armatura}; {nome} {stato}"
@@ -150,6 +152,12 @@ prove:
   # Saving throws pinned to their own number (regole/salvezze.ts).
   salvezze:
     tiro_salvezza: "saving throw"
+  # The Game Master's secret rolls (M9: abilita[].segreta): the card stays on the panel; the narrator tells it as the
+  # character perceives it.
+  segreta:
+    tiro: "The Game Master's secret roll (the player sees neither the die nor the outcome): "
+    fallita_niente: " {nome} notices nothing: tell it as if there were nothing to notice, without saying the roll failed."
+    fallita_riuscita: " {nome} believes it went well: tell it that way, without saying the roll failed; whoever should not have noticed did, and it will show in what happens."
   # A level gained between sessions (prove/livelli.ts): the hit points rolled at the session's first window.
   livelli:
     etichetta: "Hit points of level {livello}"

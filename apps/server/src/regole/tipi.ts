@@ -42,6 +42,11 @@ export interface Difficolta extends Voce {
   divisore: number | null;
   /** 2d6_fasce: si somma al tiro (rischiosa = −1). */
   modificatore: number | null;
+  /**
+   * A d100 threshold roll at this difficulty adds these percentage points to its threshold (Basic Fantasy p. 8: −20% on a
+   * slimy wall); null = thresholds ignore the rung (as before).
+   */
+  percentuale?: number | null;
 }
 
 /** Gradi di successo di un tiro sotto soglia (d100: estremo = un quinto, difficile = metà). */
@@ -118,7 +123,18 @@ export interface SistemaRegole {
   abilita: Array<
     Voce & {
       caratteristica: string | null;
-      soglia?: { dado: 6 | 20 | 100; predefinita: number | null } | null;
+      soglia?: {
+        dado: 6 | 20 | 100;
+        predefinita: number | null;
+        /** A failure band (Basic Fantasy's pick pockets: noticed above twice the target, or on 00): its name for the narrator. */
+        grave?: { oltreVolte: number; colMassimo: boolean; nome: string } | null;
+      } | null;
+      /**
+       * The Game Master rolls it in secret (M9, Basic Fantasy p. 8–9): the Engine's dice, never the player's; the card
+       * only on the panel; the narrator hears how to tell a failure: `niente` (nothing to notice: listening, finding
+       * traps) or `riuscita` (the character believes it worked: moving silently, hiding).
+       */
+      segreta?: 'niente' | 'riuscita';
       salvezza?: boolean | string;
       /** An attack with this ability deals double damage (Basic Fantasy's sneak attack, p. 9: twice the weapon's roll). */
       danno?: 'doppio';

@@ -93,15 +93,18 @@ abilita:
   - {id: ts_veleno, nome: "Tiro salvezza contro veleno", caratteristica: costituzione, salvezza: morte}
   - {id: ts_charme, nome: "Tiro salvezza contro charme e controllo della mente", caratteristica: saggezza, salvezza: incantesimi}
   - {id: ts_illusioni, nome: "Tiro salvezza contro illusioni", caratteristica: intelligenza, salvezza: incantesimi}
-  # Abilità del ladro (p. 9), in percentuale come nel manuale: d100 sotto il valore della scheda. Chi non ce l'ha
-  # nella scheda tira come una prova qualunque (d20 contro la difficoltà).
+  # Abilità del ladro (p. 9), in percentuale come nel manuale: d100 sotto il valore della tabella della classe. Chi non
+  # ce l'ha tira come una prova qualunque (d20 contro la difficoltà). Il master tira in segreto (p. 8–9) trovare e togliere
+  # trappole e ascoltare (se fallisce non nota niente), muoversi in silenzio e nascondersi (il ladro crede di esserci
+  # riuscito): il Motore tira coi suoi dadi, la carta resta al pannello. Borseggiare: col tiro oltre il doppio della
+  # soglia, o 00, la vittima se ne accorge (p. 9).
   - {id: scassinare, nome: "Scassinare serrature", caratteristica: null, soglia: {dado: 100}}
-  - {id: trappole, nome: "Trovare e togliere trappole", caratteristica: null, soglia: {dado: 100}}
-  - {id: borseggiare, nome: "Borseggiare", caratteristica: null, soglia: {dado: 100}}
-  - {id: muoversi_in_silenzio, nome: "Muoversi in silenzio", caratteristica: null, soglia: {dado: 100}}
+  - {id: trappole, nome: "Trovare e togliere trappole", caratteristica: null, soglia: {dado: 100}, segreta: niente}
+  - {id: borseggiare, nome: "Borseggiare", caratteristica: null, soglia: {dado: 100, grave: {oltre_volte: 2, col_massimo: true, nome: "la vittima, o chi guarda, se ne accorge"}}}
+  - {id: muoversi_in_silenzio, nome: "Muoversi in silenzio", caratteristica: null, soglia: {dado: 100}, segreta: riuscita}
   - {id: scalare, nome: "Scalare pareti", caratteristica: null, soglia: {dado: 100}}
-  - {id: nascondersi, nome: "Nascondersi", caratteristica: null, soglia: {dado: 100}}
-  - {id: ascoltare, nome: "Ascoltare", caratteristica: null, soglia: {dado: 100}}
+  - {id: nascondersi, nome: "Nascondersi", caratteristica: null, soglia: {dado: 100}, segreta: riuscita}
+  - {id: ascoltare, nome: "Ascoltare", caratteristica: null, soglia: {dado: 100}, segreta: niente}
   # Possibilità «x su 6» (p. 43–44): d6 sotto il valore della scheda. Porte segrete e porte bloccate valgono
   # «1 su 6» per chi non ha di più; l'occhio per la pietra è solo dei nani.
   - {id: cercare, nome: "Cercare porte segrete e trappole", caratteristica: null, soglia: {dado: 6, predefinita: 1}}
@@ -110,12 +113,13 @@ abilita:
 
 # Difficoltà: il «Target» delle prove di caratteristica al primo livello è 17 (p. 189); il master può dare un
 # bonus o una penalità. Facile = +4, difficile = −2, ardua = −4 (gli aggiustamenti che il manuale usa più spesso:
-# alle spalle +2, cieco −4, colpo furtivo +4). Tiri salvezza e abilità del ladro si tirano a difficoltà normale.
+# alle spalle +2, cieco −4, colpo furtivo +4). I tiri salvezza si tirano al loro numero. Le abilità del ladro prendono
+# punti percentuali (p. 8: «−20% per la parete viscida»): facile +20, difficile −20, ardua −40 (scelta del set).
 difficolta:
-  - {id: facile, nome: "Facile", valore: 13}
+  - {id: facile, nome: "Facile", valore: 13, percentuale: 20}
   - {id: normale, nome: "Normale", valore: 17}
-  - {id: difficile, nome: "Difficile", valore: 19}
-  - {id: ardua, nome: "Ardua", valore: 21}
+  - {id: difficile, nome: "Difficile", valore: 19, percentuale: -20}
+  - {id: ardua, nome: "Ardua", valore: 21, percentuale: -40}
 difficolta_predefinita: normale
 
 # Il manuale non ha il vantaggio: ha bonus e penalità di situazione, il più comune è ±2. Da dietro, carica e gittata
