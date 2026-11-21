@@ -169,22 +169,58 @@ export function usaPotere(c: ContestoPoteri, u: UsoPotere): EsitoPotere {
   if (p.descrittivo && !p.effetti.length) out.fatti.push(testo('prove.poteri.descrittivo', { potere: p.nome, bersagli: chiDentro.map(nome).join(', ') }));
   for (const id of chiDentro) {
     if (p.ostile && !pg(id) && pg(u.autore)) out.ostili.push({ chi: u.autore, bersaglio: id });
-    let dimezza = false;
-    if (p.salvezza && id !== u.autore) {
-      const s = c.salvezza(id, p.salvezza.abilita, p.salvezza.modificatore, pg(id) ? u.dadiDelPg(id) : c.effetti.dadi, u.privata);
-      if (s) {
-        out.tiri.push(s.t);
-        if (s.e.riuscita && p.salvezza.esito === 'annulla') {
-          out.fatti.push(testo('prove.poteri.resiste', { bersaglio: nome(id), potere: p.nome }));
-          continue;
-        }
-        dimezza = s.e.riuscita && p.salvezza.esito === 'dimezza';
-      }
-    }
-    const x = applicaEffetti({ effetti: p.effetti, bersaglio: id, autore: u.autore, fonte: p.nome, livello, dimezza, privata: u.privata, dadiAutore: u.dadiAutore }, c.effetti);
-    out.tiri.push(...x.tiri);
-    out.fatti.push(...x.fatti);
+    suUnBersaglio(c, u, id, livello, out, u.dadiAutore);
   }
   c.log.info({ autore: u.autore, potere: p.id, livello, bersagli: chiDentro, ostili: out.ostili.length }, 'powers: used');
+  return out;
+}
+
+/** One target of a power: its own save (negate or half), then the typed effects. */
+function suUnBersaglio(c: Pick<ContestoPoteri, 'salvezza' | 'effetti'>, u: Pick<UsoPotere, 'autore' | 'potere' | 'privata' | 'dadiDelPg'>, id: string, livello: number, out: Pick<EsitoPotere, 'tiri' | 'fatti'>, dadiAutore?: FonteDadi): void {
+  const p = u.potere;
+  let dimezza = false;
+  if (p.salvezza && id !== u.autore) {
+    const s = c.salvezza(id, p.salvezza.abilita, p.salvezza.modificatore, pg(id) ? u.dadiDelPg(id) : c.effetti.dadi, u.privata);
+    if (s) {
+      out.tiri.push(s.t);
+      if (s.e.riuscita && p.salvezza.esito === 'annulla') {
+        out.fatti.push(testo('prove.poteri.resiste', { bersaglio: c.effetti.nome(id), potere: p.nome }));
+        return;
+      }
+      dimezza = s.e.riuscita && p.salvezza.esito === 'dimezza';
+    }
+  }
+  const x = applicaEffetti({ effetti: p.effetti, bersaglio: id, autore: u.autore, fonte: p.nome, livello, dimezza, privata: u.privata, ...(dadiAutore ? { dadiAutore } : {}) }, c.effetti);
+  out.tiri.push(...x.tiri);
+  out.fatti.push(...x.fatti);
+}
+
+/**
+ * A monster uses one of its specials (a power of type `mostro`, regole/bestiario.ts): a breath on every PC of the fight, a
+ * gaze, or the rider of a hit (a ghoul's paralysis, a snake's poison). No cost here (its uses and rate are the caller's),
+ * the targets given by the caller; each target not immune (by the power's types, the sheet's `immune`, an active effect
+ * or a trait) rolls its own save — a PC with its own dice (`dadiDelPg`, manual rolls) — then the effects at the
+ * monster's hit dice (`livello`: a breath of 1d8 per hit die). Deterministic given the dice.
+ */
+export function usaPotereDiMostro(
+  c: Pick<ContestoPoteri, 'schede' | 'effetti' | 'salvezza' | 'immuneAttivo' | 'log'>,
+  u: { autore: string; potere: Potere; bersagli: string[]; livello: number; privata: boolean; dadiDelPg: (pg: string) => FonteDadi },
+): { tiri: TiroMostrato[]; fatti: string[]; toccati: string[] } {
+  const p = u.potere;
+  const out = { tiri: [] as TiroMostrato[], fatti: [] as string[], toccati: [] as string[] };
+  for (const id of u.bersagli) {
+    const fuori = c.effetti.stato.fuoriGioco(id);
+    if (fuori === 'morto' || fuori === 'fuggito') continue;
+    const sch = c.schede.get(id);
+    const tipi = sch?.tipo ?? [];
+    const immune = sch?.immune?.includes(p.id) || p.immuni.some((t) => tipi.includes(t)) || (p.soloTipi.length > 0 && !p.soloTipi.some((t) => tipi.includes(t))) || c.immuneAttivo?.(id, p.id);
+    if (immune) {
+      out.fatti.push(testo('prove.poteri.immune', { bersaglio: c.effetti.nome(id), potere: p.nome }));
+      continue;
+    }
+    out.toccati.push(id);
+    suUnBersaglio(c, { autore: u.autore, potere: p, privata: u.privata, dadiDelPg: u.dadiDelPg }, id, u.livello, out);
+  }
+  c.log.info({ autore: u.autore, potere: p.id, livello: u.livello, bersagli: out.toccati }, 'monsters: a special used');
   return out;
 }

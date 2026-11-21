@@ -66,7 +66,7 @@ export function richiestaDaGruppo(reg: GruppoRegistrato, turno: number, nome: st
   const g = reg.gruppo;
   const per = g.per === 'prova' ? undefined : g.per;
   const quanti = Math.max(1, reg.facce.length);
-  const tipo = g.per === 'danno' ? 'attacco' : g.per === 'morte' ? 'salvezza' : g.per === 'contesa' ? 'contrapposta' : 'prova';
+  const tipo = g.per === 'danno' ? 'attacco' : g.per === 'morte' || g.per === 'salvezza' ? 'salvezza' : g.per === 'contesa' ? 'contrapposta' : 'prova';
   return {
     id: reg.chiave,
     id_azione: g.azione ?? '',

@@ -47,9 +47,10 @@ def _scala(v, dove: str, e: Esito, codice: str) -> None:
     if v is None:
         return
     o = _ogg(v)
-    ogni = o.get("ogni_livelli", 1) if o else None
-    massimo = o.get("massimo") if o else None
-    if not o or not _intero(ogni) or ogni < 1 or (massimo is not None and (not _intero(massimo) or massimo < 1)):
+    # An empty map is valid (one per level, no cap), as the Engine reads it: `o is None`, not falsy.
+    ogni = o.get("ogni_livelli", 1) if o is not None else None
+    massimo = o.get("massimo") if o is not None else None
+    if o is None or not _intero(ogni) or ogni < 1 or (massimo is not None and (not _intero(massimo) or massimo < 1)):
         e.errore(codice, dove, "{ogni_livelli: n ≥ 1, massimo: n ≥ 1} (entrambi facoltativi)")
 
 
@@ -89,7 +90,12 @@ def controlla_effetti(v, dove: str, e: Esito, codice: str, condizioni: set[str] 
             e.errore(codice, d, f"tipo uno tra {', '.join(TIPI_EFFETTO)}")
             continue
         ok = True
-        if tipo in ("danno", "cura", "attacco") and not formula_valida(o.get("dadi")):
+        # `pari_ai_pf: true`: a damage as much as the author's current hit points, no dice needed (regole/effetti.ts).
+        if "pari_ai_pf" in o and not isinstance(o["pari_ai_pf"], bool):
+            e.errore(codice, d, "pari_ai_pf: true o false")
+        if tipo == "danno" and o.get("pari_ai_pf") is True and "dadi" not in o:
+            pass
+        elif tipo in ("danno", "cura", "attacco") and not formula_valida(o.get("dadi")):
             e.errore(codice, d, "dadi: una formula come 1d6+1 (o un intero)")
             ok = False
         if tipo in ("danno", "cura"):

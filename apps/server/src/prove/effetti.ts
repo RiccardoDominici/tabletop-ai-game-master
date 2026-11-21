@@ -141,6 +141,12 @@ export function applicaEffetti(a: Applicazione, ctx: ContestoEffetti): EsitoEffe
     if (ctx.stato.fuoriGioco(a.bersaglio) === 'morto' && e.tipo !== 'cura') continue;
     switch (e.tipo) {
       case 'danno': {
+        // As much as the author's current hit points (a breath in some manuals): no dice to roll.
+        if (e.pariAiPf) {
+          const pf = a.autore ? (ctx.stato.puntiFerita(a.autore)?.attuali ?? 0) : 0;
+          infliggi(ctx, a, { numero: 0, facce: 0, bonus: pf }, ctx.dadi, e.tipoDanno, out);
+          break;
+        }
         const f = formulaAlLivello(e, a.livello);
         // Several missiles of one spell (magic missile): their sum is the same dice, n times.
         const n = e.colpi ? perLivello(e.colpi, a.livello, true) : 1;

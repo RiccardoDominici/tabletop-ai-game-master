@@ -112,7 +112,10 @@ combattimento:
      with several attacks a round (`per_round` of its sheet or its bestiary entry, docs/regole.md §2: a ghoul's claw,
      claw, bite) makes them all in its step, the first alternative it can fully use, each with its card and a numbered
      fact («Turno di Artiglio Nero, attacco 2 di 3: …», `prove.combattimento.turno_png_piu`); when its target drops, the
-     next attack goes to the next target by the same rule (audit P6-07: before, the first weapon only).
+     next attack goes to the next target by the same rule (audit P6-07: before, the first weapon only). A line with a
+     `potere` is a special action (a breath on every PC standing, with a save for half; uses per day and a rate), and a
+     hit's `colpendo` applies its rider with the target's save (paralysis, poison): docs/regole.md §2, «The bestiary in
+     play». A PC who dies of an effect (a failed poison save) is out of the fight at once, with no death save.
    - Consecutive NPC steps are resolved together. The narrator narrates them in the same reply, after the PC's action.
 3. **At 0**:
    - the set's condition «Privo di sensi» (Unconscious);

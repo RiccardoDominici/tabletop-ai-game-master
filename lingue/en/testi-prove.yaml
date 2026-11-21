@@ -121,6 +121,14 @@ prove:
     descrittivo: "Effect of {potere} on {bersagli}: tell it as the manual describes it, the Engine does not measure it."
     senza_munizioni: "{nome} has no {risorsa} left for {arma}: no attack."
     una_volta: " ({abilita} already used against {bersaglio} in this fight: an ordinary attack)"
+  # Monsters (regole/bestiario.ts, R4): a special in the monster's step, a weapon that cannot hurt, a resistance.
+  mostri:
+    usa: "{nome} uses {potere}."
+    non_ferisce: "{arma} hits {nome} but does not hurt it: only {solo} weapons hurt it. "
+    o: " or "
+    resiste_meta: "{nome} resists {tipo} damage: half. "
+    resiste_immune: "{nome} is immune to {tipo} damage. "
+    esaurito: "{nome} cannot use {potere} again today."
   # Timed effects (prove/attivi.ts): conditions, bonuses and immunities from powers and hazards.
   attivi:
     per_round: "for {n} rounds"

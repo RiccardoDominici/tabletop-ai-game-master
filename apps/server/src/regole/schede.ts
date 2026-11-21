@@ -79,7 +79,9 @@ export function leggiSchedaGenerica(s: SistemaRegole, id: string, nome: string, 
     // A monster's line (regole/bestiario.ts): its own id (per_round names it), the powers a hit applies (`colpendo`: a
     // ghoul's paralysis), a special action instead of an attack roll (`potere`: a breath), its uses per day and rate.
     const extra = lineaDiMostro(s, a, `${dove}.attacchi[${i + 1}]`, avvisi);
-    return [{ id: typeof a['id'] === 'string' && a['id'] ? chiave(a['id']) : chiave(n), nome: n, danno: danno ?? { numero: 1, facce: 4, bonus: 0 }, caratteristica: c, abilita: ab ?? (c || extra.potere || !di_png ? null : bestiaAbilita(s, a)), tipo_danno: typeof a['tipo_danno'] === 'string' ? a['tipo_danno'] : null, distanza: a['distanza'] === true, ...(a['automatico'] === true ? { automatico: true } : {}), ...consuma, ...(armaCat ? { arma: armaCat } : {}), ...extra }];
+    // What the weapon is made of (argento, magica): a creature hurt only by some weapons reads it (P6-03).
+    const proprieta = Array.isArray(a['proprieta']) ? { proprieta: a['proprieta'].filter((x): x is string => typeof x === 'string') } : {};
+    return [{ id: typeof a['id'] === 'string' && a['id'] ? chiave(a['id']) : chiave(n), nome: n, danno: danno ?? { numero: 1, facce: 4, bonus: 0 }, caratteristica: c, abilita: ab ?? (c || extra.potere || !di_png ? null : bestiaAbilita(s, a)), tipo_danno: typeof a['tipo_danno'] === 'string' ? a['tipo_danno'] : null, distanza: a['distanza'] === true, ...(a['automatico'] === true ? { automatico: true } : {}), ...consuma, ...(armaCat ? { arma: armaCat } : {}), ...extra, ...proprieta }];
   });
   const difesa = intero(o['difesa']) ?? intero(o['ca']);
   const sch: SchedaGenerica = { id, nome, di_png, caratteristiche, abilita, pf_massimi: pf && pf > 0 ? pf : 1, difesa, armatura: intero(o['armatura']) ?? 0, attacchi, ...classeDellaScheda(s, o, dove, avvisi), ...risorseDellaScheda(s, o, dove, avvisi), ...equipaggiamentoDellaScheda(s, o, dove, avvisi), ...esperienzaDellaScheda(o, dove, avvisi), ...mostroDellaScheda(s, o, attacchi, dove, avvisi), avvisi };
@@ -304,8 +306,14 @@ function lineaDiMostro(s: SistemaRegole, a: DatiYaml, dove: string, avvisi: stri
  * of line ids), its morale (a number, or `{prima, dopo}`: before and after it is engaged), the attack bonus it prints,
  * the weapons that can hurt it (`colpito_solo_da`).
  */
-function mostroDellaScheda(s: SistemaRegole, o: DatiYaml, attacchi: SchedaGenerica['attacchi'], dove: string, avvisi: string[]): Pick<SchedaGenerica, 'perRound' | 'morale' | 'attacco' | 'colpitoSoloDa'> {
-  const out: Pick<SchedaGenerica, 'perRound' | 'morale' | 'attacco' | 'colpitoSoloDa'> = {};
+function mostroDellaScheda(s: SistemaRegole, o: DatiYaml, attacchi: SchedaGenerica['attacchi'], dove: string, avvisi: string[]): Pick<SchedaGenerica, 'perRound' | 'morale' | 'attacco' | 'colpitoSoloDa' | 'resistenze'> {
+  const out: Pick<SchedaGenerica, 'perRound' | 'morale' | 'attacco' | 'colpitoSoloDa' | 'resistenze'> = {};
+  if (o['resistenze'] !== undefined) {
+    const r = ogg(o['resistenze']);
+    const ok = r && Object.values(r).every((v) => v === 'meta' || v === 'immune');
+    if (!ok) avvisi.push(`${dove}.resistenze: {tipo di danno: meta | immune}`);
+    else out.resistenze = r as Record<string, 'meta' | 'immune'>;
+  }
   if (o['per_round'] !== undefined) {
     const righe = Array.isArray(o['per_round']) ? o['per_round'] : null;
     const ids = new Set(attacchi.map((a) => a.id));

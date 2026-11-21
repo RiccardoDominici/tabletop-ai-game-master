@@ -52,7 +52,8 @@ import { difesaDa } from '../regole/equipaggiamento';
 import { leggiCosto, scriviCosto } from '../regole/catalogo';
 import { applicaEffetti, type ContestoEffetti } from './effetti';
 import { riposa } from './riposo';
-import { chiaveOggetto, Risorse } from './risorse';
+import { chiaveOggetto, chiaveUso, Risorse } from './risorse';
+import { usaPotereDiMostro } from './poteri';
 import { Inventario } from './inventario';
 import { TempoDiGioco } from './tempo';
 import { accendi as accendiLuce, luceDellAzione, spegni as spegniLuce, type ContestoLuci } from './luci';
@@ -889,16 +890,22 @@ export class MotoreProve {
    */
   private segnaTiriAlTavolo(d: DecisioniTurno, tavolo: DadiAlTavolo, r: { perAzione: EsitoTurnoProve['perAzione'] }, comb: { tiri: TiroMostrato[] }, manuali: boolean): void {
     const { turno, azioni } = d;
-    // The PCs' cards of the fight's steps are their death saves, in order.
+    // The PCs' cards of the fight's steps: their death saves and their saves against a monster's specials, in order.
     const morte = new Map<string, TiroMostrato[]>();
-    for (const t of comb.tiri) if (!t.di_png && !t.del_master) morte.set(t.chi, [...(morte.get(t.chi) ?? []), t]);
+    const salvezze = new Map<string, TiroMostrato[]>();
+    const etichettaMorte = testo('prove.combattimento.etichetta_morte');
+    for (const t of comb.tiri) {
+      if (t.di_png || t.del_master) continue;
+      const m = t.etichetta === etichettaMorte ? morte : salvezze;
+      m.set(t.chi, [...(m.get(t.chi) ?? []), t]);
+    }
     for (const g of tavolo.gruppi) {
       const { pg, per, azione } = g.gruppo;
       const a = azione ? azioni.find((y) => y.id === azione) : undefined;
-      // The card a group belongs to: the action's own (test, damage, contest), or the PC's next death save.
-      const carta = per === 'morte' ? morte.get(pg)?.shift() : per === 'iniziativa' ? undefined : a ? r.perAzione.get(a.id)?.tiri.find((y) => y.chi === a.autore && !y.di_png) : undefined;
+      // The card a group belongs to: the action's own (test, damage, contest), the PC's next death save or save.
+      const carta = per === 'morte' ? morte.get(pg)?.shift() : per === 'salvezza' && !azione ? salvezze.get(pg)?.shift() : per === 'iniziativa' ? undefined : a ? r.perAzione.get(a.id)?.tiri.find((y) => y.chi === a.autore && !y.di_png) : undefined;
       if (g.inserito) {
-        if (carta && (per === 'prova' || per === 'morte' || !carta.manuale)) carta.manuale = g.inserito.da;
+        if (carta && (per === 'prova' || per === 'morte' || per === 'salvezza' || !carta.manuale)) carta.manuale = g.inserito.da;
         const v = g.inserito.valori;
         if (per === 'prova' && carta && v && g.inserito.richiesta.facce !== 100 && carta.dadi.join(',') !== v.join(',')) {
           this.o.log.warn({ turno, azione, inseriti: v, carta: carta.dadi }, 'manual rolls: the card dice differ from the values the player entered');
@@ -1461,7 +1468,14 @@ export class MotoreProve {
     // B/X: nella fase dei proiettili solo chi ha un'arma a distanza, in mischia solo le armi da mischia.
     // A weapon out of ammunition (`consuma`, prove/risorse.ts) is not used: the NPC takes the next one that fits.
     const conMunizioni = (a: (typeof armi)[number]): boolean => !('consuma' in a) || !a.consuma || !this.risorse || (this.risorse.restanti(png, a.consuma) ?? 1) > 0;
-    const adatta = (a: (typeof armi)[number]): boolean => (fase.png === 'attacco_distanza' ? a.distanza : fase.png === 'attacco_mischia' ? !a.distanza : true) && conMunizioni(a);
+    // A special action (a breath, `potere`): uses left today and its rate («no more often than every other round»).
+    const pronta = (a: (typeof armi)[number]): boolean => {
+      if (!('potere' in a) || !a.potere) return true;
+      if (a.usi && (this.risorse?.restanti(png, chiaveUso(a.id)) ?? a.usi) <= 0) return false;
+      const ultimo = a.ricarica && this.risorse ? this.risorse.ultimoTiro(png, a.id) : null;
+      return ultimo === null || (this.combattimento.round ?? 0) - ultimo >= a.ricarica!;
+    };
+    const adatta = (a: (typeof armi)[number]): boolean => (fase.png === 'attacco_distanza' ? a.distanza : fase.png === 'attacco_mischia' ? !a.distanza : true) && conMunizioni(a) && pronta(a);
     const adatte = armi.filter(adatta);
     if (!g) {
       if (fase.png !== 'attacco' && !adatte.length) return [];
@@ -1470,17 +1484,52 @@ export class MotoreProve {
     }
     const sch = g.schede.get(png);
     const giro = sch?.perRound?.find((r) => r.every((id) => armi.some((a) => a.id === id && adatta(a))));
-    const linee: Array<string | null> = giro ?? (fase.png !== 'attacco' && !adatte.length ? [] : [adatte[0]?.id ?? null]);
-    const strumenti = strumentiRegole(this.opzioniRegole(turno, c, g));
-    const out: Array<{ t: TiroMostrato; testo: string }> = [];
+    // Without `per_round`, one attack with the first line that fits that is not a special action.
+    const prima = adatte.find((a) => !('potere' in a) || !a.potere);
+    const linee: Array<string | null> = giro ?? (fase.png !== 'attacco' && !prima ? [] : [prima?.id ?? null]);
+    // The PCs' own dice reach the monster's step for their saves against its specials (manual rolls).
+    const strumenti = strumentiRegole({ ...this.opzioniRegole(turno, c, g), dadiDeiPg: this.tavolo });
+    const out: Array<{ t: TiroMostrato; testo: string; altri?: TiroMostrato[]; frase?: string }> = [];
     let bersaglio: string | null = pg;
     for (const id of linee) {
       if (bersaglio && this.stato.fuoriGioco(bersaglio)) bersaglio = prossimo();
       if (!bersaglio) break;
+      const linea = id ? sch?.attacchi.find((a) => a.id === id) : undefined;
+      if (linea?.potere) {
+        const r = this.specialeDiMostro(png, linea, bersaglio, turno, c);
+        if (r) out.push(r);
+        continue;
+      }
       const r = strumenti.attacca(png, bersaglio, id, [], false);
       if (r) out.push(r);
     }
     return out;
+  }
+
+  /**
+   * A monster's special action in its step (a line with `potere`: a breath, a gaze): one use of the day and its rate
+   * spent, the power on its targets — every PC standing in the fight for a power on `nemici` (the Engine knows no
+   * positions: a cone reaches them all), else the step's target — each with its own save, at the monster's hit dice.
+   */
+  private specialeDiMostro(png: string, linea: SchedaGenerica['attacchi'][number], bersaglio: string, turno: number, c: ContestoProve): { t: TiroMostrato; testo: string; altri: TiroMostrato[]; frase: string } | null {
+    const g = this.generico!;
+    const p = (g.regole.sistema.poteri ?? []).find((x) => x.id === linea.potere);
+    const sch = g.schede.get(png);
+    if (!p || !sch) return null;
+    if (linea.usi) this.risorse?.spendi(png, chiaveUso(linea.id));
+    if (linea.ricarica) this.risorse?.segnaTiro(png, linea.id, this.combattimento.round ?? 0);
+    const bersagli = p.bersaglio === 'nemici' ? this.combattimento.inPiedi('pg') : p.bersaglio === 'se_stesso' ? [png] : [bersaglio];
+    const opz = { ...this.opzioniRegole(turno, c, g), dadiDeiPg: this.tavolo };
+    const x = usaPotereDiMostro(
+      { schede: g.schede, effetti: opz.effetti!, salvezza: strumentiRegole(opz).salvezzaDelBersaglio, immuneAttivo: (id, cosa) => this.attivi.immune(id, cosa) || this.immuneDiScheda(id, cosa), log: this.o.log.child({ turno, modulo: 'mostri' }) },
+      { autore: png, potere: p, bersagli, livello: sch.dadiVita ?? 1, privata: false, dadiDelPg: (pg) => this.tavolo?.fonte({ pg, per: 'salvezza', azione: null, privata: false, etichetta: p.nome }) ?? this.dadi },
+    );
+    const restanti = linea.usi ? this.risorse?.restanti(png, chiaveUso(linea.id)) : null;
+    this.o.log.info({ png, linea: linea.id, potere: p.id, bersagli, usi_restanti: restanti ?? null }, 'monsters: a special action in the monster\'s step');
+    const [t, ...altri] = x.tiri;
+    // No card (every target immune): a placeholder card of the monster's own, so the step still has its fact.
+    const prima = t ?? { id: this.stato.nuovoIdTiro(), turno, chi: png, nome: this.nomeDi(c, png), di_png: true, tipo: 'attacco' as const, etichetta: p.nome, dadi: [], dado: 0, vantaggio: null, motivo_vantaggio: null, modificatore: 0, totale: 0, contro: { tipo: 'soglia' as const, valore: 0, descrizione: null }, bersaglio: null, riuscita: false, critico: false, fallimento_critico: false, danno: null, a_terra: false, privata: false, avversario: null, automatico: true };
+    return { t: prima, testo: x.fatti.join(' '), altri, frase: testo('prove.mostri.usa', { nome: this.nomeDi(c, png), potere: p.nome }) };
   }
 
   /**

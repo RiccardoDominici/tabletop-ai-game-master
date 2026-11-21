@@ -36,7 +36,11 @@
 import { leggiFormula, type FormulaDadi } from '../campagna/regole-srd';
 import { leggiDurata, leggiEffetti, type Durata, type EffettoTipato } from './effetti';
 
-export const TIPI_POTERE = ['incantesimo', 'oggetto', 'azione', 'pericolo'] as const;
+/**
+ * `mostro`: a monster's special, used by the Engine in the monster's step or on its hit (regole/bestiario.ts: a breath, a
+ * gaze, a poison bite's rider); no cost, never offered to a PC.
+ */
+export const TIPI_POTERE = ['incantesimo', 'oggetto', 'azione', 'pericolo', 'mostro'] as const;
 export type TipoPotere = (typeof TIPI_POTERE)[number];
 export const BERSAGLI_POTERE = ['se_stesso', 'uno', 'nemici', 'alleati'] as const;
 export type BersaglioPotere = (typeof BERSAGLI_POTERE)[number];

@@ -554,7 +554,8 @@ same decisions as before:
    - **Every die of a PC is the player's** (prove/dadi-tavolo.ts). The resolvers and the fight draw a PC's dice through
      a group of the pass's table, never straight from the Engine: the action's test (`r_<action>`), the damage of its
      hit (`r_<action>_danno`: the weapon's dice and bonus, doubled dice on a critical), the other PC's die in a contest
-     (`r_<action>_<pg>`), initiative and death saves (`r_t<turn>_<per>_<pg>_<n>`). NPC rolls, side rolls (surprise,
+     (`r_<action>_<pg>`), initiative, death saves and a PC's save against a monster's special in the monster's step (a
+     poison bite, a breath: `per: salvezza`, R4) (`r_t<turn>_<per>_<pg>_<n>`). NPC rolls, side rolls (surprise,
      initiative by sides), morale and the Game Master's rolls never pass there.
    - **Rounds.** In the dry run a group with no value gets placeholder 1s and is missing; it is asked now only when no
      missing roll it may depend on comes before it: the damage waits for the attack roll of the same PC and action; the

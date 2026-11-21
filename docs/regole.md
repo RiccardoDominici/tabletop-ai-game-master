@@ -215,6 +215,7 @@ poteri:                                     # optional [V]: spells, items, class
   - id: sonno
     nome: "Sonno"
     tipo: incantesimo                       # [V] incantesimo (a prepared copy and a slot) | oggetto (off the sheet) | azione | pericolo
+                                            #   | mostro (a monster's special: a breath, a hit's rider; no cost, never a PC's)
     livello: {mago: 1}                      # [V] incantesimo: class → spell level
     bersaglio: nemici                       # [V] se_stesso | uno | nemici | alleati
     dadi_vita_max: 3                        # only targets of these hit dice or fewer (sheet `dadi_vita`; a PC's level)…
@@ -383,6 +384,8 @@ scene check's `effetti_se_fallisce`, by the Game Master's hazards and by the set
 ```yaml
 - {tipo: danno, dadi: "1d6+1", colpi: {ogni_livelli: 3, massimo: 5}}   # [V] colpi: one more roll every n caster levels
 - {tipo: danno, dadi: "1d6", dadi_per_livello: {massimo: 10}, tipo_danno: fuoco}   # dice × caster level, capped
+                                                                       # (a monster's special: × its hit dice)
+- {tipo: danno, pari_ai_pf: true}                                      # as much as the author's current hit points
 - {tipo: cura, dadi: "2d6", bonus_per_livello: {ogni_livelli: 1}}      # +1 per caster level
 - {tipo: caduta, altezza: 3}                                           # in the unit of `cadute`
 - {tipo: attacco, bonus: 1, dadi: "1d6+1"}                             # a trap: d20 + bonus against the victim's AC
@@ -434,6 +437,11 @@ scheda:
   mostro: ghoul                                 # optional [V]: a stat block of the set's bestiary: its keys first, the
                                                 #   sheet's own win (below, «The bestiary in play»)
   per_round: [[artiglio, artiglio, morso]]      # optional [V]: a monster's attacks of a round (line ids, alternatives)
+  colpito_solo_da: [argento, magica]            # optional [V]: only weapons with one of these `proprieta` hurt it
+  resistenze: {fuoco: immune, freddo: meta}     # optional [V]: damage of these types does nothing or half
+  # monster attack lines: colpendo: [paralisi_ghoul] (powers a hit applies, the target saves), potere: soffio_x (a special
+  #   action instead of an attack roll), usi: 9 (a day, back with a rest), ricarica: 2 (at most every other round),
+  #   proprieta: [argento] (what the weapon is: a typed line; a catalog weapon's and the ammunition's count too)
   attacchi: [{nome: "Spada", danno: "1d8", caratteristica: vigore}]   # or abilita: combattere; `id` names a line for per_round
                                                 # with equipaggiamento: only the special lines, e.g.
                                                 # {nome: "Spada corta alle spalle", arma: spada_corta, abilita: alle_spalle}
@@ -467,6 +475,22 @@ own hit points and weapons. A monster needs no ability scores (the +0 value, no 
   (in the phase, with ammunition) and makes every attack, each with its card and its fact («Turno di Artiglio Nero, attacco
   2 di 3: …»); when its target drops, the next attack goes to the next target the fight picks. Without `per_round` it makes
   one attack, as before.
+
+- **specials** (prove/poteri.ts usaPotereDiMostro; audit P6-16, P6-18 to P6-20, P6-27): powers of type `mostro`. A line's
+  `colpendo` applies them to the target of a hit that hurt — each target not immune (the power's types, the sheet's
+  `immune`, a trait, an active effect) rolls its own save, then the typed effects at the monster's hit dice: a ghoul's
+  paralysis (a condition lasting turns of the clock), a snake's poison (`morte`), a charm or a fear condition. A line with
+  `potere` is a special action: in the step's alternative it costs one of its `usi` of the day (refreshed by a rest) and
+  waits `ricarica` rounds; a power on `nemici` reaches every PC standing in the fight (the Engine knows no positions: a cone
+  or a line reaches them all), one on `uno` the step's target. A breath of 1d8 per hit die is `dadi: "1d8"` with
+  `dadi_per_livello: {}`; one as strong as the monster's hit points is `pari_ai_pf: true`. A petrifying gaze gives a
+  permanent condition with `fuori_combattimento` (out like the dead). A PC's save in the monster's step is the player's
+  roll with manual rolls (`per: salvezza`, asked like a death save).
+- **defences**: `colpito_solo_da` (Basic Fantasy's (s) and (m), p. 62): a hit with a weapon none of whose `proprieta` (the
+  line's own, its catalog weapon's, the ammunition shot) is in the list deals nothing, and the fact says why («Spada colpisce
+  Lanterna Spenta ma non lo ferisce: lo feriscono solo armi argento o magica»); spells are not weapons. `resistenze` halve
+  or stop damage of a type (`tipo_danno` of a line or an effect), after the set's minimum damage. Immunity to sleep, charm
+  or hold is the sheet's `immune` (powers or conditions), as before.
 
 The validator mirrors it (strumenti/valida/regole_bestiario.py), merging the entry under the sheet as the Engine does. The
 numbers copied from a manual are checked against its PDF by `strumenti/regole/confronta_bestiario.py`, which reads the stat

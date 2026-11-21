@@ -15,7 +15,8 @@ from .esito import Esito
 from .regole_effetti import controlla_effetti
 from .regole_bestiario import dadi_vita_validi
 
-TIPI_POTERE = ("incantesimo", "oggetto", "azione", "pericolo")
+# `mostro`: a monster's special (a breath, a rider of its hit), used by the Engine, never offered to a PC.
+TIPI_POTERE = ("incantesimo", "oggetto", "azione", "pericolo", "mostro")
 BERSAGLI_POTERE = ("se_stesso", "uno", "nemici", "alleati")
 RICARICHE = ("mai", "riposo", "scontro")
 RE_ID = re.compile(r"^[a-z0-9_]+$")

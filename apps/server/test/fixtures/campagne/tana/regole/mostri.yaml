@@ -14,3 +14,58 @@ mostri:
     salva_come: {classe: guerriero, livello: 0}
     morale: 7
     px: 5
+  - id: serpe_cenere
+    nome: Serpe di cenere
+    manuale: "Ash snake"
+    pagina: 2
+    difesa: 13
+    dadi_vita: "1*"
+    attacchi:
+      - {id: morso, nome: Morso, danno: "1d4", colpendo: [veleno_serpe]}
+    per_round: [[morso]]
+    salva_come: {classe: guerriero, livello: 1}
+    morale: 7
+    testo: Il morso avvelena, salvezza contro il veleno o muore.
+  - id: drago_brina
+    nome: Drago di brina
+    manuale: "Frost drake"
+    pagina: 3
+    difesa: 16
+    dadi_vita: "4**"
+    attacchi:
+      - {id: artiglio, nome: Artiglio, danno: "1d4"}
+      - {id: morso, nome: Morso, danno: "2d6"}
+      - {id: soffio, nome: Soffio, potere: soffio_brina, usi: 4, ricarica: 2}
+    per_round: [[soffio, artiglio, artiglio], [morso, artiglio, artiglio]]
+    salva_come: {classe: guerriero, livello: 4}
+    morale: 9
+    resistenze: {freddo: immune}
+    testo: Soffia brina 4 volte al giorno, non più di una ogni due round, 1d8 per dado vita, salvezza dimezza.
+  - id: spettro_lanterna
+    nome: Spettro della lanterna
+    manuale: "Lantern wraith"
+    pagina: 4
+    difesa: 13
+    colpito_solo_da: [argento, magica]
+    dadi_vita: "3"
+    attacchi:
+      - {id: tocco, nome: Tocco gelido, danno: "1d6"}
+    per_round: [[tocco]]
+    salva_come: {classe: guerriero, livello: 3}
+    morale: 12
+    tipo: [non_morto]
+    immune: [addormentato, affascinato]
+    testo: Lo feriscono solo l'argento e la magia.
+  - id: occhio_pietra
+    nome: Occhio di pietra
+    manuale: "Stone eye"
+    pagina: 5
+    difesa: 14
+    dadi_vita: "3**"
+    attacchi:
+      - {id: sguardo, nome: Sguardo, potere: sguardo_pietra}
+      - {id: morso, nome: Morso, danno: "1d6"}
+    per_round: [[sguardo, morso]]
+    salva_come: {classe: guerriero, livello: 3}
+    morale: 9
+    testo: Lo sguardo pietrifica, salvezza contro la paralisi.

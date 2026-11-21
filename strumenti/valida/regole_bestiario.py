@@ -127,7 +127,13 @@ def mostri_del_set(cartella_regole: Path, r: dict, classi: set[str], poteri: set
             _err(e, d, "px: un intero da 0 in su")
         if "colpito_solo_da" in x and not (isinstance(x["colpito_solo_da"], list) and x["colpito_solo_da"] and all(isinstance(w, str) for w in x["colpito_solo_da"])):
             _err(e, d, "colpito_solo_da: le armi che lo feriscono, [argento, magica] o [magica]")
+        if "resistenze" in x and not resistenze_valide(x["resistenze"]):
+            _err(e, d, "resistenze: {tipo di danno: meta | immune}")
     return out
+
+
+def resistenze_valide(r) -> bool:
+    return isinstance(r, dict) and all(isinstance(k, str) and v in ("meta", "immune") for k, v in r.items())
 
 
 def morale_valido(m) -> bool:
@@ -160,6 +166,8 @@ def _linee(x: dict, d: str, poteri: set[str], e: Esito) -> None:
             _err(e, d, f"attacchi[{i}].usi: quante volte al giorno, da 1")
         if "ricarica" in a and not (_intero(a["ricarica"]) and a["ricarica"] > 1):
             _err(e, d, f"attacchi[{i}].ricarica: una volta ogni quanti round, da 2")
+        if "proprieta" in a and not (isinstance(a["proprieta"], list) and all(isinstance(w, str) for w in a["proprieta"])):
+            _err(e, d, f"attacchi[{i}].proprieta: un elenco di parole (argento, magica…)")
     for j, giro in enumerate(x.get("per_round") or [], start=1):
         if not isinstance(giro, list) or not giro or any(str(y).lower() not in ids for y in giro):
             _err(e, d, f"per_round[{j}]: una lista di id delle sue linee ({', '.join(sorted(ids)) or 'nessuna'})")

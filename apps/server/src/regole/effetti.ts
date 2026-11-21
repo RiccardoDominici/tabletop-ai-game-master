@@ -49,7 +49,8 @@ export const BERSAGLI_BONUS = ['difesa', 'attacchi', 'salvezze', 'danni'] as con
 export type BersaglioBonus = (typeof BERSAGLI_BONUS)[number];
 
 export type EffettoTipato =
-  | { tipo: 'danno'; dadi: FormulaDadi; dadiPerLivello: Scala | null; bonusPerLivello: Scala | null; colpi: Scala | null; tipoDanno: string | null }
+  /** `pariAiPf`: the damage is the author's current hit points instead of the dice (a breath in some manuals). */
+  | { tipo: 'danno'; dadi: FormulaDadi; dadiPerLivello: Scala | null; bonusPerLivello: Scala | null; colpi: Scala | null; tipoDanno: string | null; pariAiPf?: boolean }
   | { tipo: 'cura'; dadi: FormulaDadi; dadiPerLivello: Scala | null; bonusPerLivello: Scala | null }
   | { tipo: 'caduta'; altezza: number }
   | { tipo: 'attacco'; bonus: number; dadi: FormulaDadi; distanza: boolean }
@@ -125,9 +126,12 @@ export function leggiEffetto(v: unknown, dove: string, errori: string[]): Effett
   };
   switch (tipo as TipoEffetto) {
     case 'danno': {
-      const dadi = formula();
+      // `pari_ai_pf: true`: as much damage as the author's current hit points (no dice).
+      if (o['pari_ai_pf'] !== undefined && typeof o['pari_ai_pf'] !== 'boolean') errori.push(`${dove}.pari_ai_pf: true o false`);
+      const pari = o['pari_ai_pf'] === true;
+      const dadi = pari && o['dadi'] === undefined ? { numero: 0, facce: 0, bonus: 0 } : formula();
       if (!dadi) return null;
-      return { tipo: 'danno', dadi, dadiPerLivello: scala(o['dadi_per_livello'], `${dove}.dadi_per_livello`, errori), bonusPerLivello: scala(o['bonus_per_livello'], `${dove}.bonus_per_livello`, errori), colpi: scala(o['colpi'], `${dove}.colpi`, errori), tipoDanno: typeof o['tipo_danno'] === 'string' ? o['tipo_danno'] : null };
+      return { tipo: 'danno', dadi, dadiPerLivello: scala(o['dadi_per_livello'], `${dove}.dadi_per_livello`, errori), bonusPerLivello: scala(o['bonus_per_livello'], `${dove}.bonus_per_livello`, errori), colpi: scala(o['colpi'], `${dove}.colpi`, errori), tipoDanno: typeof o['tipo_danno'] === 'string' ? o['tipo_danno'] : null, ...(pari ? { pariAiPf: true } : {}) };
     }
     case 'cura': {
       const dadi = formula();

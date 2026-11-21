@@ -55,6 +55,17 @@ export interface StatoCombattimentoSalvato {
   ultimoPg: string | null;
 }
 
+/**
+ * One attack of an NPC's step: its card and its text; a hit's riders or a special's other cards (the targets' saves and
+ * damage: `altri`); `frase` replaces the «X colpisce Y» sentence (a breath: «X usa Soffio.»).
+ */
+export interface AttaccoDelPng {
+  t: TiroMostrato;
+  testo: string;
+  altri?: TiroMostrato[];
+  frase?: string;
+}
+
 /** Ciò che il Motore delle prove dà allo scontro (dadi, PF, attacchi coi resolver del set). */
 export interface DipendenzeCombattimento {
   regole: Combattimento;
@@ -66,7 +77,7 @@ export interface DipendenzeCombattimento {
    * several attacks a round (`per_round`, a ghoul's claw, claw, bite) makes them all, each with its card; when the target
    * drops, `prossimo` gives the next one (null = nobody left standing).
    */
-  attacca: (png: string, pg: string, fase: Fase, turno: number, prossimo: () => string | null) => Array<{ t: TiroMostrato; testo: string }> | { t: TiroMostrato; testo: string } | null;
+  attacca: (png: string, pg: string, fase: Fase, turno: number, prossimo: () => string | null) => Array<AttaccoDelPng> | AttaccoDelPng | null;
   /** Morale del PNG (scheda `morale`), per il set con `fine.morale`. */
   morale: (png: string) => number | null;
   nuovoIdTiro: () => string;
@@ -553,11 +564,15 @@ export class GestoreCombattimento {
     const rs = Array.isArray(r0) ? r0 : r0 ? [r0] : [];
     // Several attacks in one step (a monster's `per_round`): one fact each, numbered, so the narrator tells every blow.
     for (const [i, r] of rs.entries()) {
-      tiri.push(r.t);
+      tiri.push(r.t, ...(r.altri ?? []));
       const chiave = insieme ? 'prove.combattimento.turno_png_insieme' : rs.length > 1 ? 'prove.combattimento.turno_png_piu' : 'prove.combattimento.turno_png';
-      fatti.push(testo(chiave, { nome: p.nome, frase: fraseAttaccoPng(r.t), dettagli: r.testo, n: i + 1, di: rs.length }));
-      const b = r.t.bersaglio ? this.part(r.t.bersaglio.id) : undefined;
-      if (b) this.controllaZero(b, fatti);
+      fatti.push(testo(chiave, { nome: p.nome, frase: r.frase ?? fraseAttaccoPng(r.t), dettagli: r.testo, n: i + 1, di: rs.length }));
+      // Everyone the attack reached (a breath reaches several; a rider's own cards): who went to 0 now.
+      const colpiti = new Set([r.t, ...(r.altri ?? [])].map((t) => t.bersaglio?.id ?? (t.chi !== id ? t.chi : null)).filter((x): x is string => !!x));
+      for (const c of colpiti) {
+        const b = this.part(c);
+        if (b) this.controllaZero(b, fatti);
+      }
     }
     if (insieme && rs.length) this.d.log.info({ png: id, bersaglio, iniziativa: p.iniziativa }, 'combat: a tied NPC strikes at the same moment it falls');
     if (rs.length > 1) this.d.log.info({ png: id, attacchi: rs.map((r) => ({ linea: r.t.etichetta, bersaglio: r.t.bersaglio?.id ?? null, riuscita: r.t.riuscita })) }, 'combat: a monster makes its attacks of the round');
@@ -658,6 +673,12 @@ export class GestoreCombattimento {
   /** Chi è appena andato a 0: condizione del set, tiri contro la morte, oppure fuori gioco o morto. */
   private controllaZero(p: Partecipante, fatti?: string[]): void {
     if (p.esito !== 'in_gioco' || !this.d.stato.aTerra(p.id)) return;
+    // Dead by an effect (a poison's save failed: prove/effetti.ts), not just at zero: out of the fight, no death save.
+    if (this.d.stato.fuoriGioco(p.id) === 'morto') {
+      this.esce(p, 'morto');
+      if (p.lato === 'png') this.controllaMorale(fatti ?? []);
+      return;
+    }
     const r = this.d.regole;
     const cz = r.condizioneAZero;
     if (cz && !p.condizioni.some((c) => c.id === cz)) p.condizioni.push({ id: cz, fino: null });

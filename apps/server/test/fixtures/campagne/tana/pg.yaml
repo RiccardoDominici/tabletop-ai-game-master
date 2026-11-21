@@ -21,7 +21,7 @@ personaggi:
     difesa: 15
     attacchi:
     - {nome: Spada, danno: "1d8", abilita: mischia}
-    - {nome: Pugnale d'argento, danno: "1d4", abilita: mischia}
+    - {nome: Pugnale d'argento, danno: "1d4", abilita: mischia, proprieta: [argento]}
 - id: pg_dario
   nome: Dario
   pronomi: lui
@@ -63,3 +63,4 @@ personaggi:
     difesa: 14
     attacchi:
     - {nome: Bastone, danno: "1d6", abilita: mischia}
+    - {nome: Fiala di gelo, danno: "1d6", abilita: distanza, distanza: true, tipo_danno: freddo}

@@ -94,6 +94,40 @@ esperienza:
     - {da: 3, px: 80, speciale: 15}
     - {da: 4, px: 120, speciale: 20}
 
+tempo:
+  unita:
+    - {id: round, nome: Round, plurale: round, secondi: 10}
+    - {id: turno, nome: Turno, plurale: turni, secondi: 600}
+    - {id: ora, nome: Ora, plurale: ore, secondi: 3600}
+  round: round
+  per_finestra: {turno: 1}
+riposo:
+  - {id: notte, nome: Una notte di sonno, cura: 1, durata: {ora: 8}}
+
+# Monster specials (tipo mostro, regole/poteri.ts): applied by a hit (`colpendo`) or used as an action (`potere`).
+poteri:
+  - id: paralisi_artiglio
+    nome: Artiglio paralizzante
+    tipo: mostro
+    salvezza: {abilita: ts_paralisi, esito: annulla}
+    effetti: [{tipo: condizione, condizione: paralizzato, durata: {turno: "1d4"}}]
+  - id: veleno_serpe
+    nome: Veleno della serpe
+    tipo: mostro
+    salvezza: {abilita: ts_veleno, esito: annulla}
+    effetti: [{tipo: morte}]
+  - id: soffio_brina
+    nome: Soffio di brina
+    tipo: mostro
+    bersaglio: nemici
+    salvezza: {abilita: ts_soffio, esito: dimezza}
+    effetti: [{tipo: danno, dadi: "1d8", dadi_per_livello: {}, tipo_danno: freddo}]
+  - id: sguardo_pietra
+    nome: Sguardo di pietra
+    tipo: mostro
+    salvezza: {abilita: ts_paralisi, esito: annulla}
+    effetti: [{tipo: condizione, condizione: pietrificato, durata: permanente}]
+
 # Inline entries (the rest of the bestiary is in regole/mostri.yaml).
 mostri:
   - id: artigliatore
@@ -103,7 +137,7 @@ mostri:
     difesa: 14
     dadi_vita: "2*"
     attacchi:
-      - {id: artiglio, nome: Artiglio, danno: "1d3"}
+      - {id: artiglio, nome: Artiglio, danno: "1d3", colpendo: [paralisi_artiglio]}
       - {id: morso, nome: Morso, danno: "1d4"}
     per_round: [[artiglio, artiglio, morso]]
     movimento: "9 m"
@@ -126,6 +160,8 @@ combattimento:
   condizioni:
     - {id: sorpreso, nome: Sorpreso, icona: SO, effetti: [perde_turno, non_si_muove], testo: Perde il primo round.}
     - {id: svenuto, nome: Svenuto, icona: SV, effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio], testo: A terra senza sensi.}
+    - {id: paralizzato, nome: Paralizzato, icona: PA, effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio, fuori_combattimento], testo: Immobile.}
+    - {id: pietrificato, nome: Pietrificato, icona: PI, effetti: [perde_turno, non_si_muove, fuori_combattimento], testo: Di pietra.}
   condizione_a_zero: svenuto
   sorpresa: {dado: 6, fino_a: 2, condizione: sorpreso}
   fine: {morale: true}

@@ -52,7 +52,7 @@ import { applicaEffetti, type ContestoEffetti } from './effetti';
 import { effettiSeFallisce } from '../campagna/prove-scena';
 import type { EffettoTipato } from '../regole/effetti';
 import { bersaglioSalvezza, type BersaglioSalvezza } from '../regole/salvezze';
-import { usaPotere, type ContestoPoteri } from './poteri';
+import { usaPotere, usaPotereDiMostro, type ContestoPoteri } from './poteri';
 
 /** Una prova scritta nei dati della scena, col vocabolario del set (scena → prove). */
 export interface ProvaScenaRegole {
@@ -227,6 +227,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
       else {
         const r = attacca(a.autore, b, d.arma, fonti, a.privata, dadiDelPg(a, 'prova'), (x) => dadiDelPg(a, 'danno', x), a.testo)!;
         aggiungi(r.t);
+        for (const t of r.altri ?? []) aggiungi(t);
         esito.riuscita = r.esito?.riuscita ?? null;
         if (r.esito) (r.esito.riuscita ? esito.riuscite : esito.fallite).push('attacco', r.t.etichetta);
         fatto = r.testo;
@@ -235,6 +236,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
           const x = attacca(b, a.autore, null, [], a.privata);
           if (x && !o.stato.aTerra(b)) {
             aggiungi(x.t);
+            for (const t of x.altri ?? []) aggiungi(t);
             fatto += testo('prove.fatto.scambio', { frase: fraseAttaccoPng(x.t), dettagli: x.testo });
           }
         }
@@ -313,6 +315,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
       const x = attacca(r.png, a.autore, null, [], a.privata);
       if (x) {
         aggiungi(x.t);
+        for (const t of x.altri ?? []) aggiungi(t);
         fatto += ` ${testo('prove.fatto.reazione', { nome: o.nome(r.png), frase: fraseAttaccoPng(x.t), dettagli: x.testo })}`;
       }
     }
@@ -460,13 +463,16 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
    * Danno di un attacco riuscito al bersaglio (armatura se il set la conta): testo per il narratore. `dadiDanno`: the
    * attacking PC's own dice for the damage (manual rolls); an NPC's damage is the Engine's.
    */
-  function colpisci(t: TiroMostrato, attaccante: Attacco, bersaglio: SchedaGenerica, critico: boolean, dadiDanno: FonteDadi = o.dadi, doppio = false): string {
+  function colpisci(t: TiroMostrato, attaccante: Attacco, bersaglio: SchedaGenerica, critico: boolean, dadiDanno: FonteDadi = o.dadi, doppio = false, nonFerisce: string | null = null): string {
     // Il critico raddoppia i dadi del danno solo se il set lo dice (SRD sì); il danno minimo è del set (Basic Fantasy: 1).
     const d = tiraDanno(dadiDanno, attaccante.danno, 0, critico && s.attacchi.dannoCritico === 'doppio');
     // A situational modifier with `danno: doppio` (Basic Fantasy's charge, p. 52): the damage of the hit is doubled.
     // An active bonus to damage (prove/attivi.ts) adds to the hit.
     const base = (doppio ? d.totale * 2 : d.totale) + (o.bonusAttivi?.(t.chi, 'danni', attaccante.distanza ? 'distanza' : 'mischia') ?? 0);
-    const ridotto = Math.max(s.attacchi.dannoMinimo, s.attacchi.armaturaRiduce ? Math.max(0, base - bersaglio.armatura) : base);
+    const minimo = Math.max(s.attacchi.dannoMinimo, s.attacchi.armaturaRiduce ? Math.max(0, base - bersaglio.armatura) : base);
+    // After the minimum: a weapon that cannot hurt this creature (P6-03) deals nothing, a resistance halves or stops it.
+    const resiste = attaccante.tipo_danno ? (bersaglio.resistenze?.[attaccante.tipo_danno] ?? null) : null;
+    const ridotto = nonFerisce ? 0 : resiste === 'immune' ? 0 : resiste === 'meta' ? Math.floor(minimo / 2) : minimo;
     const r = o.stato.danneggia(bersaglio.id, ridotto);
     // A condition that ends on injury (sleep) ends with this hit.
     const svegli = ridotto > 0 ? (o.effetti?.attivi?.ferito(bersaglio.id) ?? []) : [];
@@ -478,7 +484,43 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     const armatura = s.attacchi.armaturaRiduce && bersaglio.armatura ? testo('prove.fatto.armatura', { armatura: bersaglio.armatura }) : '';
     void r;
     const sveglio = svegli.map((c) => ` ${testo('prove.effetti.svegliato', { nome: o.nome(bersaglio.id), condizione: c.toLowerCase() })}`).join('');
-    return testo('prove.fatto.danno_set', { danno: fraseDanno(ridotto, attaccante.tipo_danno ? tipoDanno(attaccante.tipo_danno) : null), armatura, nome: o.nome(bersaglio.id), stato }) + sveglio;
+    const perche = nonFerisce ? testo('prove.mostri.non_ferisce', { arma: attaccante.nome, nome: o.nome(bersaglio.id), solo: nonFerisce }) : resiste ? testo(`prove.mostri.resiste_${resiste}`, { nome: o.nome(bersaglio.id), tipo: tipoDanno(attaccante.tipo_danno!) }) : '';
+    return perche + testo('prove.fatto.danno_set', { danno: fraseDanno(ridotto, attaccante.tipo_danno ? tipoDanno(attaccante.tipo_danno) : null), armatura, nome: o.nome(bersaglio.id), stato }) + sveglio;
+  }
+
+  /**
+   * What a weapon is (argento, magica…): the line's own `proprieta`, its catalog weapon's, the ammunition shot. Null
+   * when the target can be hurt by anything; else the kinds that hurt it said in words, when this weapon is none of them.
+   */
+  function nonFerisceCon(a: Attacco, sb: SchedaGenerica, munizione: string | undefined): string | null {
+    const solo = sb.colpitoSoloDa;
+    if (!solo?.length) return null;
+    const di = (id: string | undefined): string[] => (id ? (voce(s.catalogo, id)?.proprieta ?? []) : []);
+    const ha = new Set([...(a.proprieta ?? []), ...di(a.arma), ...di(munizione)]);
+    if (solo.some((k) => ha.has(k))) return null;
+    o.log.info({ arma: a.id, bersaglio: sb.id, solo, ha: [...ha] }, 'monsters: a weapon that cannot hurt this creature, the hit deals nothing');
+    return solo.join(testo('prove.mostri.o'));
+  }
+
+  /**
+   * The powers a hit applies to its target (`colpendo` of the line: a ghoul's paralysis, a snake's poison): each with the
+   * target's own save (a PC's dice with manual rolls, asked in the step), the effects at the attacker's hit dice.
+   */
+  function colpendo(a: Attacco, chi: string, bersaglio: string, privata: boolean): { tiri: TiroMostrato[]; fatti: string[] } {
+    const out = { tiri: [] as TiroMostrato[], fatti: [] as string[] };
+    if (!a.colpendo?.length || !o.effetti || o.stato.fuoriGioco(bersaglio) === 'morto') return out;
+    const sa = o.schede.get(chi);
+    for (const id of a.colpendo) {
+      const p = (s.poteri ?? []).find((x) => x.id === id);
+      if (!p) continue;
+      const x = usaPotereDiMostro(
+        { schede: o.schede, effetti: o.effetti, salvezza: salvezzaDelBersaglio, ...(o.poteri?.immuneAttivo ? { immuneAttivo: o.poteri.immuneAttivo } : {}), log: o.log },
+        { autore: chi, potere: p, bersagli: [bersaglio], livello: sa?.dadiVita ?? sa?.livello ?? 1, privata, dadiDelPg: (pg) => o.dadiDeiPg?.fonte({ pg, per: 'salvezza', azione: null, privata, etichetta: p.nome }) ?? o.dadi },
+      );
+      out.tiri.push(...x.tiri);
+      out.fatti.push(...x.fatti);
+    }
+    return out;
   }
 
   /**
@@ -495,7 +537,7 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     dadiDanno?: (x: Pick<GruppoDadi, 'etichetta' | 'modificatore'>) => FonteDadi,
     /** The PC's action: the set's situational modifiers read it (from behind, a charge, range). Absent = none (NPCs). */
     azione?: string,
-  ): { t: TiroMostrato; testo: string; esito: EsitoTiroGenerico | null } | null {
+  ): { t: TiroMostrato; testo: string; esito: EsitoTiroGenerico | null; altri?: TiroMostrato[] } | null {
     const sa = o.schede.get(chi);
     const sb = o.schede.get(bersaglio);
     if (!sa || !sb) return null;
@@ -585,8 +627,12 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     }
     const t = cartaDa(e, chi, 'attacco', a.nome, bersaglio, fonti.filter((f) => f.v === v).map((f) => f.motivo).join('; ') || null, privata);
     if (!e.riuscita) return { t, testo: testo('prove.fatto.attacco_set', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, esito: esitoInParole(e, true) }), esito: e };
-    const fatto = colpisci(t, a, sb, e.grado?.id === 'critico' || !!conEffetto(o.condizioni, bersaglio, 'critico_contro'), danno, situazioni.some((m) => m.danno === 'doppio') || doppioAbilita);
-    return { t, testo: testo('prove.fatto.attacco_set_colpito', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, esito: esitoInParole(e, true), danno: fatto }), esito: e };
+    const nonFerisce = nonFerisceCon(a, sb, munizione);
+    const fatto = colpisci(t, a, sb, e.grado?.id === 'critico' || !!conEffetto(o.condizioni, bersaglio, 'critico_contro'), danno, situazioni.some((m) => m.danno === 'doppio') || doppioAbilita, nonFerisce);
+    // A hit that hurt applies the line's riders (a ghoul's paralysis): the target saves, then the effects.
+    const rider = nonFerisce ? { tiri: [], fatti: [] } : colpendo(a, chi, bersaglio, privata);
+    const piu = rider.fatti.length ? ` ${rider.fatti.join(' ')}` : '';
+    return { t, testo: testo('prove.fatto.attacco_set_colpito', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, esito: esitoInParole(e, true), danno: fatto }) + piu, esito: e, ...(rider.tiri.length ? { altri: rider.tiri } : {}) };
   }
   /**
    * An attack's ammunition (`attacchi[].consuma`): the line that refuses it when the counter is at 0, or null (it can

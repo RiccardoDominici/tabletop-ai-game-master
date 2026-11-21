@@ -134,7 +134,9 @@ def differenze_voce(e: dict, b: B.Blocco) -> list[str]:
         diverso("attacco", bonus, e.get("attacco"))
     n_att = attacchi_stampati(c.get("No. of Attacks", ""))
     per_round = e.get("per_round") or []
-    if n_att is not None and [len(r) for r in per_round] != n_att:
+    # «2 claws, 1 bite or breath, 1 tail» is one count with two alternatives (bite or breath): the entry's alternatives
+    # must have the printed counts, as many alternatives as it needs.
+    if n_att is not None and (not per_round or {len(r) for r in per_round} != set(n_att)):
         diverso("per_round (attacks per round)", n_att, [len(r) for r in per_round])
     linee = {x.get("id") for x in e.get("attacchi") or []}
     for r in per_round:

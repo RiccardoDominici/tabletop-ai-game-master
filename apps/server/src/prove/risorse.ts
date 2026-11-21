@@ -26,6 +26,8 @@ export type EsitoLancio = { ok: true; livello: number } | { ok: false; motivo: '
 export const chiaveSlot = (livello: number): string => `slot_${livello}`;
 export const chiaveOggetto = (id: string): string => `oggetto:${id}`;
 export const chiaveMoneta = (id: string): string => `moneta:${id}`;
+/** A monster line's uses per day (`usi`: a breath), refreshed by a rest (regole/bestiario.ts). */
+export const chiaveUso = (linea: string): string => `uso:${linea}`;
 /** Counters a character can gain in play although the sheet did not start with them: catalog items and coins. */
 const LIBERA = /^(oggetto|moneta):[a-z0-9_]+$/;
 
@@ -73,6 +75,8 @@ export class Risorse {
     if (quando === 'tutto' || quando === 'riposo') {
       this.slotDi(sch).forEach((n, i) => m.set(chiaveSlot(i + 1), n));
       if (sch.incantesimi) this.preparati.set(sch.id, [...sch.incantesimi]);
+      // A monster's line with uses per day (a breath): back with a day's rest.
+      for (const a of sch.attacchi) if (a.usi) m.set(chiaveUso(a.id), a.usi);
     }
     if (quando === 'tutto') {
       for (const [id, n] of Object.entries(sch.oggetti ?? {})) m.set(chiaveOggetto(id), n);

@@ -29,7 +29,7 @@ export function promptArbitroRegole(r: RegoleCampagna): string {
     testo('prove.arbitro_regole.regola_oro'),
     s.mosse.length ? testo('prove.arbitro_regole.mosse', { mosse: s.mosse.map((m) => `- ${m.id} (${m.nome}): ${m.quando}`).join('\n') }) : '',
     // The set's powers (regole/poteri.ts): the arbiter names one; its cost, targets and effects are the Engine's.
-    s.poteri?.length ? testo('prove.arbitro_regole.poteri', { poteri: s.poteri.filter((p) => p.tipo !== 'pericolo').map((p) => `- ${p.id} (${p.nome}${p.parole.length ? `: ${p.parole.join(', ')}` : ''})`).join('\n') }) : '',
+    s.poteri?.length ? testo('prove.arbitro_regole.poteri', { poteri: s.poteri.filter((p) => p.tipo !== 'pericolo' && p.tipo !== 'mostro').map((p) => `- ${p.id} (${p.nome}${p.parole.length ? `: ${p.parole.join(', ')}` : ''})`).join('\n') }) : '',
     testo('prove.arbitro_regole.prova', { caratteristiche: elenco(s.caratteristiche), abilita: elenco(s.abilita), difficolta: elenco(s.difficolta), predefinita: s.difficoltaPredefinita }),
     s.sociale.nota ? testo('prove.arbitro_regole.sociale', { nota: s.sociale.nota }) : '',
     testo(s.vantaggio.tipo !== 'nessuno' ? 'prove.arbitro_regole.vantaggio' : 'prove.arbitro_regole.senza_vantaggio'),

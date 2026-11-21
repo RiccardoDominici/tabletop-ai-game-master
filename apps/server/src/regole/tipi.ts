@@ -275,6 +275,8 @@ export interface SchedaGenerica {
     potere?: string;
     /** How many times a day the line can be used (a breath: as many as the hit dice); counted by prove/risorse.ts. */
     usi?: number;
+    /** What the weapon is made of or is (argento, magica…), besides its catalog weapon's `proprieta`: who it can hurt. */
+    proprieta?: string[];
   }>;
   /** Starting counters of the set's resources (`scheda.risorse`: arrows, coins). */
   risorse?: Record<string, number>;
@@ -320,6 +322,8 @@ export interface SchedaGenerica {
   attacco?: number;
   /** Only weapons of these kinds hurt it (`colpito_solo_da`: argento, magica; Basic Fantasy's (s) and (m), p. 62). */
   colpitoSoloDa?: string[];
+  /** Damage of these types is halved (`meta`) or does nothing (`immune`): `resistenze: {fuoco: immune}` (a fire elemental). */
+  resistenze?: Record<string, 'meta' | 'immune'>;
   /** The set's class id and level (`scheda.classe`, `scheda.livello`): they pick the rows of the class tables. */
   classe?: string | null;
   livello?: number | null;
