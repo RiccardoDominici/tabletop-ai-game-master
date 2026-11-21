@@ -4,6 +4,8 @@
  * a package's `pg_all_inizio` and `tempo_all_inizio` read and checked, and the Engine starting from them. On the
  * invented bottega fixture.
  */
+import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { caricaCampagna } from '../src/campagna/caricatore';
@@ -77,3 +79,14 @@ describe('the package: pg_all_inizio and tempo_all_inizio', () => {
     expect(m.stato.puntiFerita('pg_aldo')!.attuali).toBe(5);
   });
 });
+
+describe('a one-shot says its starting hour in campagna.yaml', () => {
+  it('tempo_all_inizio there starts the clock at that hour', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bottega-'));
+    fs.cpSync(BOTTEGA, dir, { recursive: true });
+    fs.appendFileSync(path.join(dir, 'campagna.yaml'), 'tempo_all_inizio: {giorno: 3, ora: 7}\n');
+    expect(caricaCampagna(dir).statoAllInizio).toEqual({ pg: {}, tempo: secondiDiOra({ giorno: 3, ora: 7, minuto: 0 }) });
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+});
+

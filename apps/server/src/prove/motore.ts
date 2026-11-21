@@ -1194,7 +1194,7 @@ export class MotoreProve {
     const ricaricati = r.ricarica && this.risorse ? this.risorse.ricarica('riposo') : [];
     const finiti = Attivi.fatto(this.attivi.riposo(), (x) => this.nomeDi(c, x));
     // The rest takes its time on the clock (a night: eight hours): lights left burning burn down meanwhile.
-    const tempo = r.durata ? this.passaTempo(r.durata, 'riposo') : [];
+    const tempo = r.durata ? [...this.passaTempo(r.durata, 'riposo'), ...(this.tempo.mostrato ? [testo('prove.tempo.passa', { quanto: this.tempo.durata(r.durata), ora: this.tempo.testoOra() })] : [])] : [];
     const fatto = [e.fatto, ricaricati.length ? testo('prove.riposo.ricarica') : '', finiti ?? '', ...tempo].filter(Boolean).join(' ');
     if (ricaricati.length) this.o.log.info({ riposo: r.id }, 'rest: resources and spells refreshed');
     this.fattiInSospeso.push(fatto);

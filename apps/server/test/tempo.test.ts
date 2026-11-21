@@ -52,7 +52,7 @@ describe('the clock: what a window, a fight round, a rest and the Game Master co
     expect(m.tempo.testoOra()).toBe('giorno 1, 18:10');
     await m.risolvi(2, [azione('pg_bice', 'Frugo tra gli scaffali')]);
     expect(m.tempo.testoOra()).toBe('giorno 1, 18:40');
-    expect(m.tempoDelMaster({ cosa: 'avanza', durata: { ora: 1 } })!.fatto).toBe('Passano 1 ora: è giorno 1, 19:40.');
+    expect(m.tempoDelMaster({ cosa: 'avanza', durata: { ora: 1 } })!.fatto).toBe('Tempo trascorso: 1 ora; ora è giorno 1, 19:40.');
   });
 
   it('a rest takes its hours; a fight refuses the Game Master’s time', async () => {

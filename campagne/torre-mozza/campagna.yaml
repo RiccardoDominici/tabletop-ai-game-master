@@ -2,6 +2,8 @@
 # Il server toglie `preparazione` dal contesto del narratore (E2): destini, agenda, segreti e conti stanno lì.
 id: torre-mozza
 lingua: it
+# L'ora di gioco all'inizio (l'orologio di gioco del set, docs/prove.md §11): i PG arrivano a Spinalba all'imbrunire.
+tempo_all_inizio: {giorno: 1, ora: 17}
 
 canone:
   # --- Pubblico: lo sanno tutti in paese, e i PG lo sentono appena arrivano.

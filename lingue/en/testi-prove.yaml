@@ -363,7 +363,7 @@ prove:
     spenta: "{nome}'s light goes out ({oggetto})."
     in_combattimento: "During a fight time passes in rounds: end it first."
     senza_tempo: "This rule set has no game clock (tempo.unita)."
-    passa: "{quanto} pass: it is {ora}."
+    passa: "Time passed: {quanto}; it is now {ora}."
   viaggio:
     non_valido: "Invalid journey: the set needs viaggio and movimento, and a distance and one of its terrains."
     fermo: "{nome} is too loaded to move: the group does not set off."

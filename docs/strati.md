@@ -83,6 +83,7 @@ does not exist):
 - **pg_all_inizio** `{pg_x: {pf, oggetti, monete, indossati, contatori, incantesimi}}` and **tempo_all_inizio**
   `{giorno, ora, minuto}`: where each PC and the game clock start this session (sessione/stato-pg.ts): the previous log's
   `pg_alla_fine` and `tempo_alla_fine`, copied by `tra_sessioni.py pacchetto` and changed by the between-session work.
+  A one-shot may write `tempo_all_inizio` (or `pg_all_inizio`) in campagna.yaml, for the hour its story starts at.
   The Engine applies them over the sheets at the start and at «Ricomincia» (a resumed session takes its snapshot); a PC
   id that is not in pg.yaml is an error, a counter the set does not track is logged and ignored. Not for the narrator.
 - **pieni_all_inizio** `{id_orologio: n}`: the signs already filled on a campaign clock at the start of this session

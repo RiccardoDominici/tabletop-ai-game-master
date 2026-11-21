@@ -376,7 +376,7 @@ prove:
     spenta: "Si spegne la luce di {nome} ({oggetto})."
     in_combattimento: "Durante uno scontro il tempo passa coi round: prima terminalo."
     senza_tempo: "Questo set di regole non ha un orologio di gioco (tempo.unita)."
-    passa: "Passano {quanto}: è {ora}."
+    passa: "Tempo trascorso: {quanto}; ora è {ora}."
   viaggio:
     non_valido: "Viaggio non valido: il set ha bisogno di viaggio e movimento, e servono una distanza e un terreno del set."
     fermo: "{nome} porta troppo peso per muoversi: il gruppo non parte."

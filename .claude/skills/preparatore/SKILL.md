@@ -273,6 +273,24 @@ here only the order.
      (`cadute`), the kinds of rest (`riposo`), and a scene check's hazard (`effetti_se_fallisce`: a fall, a trap's
      attack or damage). An attack ability the manual limits (the sneak attack: `danno: doppio`,
      `una_volta_per_bersaglio`, `ripiego`) keeps the weapon's own die on the sheet: the Engine doubles it.
+   - **Equipment, load and time as the manual's lists** (`docs/regole.md` §2, «Catalogo», «Carico», «Tempo»): the coins
+     (`monete`: worth in the smallest coin, `prezzi`, their weight), every weapon, armor, shield, ammunition and gear
+     item of the price list in `catalogo` (price as «15 ma», weight, pack size `confezione`, size, hands, damage, range
+     bands `gittate` one limit per band of `catalogo.gittate`, `lancio` for thrown weapons, `munizioni`, `ricarica`,
+     `forza_al_danno`, armor `ca` and `categoria`, `capienza`, `luce` with its burning time), the class and race
+     restrictions with their penalty (`restrizioni`: `attacco`, `vietato`, `senza_incantesimi`, `senza_abilita`,
+     `perde_incantesimi`), the AC rule (`catalogo.difesa`) and the attack abilities (`catalogo.abilita`,
+     `danno_caratteristica`); the load bands by Strength and race (`carico`) and movement by armor (`movimento`); the
+     game clock (`tempo`: units, the fight's round, `per_finestra`; `riposo[].durata`) and travel (`viaggio`). Keep the
+     manual's numbers; convert a unit only where the set already does (metres for falls and ranges: feet × 0.3) and say
+     it in a comment with the page. With bands in the catalog, do not also write range `modificatori`.
+     **The PC's sheet lists what it carries** (`equipaggiamento`: catalog ids, `{id, quante}` for ammunition and
+     torches, `{id, indossato: false}` for armor carried but not worn) and its coins (`monete`), and never types `difesa`
+     or the weapon `attacchi`: the Engine derives them, and the validator rejects an item the class or race may not use
+     at all. Only special lines stay on the sheet, naming the weapon (`{nome: "Spada corta alle spalle", arma:
+     spada_corta, abilita: alle_spalle}`). Give each missile weapon its ammunition and a few light sources. Monsters keep
+     their typed `difesa` and `attacchi`. With a clock, write the hour the story starts at in campagna.yaml
+     (`tempo_all_inizio: {giorno: 1, ora: 17}`; a package's `sessione.yaml` for the sessions after the first).
    - **Keywords** (`parole_chiave`, the `parole` of scene checks and of excerpts with `per:`): specific words, not
      places, body parts or common objects («porta», «passaggio», «spalla»), which the validator refuses.
 3. Write `campagne/<id>/regole/`: `regole.yaml` (with `fonte.titolo`, `licenza` and the section `combattimento:`,
