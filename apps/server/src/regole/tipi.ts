@@ -21,6 +21,7 @@ import type { RegolaTempo, RegolaViaggio } from './tempo';
 import type { Progressione } from './progressione';
 import type { RegolaEsperienza } from './esperienza';
 import type { Mostro, RegolaBestiario } from './bestiario';
+import type { Durata } from './effetti';
 
 export interface Voce {
   id: string;
@@ -209,6 +210,12 @@ export interface SistemaRegole {
   bestiario?: RegolaBestiario | null;
   /** The manual's stat blocks (regole.yaml → mostri, regole/mostri.yaml; regole/bestiario.ts): a sheet's `mostro:`. */
   mostri?: Mostro[];
+  /**
+   * What one level of energy drain costs (regole.yaml → livelli_negativi, Basic Fantasy pp. 58–59; prove/drenaggio.ts):
+   * added to every d20 roll and to every d100 threshold, besides one hit die of maximum hit points and one of the
+   * highest-level spell slots. Absent = a drain effect does nothing (logged).
+   */
+  livelliNegativi?: { d20: number; percentuali: number } | null;
 }
 
 /** Un passo del manuale (regole/estratti/*.md), per l'arbitro e per «Chiedi una regola». */
@@ -322,6 +329,12 @@ export interface SchedaGenerica {
   siArrende?: boolean;
   /** Its foes are surprised on 1 to this face (`sorprende: 4`: a stat block's special surprise, Basic Fantasy p. 75…). */
   sorprende?: number;
+  /**
+   * Regeneration (a troll, Basic Fantasy p. 152): `pf` hit points a round once hurt, never the damage of the `tranne`
+   * types (fire, acid); at 0 it is down, not dead, and gets up with 1 hit point after `aZero` — unless that damage alone
+   * reaches its maximum, which kills it (prove/motore.ts).
+   */
+  rigenera?: { pf: number; tranne: string[]; aZero: Durata | null };
   /** The attack bonus a stat block prints when it differs from its hit dice (Basic Fantasy p. 62, «in parentheses»). */
   attacco?: number;
   /** Only weapons of these kinds hurt it (`colpito_solo_da`: argento, magica; Basic Fantasy's (s) and (m), p. 62). */

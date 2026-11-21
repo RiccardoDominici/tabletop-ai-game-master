@@ -511,6 +511,9 @@ def controlla(c: Campagna, e: Esito) -> None:
     salvezze = {o["id"] for o in r.get("abilita") or [] if isinstance(o, dict) and o.get("salvezza")}
     poteri = regole_poteri.poteri_del_set(r, salvezze, classi, condizioni_del_set(r), e, dove)
     regole_bestiario.bestiario_del_set(r, abi, e, dove)
+    ln = r.get("livelli_negativi")
+    if ln is not None and not (isinstance(ln, dict) and all(isinstance(ln.get(k, 0), int) and not isinstance(ln.get(k, 0), bool) for k in ("d20", "percentuali"))):
+        e.errore("REGOLE.bestiario", dove, "livelli_negativi: {d20: −1, percentuali: −5} (interi)")
     mostri = regole_bestiario.mostri_del_set(c.cartella / "regole", r, set(classi), set(poteri), e)
     risorse = regole_poteri.risorse_del_set(r, e, dove)
     regole_poteri.abilita_d_attacco(r, e, dove)

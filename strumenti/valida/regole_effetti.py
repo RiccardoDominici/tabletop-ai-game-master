@@ -13,7 +13,8 @@ import re
 
 from .esito import Esito
 
-TIPI_EFFETTO = ("danno", "cura", "caduta", "attacco", "condizione", "bonus", "immunita", "stabilizza", "morte", "oggetto", "monete")
+# `drenaggio`: levels of energy drain (the set's `livelli_negativi`; prove/drenaggio.ts).
+TIPI_EFFETTO = ("danno", "cura", "caduta", "attacco", "condizione", "bonus", "immunita", "stabilizza", "morte", "oggetto", "monete", "drenaggio")
 BERSAGLI_BONUS = ("difesa", "attacchi", "salvezze", "danni")
 CONTRO_BONUS = ("tutti", "mischia", "distanza")
 DURATE = ("istantanea", "scena", "riposo", "permanente")
@@ -89,6 +90,8 @@ def controlla_effetti(v, dove: str, e: Esito, codice: str, condizioni: set[str] 
         if tipo not in TIPI_EFFETTO:
             e.errore(codice, d, f"tipo uno tra {', '.join(TIPI_EFFETTO)}")
             continue
+        if tipo == "drenaggio" and not (_intero(o.get("livelli", 1)) and o.get("livelli", 1) >= 1):
+            e.errore(codice, d, "livelli: quanti livelli si risucchiano, da 1")
         ok = True
         # `pari_ai_pf: true`: a damage as much as the author's current hit points, no dice needed (regole/effetti.ts).
         if "pari_ai_pf" in o and not isinstance(o["pari_ai_pf"], bool):

@@ -893,6 +893,11 @@ esperienza:
   # quando torna al sicuro (il master lo dice dal pannello).
   tesoro: {px: 1, per: mo, quando: al_sicuro}
 
+# Risucchio di energia (p. 58–59): ogni «livello negativo» costa un dado vita di punti ferita (anche i massimi), −1 a ogni
+# tiro di d20 (attacchi, tiri salvezza, prove), −5 a ogni percentuale e uno degli incantesimi al giorno del livello più
+# alto; a zero punti ferita per risucchio si muore. I PX e il livello restano. Lo danno i mostri col potere `risucchio_*`.
+livelli_negativi: {d20: -1, percentuali: -5}
+
 # Bestiario (p. 53–54, 62): i mostri tirano un d8 per dado vita (½ dado vita = 1d4 punti ferita) e hanno il bonus
 # d'attacco della tabella dei mostri per dadi vita («Monster Attack Bonus», p. 53); più e meno non contano (3+2 e 3−1
 # valgono 3) e «1−1» o meno vale «meno di uno» (+0, p. 54). Le voci del bestiario sono in regole/mostri.yaml.

@@ -22,6 +22,7 @@ personaggi:
     attacchi:
     - {nome: Spada, danno: "1d8", abilita: mischia}
     - {nome: Pugnale d'argento, danno: "1d4", abilita: mischia, proprieta: [argento]}
+    - {nome: Torcia accesa, danno: "1d4", abilita: mischia, tipo_danno: fuoco}
 - id: pg_dario
   nome: Dario
   pronomi: lui

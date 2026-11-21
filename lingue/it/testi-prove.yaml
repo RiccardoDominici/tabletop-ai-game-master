@@ -130,6 +130,11 @@ prove:
     descrittivo: "Effetto di {potere} su {bersagli}: raccontalo come lo descrive il manuale, il Motore non lo misura."
     senza_munizioni: "{nome} non ha più {risorsa} per {arma}: nessun attacco."
     una_volta: " ({abilita} già usato contro {bersaglio} in questo scontro: attacco normale)"
+  # Energy drain (prove/drenaggio.ts, Basic Fantasy pp. 58–59): negative levels.
+  drenaggio:
+    fatto: "{nome} perde {n} livello di energia ({pf} punti ferita massimi in meno{slot}): ora ha {totale} livelli negativi, che pesano su ogni tiro."
+    slot: "; perde un incantesimo al giorno di livello {livelli}"
+    morto: "{nome} muore, svuotato della vita."
   # Monsters (regole/bestiario.ts, R4): a special in the monster's step, a weapon that cannot hurt, a resistance.
   mostri:
     usa: "{nome} usa {potere}."
@@ -138,6 +143,9 @@ prove:
     resiste_meta: "{nome} resiste al danno da {tipo}: la metà. "
     resiste_immune: "{nome} è immune al danno da {tipo}. "
     esaurito: "{nome} non può più usare {potere} oggi."
+    rigenera: "{nome} rigenera {n} punti ferita."
+    rigenera_a_terra: "{nome} crolla, ma non è morto: si rigenera, e si rialzerà."
+    rigenera_in_piedi: "{nome} si rialza con 1 punto ferita: si è rigenerato."
   # Timed effects (prove/attivi.ts): conditions, bonuses and immunities from powers and hazards.
   attivi:
     per_round: "per {n} round"

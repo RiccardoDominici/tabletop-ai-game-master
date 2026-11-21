@@ -328,6 +328,7 @@ bestiario:                                  # optional [V]: how a monster's stat
                                             #   da 0 = less than one hit die
   abilita: [mischia, distanza]              # [V] the set's attack abilities that take it
   uno_meno_meno_di_uno: true                # «1−1» hit dice or less count as less than one (p. 54)
+livelli_negativi: {d20: -1, percentuali: -5}   # optional [V]: what a level of energy drain costs (Basic Fantasy pp. 58–59)
 mostri:                                     # optional [V]: the manual's stat blocks; also in regole/mostri.yaml (`mostri:` there)
   - id: ghoul                               # [V] snake_case, unique across both places
     nome: "Ghoul"
@@ -396,6 +397,7 @@ scene check's `effetti_se_fallisce`, by the Game Master's hazards and by the set
 - {tipo: danno, dadi: "1d6", dadi_per_livello: {massimo: 10}, tipo_danno: fuoco}   # dice × caster level, capped
                                                                        # (a monster's special: × its hit dice)
 - {tipo: danno, pari_ai_pf: true}                                      # as much as the author's current hit points
+- {tipo: drenaggio, livelli: 1}                                        # levels of energy drain (the set's livelli_negativi)
 - {tipo: cura, dadi: "2d6", bonus_per_livello: {ogni_livelli: 1}}      # +1 per caster level
 - {tipo: caduta, altezza: 3}                                           # in the unit of `cadute`
 - {tipo: attacco, bonus: 1, dadi: "1d6+1"}                             # a trap: d20 + bonus against the victim's AC
@@ -449,6 +451,7 @@ scheda:
   per_round: [[artiglio, artiglio, morso]]      # optional [V]: a monster's attacks of a round (line ids, alternatives)
   colpito_solo_da: [argento, magica]            # optional [V]: only weapons with one of these `proprieta` hurt it
   si_arrende: true                              # optional [V]: a broken morale makes it surrender, not flee
+  rigenera: {pf: 1, tranne: [fuoco, acido], a_zero: {round: "2d6"}}   # optional [V]: regeneration (a troll, p. 152)
   sorprende: 4                                  # optional [V]: its foes are surprised on 1 to 4 (an ambusher, p. 75…);
                                                 #   «surprised only on a 1» is the trait {sorpresa: -1}
   resistenze: {fuoco: immune, freddo: meta}     # optional [V]: damage of these types does nothing or half
@@ -499,6 +502,16 @@ own hit points and weapons. A monster needs no ability scores (the +0 value, no 
   `dadi_per_livello: {}`; one as strong as the monster's hit points is `pari_ai_pf: true`. A petrifying gaze gives a
   permanent condition with `fuori_combattimento` (out like the dead). A PC's save in the monster's step is the player's
   roll with manual rolls (`per: salvezza`, asked like a death save).
+- **energy drain** (prove/drenaggio.ts; P5-49, P6-21): a `drenaggio` effect (a wight's touch as its line's rider) gives
+  negative levels by the set's `livelli_negativi`, as Basic Fantasy has them (not a lost level: XP and level stay): each
+  costs one hit die of hit points, from the maximum and from the hit points now (the class's die at the level, a monster's
+  bestiary die), the set's `d20` on every d20 roll (attacks, saves, checks) and `percentuali` on every d100 threshold, and
+  one of the highest-level spell slots, for the day and the rests after; drained to 0 or less, the victim is slain. Kept in
+  the snapshot. Removing them (restoration) is the Game Master's for now.
+- **regeneration** (`rigenera`; P6-22): `pf` a round for a creature hurt and standing, as rounds pass on the clock, never
+  the damage of the `tranne` types (the Engine keeps each character's damage by type); at 0 it is down, not dead — out of
+  the fight, defeated for XP — and gets up with 1 hit point after `a_zero`, unless the damage it cannot regenerate alone
+  reaches its maximum, which kills it.
 - **defences**: `colpito_solo_da` (Basic Fantasy's (s) and (m), p. 62): a hit with a weapon none of whose `proprieta` (the
   line's own, its catalog weapon's, the ammunition shot) is in the list deals nothing, and the fact says why («Spada colpisce
   Lanterna Spenta ma non lo ferisce: lo feriscono solo armi argento o magica»); spells are not weapons. `resistenze` halve

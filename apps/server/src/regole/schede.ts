@@ -19,6 +19,7 @@ import { voce } from './catalogo';
 import { applicaDotazione, dotazioneIniziale } from './equipaggiamento';
 import { valoriDaClasse } from './progressione';
 import { attaccoDaDadiVita, dadiVitaEffettivi, formulaPuntiFerita, leggiDadiVita, schedaConMostro } from './bestiario';
+import { leggiDurata } from './effetti';
 
 const ogg = (v: unknown): DatiYaml | null => (v !== null && typeof v === 'object' && !Array.isArray(v) ? (v as DatiYaml) : null);
 const intero = (v: unknown): number | null => (typeof v === 'number' && Number.isInteger(v) ? v : null);
@@ -306,8 +307,8 @@ function lineaDiMostro(s: SistemaRegole, a: DatiYaml, dove: string, avvisi: stri
  * of line ids), its morale (a number, or `{prima, dopo}`: before and after it is engaged), the attack bonus it prints,
  * the weapons that can hurt it (`colpito_solo_da`).
  */
-function mostroDellaScheda(s: SistemaRegole, o: DatiYaml, attacchi: SchedaGenerica['attacchi'], dove: string, avvisi: string[]): Pick<SchedaGenerica, 'perRound' | 'morale' | 'attacco' | 'colpitoSoloDa' | 'resistenze' | 'siArrende' | 'sorprende'> {
-  const out: Pick<SchedaGenerica, 'perRound' | 'morale' | 'attacco' | 'colpitoSoloDa' | 'resistenze' | 'siArrende' | 'sorprende'> = {};
+function mostroDellaScheda(s: SistemaRegole, o: DatiYaml, attacchi: SchedaGenerica['attacchi'], dove: string, avvisi: string[]): Pick<SchedaGenerica, 'perRound' | 'morale' | 'attacco' | 'colpitoSoloDa' | 'resistenze' | 'siArrende' | 'sorprende' | 'rigenera'> {
+  const out: Pick<SchedaGenerica, 'perRound' | 'morale' | 'attacco' | 'colpitoSoloDa' | 'resistenze' | 'siArrende' | 'sorprende' | 'rigenera'> = {};
   if (o['resistenze'] !== undefined) {
     const r = ogg(o['resistenze']);
     const ok = r && Object.values(r).every((v) => v === 'meta' || v === 'immune');
@@ -325,6 +326,14 @@ function mostroDellaScheda(s: SistemaRegole, o: DatiYaml, attacchi: SchedaGeneri
   if (intero(m) !== null && (m as number) >= 2 && (m as number) <= 12) out.morale = m as number;
   else if (ogg(m) && intero(ogg(m)!['prima']) !== null && intero(ogg(m)!['dopo']) !== null) out.morale = { prima: ogg(m)!['prima'] as number, dopo: ogg(m)!['dopo'] as number };
   else if (m !== undefined) avvisi.push(`${dove}.morale: un numero da 2 a 12, o {prima, dopo}`);
+  if (o['rigenera'] !== undefined) {
+    const r = ogg(o['rigenera']);
+    const pf = r ? intero(r['pf']) : null;
+    const errori: string[] = [];
+    const aZero = r && r['a_zero'] !== undefined ? leggiDurata(r['a_zero'], `${dove}.rigenera.a_zero`, errori) : null;
+    if (!r || pf === null || pf < 1 || errori.length) avvisi.push(`${dove}.rigenera: {pf: da 1, tranne: [fuoco, acido], a_zero: {round: "2d6"}}`, ...errori);
+    else out.rigenera = { pf, tranne: Array.isArray(r['tranne']) ? r['tranne'].filter((x): x is string => typeof x === 'string') : [], aZero };
+  }
   if (o['sorprende'] !== undefined) {
     if (intero(o['sorprende']) !== null && (o['sorprende'] as number) >= 1) out.sorprende = o['sorprende'] as number;
     else avvisi.push(`${dove}.sorprende: la faccia fino a cui sorprende i nemici, da 1`);

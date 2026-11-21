@@ -125,6 +125,8 @@ export interface DipendenzeCombattimento {
   senzaSoccorso?: (fatti: string[]) => void;
   /** Knocked out by subduing damage (StatoProve.tramortito): it wakes with 1 hit point after the set's `sveglia`. */
   tramortito?: (id: string, fatti: string[]) => void;
+  /** At 0, a creature that regenerates (a troll) is down, not dead: true when the Engine keeps it so (prove/motore.ts). */
+  siRialzera?: (id: string, fatti: string[]) => boolean;
   log: Logger;
 }
 
@@ -754,6 +756,11 @@ export class GestoreCombattimento {
     // Knocked out by subduing damage (Basic Fantasy p. 55): unconscious, neither dead nor dying; it wakes later.
     if (this.d.stato.tramortito(p.id)) {
       this.d.tramortito?.(p.id, fatti ?? []);
+      if (p.lato === 'png') this.controllaMorale(fatti ?? []);
+      return;
+    }
+    // A regenerating creature at 0 (Basic Fantasy's troll, p. 152): down for a while, not dead.
+    if (this.d.siRialzera?.(p.id, fatti ?? [])) {
       if (p.lato === 'png') this.controllaMorale(fatti ?? []);
       return;
     }

@@ -19,6 +19,8 @@ export interface StatoRisorseSalvato {
   indossati?: Array<[string, string[]]>;
   /** The fight round of each weapon's last shot («chi|linea»), for its rate of fire. Cleared when a fight ends. */
   tiri?: Array<[string, number]>;
+  /** Spell slots lost to energy drain, by character and spell level (index 0 = 1st). */
+  slot_persi?: Array<[string, number[]]>;
 }
 
 export type EsitoLancio = { ok: true; livello: number } | { ok: false; motivo: 'classe' | 'non_preparato' | 'senza_slot'; livello: number | null };
@@ -40,6 +42,8 @@ export class Risorse {
   private readonly vestiti = new Map<string, Set<string>>();
   /** «chi|linea» → the fight round of the line's last shot (rate of fire); cleared when the fight ends. */
   private readonly ultimiTiri = new Map<string, number>();
+  /** Slots lost to energy drain (Basic Fantasy p. 58: «loses access to one of their highest-level spell slots»). */
+  private readonly slotPersi = new Map<string, number[]>();
 
   constructor(
     private readonly s: SistemaRegole,
@@ -50,9 +54,28 @@ export class Risorse {
 
   /** Spell slots by spell level of a sheet: its own `slot`, else its class table's row at its level. */
   slotDi(sch: SchedaGenerica): number[] {
-    if (sch.slot) return sch.slot;
+    const persi = this.slotPersi.get(sch.id) ?? [];
+    const meno = (l: number[]): number[] => l.map((n, i) => Math.max(0, n - (persi[i] ?? 0)));
+    if (sch.slot) return meno(sch.slot);
     const c = sch.classe ? (this.s.classi ?? []).find((x) => x.id === sch.classe) : undefined;
-    return c?.incantesimiAlGiorno.length ? (rigaAlLivello(c.incantesimiAlGiorno, sch.livello ?? 1)?.slot ?? []) : [];
+    return meno(c?.incantesimiAlGiorno.length ? (rigaAlLivello(c.incantesimiAlGiorno, sch.livello ?? 1)?.slot ?? []) : []);
+  }
+
+  /** Energy drain: one of the highest-level slots is gone, for the day and for the refresh. Returns its level, or null. */
+  perdiSlot(chi: string): number | null {
+    const sch = this.schede.get(chi);
+    if (!sch) return null;
+    const slot = this.slotDi(sch);
+    const i = slot.map((n, k) => (n > 0 ? k : -1)).filter((k) => k >= 0).at(-1);
+    if (i === undefined) return null;
+    const persi = [...(this.slotPersi.get(chi) ?? [])];
+    while (persi.length <= i) persi.push(0);
+    persi[i]! += 1;
+    this.slotPersi.set(chi, persi);
+    const m = this.contatori.get(chi);
+    const k = chiaveSlot(i + 1);
+    if (m?.has(k)) m.set(k, Math.max(0, m.get(k)! - 1));
+    return i + 1;
   }
 
   /** Everyone back to the sheet's values (start of the session, «Ricomincia»). */
@@ -62,6 +85,7 @@ export class Risorse {
     this.usati.clear();
     this.vestiti.clear();
     this.ultimiTiri.clear();
+    this.slotPersi.clear();
     for (const sch of this.schede.values()) this.ricaricaScheda(sch, 'tutto');
   }
 
@@ -288,6 +312,7 @@ export class Risorse {
       usati: [...this.usati],
       indossati: [...this.vestiti].map(([id, v]) => [id, [...v]]),
       tiri: [...this.ultimiTiri],
+      ...(this.slotPersi.size ? { slot_persi: [...this.slotPersi].map(([id, l]) => [id, [...l]] as [string, number[]]) } : {}),
     };
   }
 
@@ -295,6 +320,7 @@ export class Risorse {
   importa(s: StatoRisorseSalvato | null | undefined): void {
     this.azzera();
     if (!s) return;
+    for (const [id, l] of s.slot_persi ?? []) if (this.schede.has(id) && Array.isArray(l)) this.slotPersi.set(id, l.map((n) => (Number.isInteger(n) && n > 0 ? n : 0)));
     for (const [id, voci] of s.contatori ?? []) {
       if (!this.schede.has(id)) continue;
       const m = this.contatori.get(id) ?? new Map<string, number>();

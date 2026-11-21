@@ -40,6 +40,8 @@ export interface ContestoEffetti {
     oggetto(chi: string, id: string, n: number): { ok: boolean; fatto: string };
     aggiungiMonete(chi: string, m: Record<string, number>): { ok: boolean; fatto: string };
   };
+  /** Energy drain (prove/drenaggio.ts): `n` levels on `id`; its facts. Absent = the set has no `livelli_negativi` (logged). */
+  drena?: (id: string, n: number, fatti: string[]) => void;
   /** The timed effects (conditions, bonuses, immunities): absent = they are not applied (logged). */
   attivi?: {
     aggiungi(id: string, e: Extract<EffettoTipato, { tipo: 'condizione' | 'bonus' | 'immunita' }>, fonte: string, livello: number, dadi: FonteDadi): string | null;
@@ -121,7 +123,7 @@ function infliggi(ctx: ContestoEffetti, a: Applicazione, f: FormulaDadi, dadi: F
   const d = tiraDanno(dadi, f, 0, false);
   const totale = a.dimezza ? Math.floor(d.totale / 2) : d.totale;
   const prima = ctx.stato.puntiFerita(a.bersaglio);
-  const r = ctx.stato.danneggia(a.bersaglio, totale);
+  const r = ctx.stato.danneggia(a.bersaglio, totale, false, tipoDannoId);
   const t = carta(ctx, a, { totale, ...x, danno: dannoMostrato({ formula: d.formula, dadi: d.dadi, bonus: d.bonus, totale, tipo: tipoDannoId }) });
   t.a_terra = (ctx.stato.puntiFerita(a.bersaglio)?.attuali ?? 1) <= 0;
   out.tiri.push(t);
@@ -212,6 +214,14 @@ export function applicaEffetti(a: Applicazione, ctx: ContestoEffetti): EsitoEffe
       case 'stabilizza': {
         const ok = ctx.attivi?.stabilizza(a.bersaglio) ?? false;
         out.fatti.push(testo(ok ? 'prove.effetti.stabilizzato' : 'prove.effetti.non_serve_stabilizzare', { nome: ctx.nome(a.bersaglio), fonte: a.fonte }));
+        break;
+      }
+      case 'drenaggio': {
+        if (!ctx.drena) {
+          ctx.log.warn({ bersaglio: a.bersaglio, livelli: e.livelli }, 'effects: energy drain, but the set has no livelli_negativi: skipped');
+          break;
+        }
+        ctx.drena(a.bersaglio, e.livelli, out.fatti);
         break;
       }
       case 'oggetto':

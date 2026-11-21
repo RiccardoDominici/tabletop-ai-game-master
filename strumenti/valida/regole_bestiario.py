@@ -127,6 +127,9 @@ def mostri_del_set(cartella_regole: Path, r: dict, classi: set[str], poteri: set
             _err(e, d, "px: un intero da 0 in su")
         if "colpito_solo_da" in x and not (isinstance(x["colpito_solo_da"], list) and x["colpito_solo_da"] and all(isinstance(w, str) for w in x["colpito_solo_da"])):
             _err(e, d, "colpito_solo_da: le armi che lo feriscono, [argento, magica] o [magica]")
+        rg = x.get("rigenera")
+        if rg is not None and not (isinstance(rg, dict) and _intero(rg.get("pf")) and rg["pf"] >= 1 and isinstance(rg.get("tranne", []), list)):
+            _err(e, d, "rigenera: {pf: da 1, tranne: [fuoco, acido], a_zero: {round: \"2d6\"}}")
         if "sorprende" in x and not (_intero(x["sorprende"]) and x["sorprende"] >= 1):
             _err(e, d, "sorprende: la faccia fino a cui sorprende i nemici, da 1")
         if "si_arrende" in x and not isinstance(x["si_arrende"], bool):

@@ -118,6 +118,10 @@ export interface OpzioniRisolutoreRegole {
   extraSalvezza?: (id: string, abilita: string) => number;
   /** What a character's traits add to a roll of one of the set's abilities, attacks included (regole/tratti.ts). */
   extraAbilita?: (id: string, abilita: string) => number;
+  /** What weighs on a characteristic's d20 check (negative levels, prove/drenaggio.ts). */
+  penalitaD20?: (id: string) => number;
+  /** What a d100 threshold of the character gets (negative levels: −5% each). */
+  extraSoglia?: (id: string) => number;
   /** The active bonuses of a character (prove/attivi.ts): to its AC, attack rolls, damage; against melee or missiles. */
   bonusAttivi?: (id: string, a: 'difesa' | 'attacchi' | 'danni', contro: 'mischia' | 'distanza') => number;
   /**
@@ -392,7 +396,7 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
       // Abilità tirata a parte sotto la soglia della scheda (percentuale, «x su 6»), se la scheda o il set la dà.
       const so = s.abilita.find((x) => x.id === abil)?.soglia ?? null;
       const valoreSoglia = so ? (sch.abilita[abil] ?? so.predefinita) : null;
-      if (so && valoreSoglia !== null) return { valore: valoreSoglia, etichetta: nomeAbil(abil), mossa: null, soglia: so.dado };
+      if (so && valoreSoglia !== null) return { valore: Math.max(0, valoreSoglia + (so.dado === 100 ? (o.extraSoglia?.(sch.id) ?? 0) : 0)), etichetta: nomeAbil(abil), mossa: null, soglia: so.dado };
       if (s.modificatore === 'soglia') {
         const v = sch.abilita[abil] ?? (carAbil ? sch.caratteristiche[carAbil] : undefined) ?? 0;
         return { valore: v, etichetta: nomeAbil(abil), mossa: null };
@@ -404,7 +408,7 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
       const tratto = salvezza.salvezza ? 0 : (o.extraAbilita?.(sch.id, abil) ?? 0);
       return { valore: base + (sch.abilita[abil] ?? 0) + tratto, etichetta: carAbil ? etichettaComposta(nomeAbil(abil), nomeCar(carAbil)) : nomeAbil(abil), mossa: null, ...salvezza };
     }
-    if (car) return { valore: valoreCaratteristica(s, sch, car), etichetta: nomeCar(car), mossa: null };
+    if (car) return { valore: valoreCaratteristica(s, sch, car) + (s.risoluzione.tipo === 'd20_cd' ? (o.penalitaD20?.(sch.id) ?? 0) : 0), etichetta: nomeCar(car), mossa: null };
     return null;
   }
 
@@ -490,7 +494,7 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     // After the minimum: a weapon that cannot hurt this creature (P6-03) deals nothing, a resistance halves or stops it.
     const resiste = attaccante.tipo_danno ? (bersaglio.resistenze?.[attaccante.tipo_danno] ?? null) : null;
     const ridotto = nonFerisce ? 0 : resiste === 'immune' ? 0 : resiste === 'meta' ? Math.floor(minimo / 2) : minimo;
-    const r = o.stato.danneggia(bersaglio.id, ridotto, !!nonLetale);
+    const r = o.stato.danneggia(bersaglio.id, ridotto, !!nonLetale, attaccante.tipo_danno);
     // A condition that ends on injury (sleep) ends with this hit.
     const svegli = ridotto > 0 ? (o.effetti?.attivi?.ferito(bersaglio.id) ?? []) : [];
     t.danno = dannoMostrato({ formula: d.formula, dadi: d.dadi, bonus: d.bonus, totale: ridotto, tipo: attaccante.tipo_danno });

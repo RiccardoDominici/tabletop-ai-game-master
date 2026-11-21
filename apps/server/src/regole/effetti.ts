@@ -41,7 +41,8 @@ export type Durata =
   | { tipo: 'permanente' };
 
 /** The closed list of effect kinds (docs/regole.md §2). */
-export const TIPI_EFFETTO = ['danno', 'cura', 'caduta', 'attacco', 'condizione', 'bonus', 'immunita', 'stabilizza', 'morte', 'oggetto', 'monete'] as const;
+/** `drenaggio`: levels of energy drain (the set's `livelli_negativi`, Basic Fantasy pp. 58–59; prove/drenaggio.ts). */
+export const TIPI_EFFETTO = ['danno', 'cura', 'caduta', 'attacco', 'condizione', 'bonus', 'immunita', 'stabilizza', 'morte', 'oggetto', 'monete', 'drenaggio'] as const;
 export type TipoEffetto = (typeof TIPI_EFFETTO)[number];
 
 /** What a temporary bonus adds to: Armor Class, attack rolls, saving throws, damage. */
@@ -62,7 +63,9 @@ export type EffettoTipato =
   /** A catalog item gained (quante > 0: a chest's rope) or lost (< 0) by the target (prove/inventario.ts). */
   | { tipo: 'oggetto'; oggetto: string; quante: number }
   /** Coins gained (a reward) or paid (negative: their worth, with change) by the target. */
-  | { tipo: 'monete'; monete: Record<string, number> };
+  | { tipo: 'monete'; monete: Record<string, number> }
+  /** Levels of energy drain (a wight's touch): what each costs is the set's `livelli_negativi`. */
+  | { tipo: 'drenaggio'; livelli: number };
 
 type D = Record<string, unknown>;
 const ogg = (v: unknown): D | null => (v !== null && typeof v === 'object' && !Array.isArray(v) ? (v as D) : null);
@@ -191,6 +194,14 @@ export function leggiEffetto(v: unknown, dove: string, errori: string[]): Effett
         return null;
       }
       return { tipo: 'oggetto', oggetto, quante };
+    }
+    case 'drenaggio': {
+      const n = o['livelli'] === undefined ? 1 : intero(o['livelli']);
+      if (n === null || n < 1) {
+        errori.push(`${dove}.livelli: how many levels are drained, from 1`);
+        return null;
+      }
+      return { tipo: 'drenaggio', livelli: n };
     }
     case 'monete': {
       const m = ogg(o['monete']);

@@ -109,8 +109,16 @@ tempo:
 riposo:
   - {id: notte, nome: Una notte di sonno, cura: 1, durata: {ora: 8}}
 
+# Energy drain (prove/drenaggio.ts): each negative level −1 to every d20 roll and −5 to d100 thresholds, besides a hit
+# die of maximum hit points and the highest-level spell slot.
+livelli_negativi: {d20: -1, percentuali: -5}
+
 # Monster specials (tipo mostro, regole/poteri.ts): applied by a hit (`colpendo`) or used as an action (`potere`).
 poteri:
+  - id: risucchio
+    nome: Risucchio di vita
+    tipo: mostro
+    effetti: [{tipo: drenaggio, livelli: 1}]
   - id: paralisi_artiglio
     nome: Artiglio paralizzante
     tipo: mostro

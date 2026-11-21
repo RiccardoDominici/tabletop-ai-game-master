@@ -124,6 +124,11 @@ prove:
     descrittivo: "Effect of {potere} on {bersagli}: tell it as the manual describes it, the Engine does not measure it."
     senza_munizioni: "{nome} has no {risorsa} left for {arma}: no attack."
     una_volta: " ({abilita} already used against {bersaglio} in this fight: an ordinary attack)"
+  # Energy drain (prove/drenaggio.ts, Basic Fantasy pp. 58–59): negative levels.
+  drenaggio:
+    fatto: "{nome} loses {n} energy level ({pf} maximum hit points fewer{slot}): now {totale} negative levels, weighing on every roll."
+    slot: "; loses a spell slot of level {livelli}"
+    morto: "{nome} dies, drained of life."
   # Monsters (regole/bestiario.ts, R4): a special in the monster's step, a weapon that cannot hurt, a resistance.
   mostri:
     usa: "{nome} uses {potere}."
@@ -132,6 +137,9 @@ prove:
     resiste_meta: "{nome} resists {tipo} damage: half. "
     resiste_immune: "{nome} is immune to {tipo} damage. "
     esaurito: "{nome} cannot use {potere} again today."
+    rigenera: "{nome} regenerates {n} hit points."
+    rigenera_a_terra: "{nome} collapses, but is not dead: it regenerates, and will get up."
+    rigenera_in_piedi: "{nome} gets up with 1 hit point: it has regenerated."
   # Timed effects (prove/attivi.ts): conditions, bonuses and immunities from powers and hazards.
   attivi:
     per_round: "for {n} rounds"

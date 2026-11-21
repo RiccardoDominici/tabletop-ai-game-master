@@ -95,3 +95,29 @@ mostri:
     salva_come: {classe: guerriero, livello: 2}
     morale: 8
     si_arrende: true
+  - id: ombra_fredda
+    nome: Ombra fredda
+    manuale: "Cold shade"
+    pagina: 8
+    difesa: 15
+    dadi_vita: "3*"
+    attacchi:
+      - {id: tocco, nome: Tocco, danno: "1d4", colpendo: [risucchio]}
+    per_round: [[tocco]]
+    salva_come: {classe: guerriero, livello: 3}
+    morale: 12
+    tipo: [non_morto]
+    testo: Il tocco risucchia un livello di energia, senza tiro salvezza.
+  - id: ceppo_vivo
+    nome: Ceppo vivo
+    manuale: "Living stump"
+    pagina: 9
+    difesa: 14
+    dadi_vita: "3"
+    attacchi:
+      - {id: ramo, nome: Ramo, danno: "1d6"}
+    per_round: [[ramo]]
+    salva_come: {classe: guerriero, livello: 3}
+    morale: 10
+    rigenera: {pf: 2, tranne: [fuoco, acido], a_zero: {round: "1d4"}}
+    testo: Rigenera 2 punti ferita a round; a zero si rialza dopo 1d4 round; il fuoco e l'acido non si rigenerano.

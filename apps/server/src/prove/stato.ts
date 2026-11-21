@@ -12,6 +12,7 @@ import type { StatoMorentiSalvato } from './morte';
 import type { StatoTempoSalvato } from './tempo';
 import type { StatoEsperienzaSalvato } from './esperienza';
 import type { StatoLivelliSalvato } from './livelli';
+import type { StatoDrenaggiSalvato } from './drenaggio';
 
 export interface StatoProveSalvato {
   seme: string;
@@ -43,6 +44,12 @@ export interface StatoProveSalvato {
   livelli?: StatoLivelliSalvato;
   /** Subduing and killing damage taken since the last full health (Basic Fantasy pp. 55–56): who is knocked out. */
   danni_tipo?: Array<[string, { non_letali: number; letali: number }]>;
+  /** Maximum hit points lost to energy drain (prove/drenaggio.ts), by character. */
+  riduzioni?: Array<[string, number]>;
+  /** Negative levels by character (prove/drenaggio.ts). */
+  drenaggi?: StatoDrenaggiSalvato;
+  /** Damage taken by type, by character (a troll's fire and acid, which it cannot regenerate). */
+  danni_per_tipo?: Array<[string, Array<[string, number]>]>;
 }
 
 /** Fuori gioco oltre ai PF: morto (finché il master non lo cura), fuggito (finché la scena non cambia). */
@@ -72,6 +79,10 @@ export class StatoProve {
    * less killing damage than its maximum, a character is knocked out, not dead or dying. Healing takes the subduing first.
    */
   private readonly tipi = new Map<string, { nonLetali: number; letali: number }>();
+  /** Maximum hit points lost (energy drain: one hit die per negative level, Basic Fantasy p. 58). */
+  private readonly riduzioni = new Map<string, number>();
+  /** Damage taken by type since full health (what a troll cannot regenerate: fire, acid). */
+  private readonly perTipo = new Map<string, Map<string, number>>();
 
   /** Schede SRD o del set del manuale: servono solo id e punti ferita massimi. */
   constructor(private readonly schede: ReadonlyMap<string, Pick<SchedaNumerica, 'id' | 'pf_massimi'>>) {
@@ -83,13 +94,25 @@ export class StatoProve {
     this.pf.clear();
     this.usciti.clear();
     this.tipi.clear();
+    this.riduzioni.clear();
+    this.perTipo.clear();
     for (const s of this.schede.values()) this.pf.set(s.id, s.pf_massimi);
   }
 
   puntiFerita(id: string): PuntiFerita | null {
     const s = this.schede.get(id);
     if (!s) return null;
-    return { attuali: this.pf.get(id) ?? s.pf_massimi, massimi: s.pf_massimi };
+    const massimi = Math.max(0, s.pf_massimi - (this.riduzioni.get(id) ?? 0));
+    return { attuali: Math.min(this.pf.get(id) ?? s.pf_massimi, massimi), massimi };
+  }
+
+  /** Energy drain lowers the maximum (current hit points capped by it). Returns the hit points after. */
+  riduciMassimi(id: string, n: number): PuntiFerita | null {
+    if (!this.schede.has(id) || n <= 0) return this.puntiFerita(id);
+    this.riduzioni.set(id, (this.riduzioni.get(id) ?? 0) + n);
+    const p = this.puntiFerita(id)!;
+    this.pf.set(id, p.attuali);
+    return p;
   }
 
   aTerra(id: string): boolean {
@@ -134,11 +157,16 @@ export class StatoProve {
   }
 
   /** Danno: i PF non scendono sotto 0 (SRD 5.2: a 0 il PNG muore o è fuori combattimento, il PG perde i sensi). */
-  danneggia(id: string, n: number, nonLetale = false): EsitoDannoApplicato | null {
+  danneggia(id: string, n: number, nonLetale = false, tipo: string | null = null): EsitoDannoApplicato | null {
     const p = this.puntiFerita(id);
     if (!p) return null;
     const dopo = Math.max(0, p.attuali - Math.max(0, n));
     this.pf.set(id, dopo);
+    if (tipo && n > 0) {
+      const m = this.perTipo.get(id) ?? new Map<string, number>();
+      m.set(tipo, (m.get(tipo) ?? 0) + n);
+      this.perTipo.set(id, m);
+    }
     // Subduing damage on a character already at 0 is killing damage (p. 55: «someone might be beaten to death»).
     const t = this.tipi.get(id) ?? { nonLetali: 0, letali: 0 };
     if (nonLetale && p.attuali > 0) t.nonLetali += Math.max(0, n);
@@ -160,6 +188,7 @@ export class StatoProve {
       t.letali = Math.max(0, t.letali - (Math.max(0, n) - via));
       if (this.pf.get(id) === p.massimi || (!t.nonLetali && !t.letali)) this.tipi.delete(id);
     }
+    if (this.pf.get(id) === p.massimi) this.perTipo.delete(id);
     // Il master che ridà PF a un morto lo riporta in vita: è la sua decisione.
     if (this.usciti.get(id) === 'morto' && this.pf.get(id)! > 0) this.usciti.delete(id);
     return this.puntiFerita(id);
@@ -172,6 +201,12 @@ export class StatoProve {
   curaRegola(id: string, n: number): PuntiFerita | null {
     if (this.usciti.get(id) === 'morto') return null;
     return this.cura(id, n);
+  }
+
+  /** The damage of these types `id` has taken since full health (a troll: fire and acid). */
+  dannoDiTipo(id: string, tipi: readonly string[]): number {
+    const m = this.perTipo.get(id);
+    return m ? tipi.reduce((n, t) => n + (m.get(t) ?? 0), 0) : 0;
   }
 
   /**
@@ -199,13 +234,16 @@ export class StatoProve {
   }
 
   esporta(seme: string, contatore: number): StatoProveSalvato {
-    return { seme, contatore, pf: [...this.pf], prossimoTiro: this.prossimo, recenti: [...this.recentiTiri], fuori: [...this.usciti], ...(this.tipi.size ? { danni_tipo: [...this.tipi].map(([id, t]) => [id, { non_letali: t.nonLetali, letali: t.letali }] as [string, { non_letali: number; letali: number }]) } : {}) };
+    return { seme, contatore, pf: [...this.pf], prossimoTiro: this.prossimo, recenti: [...this.recentiTiri], fuori: [...this.usciti], ...(this.tipi.size ? { danni_tipo: [...this.tipi].map(([id, t]) => [id, { non_letali: t.nonLetali, letali: t.letali }] as [string, { non_letali: number; letali: number }]) } : {}), ...(this.riduzioni.size ? { riduzioni: [...this.riduzioni] } : {}), ...(this.perTipo.size ? { danni_per_tipo: [...this.perTipo].map(([id, m]) => [id, [...m]] as [string, Array<[string, number]>]) } : {}) };
   }
 
   importa(s: StatoProveSalvato): void {
     this.azzeraPf();
-    for (const [id, v] of s.pf ?? []) if (this.schede.has(id) && Number.isFinite(v)) this.pf.set(id, Math.max(0, Math.min(v, this.schede.get(id)!.pf_massimi)));
+    // The drained maxima first: the hit points are read back against them.
+    for (const [id, n] of s.riduzioni ?? []) if (this.schede.has(id) && Number.isFinite(n) && n > 0) this.riduzioni.set(id, n);
+    for (const [id, v] of s.pf ?? []) if (this.schede.has(id) && Number.isFinite(v)) this.pf.set(id, Math.max(0, Math.min(v, this.puntiFerita(id)!.massimi)));
     for (const [id, u] of s.fuori ?? []) if (u === 'morto' || u === 'fuggito') this.usciti.set(id, u);
+    for (const [id, l] of s.danni_per_tipo ?? []) if (this.schede.has(id) && Array.isArray(l)) this.perTipo.set(id, new Map(l.filter(([k, n]) => typeof k === 'string' && Number.isFinite(n))));
     for (const [id, t] of s.danni_tipo ?? []) if (this.schede.has(id) && t) this.tipi.set(id, { nonLetali: Math.max(0, t.non_letali ?? 0), letali: Math.max(0, t.letali ?? 0) });
     this.prossimo = Math.max(1, s.prossimoTiro ?? 1);
     this.recentiTiri = [...(s.recenti ?? [])].slice(-MAX_RECENTI);

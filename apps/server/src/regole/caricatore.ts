@@ -234,6 +234,10 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[], fileMostr
   // The bestiary (P6-00): the rules that turn a stat block into a sheet, and the entries (inline, then regole/mostri.yaml).
   const bestiario = leggiRegolaBestiario(d['bestiario'], new Set(abilita.map((a) => a.id)), errori);
   const mostri = leggiMostri([{ v: d['mostri'], dove: 'mostri' }, { v: fileMostri, dove: 'regole/mostri.yaml' }], errori);
+  // Energy drain (Basic Fantasy pp. 58–59): what each negative level costs on the rolls.
+  const ln = ogg(d['livelli_negativi']);
+  if (d['livelli_negativi'] !== undefined && (!ln || ![ln['d20'] ?? 0, ln['percentuali'] ?? 0].every((x) => typeof x === 'number' && Number.isInteger(x)))) errori.push('livelli_negativi: {d20: −1, percentuali: −5} (whole numbers)');
+  const livelliNegativi = ln ? { d20: (ln['d20'] as number) ?? 0, percentuali: (ln['percentuali'] as number) ?? 0 } : null;
   const riposo = leggiRiposo(d['riposo'], errori);
   for (const [i, x] of (Array.isArray(d['riposo']) ? d['riposo'] : []).entries()) {
     const durata = ogg(x)?.['durata'];
@@ -300,6 +304,7 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[], fileMostr
     ...(esperienza ? { esperienza } : {}),
     ...(bestiario ? { bestiario } : {}),
     ...(mostri.length ? { mostri } : {}),
+    ...(livelliNegativi ? { livelliNegativi } : {}),
   };
 }
 

@@ -54,6 +54,7 @@ import { applicaEffetti, type ContestoEffetti } from './effetti';
 import { riposa } from './riposo';
 import { chiaveOggetto, chiaveUso, Risorse } from './risorse';
 import { usaPotereDiMostro } from './poteri';
+import { Drenaggi } from './drenaggio';
 import { Inventario } from './inventario';
 import { TempoDiGioco } from './tempo';
 import { accendi as accendiLuce, luceDellAzione, spegni as spegniLuce, type ContestoLuci } from './luci';
@@ -73,6 +74,8 @@ import { mostraTiroDelMaster } from './tiri-master';
 
 /** The source of a knock-out's timed condition (prove/attivi.ts): its end wakes the character with 1 hit point. */
 const FONTE_KO = 'non_letale';
+/** The source of a regenerating creature's time down at 0 (prove/attivi.ts): its end gets it up with 1 hit point. */
+const FONTE_RIGENERA = 'rigenera';
 
 /** Decisione dell'arbitro: SRD 5.2, o col vocabolario del set del manuale. */
 type Decisione = DecisioneProva | DecisioneRegole;
@@ -210,6 +213,8 @@ export class MotoreProve {
   private readonly risorse: Risorse | null;
   /** Timed effects of powers and hazards (prove/attivi.ts): conditions, bonuses, immunities that outlive a fight. */
   readonly attivi: Attivi;
+  /** Negative levels of energy drain (prove/drenaggio.ts). Null with the SRD path. */
+  readonly drenaggi: Drenaggi | null;
   /** The PCs in a dying window of the death rule (prove/morte.ts, Basic Fantasy p. 188). */
   readonly morenti = new Morenti();
   /**
@@ -256,6 +261,7 @@ export class MotoreProve {
           log: o.log.child({ modulo: 'esperienza' }),
         })
       : null;
+    this.drenaggi = this.generico && sist ? new Drenaggi({ sistema: sist, schede: this.generico.schede, stato: this.stato, risorse: this.risorse, nome: (id) => this.nomeDi(this.o.contesto(), id), log: o.log.child({ modulo: 'drenaggio' }) }) : null;
     this.livelli = this.generico && sist && o.regole ? new Livelli({ sistema: sist, schede: this.generico.schede, stato: this.stato, originali: o.regole.schede, nome: (id) => this.nomeDi(this.o.contesto(), id), log: o.log.child({ modulo: 'livelli' }) }) : null;
     this.tempo = new TempoDiGioco(this.sistema.tempo ?? null, { nome: (id) => this.nomeDi(this.o.contesto(), id), nomeOggetto: (id) => voce(this.sistema.catalogo, id)?.nome ?? id, log: o.log.child({ modulo: 'tempo' }) }, o.allInizio?.tempo ?? null);
     this.attivi = new Attivi({
@@ -319,6 +325,7 @@ export class MotoreProve {
       salvezzaMorte: (id, abilita) => this.salvezzaMorte(id, abilita),
       morente: (id, fatti) => this.iniziaMorente(id, fatti),
       tramortito: (id, fatti) => this.tramortisci(id, fatti),
+      siRialzera: (id, fatti) => this.aTerraRigenera(id, fatti),
       senzaSoccorso: (fatti) => {
         const ids = this.morenti.tutti();
         if (!ids.length) return;
@@ -980,8 +987,10 @@ export class MotoreProve {
       turni: { regole: this.regoleCombattimento().iniziativa.tipo !== 'nessuna', inCorso: this.combattimento.aTurni },
       effetti: this.contestoEffetti(turno, c),
       ...(this.risorse ? { poteri: { risorse: this.risorse, nemici: (autore: string) => this.nemiciDi(c, autore), alleati: () => c.pgAlTavolo.filter((id) => g.schede.has(id)), immuneAttivo: (id: string, cosa: string) => this.attivi.immune(id, cosa) || this.immuneDiScheda(id, cosa), condizioni: (id: string) => this.attivi.condizioni(id) } } : {}),
-      extraSalvezza: (id: string, abilita: string) => this.attivi.bonus(id, 'salvezze') + bonusTratti(this.trattiDi(id), { tipo: 'salvezza', colonna: colonnaDi(g.regole.sistema, abilita) }),
-      extraAbilita: (id: string, abilita: string) => bonusTratti(this.trattiDi(id), { tipo: 'abilita', abilita }),
+      // Negative levels (energy drain) weigh on every d20 roll and d100 threshold (prove/drenaggio.ts).
+      extraSalvezza: (id: string, abilita: string) => this.attivi.bonus(id, 'salvezze') + bonusTratti(this.trattiDi(id), { tipo: 'salvezza', colonna: colonnaDi(g.regole.sistema, abilita) }) + (this.drenaggi?.d20(id) ?? 0),
+      extraAbilita: (id: string, abilita: string) => bonusTratti(this.trattiDi(id), { tipo: 'abilita', abilita }) + (this.drenaggi?.d20(id) ?? 0),
+      ...(this.drenaggi?.attivo ? { penalitaD20: (id: string) => this.drenaggi!.d20(id), extraSoglia: (id: string) => this.drenaggi!.percentuale(id) } : {}),
       bonusAttivi: (id: string, a: 'difesa' | 'attacchi' | 'danni', contro: 'mischia' | 'distanza') => this.attivi.bonus(id, a, contro),
       ...(this.inventario ? { indossate: (id: string) => this.inventario!.penalita(id) } : {}),
       round: this.combattimento.round,
@@ -1012,7 +1021,7 @@ export class MotoreProve {
     const sch = g?.schede.get(id);
     if (!g || !sch) return null;
     const s = g.regole.sistema;
-    const b = bersaglioSalvezza(s, sch, abilita, this.attivi.bonus(id, 'salvezze') + bonusTratti(this.trattiDi(id), { tipo: 'salvezza', colonna: colonnaDi(s, abilita) }));
+    const b = bersaglioSalvezza(s, sch, abilita, this.attivi.bonus(id, 'salvezze') + bonusTratti(this.trattiDi(id), { tipo: 'salvezza', colonna: colonnaDi(s, abilita) }) + (this.drenaggi?.d20(id) ?? 0));
     return b ? { contro: b.contro, modificatore: b.modificatore, naturali: s.risoluzione.critici !== 'attacchi' } : null;
   }
 
@@ -1048,6 +1057,18 @@ export class MotoreProve {
       fatti.push(testo('prove.combattimento.tramortito_sveglio', { nome: this.nomeDi(c, x.id) }));
       this.o.log.info({ id: x.id }, 'combat: woke from a knock-out with 1 HP');
     }
+    // A regenerating creature's time down ran out: up with 1 hit point (p. 152); then it regenerates as rounds pass (not
+    // in the rounds it was down).
+    const rialzati = new Set<string>();
+    for (const x of scaduti) {
+      if (x.fonte !== FONTE_RIGENERA || !this.stato.aTerra(x.id) || this.stato.fuoriGioco(x.id) === 'morto') continue;
+      this.stato.cura(x.id, 1);
+      this.combattimento.dopoCura(x.id);
+      rialzati.add(x.id);
+      fatti.push(testo('prove.mostri.rigenera_in_piedi', { nome: this.nomeDi(c, x.id) }));
+      this.o.log.info({ id: x.id }, 'monsters: a regenerating creature gets up');
+    }
+    this.rigenerazioni(round, fatti, rialzati);
     fatti.push(...this.passaRoundMorenti(round));
     if (spente.length) {
       fatti.push(...this.tempo.fattiSpente(spente));
@@ -1229,11 +1250,12 @@ export class MotoreProve {
    */
   private aZeroFuoriScontro(id: string, turno: number, fatti: string[], tiri: TiroMostrato[]): void {
     if (this.combattimento.attivo) return;
-    // Knocked out by subduing damage: no rule at zero, it wakes later (p. 55).
+    // Knocked out by subduing damage: no rule at zero, it wakes later (p. 55). A troll at 0 gets up later (p. 152).
     if (this.stato.tramortito(id)) {
       this.tramortisci(id, fatti);
       return;
     }
+    if (this.aTerraRigenera(id, fatti)) return;
     const r = this.regoleCombattimento().danni;
     const nome = this.nomeDi(this.o.contesto(), id);
     const pg = !id.startsWith('png_');
@@ -1276,6 +1298,42 @@ export class MotoreProve {
     this.o.log.info({ id }, 'combat: knocked out by subduing damage, wakes later with 1 HP');
   }
 
+  /**
+   * A creature that regenerates at 0 hit points (`rigenera`, Basic Fantasy p. 152): down for `a_zero` (2d6 rounds), then
+   * up with 1 hit point — unless the damage it cannot regenerate (fire, acid) alone reaches its maximum: then the rule
+   * at zero kills it. True when it stays down to get up later. Once per fall.
+   */
+  private aTerraRigenera(id: string, fatti: string[]): boolean {
+    const r = this.generico?.schede.get(id)?.rigenera;
+    const p = this.stato.puntiFerita(id);
+    if (!r || !p || this.stato.dannoDiTipo(id, r.tranne) >= p.massimi) return false;
+    const cz = this.regoleCombattimento().condizioneAZero;
+    if (cz && r.aZero && !this.attivi.daFonte(id, FONTE_RIGENERA)) {
+      this.attivi.aggiungi(id, { tipo: 'condizione', condizione: cz, durata: r.aZero, finisceSeFerito: false }, FONTE_RIGENERA, 1, this.dadi);
+      fatti.push(testo('prove.mostri.rigenera_a_terra', { nome: this.nomeDi(this.o.contesto(), id) }));
+      this.o.log.info({ id }, 'monsters: a regenerating creature at 0 is down, not dead');
+    }
+    return true;
+  }
+
+  /** Regeneration as rounds pass: `pf` a round for each regenerating creature hurt and standing, never its fire or acid. */
+  private rigenerazioni(round: number, fatti: string[], salta: ReadonlySet<string> = new Set()): void {
+    const g = this.generico;
+    if (!g || round <= 0) return;
+    for (const sch of g.schede.values()) {
+      if (salta.has(sch.id)) continue;
+      const r = sch.rigenera;
+      const p = this.stato.puntiFerita(sch.id);
+      if (!r || !p || p.attuali <= 0 || this.stato.fuoriGioco(sch.id)) continue;
+      const vuoto = p.massimi - this.stato.dannoDiTipo(sch.id, r.tranne) - p.attuali;
+      const n = Math.min(vuoto, r.pf * round);
+      if (n <= 0) continue;
+      this.stato.cura(sch.id, n);
+      fatti.push(testo('prove.mostri.rigenera', { nome: this.nomeDi(this.o.contesto(), sch.id), n }));
+      this.o.log.info({ id: sch.id, n, round }, 'monsters: regeneration');
+    }
+  }
+
   /** A sheet's traits: its race's, its class's, its own (regole/tratti.ts); none on the SRD path. */
   private trattiDi(id: string): Tratto[] {
     const g = this.generico;
@@ -1314,6 +1372,7 @@ export class MotoreProve {
         if (this.morenti.ferma(id)) this.o.log.info({ id }, 'death: healed above 0, no longer dying');
       },
       aZero: (id, fatti, tiri) => this.aZeroFuoriScontro(id, turno, fatti, tiri),
+      ...(this.drenaggi?.attivo ? { drena: (id: string, n: number, fatti: string[]) => this.drenaggi!.drena(id, n, this.dadi, fatti) } : {}),
       ...(this.inventario ? { inventario: this.inventario } : {}),
       attivi: {
         aggiungi: (id, e, fonte, livello, dadi) => this.attivi.aggiungi(id, e, fonte, livello, dadi),
@@ -1834,7 +1893,7 @@ export class MotoreProve {
   // ------------------------------------------------------------------ sessione
 
   esporta(): StatoProveSalvato {
-    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta(), ...(this.tempo.mostrato ? { tempo: this.tempo.esporta() } : {}), ...(this.esperienza?.attiva ? { esperienza: this.esperienza.esporta() } : {}), ...(this.livelli?.attivo ? { livelli: this.livelli.esporta() } : {}) };
+    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta(), ...(this.tempo.mostrato ? { tempo: this.tempo.esporta() } : {}), ...(this.esperienza?.attiva ? { esperienza: this.esperienza.esporta() } : {}), ...(this.livelli?.attivo ? { livelli: this.livelli.esporta() } : {}), ...(this.drenaggi?.attivo ? { drenaggi: this.drenaggi.esporta() } : {}) };
   }
 
   importa(s: StatoProveSalvato): void {
@@ -1852,6 +1911,7 @@ export class MotoreProve {
     this.morenti.importa(s.morenti);
     this.tempo.importa(s.tempo);
     this.esperienza?.importa(s.esperienza);
+    this.drenaggi?.importa(s.drenaggi);
     if (!this.o.dadi && s.seme && /^[0-9a-f]{8,128}$/i.test(s.seme)) this.dadi = this.nuoviDadi(s.seme, s.contatore ?? 0);
     const ultimo = s.recenti?.at(-1)?.turno;
     this.ultimoTurno = ultimo !== undefined ? { turno: ultimo, tiri: (s.recenti ?? []).filter((t) => t.turno === ultimo) } : null;
@@ -1876,6 +1936,7 @@ export class MotoreProve {
     this.tempo.azzera();
     this.luciSpente = [];
     this.esperienza?.azzera();
+    this.drenaggi?.azzera();
     this.nemiciDelloScontro.clear();
     this.applicaInizio();
     this.intestazione = null;
