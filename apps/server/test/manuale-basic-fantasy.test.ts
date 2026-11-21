@@ -477,6 +477,12 @@ describe('the bestiary\'s specials as typed data (pp. 62–162)', () => {
     expect(drago.attacchi.find((a) => a['id'] === 'soffio')).toMatchObject({ potere: 'soffio_fuoco', usi: 10, ricarica: 2 });
     expect(drago['resistenze']).toEqual({ fuoco: 'immune' });
     expect(m('troll')['rigenera']).toEqual({ pf: 1, tranne: ['fuoco', 'acido'], a_zero: { round: '2d6' } });
+    // Undead are immune to sleep, charm and hold (p. 62 and the entries): ids of the set's own spells, read by prove/poteri.ts.
+    const poteri = new Set(s.poteri!.map((p) => p.id));
+    for (const id of ['sonno', 'charme', 'blocca_persone']) {
+      expect(m('scheletro')['immune']).toContain(id);
+      expect(poteri.has(id)).toBe(true);
+    }
     // A sheet from the dragon's entry: its breath is a power of the set, 1d8 per hit die.
     const sch = caricaSchedeGeneriche(s, { pg: [], png: [{ id: 'png_d', nome: 'Drago', dati: { scheda: { mostro: 'drago_montagna' } } } as never] }).get('png_d')!;
     expect(sch.attacchi.find((a) => a.id === 'soffio')).toMatchObject({ potere: 'soffio_fuoco', usi: 10 });

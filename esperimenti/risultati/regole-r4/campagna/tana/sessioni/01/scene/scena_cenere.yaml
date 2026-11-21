@@ -1,0 +1,27 @@
+id: scena_cenere
+nodo: n_tana
+nome: La fossa di cenere
+descrizione: Una fossa dove i predoni bruciavano gli scarti, con la cenere alta fino alle caviglie. Un drago di
+  brina, piccolo come un cane, dorme su una lastra di ghiaccio; nella cenere qualcosa si muove.
+domanda_drammatica: Il gruppo attraverserà la fossa senza farsi avvelenare o gelare?
+intensita: 3
+sensi:
+- Odore di terra e di fumo.
+- Il crepitio del fuoco.
+- Il respiro pesante della bestia.
+elementi_interattivi:
+- cosa: il passaggio in fondo
+  dove: dietro il fuoco
+  azioni: si scende
+png_presenti:
+- png_serpe
+- png_drago
+gregari: []
+orologi_attivi:
+- o_predoni
+indizi: []
+mossa_morbida_pronta: Il drago soffia una nuvola bianca.
+apertura: La cenere si muove sotto i vostri piedi. Sulla lastra di ghiaccio il drago apre la bocca. Che fate?
+musica:
+  tag: tensione
+taglio: Si chiude quando la fossa è attraversata.

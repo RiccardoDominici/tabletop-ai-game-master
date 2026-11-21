@@ -1,0 +1,123 @@
+# The rest of the fixture's invented bestiary (regole/bestiario.ts): the file the loader reads next to regole.yaml.
+mostri:
+  - id: predone
+    nome: Predone
+    manuale: "Raider"
+    pagina: 2
+    difesa: 12
+    dadi_vita: "1-1"
+    attacchi:
+      - {id: arma, nome: Mazza, danno: "1d6"}
+    per_round: [[arma]]
+    movimento: "9 m"
+    numero: "2d4"
+    salva_come: {classe: guerriero, livello: 0}
+    morale: 7
+    px: 5
+  - id: serpe_cenere
+    nome: Serpe di cenere
+    manuale: "Ash snake"
+    pagina: 2
+    difesa: 13
+    dadi_vita: "1*"
+    attacchi:
+      - {id: morso, nome: Morso, danno: "1d4", colpendo: [veleno_serpe]}
+    per_round: [[morso]]
+    salva_come: {classe: guerriero, livello: 1}
+    morale: 7
+    sorprende: 4
+    testo: Il morso avvelena, salvezza contro il veleno o muore. Nascosta nella cenere, sorprende con 1–4.
+  - id: drago_brina
+    nome: Drago di brina
+    manuale: "Frost drake"
+    pagina: 3
+    difesa: 16
+    dadi_vita: "4**"
+    attacchi:
+      - {id: artiglio, nome: Artiglio, danno: "1d4"}
+      - {id: morso, nome: Morso, danno: "2d6"}
+      - {id: soffio, nome: Soffio, potere: soffio_brina, usi: 4, ricarica: 2}
+    per_round: [[soffio, artiglio, artiglio], [morso, artiglio, artiglio]]
+    salva_come: {classe: guerriero, livello: 4}
+    morale: 9
+    resistenze: {freddo: immune}
+    testo: Soffia brina 4 volte al giorno, non più di una ogni due round, 1d8 per dado vita, salvezza dimezza.
+  - id: spettro_lanterna
+    nome: Spettro della lanterna
+    manuale: "Lantern wraith"
+    pagina: 4
+    difesa: 13
+    colpito_solo_da: [argento, magica]
+    dadi_vita: "3"
+    attacchi:
+      - {id: tocco, nome: Tocco gelido, danno: "1d6"}
+    per_round: [[tocco]]
+    salva_come: {classe: guerriero, livello: 3}
+    morale: 12
+    tipo: [non_morto]
+    immune: [paralisi_artiglio, paralizzato]
+    tratti: [{sorpresa: -1}]
+    testo: Lo feriscono solo l'argento e la magia.
+  - id: occhio_pietra
+    nome: Occhio di pietra
+    manuale: "Stone eye"
+    pagina: 5
+    difesa: 14
+    dadi_vita: "3**"
+    attacchi:
+      - {id: sguardo, nome: Sguardo, potere: sguardo_pietra}
+      - {id: morso, nome: Morso, danno: "1d6"}
+    per_round: [[sguardo, morso]]
+    salva_come: {classe: guerriero, livello: 3}
+    morale: 9
+    testo: Lo sguardo pietrifica, salvezza contro la paralisi.
+  - id: formicone
+    nome: Formicone
+    manuale: "Big ant"
+    pagina: 6
+    difesa: 15
+    dadi_vita: "2"
+    attacchi:
+      - {id: morso, nome: Morso, danno: "1d6"}
+    per_round: [[morso]]
+    salva_come: {classe: guerriero, livello: 2}
+    morale: {prima: 4, dopo: 12}
+    testo: Timido alla prima vista, una volta in lotta combatte fino alla morte.
+  - id: capobanda
+    nome: Capobanda
+    manuale: "Raider chief"
+    pagina: 7
+    difesa: 13
+    dadi_vita: "2"
+    attacchi:
+      - {id: arma, nome: Spada, danno: "1d8"}
+    per_round: [[arma]]
+    salva_come: {classe: guerriero, livello: 2}
+    morale: 8
+    si_arrende: true
+  - id: ombra_fredda
+    nome: Ombra fredda
+    manuale: "Cold shade"
+    pagina: 8
+    difesa: 15
+    dadi_vita: "3*"
+    attacchi:
+      - {id: tocco, nome: Tocco, danno: "1d4", colpendo: [risucchio]}
+    per_round: [[tocco]]
+    salva_come: {classe: guerriero, livello: 3}
+    morale: 12
+    tipo: [non_morto]
+    testo: Il tocco risucchia un livello di energia, senza tiro salvezza.
+  - id: ceppo_vivo
+    nome: Ceppo vivo
+    manuale: "Living stump"
+    pagina: 9
+    difesa: 14
+    dadi_vita: "3"
+    attacchi:
+      - {id: ramo, nome: Ramo, danno: "1d6"}
+    per_round: [[ramo]]
+    salva_come: {classe: guerriero, livello: 3}
+    morale: 10
+    rigenera: {pf: 2, tranne: [fuoco, acido], a_zero: {round: "1d4"}}
+    testo: Rigenera 2 punti ferita a round; a zero si rialza dopo 1d4 round; il fuoco e l'acido non si rigenerano.

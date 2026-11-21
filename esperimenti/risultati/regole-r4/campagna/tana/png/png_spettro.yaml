@@ -1,0 +1,27 @@
+id: png_spettro
+nome: Lanterna Spenta
+pronuncia: Lanterna Spenta
+alias: [spettro]
+livello: supporto
+ruolo: una creatura della tana
+aspetto:
+  lettura: Uno spettro pallido con una lanterna vuota.
+  invarianti: [spettro]
+personalita:
+  superficie: [muto]
+  sotto_pressione: [attacca]
+  contraddizione: Sembra immobile ma attacca.
+desiderio: Difendere la tana.
+voce:
+  tts: {voce_id: dario}
+  registro: tu
+  stile: Non parla.
+  battuta_campione: …
+sa: [f_tana]
+non_sa: [f_predoni]
+atteggiamento_pg:
+  pg_bruna: {stato: ostile, perche: intrusa, vuole: niente}
+  pg_dario: {stato: ostile, perche: intruso, vuole: niente}
+  pg_selva: {stato: ostile, perche: intrusa, vuole: niente}
+scheda:
+  mostro: spettro_lanterna

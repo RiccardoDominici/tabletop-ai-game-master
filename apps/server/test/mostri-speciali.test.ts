@@ -113,7 +113,7 @@ describe('defences', () => {
     const m = contro('png_spettro', ['pg_bruna'], { 6: [1], 20: [20], 8: [8], 4: [4] });
     const prima = m.stato.puntiFerita('png_spettro')!.attuali;
     const r = await m.risolvi(1, [azione('pg_bruna', 'Colpisco Lanterna Spenta con la spada')]);
-    expect(r.fatti.join(' ')).toMatch(/Spada colpisce Lanterna Spenta ma non lo ferisce: lo feriscono solo armi argento o magica/);
+    expect(r.fatti.join(' ')).toMatch(/Spada colpisce Lanterna Spenta ma non lo ferisce: lo ferisce solo un'arma con una di queste proprietà: argento o magica\. 0 danni; Lanterna Spenta non ha ferite/);
     expect(m.stato.puntiFerita('png_spettro')!.attuali).toBe(prima);
     await m.risolvi(2, [azione('pg_bruna', "Colpisco Lanterna Spenta col pugnale d'argento")]);
     expect(m.stato.puntiFerita('png_spettro')!.attuali).toBeLessThan(prima);

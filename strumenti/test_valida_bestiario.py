@@ -40,6 +40,7 @@ def test_regole_e_voci_rotte(tmp_path: Path) -> None:
         d["mostri"][0]["per_round"] = [["artiglio", "coda"]]
         d["mostri"][0]["attacchi"][0]["colpendo"] = ["veleno_inesistente"]
         d["mostri"][0]["morale"] = 13
+        d["mostri"][0]["immune"] = ["paralisi_artiglio", "sorpreso", "charme_inesistente"]
         d["mostri"].append({"id": "artigliatore"})
     modifica(dest, "regole/regole.yaml", rompi)
     e = " | ".join(regole_di(dest))
@@ -50,6 +51,9 @@ def test_regole_e_voci_rotte(tmp_path: Path) -> None:
     assert "per_round[1]" in e
     assert "colpendo: «veleno_inesistente»" in e
     assert "morale: da 2 a 12" in e
+    # A power and a condition of the set are fine; an unknown id would protect from nothing.
+    assert "immune: «charme_inesistente» non è un potere né una condizione del set" in e
+    assert "«paralisi_artiglio» non" not in e and "«sorpreso» non" not in e
     assert "id del mostro ripetuto «artigliatore»" in e
 
 

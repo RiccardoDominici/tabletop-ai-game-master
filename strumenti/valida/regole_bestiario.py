@@ -136,7 +136,24 @@ def mostri_del_set(cartella_regole: Path, r: dict, classi: set[str], poteri: set
             _err(e, d, "si_arrende: true o false")
         if "resistenze" in x and not resistenze_valide(x["resistenze"]):
             _err(e, d, "resistenze: {tipo di danno: meta | immune}")
+        # An immunity names a power or a condition of the set: a wrong id would silently protect from nothing.
+        im = x.get("immune")
+        if im is not None:
+            if not (isinstance(im, list) and all(isinstance(i, str) for i in im)):
+                _err(e, d, "immune: una lista di id di poteri o condizioni del set")
+            elif (noti := _poteri_e_condizioni(r, poteri)) is not None:
+                for i in im:
+                    if i not in noti:
+                        _err(e, d, f"immune: «{i}» non è un potere né una condizione del set")
     return out
+
+
+def _poteri_e_condizioni(r: dict, poteri: set[str]) -> set[str] | None:
+    """The ids an immunity may name; None when the set has no condition list of its own (the defaults apply)."""
+    cond = (r.get("combattimento") or {}).get("condizioni") if isinstance(r.get("combattimento"), dict) else None
+    if not isinstance(cond, list):
+        return None
+    return poteri | {c["id"] for c in cond if isinstance(c, dict) and isinstance(c.get("id"), str)}
 
 
 def resistenze_valide(r) -> bool:

@@ -1,0 +1,19 @@
+# Live check of R4, run 2 of 3 (tana.yaml has the setup): the ash pit, a snake that ambushes on 1–4 and whose bite kills
+# unless the bitten saves against poison, and a frost drake whose breath halves with a save. The Game Master opens the
+# fight from the panel, so both sides roll surprise (with manual rolls the players' initiative comes first).
+#   TAGM_PORTA=5014 TAGM_SEME_DADI=<hex> npx tsx apps/server/src/esperimenti/esegui.ts esperimenti/copioni/regole-r4/cenere.yaml \
+#     A --cartella esperimenti/risultati/regole-r4/campagna/tana --finto --tiri manuale --seme-giocatori <hex> --uscita regole-r4/cenere
+scena: scena_cenere
+pg: [pg_bruna, pg_dario, pg_selva]
+turni:
+  - - {master: {tipo: combattimento_inizia}}
+    - {pg: pg_bruna, azione: "Guardo dove si muove la cenere"}
+  - - {pg: pg_dario, azione: "Tiro con l'arco a Brina"}
+  - - {pg: pg_bruna, azione: "Colpisco Brina con la spada"}
+  - - {pg: pg_selva, azione: "Colpisco Brina col bastone"}
+  - - {pg: pg_dario, azione: "Tiro con l'arco a Brina"}
+  - - {pg: pg_bruna, azione: "Colpisco Brina con la spada"}
+  - - {pg: pg_selva, azione: "Colpisco Brina col bastone"}
+  - - {pg: pg_dario, azione: "Tiro con l'arco a Brina"}
+  - - {pg: pg_bruna, azione: "Colpisco la Serpe di Cenere con la spada"}
+  - - {pg: pg_selva, azione: "Colpisco la Serpe di Cenere col bastone"}

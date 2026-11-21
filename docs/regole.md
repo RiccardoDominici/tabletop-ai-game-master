@@ -514,9 +514,11 @@ own hit points and weapons. A monster needs no ability scores (the +0 value, no 
   reaches its maximum, which kills it.
 - **defences**: `colpito_solo_da` (Basic Fantasy's (s) and (m), p. 62): a hit with a weapon none of whose `proprieta` (the
   line's own, its catalog weapon's, the ammunition shot) is in the list deals nothing, and the fact says why («Spada colpisce
-  Lanterna Spenta ma non lo ferisce: lo feriscono solo armi argento o magica»); spells are not weapons. `resistenze` halve
-  or stop damage of a type (`tipo_danno` of a line or an effect), after the set's minimum damage. Immunity to sleep, charm
-  or hold is the sheet's `immune` (powers or conditions), as before.
+  Lanterna Spenta ma non lo ferisce: lo ferisce solo un'arma con una di queste proprietà: argento o magica. 0 danni;
+  Lanterna Spenta non ha ferite»); spells are not weapons. `resistenze` halve or stop damage of a type (`tipo_danno` of a
+  line or an effect), after the set's minimum damage. Immunity to sleep, charm or hold is the sheet's `immune` (powers or
+  conditions), as before; in an entry of a set with its own condition list each id must be a power or a condition of the
+  set [V] (a misspelt id would protect from nothing).
 
 A line the manual does not count among the printed attacks (a gaze described in the text, a siren's song) is marked
 `in_piu: true` (the PDF check leaves it out of the counts); in `per_round` the alternative with a special action comes
@@ -590,20 +592,28 @@ The `significato` of bands and grades replaces it. With the SRD 5.2 the rule sta
   by the game clock of R2, docs/prove.md §11): the SRD 5.2 has its falls and long rest as
   data but no spells or slots yet; monster specials (poison riders, breath, paralysis on a hit) can use the typed
   effects but are not data of any set; carrying HP and resources from one session to the next is done by R2 (the log's
-  `pg_alla_fine`, a package's `pg_all_inizio`, docs/strati.md); subdual damage is not modelled; spells of levels 3–6 of Basic Fantasy are not data yet.
+  `pg_alla_fine`, a package's `pg_all_inizio`, docs/strati.md); subdual damage is not modelled; spells of levels 3–6 of Basic Fantasy are not data yet. (Monster specials and subdual damage: done by R4.)
 - **Rules-engine work R2 (20–21 November) leaves open**: the scene has no light state (darkness blinds nobody yet);
   wandering monster checks, rations and water, forced march and getting lost do not use the clock yet; magic armor's
   better movement row, two-handed weapons with a shield, container volume and capacity are not enforced; silver and
-  magic weapons against creatures only they hurt (P6-03) need an immunity rule; creation (starting money, the first
+  magic weapons against creatures only they hurt (P6-03: done by R4, `colpito_solo_da`); creation (starting money, the first
   purchase) is the Preparer's; the SRD 5.2 has its round and rest durations as data but no equipment catalog (its
   sheets keep the SRD path's own armor table). Evidence: esperimenti/risultati/regole-r2/.
 - **Rules-engine work R3 (21 November) leaves open**: creation (M7: rolling the scores and the first hit die, race and
   class requirements, combination classes); the ability-roll target that falls with the level (Basic Fantasy p. 189);
-  a monster's attack bonus by hit dice (its sheet's, typed); retainers' half shares and treasure spent on training; the
+  a monster's attack bonus by hit dice (done by R4: the set's `bestiario.attacco`); retainers' half shares and treasure spent on training; the
   non-thief's 1 in 6 to listen (a d20 check); the thief's point allocation option; the SRD 5.2's XP and levels (its
   sheets level by the brief, docs/strati.md); energy drain (negative levels: done by R4). Found in its live check and
   fixed by R4: a PC at 0 when a fight ends before its turn now rolls its death save when the fight ends (or at the next
   window, when the panel ended it), and an attack on undead already turned opens no fight. Evidence:
   esperimenti/risultati/regole-r3/.
+- **Rules-engine work R4 (21 November) leaves open**: the Game Master's ±2 to a morale score (P5-46) is not on the
+  panel; kicks (1d4 at −2) and the bare fist that hurts its owner against metal armor (P5-42); a creature knocked out by
+  subduing damage wakes after the set's `sveglia`, never woken by someone after 2d10 rounds; removing negative levels (restoration) is the
+  Game Master's; conditions (cover, concealment, held) are set from the panel only during a fight, and from words only
+  through the modifiers; breath has no area (it reaches every enemy standing: there are no positions); a chimera's fixed
+  3d4 breath and the specials no power expresses (swallowing, sprays, grabs, splitting, disease, lycanthropy: P6-23,
+  P6-24, P6-26) stay text in the entry; the 24 hours a song cannot charm again after a save are one use a day;
+  dragon ages (P6-17) are the printed category-4 entry. Evidence: esperimenti/risultati/regole-r4/.
 - **Subsystems** (`sottosistemi`) are text only. Conditions apply in the fight (docs/combattimento.md); damage, healing, falls and rest outside an attack are typed effects (above).
 - **Opposed checks** in a non-SRD set become normal checks. Saving throws are pinned to their own number (above), and a target rolls its own save against a PC's power (`salvezzaDelBersaglio`, the Game Master's side for an NPC).

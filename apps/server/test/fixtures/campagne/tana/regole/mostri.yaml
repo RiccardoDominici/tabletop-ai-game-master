@@ -55,7 +55,7 @@ mostri:
     salva_come: {classe: guerriero, livello: 3}
     morale: 12
     tipo: [non_morto]
-    immune: [addormentato, affascinato]
+    immune: [paralisi_artiglio, paralizzato]
     tratti: [{sorpresa: -1}]
     testo: Lo feriscono solo l'argento e la magia.
   - id: occhio_pietra

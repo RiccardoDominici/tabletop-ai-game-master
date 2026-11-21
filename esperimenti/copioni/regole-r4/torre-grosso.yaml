@@ -1,0 +1,25 @@
+# Live check of R4 on torre-mozza (Basic Fantasy, the real set), manual rolls: the fight in the tower against Grosso and
+# Zirrà, whose sheets are now the bestiary's hobgoblin and goblin entries with their own numbers (`mostro:`). Their
+# attack bonus comes from the bestiary's table by hit dice, their morale from the entry, and every die of the players
+# is typed on the phone; Fulco hits Grosso with the flat of his mace to take him alive (subduing damage), Nespola's sling
+# shoots at Grosso while he fights Livia hand to hand (a miss goes into the melee).
+#   TAGM_PORTA=5016 TAGM_SEME_DADI=<hex> npx tsx apps/server/src/esperimenti/esegui.ts esperimenti/copioni/regole-r4/torre-grosso.yaml \
+#     A --campagna torre-mozza --finto --tiri manuale --seme-giocatori <hex> --uscita regole-r4/torre-mozza-manuale
+scena: scena_torre
+pg: [pg_livia, pg_fulco, pg_nespola, pg_eliandro]
+turni:
+  - - {pg: pg_livia, azione: "Colpisco Grosso con la spada lunga"}
+  - - {pg: pg_fulco, azione: "Colpisco Grosso con la mazza di piatto, per tramortirlo"}
+  - - {pg: pg_nespola, azione: "Tiro con la fionda a Zirrà"}
+  - - {pg: pg_eliandro, azione: "Lancio il dardo incantato contro Zirrà"}
+  - - {pg: pg_livia, azione: "Colpisco Grosso con la spada lunga"}
+  - - {pg: pg_fulco, azione: "Colpisco Grosso con la mazza di piatto, per tramortirlo"}
+  - - {pg: pg_nespola, azione: "Tiro con la fionda a Zirrà"}
+  - - {pg: pg_livia, azione: "Colpisco Zirrà con la spada lunga"}
+  # Grosso fights Livia hand to hand: a sling stone that misses him may hit her.
+  - - {pg: pg_nespola, azione: "Tiro con la fionda a Grosso"}
+  - - {pg: pg_livia, azione: "Colpisco Grosso con la spada lunga"}
+  - - {pg: pg_nespola, azione: "Tiro con la fionda a Grosso"}
+  - - {pg: pg_livia, azione: "Colpisco Grosso con la spada lunga"}
+  - - {pg: pg_nespola, azione: "Tiro con la fionda a Grosso"}
+  - - {pg: pg_livia, azione: "Colpisco Grosso con la spada lunga"}

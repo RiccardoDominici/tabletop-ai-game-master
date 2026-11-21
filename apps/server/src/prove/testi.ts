@@ -28,6 +28,8 @@ export function etichettaSalvezza(c: Caratteristica): string {
 /** Stato di salute in parole, dai punti ferita (per il narratore: niente numeri dei PNG a voce). */
 export function salute(attuali: number, massimi: number): string {
   if (attuali <= 0) return testo('prove.salute.a_terra');
+  // A hit that does nothing (a weapon it is immune to, a resistance) leaves it unhurt, not «wounded».
+  if (attuali >= massimi) return testo('prove.salute.illeso');
   if (attuali * 2 > massimi) return testo('prove.salute.regge');
   return testo('prove.salute.grave');
 }

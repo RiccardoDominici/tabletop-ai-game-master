@@ -1,0 +1,28 @@
+id: png_artigliatore
+nome: Artiglio Nero
+pronuncia: Artiglio Nero
+alias: [bestia, artigliatore]
+livello: supporto
+ruolo: la bestia dei predoni
+aspetto:
+  lettura: Una bestia nera con tre artigli per zampa e i denti gialli.
+  invarianti: [artigli lunghi, denti gialli]
+personalita:
+  superficie: [ringhia]
+  sotto_pressione: [attacca]
+  contraddizione: Dorme sempre ma si sveglia al primo passo.
+desiderio: Difendere la tana.
+voce:
+  tts: {voce_id: dario}
+  registro: tu
+  stile: Non parla.
+  battuta_campione: …
+sa: [f_tana]
+non_sa: [f_predoni]
+atteggiamento_pg:
+  pg_bruna: {stato: ostile, perche: intrusa, vuole: niente}
+  pg_dario: {stato: ostile, perche: intruso, vuole: niente}
+  pg_selva: {stato: ostile, perche: intrusa, vuole: niente}
+# The bestiary's entry gives every number (regole/regole.yaml → mostri): no hit points written, so they are rolled.
+scheda:
+  mostro: artigliatore

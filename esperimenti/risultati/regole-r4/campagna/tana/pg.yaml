@@ -1,0 +1,102 @@
+# The R4 live check's PCs: the fixture's, with more hit points (campagna.py).
+situazione_comune: Siete entrati nella tana sotto la collina, dove i predoni tengono il bottino.
+personaggi:
+- id: pg_bruna
+  nome: Bruna
+  pronomi: lei
+  specie: umana
+  classe: guerriera
+  livello: 1
+  aspetto: Una donna robusta con una spada e un pugnale d'argento alla cintura.
+  concetto: Cacciatrice di bestie, che porta l'argento per gli spettri.
+  aggancio: I predoni le hanno rubato il cavallo.
+  cosa_sai_fare:
+  - combatti con la spada
+  - colpisci gli spettri col pugnale d'argento
+  scheda:
+    caratteristiche:
+      forza: 15
+      destrezza: 11
+      costituzione: 14
+      intelligenza: 9
+      saggezza: 10
+    classe: guerriero
+    livello: 1
+    pf: 18
+    difesa: 15
+    attacchi:
+    - nome: Spada
+      danno: 1d8
+      abilita: mischia
+    - nome: Pugnale d'argento
+      danno: 1d4
+      abilita: mischia
+      proprieta:
+      - argento
+    - nome: Torcia accesa
+      danno: 1d4
+      abilita: mischia
+      tipo_danno: fuoco
+- id: pg_dario
+  nome: Dario
+  pronomi: lui
+  specie: umano
+  classe: ladro
+  livello: 1
+  aspetto: Un ragazzo magro con un arco corto e un cappuccio verde.
+  concetto: Arciere di bosco, che tira da lontano.
+  aggancio: I predoni gli devono dei soldi.
+  cosa_sai_fare:
+  - tiri con l'arco
+  - ti nascondi tra le radici
+  scheda:
+    caratteristiche:
+      forza: 10
+      destrezza: 16
+      costituzione: 11
+      intelligenza: 12
+      saggezza: 10
+    classe: ladro
+    livello: 1
+    pf: 8
+    difesa: 13
+    attacchi:
+    - nome: Arco corto
+      danno: 1d6
+      abilita: distanza
+      distanza: true
+    - nome: Coltello
+      danno: 1d4
+      abilita: mischia
+- id: pg_selva
+  nome: Selva
+  pronomi: lei
+  specie: umana
+  classe: chierica
+  livello: 1
+  aspetto: Una donna anziana con un bastone nodoso e un simbolo di legno.
+  concetto: Guaritrice del villaggio, che fascia le ferite.
+  aggancio: Il villaggio l'ha mandata a riprendere il bottino.
+  cosa_sai_fare:
+  - fasci le ferite
+  - colpisci col bastone
+  scheda:
+    caratteristiche:
+      forza: 11
+      destrezza: 10
+      costituzione: 12
+      intelligenza: 10
+      saggezza: 15
+    classe: chierico
+    livello: 1
+    pf: 12
+    difesa: 14
+    attacchi:
+    - nome: Bastone
+      danno: 1d6
+      abilita: mischia
+    - nome: Fiala di gelo
+      danno: 1d6
+      abilita: distanza
+      distanza: true
+      tipo_danno: freddo

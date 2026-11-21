@@ -1,0 +1,27 @@
+id: png_formica
+nome: Zampa Rossa
+pronuncia: Zampa Rossa
+alias: [formica]
+livello: supporto
+ruolo: una creatura della tana
+aspetto:
+  lettura: Zampa Rossa, una creatura della tana.
+  invarianti: [formica]
+personalita:
+  superficie: [muto]
+  sotto_pressione: [attacca]
+  contraddizione: Sembra immobile ma attacca.
+desiderio: Difendere la tana.
+voce:
+  tts: {voce_id: dario}
+  registro: tu
+  stile: Non parla.
+  battuta_campione: …
+sa: [f_tana]
+non_sa: [f_predoni]
+atteggiamento_pg:
+  pg_bruna: {stato: ostile, perche: intrusa, vuole: niente}
+  pg_dario: {stato: ostile, perche: intruso, vuole: niente}
+  pg_selva: {stato: ostile, perche: intrusa, vuole: niente}
+scheda:
+  mostro: formicone

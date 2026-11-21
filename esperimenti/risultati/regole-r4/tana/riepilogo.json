@@ -1,0 +1,546 @@
+{
+  "copione": "tana",
+  "campagna": "tana",
+  "modo": "improvvisa",
+  "porta": 5013,
+  "narratore_finto": true,
+  "sessione": "2026-11-21T13:29:33.649Z",
+  "nota_ambiente": null,
+  "codice": {
+    "commit": "c5387038d9bcadcf89ce2e71dba6d107507670c5",
+    "modificati": [
+      "M apps/server/src/prove/testi.ts",
+      "M apps/server/test/fixtures/campagne/tana/regole/mostri.yaml",
+      "M apps/server/test/manuale-basic-fantasy.test.ts",
+      "M apps/server/test/mostri-speciali.test.ts"
+    ],
+    "radice": "/Users/riccardo/Developer/cantastorie"
+  },
+  "turni": 9,
+  "turni_copione": 9,
+  "cambi_di_scena": [],
+  "fine_prima_del_copione": null,
+  "tiri_al_tavolo": {
+    "modo": "manuale",
+    "tiri": [
+      {
+        "pg": "pg_bruna",
+        "id": "r_a1",
+        "etichetta": "Spada",
+        "dadi": "1d20",
+        "valori": [
+          18
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_bruna",
+        "id": "r_a1_danno",
+        "etichetta": "Danni: Spada",
+        "dadi": "1d8",
+        "valori": [
+          8
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_bruna",
+        "id": "r_t1_iniziativa_pg_bruna_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          4
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_dario",
+        "id": "r_t1_iniziativa_pg_dario_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          5
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_selva",
+        "id": "r_t1_iniziativa_pg_selva_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          2
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_dario",
+        "id": "r_a2",
+        "etichetta": "Arco corto",
+        "dadi": "1d20",
+        "valori": [
+          19
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_dario",
+        "id": "r_a2_danno",
+        "etichetta": "Danni: Arco corto",
+        "dadi": "1d6",
+        "valori": [
+          1
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_bruna",
+        "id": "r_a3",
+        "etichetta": "Spada",
+        "dadi": "1d20",
+        "valori": [
+          8
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_bruna",
+        "id": "r_t3_salvezza_pg_bruna_0",
+        "etichetta": "Artiglio paralizzante",
+        "dadi": "1d20",
+        "valori": [
+          18
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_selva",
+        "id": "r_a4",
+        "etichetta": "Bastone",
+        "dadi": "1d20",
+        "valori": [
+          10
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_bruna",
+        "id": "r_t4_iniziativa_pg_bruna_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          5
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_dario",
+        "id": "r_t4_iniziativa_pg_dario_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          6
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_selva",
+        "id": "r_t4_iniziativa_pg_selva_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          6
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_dario",
+        "id": "r_a5",
+        "etichetta": "Arco corto",
+        "dadi": "1d20",
+        "valori": [
+          13
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_dario",
+        "id": "r_a5_danno",
+        "etichetta": "Danni: Arco corto",
+        "dadi": "1d6",
+        "valori": [
+          2
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_selva",
+        "id": "r_a6",
+        "etichetta": "Bastone",
+        "dadi": "1d20",
+        "valori": [
+          5
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_bruna",
+        "id": "r_a7",
+        "etichetta": "Spada",
+        "dadi": "1d20",
+        "valori": [
+          4
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_bruna",
+        "id": "r_t7_salvezza_pg_bruna_0",
+        "etichetta": "Artiglio paralizzante",
+        "dadi": "1d20",
+        "valori": [
+          6
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_bruna",
+        "id": "r_t7_iniziativa_pg_bruna_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          1
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_dario",
+        "id": "r_t7_iniziativa_pg_dario_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          6
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_selva",
+        "id": "r_t7_iniziativa_pg_selva_0",
+        "etichetta": "Iniziativa",
+        "dadi": "1d6",
+        "valori": [
+          2
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_dario",
+        "id": "r_a8",
+        "etichetta": "Arco corto",
+        "dadi": "1d20",
+        "valori": [
+          15
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_dario",
+        "id": "r_a8_danno",
+        "etichetta": "Danni: Arco corto",
+        "dadi": "1d6",
+        "valori": [
+          6
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_dario",
+        "id": "r_t8_salvezza_pg_dario_0",
+        "etichetta": "Artiglio paralizzante",
+        "dadi": "1d20",
+        "valori": [
+          15
+        ],
+        "ok": true
+      },
+      {
+        "pg": "pg_dario",
+        "id": "r_t9_morte_pg_dario_0",
+        "etichetta": "Tiro salvezza contro la morte",
+        "dadi": "1d20",
+        "valori": [
+          7
+        ],
+        "ok": true
+      }
+    ]
+  },
+  "combattimento_copione": {
+    "in_attesa_del_turno": 1,
+    "passate": 0
+  },
+  "finale": null,
+  "orologi": {
+    "per_turno": [
+      {
+        "turno": 1,
+        "stato": {
+          "o_predoni": "0/4"
+        }
+      },
+      {
+        "turno": 2,
+        "stato": {
+          "o_predoni": "0/4"
+        }
+      },
+      {
+        "turno": 3,
+        "stato": {
+          "o_predoni": "0/4"
+        }
+      },
+      {
+        "turno": 4,
+        "stato": {
+          "o_predoni": "0/4"
+        }
+      },
+      {
+        "turno": 5,
+        "stato": {
+          "o_predoni": "0/4"
+        }
+      },
+      {
+        "turno": 6,
+        "stato": {
+          "o_predoni": "0/4"
+        }
+      },
+      {
+        "turno": 7,
+        "stato": {
+          "o_predoni": "0/4"
+        }
+      },
+      {
+        "turno": 8,
+        "stato": {
+          "o_predoni": "0/4"
+        }
+      },
+      {
+        "turno": 9,
+        "stato": {
+          "o_predoni": "0/4"
+        }
+      }
+    ],
+    "massimo": {
+      "o_predoni": "0/4"
+    },
+    "completo_al_turno": {}
+  },
+  "azioni_private_copione": 0,
+  "voce": "mock",
+  "latenze": {
+    "finestra_ms": {
+      "mediana": 17,
+      "peggiore": 30,
+      "n": 9
+    },
+    "voce_sveglia": {
+      "mediana": null,
+      "peggiore": null,
+      "n": 0
+    },
+    "llm_primo_token": {
+      "mediana": 512,
+      "peggiore": 535,
+      "n": 9
+    },
+    "llm_prima_frase": {
+      "mediana": 1400,
+      "peggiore": 1415,
+      "n": 9
+    },
+    "voce_richiesta": {
+      "mediana": 1570,
+      "peggiore": 1973,
+      "n": 9
+    },
+    "voce_primo_audio": {
+      "mediana": 1972,
+      "peggiore": 2398,
+      "n": 9
+    },
+    "schermo_inizio_audio": {
+      "mediana": 398,
+      "peggiore": 402,
+      "n": 2
+    },
+    "llm_fine": {
+      "mediana": 1533,
+      "peggiore": 1563,
+      "n": 9
+    },
+    "audio_fine": {
+      "mediana": 8817,
+      "peggiore": 24020,
+      "n": 9
+    }
+  },
+  "buchi": {
+    "totale": 39,
+    "in_frase": 0,
+    "tra_frasi": 39,
+    "silenzio_ms": 12333,
+    "per_turno": [
+      8,
+      4,
+      3,
+      4,
+      3,
+      1,
+      6,
+      6,
+      4
+    ]
+  },
+  "righe_prescritte": 0,
+  "righe_improvvisate": 11,
+  "quota_prescritte": 0,
+  "usa_rifiutati": 0,
+  "azioni_pubbliche": 9,
+  "azioni_senza_risposta": 9,
+  "riparazioni": 0,
+  "conferme_motore": 0,
+  "righe_segrete_fermate": 0,
+  "pg_dedotti": 0,
+  "battute_indicate": 0,
+  "battute_indicate_usate": 0,
+  "righe_png_assenti": 16,
+  "usa_rifiutati_per_motivo": {},
+  "rivelazioni_fuori_contesto": {
+    "totale": 0,
+    "elenco": []
+  },
+  "serata": {
+    "ore": null,
+    "consiglio_ai_turni": [],
+    "chiusura": null
+  },
+  "fughe": {
+    "nota": "Modo A: non ci sono id di battuta e gli indizi non sono tracciati, quindi conta solo «un giocatore l’ha scritta prima». È un conteggio GREZZO: le rivelazioni legittime (il PG spezza il pane e vede i chicchi) qui risultano fughe; vanno giudicate a mano.",
+    "improvvisate": 0,
+    "prescritte": 0,
+    "elenco": []
+  },
+  "battute_usate": 0,
+  "battute_mai_usate": [],
+  "costo_totale_usd": 0,
+  "costo_mediana_turno_usd": 0,
+  "proiettore_virtuale": [
+    {
+      "turno": 0,
+      "frasi": 4,
+      "pezzi": 57,
+      "secondi": 11.199999999999994,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 174
+    },
+    {
+      "turno": 1,
+      "frasi": 11,
+      "pezzi": 114,
+      "secondi": 21.933333333333287,
+      "buchi": 8,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 8,
+      "silenzio_ms": 2537
+    },
+    {
+      "turno": 2,
+      "frasi": 5,
+      "pezzi": 40,
+      "secondi": 7.600000000000004,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 1238
+    },
+    {
+      "turno": 3,
+      "frasi": 4,
+      "pezzi": 35,
+      "secondi": 6.600000000000004,
+      "buchi": 3,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 3,
+      "silenzio_ms": 896
+    },
+    {
+      "turno": 4,
+      "frasi": 6,
+      "pezzi": 64,
+      "secondi": 12.266666666666655,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 1303
+    },
+    {
+      "turno": 5,
+      "frasi": 4,
+      "pezzi": 32,
+      "secondi": 6.066666666666669,
+      "buchi": 3,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 3,
+      "silenzio_ms": 910
+    },
+    {
+      "turno": 6,
+      "frasi": 2,
+      "pezzi": 15,
+      "secondi": 2.866666666666667,
+      "buchi": 1,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 1,
+      "silenzio_ms": 186
+    },
+    {
+      "turno": 7,
+      "frasi": 8,
+      "pezzi": 84,
+      "secondi": 15.999999999999977,
+      "buchi": 6,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 6,
+      "silenzio_ms": 2010
+    },
+    {
+      "turno": 8,
+      "frasi": 7,
+      "pezzi": 54,
+      "secondi": 10.33333333333333,
+      "buchi": 6,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 6,
+      "silenzio_ms": 1890
+    },
+    {
+      "turno": 9,
+      "frasi": 5,
+      "pezzi": 32,
+      "secondi": 6.06666666666667,
+      "buchi": 4,
+      "buchi_in_frase": 0,
+      "buchi_tra_frasi": 4,
+      "silenzio_ms": 1363
+    }
+  ]
+}

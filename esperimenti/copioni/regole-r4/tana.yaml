@@ -1,0 +1,22 @@
+# Live check of the rules-engine work R4 (monsters and combat, docs/combattimento.md, docs/regole.md «Bestiario»), run 1 of
+# 3, on a copy of the invented fixture apps/server/test/fixtures/campagne/tana (esperimenti/risultati/regole-r4/rifai.sh):
+# the den, a beast of three attacks a round with a paralysing claw and three raiders of morale 7; the PCs open the
+# fight (the raiders' side rolls surprise), morale at the first opposition and at half strength; a PC at 0 when the
+# Game Master ends the fight.
+#   TAGM_PORTA=5013 TAGM_SEME_DADI=<hex> npx tsx apps/server/src/esperimenti/esegui.ts esperimenti/copioni/regole-r4/tana.yaml \
+#     A --cartella esperimenti/risultati/regole-r4/campagna/tana --finto --tiri manuale --seme-giocatori <hex> --uscita regole-r4/tana
+scena: scena_tana
+pg: [pg_bruna, pg_dario, pg_selva]
+turni:
+  - - {pg: pg_bruna, azione: "Colpisco un predone con la spada"}
+  - - {pg: pg_dario, azione: "Tiro con l'arco al predone che combatte con Bruna"}
+  - - {pg: pg_selva, azione: "Colpisco un predone col bastone"}
+  - - {pg: pg_bruna, azione: "Colpisco il predone con la spada"}
+  - - {pg: pg_dario, azione: "Tiro con l'arco al predone che combatte con Bruna"}
+  - - {pg: pg_selva, azione: "Colpisco il predone col bastone"}
+  - - {pg: pg_bruna, azione: "Colpisco il predone con la spada"}
+  - - {pg: pg_dario, azione: "Tiro con l'arco al predone che combatte con Selva"}
+  # Dario fell to 0 in the beast's step of turn 8, before his death save (it comes at his next step): the Game Master
+  # ends the fight from the panel now, and the save he still owes is rolled at this closed window.
+  - - {master: {tipo: combattimento_termina}}
+    - {pg: pg_selva, azione: "Mi chino su Dario per sentire se respira"}

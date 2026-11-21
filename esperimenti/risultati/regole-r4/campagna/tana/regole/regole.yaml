@@ -1,0 +1,193 @@
+# Invented rule set of the R4 fixture (docs/regole.md §2): an old-school d20 game written for the tests, with the pieces
+# of the rules-engine work R4 — a bestiary (stat blocks as data, the attack bonus by hit dice, hit points rolled per
+# creature, several attacks a round), monster specials as powers, morale, situational modifiers, surprise, subdual.
+# The numbers and the creatures are invented: a test against a manual uses that manual's set.
+id: tana-prova
+nome: Vecchia scuola con i mostri (set di prova)
+fonte:
+  titolo: Set di prova di Tabletop AI Game Master, scritto per i test
+  autore: Tabletop AI Game Master
+licenza:
+  nome: CC0
+  libera: true
+risoluzione:
+  tipo: d20_cd
+  dado: 20
+  critico: 20
+  disastro: 1
+  critici: attacchi_e_salvezze
+caratteristiche:
+  - {id: forza, nome: Forza}
+  - {id: destrezza, nome: Destrezza}
+  - {id: costituzione, nome: Costituzione}
+  - {id: intelligenza, nome: Intelligenza}
+  - {id: saggezza, nome: Saggezza}
+modificatore:
+  tipo: tabella
+  tabella:
+    - {da: 3, mod: -2}
+    - {da: 7, mod: -1}
+    - {da: 9, mod: 0}
+    - {da: 13, mod: 1}
+    - {da: 17, mod: 2}
+abilita:
+  - {id: mischia, nome: Attacco in mischia, caratteristica: forza}
+  - {id: distanza, nome: Attacco a distanza, caratteristica: destrezza}
+  - {id: ts_veleno, nome: Salvezza contro il veleno, caratteristica: costituzione, salvezza: morte}
+  - {id: ts_paralisi, nome: Salvezza contro la paralisi, caratteristica: null, salvezza: paralisi}
+  - {id: ts_soffio, nome: Salvezza contro il soffio, caratteristica: null, salvezza: soffio}
+  - {id: ts_magia, nome: Salvezza contro la magia, caratteristica: null, salvezza: magia}
+difficolta:
+  - {id: facile, nome: Facile, valore: 11}
+  - {id: normale, nome: Normale, valore: 15}
+  - {id: difficile, nome: Difficile, valore: 18}
+difficolta_predefinita: normale
+vantaggio:
+  tipo: bonus
+  valore: 2
+attacchi:
+  tipo: prova
+  danno_critico: normale
+  danno_minimo: 1
+danni:
+  nome: Punti ferita
+  a_zero: a zero si rischia la morte
+sociale:
+  caratteristica: saggezza
+  nota: Si tira Saggezza contro la diffidenza del PNG.
+
+tiri_salvezza:
+  colonne:
+    - {id: morte, nome: Morte o veleno}
+    - {id: paralisi, nome: Paralisi o pietra}
+    - {id: soffio, nome: Soffio}
+    - {id: magia, nome: Magia}
+progressione:
+  attacco: [mischia, distanza]
+  punti_ferita: {caratteristica: costituzione, minimo: 1}
+classi:
+  - id: guerriero
+    nome: Guerriero
+    attacco: [{da: 0, bonus: 0}, {da: 1, bonus: 1}, {da: 3, bonus: 2}]
+    tiri_salvezza: [{da: 0, valori: [14, 15, 16, 17]}, {da: 1, valori: [12, 13, 14, 16]}, {da: 3, valori: [11, 12, 13, 15]}]
+  - id: chierico
+    nome: Chierico
+    attacco: [{da: 1, bonus: 1}]
+    tiri_salvezza: [{da: 1, valori: [11, 13, 15, 14]}]
+  - id: ladro
+    nome: Ladro
+    attacco: [{da: 1, bonus: 1}]
+    tiri_salvezza: [{da: 1, valori: [13, 13, 15, 15]}]
+
+# The bestiary's rules (regole/bestiario.ts): a d8 hit die, ½ hit dice = 1d4, the attack bonus by hit dice.
+bestiario:
+  dado_vita: 8
+  mezzo: "1d4"
+  attacco: [{da: 0, bonus: 0}, {da: 1, bonus: 1}, {da: 2, bonus: 2}, {da: 3, bonus: 3}, {da: 5, bonus: 4}]
+  abilita: [mischia, distanza]
+  uno_meno_meno_di_uno: true
+esperienza:
+  per_dadi_vita:
+    - {da: 0, px: 5, speciale: 1}
+    - {da: 1, px: 20, speciale: 5}
+    - {da: 2, px: 40, speciale: 10}
+    - {da: 3, px: 80, speciale: 15}
+    - {da: 4, px: 120, speciale: 20}
+
+# Situational attack modifiers by the words of a PC's action (regole/modificatori.ts).
+modificatori:
+  - {id: da_dietro, nome: Da dietro, bonus: 2, parole: [alle spalle, da dietro]}
+  - {id: nemico_addosso, nome: Nemico addosso, bonus: -5, attacchi: distanza, parole: [a bruciapelo, mi sta addosso]}
+
+tempo:
+  unita:
+    - {id: round, nome: Round, plurale: round, secondi: 10}
+    - {id: turno, nome: Turno, plurale: turni, secondi: 600}
+    - {id: ora, nome: Ora, plurale: ore, secondi: 3600}
+  round: round
+  per_finestra: {turno: 1}
+riposo:
+  - {id: notte, nome: Una notte di sonno, cura: 1, durata: {ora: 8}}
+
+# Energy drain (prove/drenaggio.ts): each negative level −1 to every d20 roll and −5 to d100 thresholds, besides a hit
+# die of maximum hit points and the highest-level spell slot.
+livelli_negativi: {d20: -1, percentuali: -5}
+
+# Monster specials (tipo mostro, regole/poteri.ts): applied by a hit (`colpendo`) or used as an action (`potere`).
+poteri:
+  - id: risucchio
+    nome: Risucchio di vita
+    tipo: mostro
+    effetti: [{tipo: drenaggio, livelli: 1}]
+  - id: paralisi_artiglio
+    nome: Artiglio paralizzante
+    tipo: mostro
+    salvezza: {abilita: ts_paralisi, esito: annulla}
+    effetti: [{tipo: condizione, condizione: paralizzato, durata: {turno: "1d4"}}]
+  - id: veleno_serpe
+    nome: Veleno della serpe
+    tipo: mostro
+    salvezza: {abilita: ts_veleno, esito: annulla}
+    effetti: [{tipo: morte}]
+  - id: soffio_brina
+    nome: Soffio di brina
+    tipo: mostro
+    bersaglio: nemici
+    salvezza: {abilita: ts_soffio, esito: dimezza}
+    effetti: [{tipo: danno, dadi: "1d8", dadi_per_livello: {}, tipo_danno: freddo}]
+  - id: sguardo_pietra
+    nome: Sguardo di pietra
+    tipo: mostro
+    salvezza: {abilita: ts_paralisi, esito: annulla}
+    effetti: [{tipo: condizione, condizione: pietrificato, durata: permanente}]
+
+# Inline entries (the rest of the bestiary is in regole/mostri.yaml).
+mostri:
+  - id: artigliatore
+    nome: Artigliatore
+    manuale: "Clawbeast"
+    pagina: 1
+    difesa: 14
+    dadi_vita: "2*"
+    attacchi:
+      - {id: artiglio, nome: Artiglio, danno: "1d3", colpendo: [paralisi_artiglio]}
+      - {id: morso, nome: Morso, danno: "1d4"}
+    per_round: [[artiglio, artiglio, morso]]
+    movimento: "9 m"
+    numero: "1"
+    salva_come: {classe: guerriero, livello: 2}
+    morale: 9
+    px: 50
+    testo: Tre attacchi a round.
+
+combattimento:
+  iniziativa: {tipo: individuale, dado: 6, caratteristica: destrezza, ogni_round: true, pari: simultanei}
+  fasi:
+    - {id: turno, nome: Turno, png: attacco}
+  azioni:
+    - {id: attacco, nome: Attacco, quante: "uno, oppure un incantesimo"}
+  danni:
+    modello: pf
+    a_zero: {pg: tiri_morte, png: morte}
+    tiri_morte: {cd: 10, successi: 1, fallimenti: 1, venti_rialza: false, uno_doppio: false, abilita: ts_veleno, finestra: "2d10"}
+  condizioni:
+    - {id: sorpreso, nome: Sorpreso, icona: SO, effetti: [perde_turno, non_si_muove], testo: Perde il primo round.}
+    - {id: svenuto, nome: Svenuto, icona: SV, effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio], testo: A terra senza sensi.}
+    - {id: paralizzato, nome: Paralizzato, icona: PA, effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio, fuori_combattimento], testo: Immobile.}
+    - {id: pietrificato, nome: Pietrificato, icona: PI, effetti: [perde_turno, non_si_muove, fuori_combattimento], testo: Di pietra.}
+    - {id: arreso, nome: Arreso, icona: AR, effetti: [perde_turno, fuori_combattimento], testo: Si è arreso.}
+    # Conditions with numbers (docs/combattimento.md §2): to hit, to be hit, initiative, the surprise range; a blind
+    # attacker against an invisible target is −4 once (group «vista»).
+    - {id: accecato, nome: Accecato, icona: AC, valori: {attacchi: -4, contro: 4, iniziativa: -2, sorpresa: 4}, gruppo: vista, testo: Non vede.}
+    - {id: invisibile, nome: Invisibile, icona: IN, valori: {contro: -4}, gruppo: vista, testo: Non si vede.}
+    - {id: al_riparo, nome: Al riparo, icona: RI, valori: {contro: -4}, testo: Dietro un riparo solido.}
+  condizione_a_zero: svenuto
+  sorpresa: {dado: 6, fino_a: 2, condizione: sorpreso}
+  # A missile that misses an NPC engaged with other PCs may hit one of them (up to three, rolled by the Game Master).
+  nella_mischia: {alleati: 3}
+  # Subduing damage (non-lethal): an attack whose words say so is at −4 for half damage that knocks out; bare hands
+  # 1d3, always subduing; a knocked-out creature wakes with 1 HP after 1d4 turns.
+  non_letale: {parole: [col piatto, tramortirlo, tramortirla, senza ucciderlo], attacco: -4, danno: meta, a_mani_nude: {danno: "1d3", parole: [pugno, pugni, a mani nude]}, sveglia: {turno: "1d4"}}
+  # Morale as Basic Fantasy times it (p. 57): at the first opposition and at half strength; a broken NPC with
+  # `si_arrende` surrenders (out of the fight for the scene).
+  fine: {morale: {quando: [prima_opposizione, meta], resa: {condizione: arreso}}}

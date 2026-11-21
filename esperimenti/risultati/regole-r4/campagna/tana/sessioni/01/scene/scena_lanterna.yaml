@@ -1,0 +1,26 @@
+id: scena_lanterna
+nodo: n_tana
+nome: La stanza della lanterna
+descrizione: Una stanza rotonda in fondo al passaggio, con una lanterna spenta appesa al soffitto. Sotto la lanterna
+  galleggia una figura grigia che manda freddo.
+domanda_drammatica: Il gruppo scaccerà lo spettro della lanterna?
+intensita: 3
+sensi:
+- Odore di terra e di fumo.
+- Il crepitio del fuoco.
+- Il respiro pesante della bestia.
+elementi_interattivi:
+- cosa: il passaggio in fondo
+  dove: dietro il fuoco
+  azioni: si scende
+png_presenti:
+- png_spettro
+gregari: []
+orologi_attivi:
+- o_predoni
+indizi: []
+mossa_morbida_pronta: La lanterna oscilla e il freddo aumenta.
+apertura: La figura grigia si volta verso di voi e la lanterna oscilla. Che fate?
+musica:
+  tag: tensione
+taglio: Si chiude quando lo spettro è sparito.

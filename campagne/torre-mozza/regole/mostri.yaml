@@ -1941,7 +1941,7 @@ mostri:
     tesoro: "E, N, O"
     px: 1390
     tipo: [non_morto, fantasma]
-    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    immune: [sonno, charme, blocca_persone, addormentato, affascinato, paralizzato]
     testo: "Tocco: 1d8 danni, il fantasma recupera altrettanti PF e la vittima perde 1 Costituzione (salvezza vs. Raggio della morte per elfi e nani). Vista: salvezza vs. Incantesimi o fuga per 2d6 round. Possessione: salvezza vs. Incantesimi, altrimenti controlla il corpo. Telecinesi una volta a turno."
   - id: ghoul
     nome: "Ghoul"
@@ -1960,7 +1960,7 @@ mostri:
     tesoro: "B"
     px: 100
     tipo: [non_morto, ghoul]
-    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    immune: [sonno, charme, blocca_persone, addormentato, affascinato, paralizzato]
     sorprende: 3
     testo: "Paralisi per 2d8 turni con morso o artiglio (salvezza vs. Paralisi; gli elfi sono immuni). Sorprende con 1-3 su 1d6. Chi muore per la febbre di ghoul risorge come ghoul."
   - id: ghast
@@ -1980,7 +1980,7 @@ mostri:
     tesoro: "B"
     px: 125
     tipo: [non_morto, ghoul]
-    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    immune: [sonno, charme, blocca_persone, addormentato, affascinato, paralizzato]
     testo: "Paralisi per 2d8 turni con morso o artiglio (salvezza vs. Paralisi; gli elfi sono immuni). Fetore: entro 10' salvezza vs. Veleno o nausea per 2d6 round (-2 ai tiri per colpire)."
   - id: gigante_nuvole
     nome: "Gigante delle nuvole"
@@ -2215,7 +2215,7 @@ mostri:
     morale: 12
     tesoro: "None"
     px: 1390
-    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    immune: [sonno, charme, blocca_persone, addormentato, affascinato, paralizzato]
     testo: "Rileva gli invisibili entro 60' e segue tracce con il 95% di precisione. Danni elettrici: cura 1 PF ogni 3 danni che avrebbe inflitto."
   - id: golem_osso
     nome: "Golem d'osso"
@@ -2233,7 +2233,7 @@ mostri:
     morale: 12
     tesoro: "None"
     px: 945
-    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    immune: [sonno, charme, blocca_persone, addormentato, affascinato, paralizzato]
     testo: "Non è non morto e non può essere scacciato. Con due armi a due mani fa 2 attacchi a round, 1d10 o arma ciascuno."
   - id: golem_bronzo
     nome: "Golem di bronzo"
@@ -2254,7 +2254,7 @@ mostri:
     morale: 12
     tesoro: "None"
     px: 5650
-    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    immune: [sonno, charme, blocca_persone, addormentato, affascinato, paralizzato]
     testo: "Calore: +1d10 danni a chi colpisce. Se viene colpito, metallo fuso spruzza l'attaccante per 2d6 (salvezza vs. Raggio della morte evita lo spruzzo)."
   - id: golem_argilla
     nome: "Golem d'argilla"
@@ -2273,7 +2273,7 @@ mostri:
     morale: 12
     tesoro: "None"
     px: 1765
-    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    immune: [sonno, charme, blocca_persone, addormentato, affascinato, paralizzato]
     testo: "Le ferite non guariscono normalmente: la magia cura solo 1 PF per dado (i bonus si sommano). Una cura leggera cura 2 PF."
   - id: golem_carne
     nome: "Golem di carne"
@@ -2292,7 +2292,7 @@ mostri:
     morale: 12
     tesoro: "None"
     px: 1225
-    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    immune: [sonno, charme, blocca_persone, addormentato, affascinato, paralizzato]
     testo: "Freddo o fuoco lo rallentano per 2d6 round, senza tiro salvezza. Fulmine o elettricità curano 1 PF ogni 3 danni e spezzano il rallentamento."
   - id: golem_ferro
     nome: "Golem di ferro"
@@ -2312,7 +2312,7 @@ mostri:
     morale: 12
     tesoro: "None"
     px: 3890
-    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    immune: [sonno, charme, blocca_persone, addormentato, affascinato, paralizzato]
     testo: "Il gas velenoso riempie un cubo di 10' per 1 round: chi è nell'area deve salvare vs. Soffio di drago o morire (fino a 3 volte al giorno). Fulmine o elettricità lo rallentano per 1d6 round; il fuoco cura 1 PF ogni 3 danni. Ruggine: 2d6 danni per colpo."
   - id: golem_pietra
     nome: "Golem di pietra"
@@ -2332,7 +2332,7 @@ mostri:
     morale: 12
     tesoro: "None"
     px: 2730
-    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    immune: [sonno, charme, blocca_persone, addormentato, affascinato, paralizzato]
     testo: "Ogni due round rallenta per 2d6 round (raggio 10'; salvezza vs. Incantesimi). Pietra in carne: per un round è vulnerabile alle armi normali (salvezza vs. Incantesimi)."
   - id: golem_di_legno
     nome: "Golem di legno"
@@ -2350,7 +2350,7 @@ mostri:
     morale: 12
     tesoro: "None"
     px: 100
-    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    immune: [sonno, charme, blocca_persone, addormentato, affascinato, paralizzato]
     testo: "Subisce 1 danno extra per dado dal fuoco; -2 ai tiri salvezza contro effetti di fuoco. Penalità -1 all'Iniziativa."
   - id: gorgone
     nome: "Gorgone"
@@ -3413,7 +3413,7 @@ mostri:
     manuale: "Mummy"
     pagina: 130
     tipo: [non_morto, mummia]
-    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    immune: [sonno, charme, blocca_persone, addormentato, affascinato, paralizzato]
     difesa: 17
     colpito_solo_da: [magica]
     dadi_vita: "5**"
@@ -3980,7 +3980,7 @@ mostri:
     nome: "Ombra"
     manuale: "Shadow"
     pagina: 142
-    immune: [sonno, charme_persone]
+    immune: [sonno, charme]
     difesa: 13
     colpito_solo_da: [magica]
     dadi_vita: "2*"
@@ -4096,7 +4096,7 @@ mostri:
     nome: "Scheletro"
     manuale: "Skeleton"
     pagina: 145
-    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    immune: [sonno, charme, blocca_persone, addormentato, affascinato, paralizzato]
     tipo: [non_morto, scheletro]
     difesa: 13
     dadi_vita: "1"
@@ -4201,7 +4201,7 @@ mostri:
     nome: "Spettro"
     manuale: "Spectre"
     pagina: 147
-    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    immune: [sonno, charme, blocca_persone, addormentato, affascinato, paralizzato]
     tipo: [non_morto, spettro]
     difesa: 17
     colpito_solo_da: [magica]
@@ -4614,7 +4614,7 @@ mostri:
     nome: "Vampiro"
     manuale: "Vampire"
     pagina: 155
-    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    immune: [sonno, charme, blocca_persone, addormentato, affascinato, paralizzato]
     tipo: [non_morto, vampiro]
     difesa: 18
     colpito_solo_da: [magica]
@@ -4741,7 +4741,7 @@ mostri:
     nome: "Wight"
     manuale: "Wight"
     pagina: 158
-    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    immune: [sonno, charme, blocca_persone, addormentato, affascinato, paralizzato]
     tipo: [non_morto, wight]
     difesa: 15
     colpito_solo_da: [argento, magica]
@@ -4792,7 +4792,7 @@ mostri:
     nome: "Ombra spettrale"
     manuale: "Wraith"
     pagina: 159
-    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    immune: [sonno, charme, blocca_persone, addormentato, affascinato, paralizzato]
     tipo: [non_morto, wraith]
     difesa: 15
     colpito_solo_da: [magica]
@@ -4844,7 +4844,7 @@ mostri:
     nome: "Zombi"
     manuale: "Zombie"
     pagina: 161
-    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    immune: [sonno, charme, blocca_persone, addormentato, affascinato, paralizzato]
     tipo: [non_morto, zombi]
     difesa: 12
     dadi_vita: "2"
@@ -4863,7 +4863,7 @@ mostri:
     nome: "Zombraire"
     manuale: "Zombraire (and Skeletaire) | Zombraire"
     pagina: 162
-    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    immune: [sonno, charme, blocca_persone, addormentato, affascinato, paralizzato]
     tipo: [non_morto]
     difesa: 12
     dadi_vita: "2*"
@@ -4883,7 +4883,7 @@ mostri:
     nome: "Scheletraire"
     manuale: "Zombraire (and Skeletaire) | Skeletaire"
     pagina: 162
-    immune: [sonno, charme_persone, blocca_persone, addormentato, affascinato, paralizzato]
+    immune: [sonno, charme, blocca_persone, addormentato, affascinato, paralizzato]
     tipo: [non_morto]
     difesa: 13
     dadi_vita: "1*"

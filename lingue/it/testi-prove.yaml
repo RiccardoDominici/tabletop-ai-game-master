@@ -13,6 +13,7 @@ prove:
   # Come sta un personaggio dopo un colpo (dei PNG il narratore sente solo le parole, mai i numeri).
   salute:
     a_terra: "è A TERRA (0 punti ferita): fuori combattimento"
+    illeso: "non ha ferite"
     regge: "è ferito ma regge"
     grave: "è ferito gravemente"
     pg_a_terra: "è A TERRA (0 punti ferita): privo di sensi"
@@ -138,7 +139,7 @@ prove:
   # Monsters (regole/bestiario.ts, R4): a special in the monster's step, a weapon that cannot hurt, a resistance.
   mostri:
     usa: "{nome} usa {potere}."
-    non_ferisce: "{arma} colpisce {nome} ma non lo ferisce: lo feriscono solo armi {solo}. "
+    non_ferisce: "{arma} colpisce {nome} ma non lo ferisce: lo ferisce solo un'arma con una di queste proprietà: {solo}. "
     o: " o "
     resiste_meta: "{nome} resiste al danno da {tipo}: la metà. "
     resiste_immune: "{nome} è immune al danno da {tipo}. "

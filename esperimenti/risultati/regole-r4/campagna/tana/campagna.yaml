@@ -1,0 +1,30 @@
+# Invented fixture for the rules-engine work R4 (docs/regole.md §2, «Bestiario»; docs/combattimento.md): a den under a
+# hill where a clawed beast, a band of raiders and other creatures of an invented bestiary wait. Generic: no campaign's
+# content, no manual's monsters (the names and numbers are made up for the tests).
+id: tana
+canone:
+- id: f_tana
+  noto_ai_pg: true
+  testo: Sotto la collina c'è una tana scavata nella terra, con un passaggio verso il basso.
+- id: f_predoni
+  noto_ai_pg: false
+  testo: Nella tana si nascondono tre predoni con la loro bestia.
+orologi:
+- id: o_predoni
+  nome: I predoni scappano col bottino
+  segmenti: 4
+  segno_almeno_ogni: 3
+  pieni_all_inizio: 0
+  segni:
+  - Un sacco trascinato sulla terra.
+  - Voci che si allontanano.
+  - Passi nel passaggio in basso.
+  - Silenzio.
+  al_completo: I predoni sono spariti col bottino.
+# The raiders are minions of one bestiary entry (`mostro: predone`): numbers from the set, hit points rolled per raider.
+gregari:
+  - tipo: predone
+    nome: "predone"
+    parole: [predone, predoni, bandito, banditi]
+    scheda: {mostro: predone}
+# This copy is the R4 live check's campaign (esperimenti/risultati/regole-r4/rifai.sh).

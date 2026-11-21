@@ -10,6 +10,7 @@ prove:
     salvezza: "{caratteristica} saving throw"
   salute:
     a_terra: "is DOWN (0 hit points): out of the fight"
+    illeso: "is unhurt"
     regge: "is wounded but holding on"
     grave: "is badly wounded"
     pg_a_terra: "is DOWN (0 hit points): unconscious"
@@ -132,7 +133,7 @@ prove:
   # Monsters (regole/bestiario.ts, R4): a special in the monster's step, a weapon that cannot hurt, a resistance.
   mostri:
     usa: "{nome} uses {potere}."
-    non_ferisce: "{arma} hits {nome} but does not hurt it: only {solo} weapons hurt it. "
+    non_ferisce: "{arma} hits {nome} but does not hurt it: only a weapon with one of these properties hurts it: {solo}. "
     o: " or "
     resiste_meta: "{nome} resists {tipo} damage: half. "
     resiste_immune: "{nome} is immune to {tipo} damage. "

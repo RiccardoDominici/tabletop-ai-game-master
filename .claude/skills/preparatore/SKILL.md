@@ -144,7 +144,7 @@ the work of the Preparatore, and the form of the fields is in `riferimenti/schem
   consistent with the CR.
 - **Minions**: every creature the PCs may fight has stats. A nameless foe (sentries, wolves, thugs) gets a stat line
   by type in `campagna.yaml` → `gregari` (`tipo`, `nome`, `parole` the players may use, `scheda` as an NPC sheet of
-  the set) and the scene says how many: `gregari: [{tipo, quanti}]`. If a scene's text shows such creatures, write
+  the set, or `scheda: {mostro: <entry>}` with a bestiary) and the scene says how many: `gregari: [{tipo, quanti}]`. If a scene's text shows such creatures, write
   them there (the validator warns, `SCHEDA.nemici_senza_statistiche`); if it says there are none, do not write them.
 - **Scene**: for every obstacle or non-essential clue that the text describes, 2–4 `prove`, with DC 10 (easy),
   15 (medium) or 20 (hard). An essential clue never sits behind a roll. Each `quando` opens with what the PC does
@@ -312,6 +312,29 @@ here only the order.
      spada_corta, abilita: alle_spalle}`). Give each missile weapon its ammunition and a few light sources. Monsters keep
      their typed `difesa` and `attacchi`. With a clock, write the hour the story starts at in campagna.yaml
      (`tempo_all_inizio: {giorno: 1, ora: 17}`; a package's `sessione.yaml` for the sessions after the first).
+   - **Monsters as the manual's bestiary** (`docs/regole.md` §2, «Bestiario»; docs/combattimento.md): the bestiary's
+     rules in `bestiario` (`dado_vita`, `mezzo` for ½ hit die, the attack bonus by hit dice `attacco: [{da, bonus}]`,
+     the `abilita` it fills, `uno_meno_meno_di_uno` when «1−1» hit dice count as less than one), then every stat block
+     the campaign may meet as an entry of `regole/mostri.yaml` (or inline `mostri:`), numbers as printed with `manuale`
+     and `pagina`: `difesa`, `dadi_vita` as the manual writes them («3+1*», «1-1»), `attacchi` (one line per kind,
+     `danno`), `per_round` (the routine of a round, one list per alternative: `[[artiglio, artiglio, morso]]`),
+     `salva_come`, `morale` (a number, or `{prima, dopo}` when it changes once the monster is fighting), `px` as printed,
+     `tipo` (`non_morto`, `umanoide`, `animale`, the Turn Undead column) and a
+     short `testo`. The specials are data where a power can say them: a power `tipo: mostro` with the defender's save
+     (`salvezza: {abilita, esito: annulla | dimezza}`) and typed effects (`morte` for a deadly poison, a timed
+     `condizione` for paralysis or petrification, `drenaggio: {livelli}` with the set's `livelli_negativi`, breath
+     damage `dadi_per_livello` keyed to hit dice or `pari_ai_pf`), put on the line that delivers it (`colpendo:
+     [<power>]`) or as a line of its own (`potere`, `usi` a day, `ricarica` in rounds; `in_piu: true` for a gaze or a
+     song the manual does not count among the attacks; the alternative with it first in `per_round`). Defences:
+     `immune` (conditions and powers), `resistenze: {fuoco: immune | meta}`, `colpito_solo_da: [argento, magica]` (the
+     weapon's `proprieta` or the catalog's), `rigenera: {pf, tranne, a_zero}`, `sorprende: 4` (surprises on 1–4),
+     `si_arrende: true`. The fight's rules from the manual: `combattimento.fine.morale` (`quando`: `prima_opposizione`,
+     `meta`; `resa: {condizione}`), conditions with their numbers (`valori: {attacchi, contro, iniziativa, sorpresa}`,
+     `gruppo`), `sorpresa`, `nella_mischia: {alleati}` (a missile that misses into a melee), `non_letale` (subdual:
+     the words, the attack penalty, the damage, bare hands). Check the entries against the manual's PDF when you can
+     (`strumenti/regole/confronta_bestiario.py`, for Basic Fantasy). **An NPC or minion sheet names its entry**
+     (`scheda: {mostro: ghoul}`) and writes only what is its own (its `pf`, a weapon, a different `px`): the Engine
+     merges the entry under the sheet and rolls the hit points the sheet does not give.
    - **Keywords** (`parole_chiave`, the `parole` of scene checks and of excerpts with `per:`): specific words, not
      places, body parts or common objects («porta», «passaggio», «spalla»), which the validator refuses.
 3. Write `campagne/<id>/regole/`: `regole.yaml` (with `fonte.titolo`, `licenza` and the section `combattimento:`,

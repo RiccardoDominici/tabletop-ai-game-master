@@ -1,0 +1,15 @@
+# Live check of R4, run 3 of 3 (tana.yaml has the setup): the lantern room, a wraith that only silver or magic hurts.
+# Bruna's sword and Dario's arrows do nothing to it, her silver dagger does.
+#   TAGM_PORTA=5015 TAGM_SEME_DADI=<hex> npx tsx apps/server/src/esperimenti/esegui.ts esperimenti/copioni/regole-r4/lanterna.yaml \
+#     A --cartella esperimenti/risultati/regole-r4/campagna/tana --finto --tiri manuale --seme-giocatori <hex> --uscita regole-r4/lanterna
+scena: scena_lanterna
+pg: [pg_bruna, pg_dario, pg_selva]
+turni:
+  - - {pg: pg_bruna, azione: "Colpisco la Lanterna Spenta con la spada"}
+  - - {pg: pg_dario, azione: "Tiro con l'arco alla Lanterna Spenta"}
+  - - {pg: pg_bruna, azione: "Colpisco la Lanterna Spenta con la spada"}
+  - - {pg: pg_selva, azione: "Colpisco la Lanterna Spenta col bastone"}
+  - - {pg: pg_bruna, azione: "Colpisco la Lanterna Spenta col pugnale d'argento"}
+  - - {pg: pg_dario, azione: "Tiro con l'arco alla Lanterna Spenta"}
+  - - {pg: pg_bruna, azione: "Colpisco la Lanterna Spenta col pugnale d'argento"}
+  - - {pg: pg_bruna, azione: "Colpisco la Lanterna Spenta col pugnale d'argento"}
