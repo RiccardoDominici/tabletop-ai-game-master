@@ -42,7 +42,7 @@ test('panel: XP by level, treasure back to safety, an award; each phone sees onl
   if ((await salute(schermo)).fase !== 'attesa') await schermo.request.post('/api/scena/ricomincia');
   await schermo.goto('/schermo');
 
-  // Three phones (the PCs at the table share the party's XP): Tessa (nothing yet), Gaia (a potion), Oreste.
+  // A phone for each PC: Tessa (nothing yet), Gaia (a potion), Oreste.
   const tessa = await telefono(browser, 'pg_tessa', errori);
   const gaia = await telefono(browser, 'pg_gaia', errori);
   await telefono(browser, 'pg_oreste', errori);

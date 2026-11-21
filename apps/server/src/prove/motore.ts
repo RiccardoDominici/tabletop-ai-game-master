@@ -243,8 +243,9 @@ export class MotoreProve {
       ? new Esperienza({
           sistema: sist,
           schede: this.generico.schede,
-          // The party's shares: the PCs at the table with a sheet, not dead (p. 49: «divided by the number of adventurers»).
-          compagni: () => this.o.contesto().pgAlTavolo.filter((id) => this.generico!.schede.has(id) && this.stato.fuoriGioco(id) !== 'morto'),
+          // The party's shares: every PC of the session with a sheet, not dead (p. 49: «divided by the number of
+          // adventurers»). Not the phones connected now: a phone that drops, or a player with none, would lose a share.
+          compagni: () => this.o.contesto().campagna.pg.map((p) => p.id).filter((id) => this.generico!.schede.has(id) && this.stato.fuoriGioco(id) !== 'morto'),
           nome: (id) => this.nomeDi(this.o.contesto(), id),
           log: o.log.child({ modulo: 'esperienza' }),
         })
@@ -1555,8 +1556,14 @@ export class MotoreProve {
     // The sheet's spells and items, and those the state has now: spells a package prepared (a cleric's first slot after a
     // level-up), items found in play. A spent one is still found, so the Engine says it is gone instead of no roll.
     const preparati = new Set([...(sch.incantesimi ?? []), ...(this.risorse?.incantesimiDi(pg) ?? [])]);
-    const suoi = (g.regole.sistema.poteri ?? []).filter((p) => (p.tipo === 'incantesimo' && preparati.has(p.id)) || (p.tipo === 'oggetto' && ((sch.oggetti?.[p.id] ?? 0) > 0 || (this.risorse?.restanti(pg, chiaveOggetto(p.id)) ?? null) !== null)) || p.tipo === 'azione');
+    const suoi = (g.regole.sistema.poteri ?? []).filter((p) => (p.tipo === 'incantesimo' && preparati.has(p.id)) || (p.tipo === 'oggetto' && ((sch.oggetti?.[p.id] ?? 0) > 0 || (this.risorse?.restanti(pg, chiaveOggetto(p.id)) ?? null) !== null)) || (p.tipo === 'azione' && (!p.tabella || this.haTabella(sch, p.id))));
     return suoi.map((p) => ({ id: p.id, parole: [...p.parole, p.nome] }));
+  }
+
+  /** Whether a sheet's class has the rows of a table power (Turn Undead is the cleric's): only then its words call it. */
+  private haTabella(sch: SchedaGenerica, potere: string): boolean {
+    const c = sch.classe ? (this.sistema.classi ?? []).find((x) => x.id === sch.classe) : undefined;
+    return !!c?.progressione.tabelle[potere]?.length;
   }
 
   get inCombattimento(): boolean {

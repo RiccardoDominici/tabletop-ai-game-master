@@ -632,7 +632,8 @@ never wait. The startup log line `PROVE E DADI` says the value and its origin (o
 
 **Transport** (packages/shared). `StatoTavolo.tiri_manuali` and `tiri_richiesti` (public requests only, without DC) for
 the projector and every phone; `tiri:richiesti` to the room of one PC (its own requests, private ones included), at
-every change and when the PC is chosen, so a phone that reconnects finds its roll again; `tiro:inserisci` from the
+every change and when the PC is chosen, so a phone that reconnects finds its roll again (its gear view `pg:scorta`
+travels the same way, R3: never in the table state); `tiro:inserisci` from the
 phone (only for its own PC; refused: unknown or closed request, wrong number of dice, a die off its faces; `dettato:
 true` when the values came from dictation); the Game Master command `{tipo: 'tiro', id, valori}` (`valori: null` = the
 Engine rolls, `id: '*'` = every open request); `StatoMaster.tiri` with the requests WITH the DC and the last turn's
@@ -855,8 +856,9 @@ the XP the party earns (prove/esperienza.ts), by the set's `esperienza`, never t
   are not treasure.
 - **The Game Master's award** from the panel (command `esperienza`, `cosa: assegna`, `px`, a PC or the party, a reason):
   a non-combat challenge, gems the catalog does not list, a correction (negative).
-- **Shares.** The party's XP are divided equally among the PCs at the table who are not dead («divided by the number of
-  adventurers», p. 49; retainers' half shares are not modelled), each share raised by the PC's XP traits (the humans'
+- **Shares.** The party's XP are divided equally among the session's PCs who are not dead («divided by the number of
+  adventurers», p. 49; not by the phones connected, which come and go: an absent player's share is the Game Master's to
+  correct with a negative award; retainers' half shares are not modelled), each share raised by the PC's XP traits (the humans'
   +10%) and held one short of the level after next when the set has `un_livello_per_avventura` (here: one session).
 - **Where it shows.** The panel's combat box has a «Punti esperienza» part: each PC's XP and level, the XP of the next
   level and «sale di livello alla prossima sessione» when it is reached, the treasure waiting, the award form and the

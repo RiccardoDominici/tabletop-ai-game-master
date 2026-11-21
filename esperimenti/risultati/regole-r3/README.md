@@ -33,6 +33,14 @@ Files of each session: `fatti-e-tiri.md` (the facts the narrator received and th
 
 No «a player roll was not asked» line in either session's log after its start.
 
+Not shown live (covered by the unit tests on the same fixture): a successful secret listen and a private one
+(tiri-segreti.test.ts), the thief's «it seems to have worked» for moving silently, pick pockets noticed above twice the
+target, a rung's −20 on a threshold; Turn Undead turning the whole group, a D result destroying with 1d8 × level rolled
+once, a failure on the weakest, a class without the table (scacciare.test.ts); the one-level cap of an adventure, a dead
+PC's lost share (esperienza.test.ts); a resume and «Ricomincia» around the level-up roll (livelli.test.ts). Attacking a
+turned undead (T10, T12) opens a fight that ends at once, the enemies being out of it: no harm, a fact the narrator gets
+twice.
+
 Found and fixed in this check (commit 03d35ba): the rules arbiter listed only the sheet's spells, so the cleric's new
 spell from the package rolled nothing; the dry run of manual rolls dropped the prepared list of a sheet that prepares none,
 so the cure's die was not asked; the panel could not give coins to a PC with an empty purse; the harness checked a script

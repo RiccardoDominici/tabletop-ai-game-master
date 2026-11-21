@@ -66,10 +66,12 @@ describe('Turn Undead', () => {
     expect(r.fatti.join(' ')).toMatch(/fallito almeno in parte/);
   });
 
-  it('a class without the table cannot', async () => {
-    const m = motoreCripta({ 20: [20] });
-    const r = await m.risolvi(1, [azione('pg_gaia', 'Scaccio i non morti col simbolo sacro')]);
-    expect(r.fatti.join(' ')).toMatch(/Gaia non sa usare Scacciare i morti: la sua classe non ha la tabella\./);
+  it('a class without the table: its words do not call the power, an attack on the undead stays an attack', async () => {
+    const m = motoreCripta({ 20: [20], 6: [6] });
+    const r = await m.risolvi(1, [azione('pg_gaia', 'Colpisco i morti con la lancia, Ossa per primo')]);
+    expect(r.fatti.join(' ')).toMatch(/Gaia: attacco con Lancia a Ossa/);
+    const r2 = await m.risolvi(2, [azione('pg_gaia', 'Alzo il simbolo sacro e scaccio i morti')]);
+    expect(r2.fatti.join(' ')).not.toMatch(/Scacciare i morti/);
     expect(condizioni(m, 'png_ossa')).toEqual([]);
   });
 

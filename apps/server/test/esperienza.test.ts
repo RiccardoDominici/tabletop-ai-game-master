@@ -36,10 +36,12 @@ describe('XP for the defeated', () => {
     expect(g[0]!.testo).toBe('PX per Ossa: 20 in tutto (Tessa 6, Oreste 6, Gaia 6).');
   });
 
-  it('only the PCs at the table share', async () => {
+  it('every PC of the session shares, whatever phones are connected; the dead do not', async () => {
     const m = motoreCripta({ 20: [20], 6: [6] }, {}, ['pg_gaia']);
+    m.stato.segnaUscito('pg_tessa', 'morto');
     await m.risolvi(1, [azione('pg_gaia', 'Colpisco Ossa con la lancia')]);
-    expect(px(m)).toEqual({ pg_tessa: 0, pg_oreste: 100, pg_gaia: 22 });
+    // 20 XP by two: 10 each, the two humans 11.
+    expect(px(m)).toEqual({ pg_tessa: 0, pg_oreste: 111, pg_gaia: 11 });
   });
 });
 

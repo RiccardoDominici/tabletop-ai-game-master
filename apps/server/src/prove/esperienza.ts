@@ -7,8 +7,8 @@
  *   panel's coins control) are worth the set's rate, at once (`trovato`) or once the Game Master marks the treasure
  *   back to safety (`al_sicuro`, Basic Fantasy p. 190);
  * - the Game Master's award from the panel, to one PC or to the party.
- * The party's XP are divided equally by the PCs at the table who are not dead (Basic Fantasy p. 49: «divided by the
- * number of adventurers»), each share raised by the PC's traits (the humans' +10%), and held one short of the level
+ * The party's XP are divided equally by the session's PCs who are not dead (Basic Fantasy p. 49: «divided by the
+ * number of adventurers»; not by the phones connected, which come and go), each share raised by the PC's traits (the humans' +10%), and held one short of the level
  * after next when the set gives one level per adventure (here: per session). XP never change a level during play: the
  * level-up is the step between sessions (strumenti/tra_sessioni.py, prove/livelli.ts).
  * Saved in the session snapshot; the session log writes each PC's total and the session's awards (sessione/registro.ts).
@@ -45,7 +45,7 @@ export interface OpzioniEsperienza {
   sistema: SistemaRegole;
   /** The Engine's live sheets (their level may change at the session's start, prove/livelli.ts). */
   schede: ReadonlyMap<string, SchedaGenerica>;
-  /** The PCs who share the party's XP now: at the table, with a sheet, not dead. */
+  /** The PCs who share the party's XP now: the session's, with a sheet, not dead. */
   compagni: () => string[];
   nome: (id: string) => string;
   log: Logger;

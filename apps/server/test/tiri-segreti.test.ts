@@ -45,6 +45,17 @@ describe('a secret roll', () => {
     expect(r.perAzione.get(d.azioni[0]!.id)!.riuscita).toBe(false);
   });
 
+  it('a private secret roll: its phone gets no card either, and the private fact says how to tell it', async () => {
+    const m = motoreCripta({ 10: d100(12) });
+    const a = { ...azione('pg_tessa', 'Ascolto alla porta di ferro'), privata: true };
+    const r = await m.risolvi(1, [a]);
+    // The action's cards for its own phone (the private reply's cards) leave the Game Master's out.
+    expect(m.tiriDellAzione(a.id)).toEqual([]);
+    expect(m.tiriPubblici()).toEqual([]);
+    expect(r.fatti).toEqual([]);
+    expect(r.fattiPrivati.join(' ')).toMatch(/Tiro segreto del master/);
+  });
+
   it('a success is the plain fact, still secret', async () => {
     const m = motoreCripta({ 10: d100(12) });
     const r = await m.risolvi(1, [azione('pg_tessa', 'Ascolto alla porta di ferro')]);
