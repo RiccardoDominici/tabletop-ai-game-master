@@ -27,8 +27,10 @@ sys.path.insert(0, str(QUI))
 import blocchi_mostri as B  # noqa: E402
 
 CLASSI = {"fighter": "guerriero", "cleric": "chierico", "magic-user": "mago", "thief": "ladro"}
-DADI = re.compile(r"\d+d\d+(?:\s*[+-]\s*\d+)?")
-PUNTI = re.compile(r"(\d+)\s+points?\b")
+# «1d4 + 1 point Strength loss» is 1d4 and a drain, not 1d4+1: a bonus followed by «point» is not the dice's.
+DADI = re.compile(r"\d+d\d+(?:\s*[+-]\s*\d+(?![\dd])(?!\s*points?\b))?", re.IGNORECASE)
+# «1 point bite» is damage; «1 point Strength loss» (a shadow) is not.
+PUNTI = re.compile(r"(\d+)\s+points?\b(?!\s+(?:of\s+)?(?:strength|dexterity|constitution|intelligence|wisdom|charisma))", re.IGNORECASE)
 NUMERI_PAROLE = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6}
 
 
@@ -53,12 +55,13 @@ def attacchi_stampati(v: str) -> list[int] | None:
     """«2 claws, 1 bite» → [3]; «1 gore or 1 trample» → [1, 1]; None when it has no count (Special, See below)."""
     alternative = []
     # «or» starts an alternative only before a count and a word («1 gore or 1 trample»), not «natural 19 or 20».
-    for alt in re.split(r"\bor\b(?=\s+(?:\d+|one|two|three|four|five|six)\s+[a-z])", v or "", flags=re.IGNORECASE):
+    # A count may be dice («or 1d8 spikes», a manticore's volley): one attack line.
+    for alt in re.split(r"\bor\b(?=\s+(?:\d+(?:d\d+)?|one|two|three|four|five|six)\s+[a-z])", v or "", flags=re.IGNORECASE):
         n = 0
         for pezzo in alt.split(","):
-            m = re.match(r"\s*(\d+|one|two|three|four|five|six)\b", pezzo.strip().lower())
+            m = re.match(r"\s*(\d+d\d+|\d+|one|two|three|four|five|six)\b", pezzo.strip().lower())
             if m:
-                n += int(m.group(1)) if m.group(1).isdigit() else NUMERI_PAROLE[m.group(1)]
+                n += 1 if "d" in m.group(1) and m.group(1)[0].isdigit() else int(m.group(1)) if m.group(1).isdigit() else NUMERI_PAROLE[m.group(1)]
         if n:
             alternative.append(n)
     return alternative or None
@@ -122,18 +125,27 @@ def differenze_voce(e: dict, b: B.Blocco) -> list[str]:
         # A creature with fixed hit points (a normal rat: «1 Hit Point»): less than one hit die, its own `pf`.
         if str(e.get("pf")) != fissi.group(1) or str(e.get("dadi_vita")) != "½":
             diverso("dadi_vita and pf", f"½ with pf {fissi.group(1)}", f"{e.get('dadi_vita')} with pf {e.get('pf')}")
-    elif "to" in stampati:
-        lo, hi = _intervallo(dv) or (0, 0)
+    elif "to" in stampati or re.fullmatch(r"\d+\*+-\d+\*+", stampati):  # «2* to 4*», «1*-2*» (a trollkin's stages)
+        lo, hi = _intervallo(re.sub(r"\([^)]*\)", "", dv).replace("*", "")) or (0, 0)
         n = B.numero(str(e.get("dadi_vita")))
         if n is None or not lo <= n <= hi:
             diverso("dadi_vita", stampati, e.get("dadi_vita"))
     elif stampati != re.sub(r"\s+", "", str(e.get("dadi_vita", ""))):
         diverso("dadi_vita", stampati, e.get("dadi_vita"))
     bonus = B.tra_parentesi(dv)
+    rng_dv = _intervallo(re.sub(r"\([^)]*\)", "", dv)) if "to" in stampati else None
+    # A range of hit dice («5 to 12 (+10)», «11* (+9) to 15* (+11)»): the last bracket is the strongest one's bonus.
+    if rng_dv:
+        ultime = re.findall(r"\(\s*(?:AB\s*)?\+?(-?\d+)\s*\)", dv)
+        bonus = int(ultime[-1]) if ultime and B.numero(str(e.get("dadi_vita"))) == rng_dv[1] else None
     if bonus != e.get("attacco"):
         diverso("attacco", bonus, e.get("attacco"))
     n_att = attacchi_stampati(c.get("No. of Attacks", ""))
     per_round = e.get("per_round") or []
+    # «5 to 12 bites» (a hydra's heads): one entry per value, each with its own count within the range.
+    rng_att = _intervallo(c.get("No. of Attacks", "")) if re.search(r"\d\s*to\s*\d", c.get("No. of Attacks", "")) else None
+    if rng_att and per_round and all(rng_att[0] <= len(r) <= rng_att[1] for r in per_round):
+        n_att = None
     # «2 claws, 1 bite or breath, 1 tail» is one count with two alternatives (bite or breath): the entry's alternatives
     # must have the printed counts, as many alternatives as it needs.
     if n_att is not None and (not per_round or {len(r) for r in per_round} != set(n_att)):
@@ -163,7 +175,13 @@ def differenze_voce(e: dict, b: B.Blocco) -> list[str]:
         diverso("morale", B.numero(mo), m_voce)
     xp = c.get("XP", "")
     rng = _intervallo(xp) if re.search(r"\d\s*(?:to|-)\s*\d", xp) else None
-    if rng:
+    # «5 HD 360, 6 HD 500, …»: each entry's XP is the one printed for its hit dice.
+    per_dv = {int(a): int(b.replace(",", "")) for a, b in re.findall(r"(\d+)\s*HD\s*([\d,]+)", xp)}
+    if per_dv:
+        n = B.numero(str(e.get("dadi_vita")))
+        if per_dv.get(n) != e.get("px"):
+            diverso("px", per_dv.get(n), e.get("px"))
+    elif rng:
         if not (isinstance(e.get("px"), int) and rng[0] <= e["px"] <= rng[1]):
             diverso("px", xp, e.get("px"))
     elif B.numero(xp) != e.get("px"):

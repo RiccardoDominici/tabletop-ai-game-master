@@ -418,3 +418,31 @@ describe('progression as torre-mozza uses it (pp. 3–9, 49, 53, 57–58, 190)',
     expect(pxDiScheda(s.esperienza, schede.get('png_berta')!)).toBe(10);
   });
 });
+
+describe('the bestiary (pp. 53–54, 62–162)', () => {
+  it('the monster attack bonus by hit dice (p. 53) and the d8, ½ = 1d4, «1−1» less than one (p. 54)', () => {
+    const b = set().bestiario!;
+    expect(b).toMatchObject({ dadoVita: 8, mezzo: { numero: 1, facce: 4, bonus: 0 }, abilita: ['mischia', 'distanza'], unoMenoMenoDiUno: true });
+    const ab = (hd: number) => [...b.attacco].reverse().find((r) => hd >= r.da)!.bonus;
+    expect([0, 1, 7, 8, 9, 10, 13, 15, 19, 20, 27, 31, 32, 40].map(ab)).toEqual([0, 1, 7, 8, 8, 9, 10, 11, 12, 13, 14, 15, 16, 16]);
+  });
+
+  it('every printed stat block is an entry (275 with the ranges spelled out); a few checked by hand', () => {
+    const s = set();
+    expect(s.mostri).toHaveLength(275);
+    const m = (id: string) => s.mostri!.find((x) => x.id === id)!.dati;
+    // p. 97: ghoul AC 14, HD 2*, 2 claws 1 bite 1d4, morale 9, XP 100.
+    expect(m('ghoul')).toMatchObject({ difesa: 14, dadi_vita: '2*', per_round: [['artiglio', 'artiglio', 'morso']], morale: 9, px: 100 });
+    // p. 104: goblin AC 14 (11), HD 1-1, morale 7, XP 10; p. 111: hobgoblin AC 14 (11), HD 1, 1d8, morale 8, XP 25.
+    expect(m('goblin')).toMatchObject({ difesa: 14, difesa_senza_armatura: 11, dadi_vita: '1-1', morale: 7, px: 10 });
+    expect(m('hobgoblin')).toMatchObject({ difesa: 14, dadi_vita: '1', morale: 8, px: 25 });
+    // p. 152: troll AC 16, HD 6*, claws 1d6 and bite 1d10, morale 10, XP 555.
+    expect(m('troll')).toMatchObject({ difesa: 16, dadi_vita: '6*', morale: 10, px: 555 });
+  });
+
+  it('a goblin\'s sheet from its entry: +0 to hit (less than one hit die), 1d8−1 hit points, its XP by the table', () => {
+    const s = set();
+    const g = caricaSchedeGeneriche(s, { pg: [], png: [{ id: 'png_g', nome: 'Goblin', dati: { scheda: { mostro: 'goblin' } } } as never] }).get('png_g')!;
+    expect(g).toMatchObject({ difesa: 14, dadiVita: 0, abilita: { mischia: 0, distanza: 0 }, pfDaTirare: { numero: 1, facce: 8, bonus: -1 }, morale: 7, px: 10 });
+  });
+});

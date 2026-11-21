@@ -104,6 +104,15 @@ def _colonne_del_blocco(spans: list[Span], primo: Span, destra: float, f: Format
     return sorted([s for s in sopra if abs(s.y0 - y) < 2.5], key=lambda s: s.x0)
 
 
+def _colonne_implicite(spans: list[Span], primo: Span, destra: float, f: Formato) -> list[Span]:
+    """Variants side by side with no header (Basic Fantasy's purple worm: 11–15 and 16–20 hit dice): the first label's
+    values, when they are two or more spans far apart, are the columns, named «1», «2»…"""
+    valori = sorted([s for s in spans if _stessa_riga(s, primo) and s.x0 > primo.x1 + 1 and s.x0 < destra and abs(s.size - f.corpo) < 0.6], key=lambda s: s.x0)
+    if len(valori) < 2 or any(b.x0 - a.x1 < 25 for a, b in zip(valori, valori[1:])):
+        return []
+    return [Span(v.x0, v.y0, v.x1, v.size, v.font, str(i)) for i, v in enumerate(valori, start=1)]
+
+
 def _testo_riga(pezzi: list[Span]) -> str:
     return " ".join(p.testo for p in sorted(pezzi, key=lambda p: p.x0)).strip()
 
@@ -154,7 +163,7 @@ def blocchi_della_pagina(pagina, numero_pdf: int, titolo_prima: dict[str, str], 
             destra = meta if testo_a_destra else pagina.rect.width
         else:
             destra = pagina.rect.width
-        colonne = _colonne_del_blocco(spans, primo, destra, f)
+        colonne = _colonne_del_blocco(spans, primo, destra, f) or _colonne_implicite(spans, primo, destra, f)
         # The heading: the nearest one above in the same column, else the last one before this column.
         sopra = [t for t in titoli if t.y0 < primo.y0 and ((t.x0 < meta) == (lato == "sx"))]
         if sopra:
@@ -165,7 +174,10 @@ def blocchi_della_pagina(pagina, numero_pdf: int, titolo_prima: dict[str, str], 
             titolo = titolo_prima.get("ultimo", "?")
         valori: list[dict[str, list[str]]] = [dict() for _ in (colonne or [None])]
         for i, et in enumerate(righe):
-            prossima = righe[i + 1].y0 if i + 1 < len(righe) else et.y0 + 11
+            # The last label's value may wrap onto a few lines («5 HD 360, 6 HD 500, …»): down to the first line that is
+            # not in the block's font size (the description), within a few lines.
+            sotto = [s.y0 for s in spans if s.y0 > et.y0 + 2 and abs(s.size - f.corpo) >= 0.6 and et.x0 - 5 <= s.x0 < destra]
+            prossima = righe[i + 1].y0 if i + 1 < len(righe) else min([et.y0 + 45, *sotto])
             # This label's value spans, and the wrapped lines below it before the next label.
             pezzi = [s for s in spans if s.x0 > et.x1 + 1 and s.x0 < destra and abs(s.size - f.corpo) < 0.6
                      and not _etichetta(s, f) and et.y0 - 2.5 <= s.y0 < prossima - 2.5 and s not in colonne]

@@ -890,6 +890,33 @@ esperienza:
   # quando torna al sicuro (il master lo dice dal pannello).
   tesoro: {px: 1, per: mo, quando: al_sicuro}
 
+# Bestiario (p. 53–54, 62): i mostri tirano un d8 per dado vita (½ dado vita = 1d4 punti ferita) e hanno il bonus
+# d'attacco della tabella dei mostri per dadi vita («Monster Attack Bonus», p. 53); più e meno non contano (3+2 e 3−1
+# valgono 3) e «1−1» o meno vale «meno di uno» (+0, p. 54). Le voci del bestiario sono in regole/mostri.yaml.
+bestiario:
+  dado_vita: 8
+  mezzo: "1d4"
+  attacco:
+    - {da: 0, bonus: 0}
+    - {da: 1, bonus: 1}
+    - {da: 2, bonus: 2}
+    - {da: 3, bonus: 3}
+    - {da: 4, bonus: 4}
+    - {da: 5, bonus: 5}
+    - {da: 6, bonus: 6}
+    - {da: 7, bonus: 7}
+    - {da: 8, bonus: 8}
+    - {da: 10, bonus: 9}
+    - {da: 12, bonus: 10}
+    - {da: 14, bonus: 11}
+    - {da: 16, bonus: 12}
+    - {da: 20, bonus: 13}
+    - {da: 24, bonus: 14}
+    - {da: 28, bonus: 15}
+    - {da: 32, bonus: 16}
+  abilita: [mischia, distanza]
+  uno_meno_meno_di_uno: true
+
 # Tempo di gioco (p. 42): un turno è circa dieci minuti, un round dieci secondi (sessanta round fanno un turno).
 # Esplorando, ogni giro di azioni del tavolo è un turno (il movimento e le ricerche si contano a turni, p. 42–44; le
 # abilità del ladro chiedono un turno, p. 8); in combattimento ogni round è un round. Le torce bruciano 1d4+4 turni, la
