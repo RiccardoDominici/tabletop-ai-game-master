@@ -45,6 +45,16 @@ def test_una_voce_giusta_non_ha_differenze() -> None:
     assert C.differenze_voce(VOCE, _blocco()) == []
 
 
+def test_un_soffio_stampato_coi_dadi_e_un_potere() -> None:
+    # «30d8 breath» as a line with a power of the set (its own dice by hit dice): no difference; a second missing die is.
+    b = _blocco(**{"No. of Attacks": "2 claws, 1 bite or breath", "Damage": "1d3 claw, 1d4 bite or 2d8 breath"})
+    v = {**VOCE, "attacchi": [*VOCE["attacchi"], {"id": "soffio", "nome": "Soffio", "potere": "soffio_brina", "usi": 2}],
+         "per_round": [["artiglio", "artiglio", "soffio"], ["artiglio", "artiglio", "morso"]]}
+    assert C.differenze_voce(v, b) == []
+    senza = {**v, "attacchi": [VOCE["attacchi"][0], v["attacchi"][2]], "per_round": [["artiglio", "artiglio", "soffio"]]}
+    assert any("attacchi[].danno" in x for x in C.differenze_voce(senza, b))
+
+
 def test_ogni_numero_sbagliato_si_vede() -> None:
     v = {**VOCE, "difesa": 15, "px": 75, "per_round": [["artiglio", "morso"]], "morale": 8}
     d = " | ".join(C.differenze_voce(v, _blocco()))

@@ -179,8 +179,9 @@ def _linee(x: dict, d: str, poteri: set[str], e: Esito) -> None:
         ids.add(str(a.get("id") or a["nome"]).lower())
         if "danno" in a and not formula(a["danno"]):
             _err(e, d, f"attacchi[{i}].danno: «{a['danno']}» non è una formula come 1d6")
-        if "danno" not in a and "potere" not in a:
-            # A special the manual prints without dice (a gaze, a drain's touch) and the set has no power for yet: the
+        # A line with riders and no damage (a wight's touch, «Damage: energy drain») hits for its effects only.
+        if "danno" not in a and "potere" not in a and not a.get("colpendo"):
+            # A special the manual prints without dice (a gaze, a spray) and the set has no power for yet: the
             # Engine cannot use the line (a sheet using it rolls 1d4, with a warning); the special stays in `testo`.
             e.avviso("REGOLE.bestiario", d, f"attacchi[{i}] «{a.get('nome')}»: né danno né un potere del set (potere): il Motore non sa usarla")
         for p in ([a["colpendo"]] if isinstance(a.get("colpendo"), str) else a.get("colpendo") or []):

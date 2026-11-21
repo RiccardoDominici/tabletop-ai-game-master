@@ -161,7 +161,10 @@ def differenze_voce(e: dict, b: B.Blocco) -> list[str]:
     danni_voce = {_formula_voce(x.get("danno")) for x in e.get("attacchi") or [] if x.get("danno") is not None}
     # A block printed as a range («1d4 or 1d6 or 1d8», by hit dice) has one entry per value: each takes some of its dice.
     alternative = bool(re.search(r"\bto\b", dv)) or bool(re.search(r"\d\s*-\s*\d", c.get("XP", "")))
-    if danni_stampati and (not danni_voce <= danni_stampati if alternative else danni_stampati != danni_voce):
+    # A breath printed with its dice («30d8 breath») can be a line with a power of the set instead (`potere`: its own dice,
+    # by hit dice, with the save): each such line may stand for one printed formula the entry does not repeat.
+    poteri = sum(1 for x in e.get("attacchi") or [] if x.get("potere") and not x.get("in_piu") and x.get("danno") is None)
+    if danni_stampati and (not danni_voce <= danni_stampati if alternative else not (danni_voce <= danni_stampati and len(danni_stampati - danni_voce) <= poteri)):
         diverso("attacchi[].danno", sorted(danni_stampati), sorted(danni_voce))
     sc = salva_come_stampato(c.get("Save As", ""))
     ev = e.get("salva_come") or {}

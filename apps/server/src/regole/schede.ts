@@ -70,7 +70,9 @@ export function leggiSchedaGenerica(s: SistemaRegole, id: string, nome: string, 
     const armaCat = typeof a['arma'] === 'string' ? a['arma'] : null;
     if (armaCat && voce(s.catalogo, armaCat)?.tipo !== 'arma') avvisi.push(`${dove}.attacchi[${i + 1}].arma: «${armaCat}» non è un'arma del catalogo del set`);
     const danno = leggiFormula(a['danno']);
-    if (!danno && !armaCat && typeof a['potere'] !== 'string') avvisi.push(`${dove}.attacchi[${i + 1}]: danno «${String(a['danno'])}» non è una formula come 1d6 (uso 1d4)`);
+    // A line with riders and no damage (a wight's touch: «Damage: energy drain») hits for its effects only.
+    const soloEffetti = !danno && !armaCat && typeof a['potere'] !== 'string' && a['danno'] === undefined && (Array.isArray(a['colpendo']) || typeof a['colpendo'] === 'string');
+    if (!danno && !armaCat && typeof a['potere'] !== 'string' && !soloEffetti) avvisi.push(`${dove}.attacchi[${i + 1}]: danno «${String(a['danno'])}» non è una formula come 1d6 (uso 1d4)`);
     const c = typeof a['caratteristica'] === 'string' && s.caratteristiche.some((x) => x.id === a['caratteristica']) ? (a['caratteristica'] as string) : null;
     const ab = typeof a['abilita'] === 'string' && s.abilita.some((x) => x.id === a['abilita']) ? (a['abilita'] as string) : null;
     if (a['automatico'] !== undefined && typeof a['automatico'] !== 'boolean') avvisi.push(`${dove}.attacchi[${i + 1}].automatico: true o false`);
@@ -82,7 +84,7 @@ export function leggiSchedaGenerica(s: SistemaRegole, id: string, nome: string, 
     const extra = lineaDiMostro(s, a, `${dove}.attacchi[${i + 1}]`, avvisi);
     // What the weapon is made of (argento, magica): a creature hurt only by some weapons reads it (P6-03).
     const proprieta = Array.isArray(a['proprieta']) ? { proprieta: a['proprieta'].filter((x): x is string => typeof x === 'string') } : {};
-    return [{ id: typeof a['id'] === 'string' && a['id'] ? chiave(a['id']) : chiave(n), nome: n, danno: danno ?? { numero: 1, facce: 4, bonus: 0 }, caratteristica: c, abilita: ab ?? (c || extra.potere || !di_png ? null : bestiaAbilita(s, a)), tipo_danno: typeof a['tipo_danno'] === 'string' ? a['tipo_danno'] : null, distanza: a['distanza'] === true, ...(a['automatico'] === true ? { automatico: true } : {}), ...consuma, ...(armaCat ? { arma: armaCat } : {}), ...extra, ...proprieta }];
+    return [{ id: typeof a['id'] === 'string' && a['id'] ? chiave(a['id']) : chiave(n), nome: n, danno: danno ?? { numero: 1, facce: 4, bonus: 0 }, caratteristica: c, abilita: ab ?? (c || extra.potere || !di_png ? null : bestiaAbilita(s, a)), tipo_danno: typeof a['tipo_danno'] === 'string' ? a['tipo_danno'] : null, distanza: a['distanza'] === true, ...(a['automatico'] === true ? { automatico: true } : {}), ...consuma, ...(armaCat ? { arma: armaCat } : {}), ...extra, ...proprieta, ...(soloEffetti ? { soloEffetti: true } : {}) }];
   });
   const difesa = intero(o['difesa']) ?? intero(o['ca']);
   const sch: SchedaGenerica = { id, nome, di_png, caratteristiche, abilita, pf_massimi: pf && pf > 0 ? pf : 1, difesa, armatura: intero(o['armatura']) ?? 0, attacchi, ...classeDellaScheda(s, o, dove, avvisi), ...risorseDellaScheda(s, o, dove, avvisi), ...equipaggiamentoDellaScheda(s, o, dove, avvisi), ...esperienzaDellaScheda(o, dove, avvisi), ...mostroDellaScheda(s, o, attacchi, dove, avvisi), avvisi };

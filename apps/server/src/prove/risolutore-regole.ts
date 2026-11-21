@@ -485,12 +485,13 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
    */
   function colpisci(t: TiroMostrato, attaccante: Attacco, bersaglio: SchedaGenerica, critico: boolean, dadiDanno: FonteDadi = o.dadi, doppio = false, nonFerisce: string | null = null, nonLetale: { dimezza: boolean } | null = null): string {
     // Il critico raddoppia i dadi del danno solo se il set lo dice (SRD sì); il danno minimo è del set (Basic Fantasy: 1).
-    const d = tiraDanno(dadiDanno, attaccante.danno, 0, critico && s.attacchi.dannoCritico === 'doppio');
+    const d = attaccante.soloEffetti ? { formula: '0', dadi: [], bonus: 0, totale: 0 } : tiraDanno(dadiDanno, attaccante.danno, 0, critico && s.attacchi.dannoCritico === 'doppio');
     // A situational modifier with `danno: doppio` (Basic Fantasy's charge, p. 52): the damage of the hit is doubled.
     // An active bonus to damage (prove/attivi.ts) adds to the hit. A subduing blow with a weapon does half (p. 55).
     const pieno = (doppio ? d.totale * 2 : d.totale) + (o.bonusAttivi?.(t.chi, 'danni', attaccante.distanza ? 'distanza' : 'mischia') ?? 0);
     const base = nonLetale?.dimezza ? Math.floor(pieno / 2) : pieno;
-    const minimo = Math.max(s.attacchi.dannoMinimo, s.attacchi.armaturaRiduce ? Math.max(0, base - bersaglio.armatura) : base);
+    // A line that hits for its effects only (a wight's touch) takes no hit points, not even the set's minimum.
+    const minimo = attaccante.soloEffetti ? 0 : Math.max(s.attacchi.dannoMinimo, s.attacchi.armaturaRiduce ? Math.max(0, base - bersaglio.armatura) : base);
     // After the minimum: a weapon that cannot hurt this creature (P6-03) deals nothing, a resistance halves or stops it.
     const resiste = attaccante.tipo_danno ? (bersaglio.resistenze?.[attaccante.tipo_danno] ?? null) : null;
     const ridotto = nonFerisce ? 0 : resiste === 'immune' ? 0 : resiste === 'meta' ? Math.floor(minimo / 2) : minimo;
@@ -509,6 +510,7 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     // Knocked out by subduing damage (p. 55): unconscious, not dead nor dying.
     const ko = pf.attuali <= 0 && o.stato.tramortito(bersaglio.id) ? testo('prove.fatto.tramortito', { nome: o.nome(bersaglio.id) }) : '';
     if (ko) o.log.info({ bersaglio: bersaglio.id }, 'prove: knocked out by subduing damage, not dead');
+    if (attaccante.soloEffetti) return perche + testo('prove.fatto.solo_effetti', { nome: o.nome(bersaglio.id), stato });
     return perche + testo('prove.fatto.danno_set', { danno: fraseDanno(ridotto, attaccante.tipo_danno ? tipoDanno(attaccante.tipo_danno) : null), armatura, nome: o.nome(bersaglio.id), stato }) + sveglio + ko;
   }
 

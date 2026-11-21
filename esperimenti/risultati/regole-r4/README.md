@@ -66,7 +66,7 @@ Grosso and Zirrà are now `scheda: {mostro: hobgoblin}` and `{mostro: goblin}` w
 | T1, T7 | morale from the entries | first opposition 7 on 2d6, both hold (8 and 7); Zirrà down, half strength: «6 contro 8 → tengono» |
 | T5 | subduing damage (P5-41): the words of the action | «Colpisco Grosso con la mazza di piatto, per tramortirlo»: «d20−2 … (per tramortire −4, metà danno) → COLPITO, 2 danni» |
 | T10, T12 | a stone into the melee | Nespola's sling misses Grosso, who fights Livia: «Il colpo finisce nella mischia, verso Livia Sarti» |
-| T13 | killing damage beyond the hit points: dead, not knocked out | Livia's 10 drops Grosso (2 subduing, 12 killing against 7 hit points): «fuori combattimento», «Il combattimento è finito: i nemici sono a terra» |
+| T13 | killing damage beyond the hit points: dead, not knocked out | Livia's 10 drops Grosso: of the damage he took (Fulco's 2 subduing at T5, Nespola's 2 at T8 and Livia's 10, both killing) the killing part is above his 7 hit points, so he is «fuori combattimento», not knocked out, «Il combattimento è finito: i nemici sono a terra» |
 | all | manual rolls | every PC die typed by its player, the Game Master's (the NPCs' attacks, the morale) hidden on the panel |
 
 Not shown live (covered by the unit tests on the tana fixture): a subdued creature waking after its `sveglia`

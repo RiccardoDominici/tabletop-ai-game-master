@@ -471,6 +471,9 @@ describe('the bestiary\'s specials as typed data (pp. 62–162)', () => {
     expect(m('ghoul').attacchi.map((a) => a['colpendo'])).toEqual([['paralisi_ghoul'], ['paralisi_ghoul']]);
     expect(m('ghoul')['tipo']).toEqual(['non_morto', 'ghoul']);
     expect(m('wight').attacchi[0]!['colpendo']).toEqual(['risucchio_1']);
+    // «Damage: energy drain (1 level)» (p. 158): the touch has no damage of its own.
+    const wight = caricaSchedeGeneriche(s, { pg: [], png: [{ id: 'png_w', nome: 'Wight', dati: { scheda: { mostro: 'wight' } } } as never] }).get('png_w')!;
+    expect(wight.attacchi[0]).toMatchObject({ id: 'tocco', soloEffetti: true, colpendo: ['risucchio_1'] });
     expect(m('wight')['colpito_solo_da']).toEqual(['argento', 'magica']);
     const drago = m('drago_montagna');
     expect(drago.per_round[0]).toContain('soffio');

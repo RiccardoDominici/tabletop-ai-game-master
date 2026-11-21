@@ -12,13 +12,14 @@ const contro = (png: string, pg: string[], dadi: Record<number, number[]>): Moto
 
 describe('energy drain (negative levels)', () => {
   it('a touch drains a level: one hit die of maximum hit points, −1 on her next d20 roll, kept in the snapshot', async () => {
-    // Bruna's sword (d20 20, d8 1); d6: Bruna 1, the shade 6 (it acts first), surprise 6; its touch d20 20, d4 1; the
-    // drained hit die d8 3; morale is 12. Then her attack roll of turn 2 shows the −1.
-    const m = contro('png_ombra', ['pg_bruna'], { 20: [20], 8: [1, 3, 1], 6: [1, 6, 6, 1, 1, 1], 4: [1] });
+    // Bruna's sword (d20 20, d8 1); d6: Bruna 1, the shade 6 (it acts first), surprise 6; its touch d20 20 (no damage
+    // of its own: «Damage: energy drain», not even the minimum 1); the drained hit die d8 3; morale is 12. Then her
+    // attack roll of turn 2 shows the −1.
+    const m = contro('png_ombra', ['pg_bruna'], { 20: [20], 8: [1, 3, 1], 6: [1, 6, 6, 1, 1, 1] });
     const r = await m.risolvi(1, [azione('pg_bruna', 'Colpisco Gelo con la spada')]);
-    expect(r.fatti.join(' ')).toMatch(/Bruna perde 1 livello di energia/);
+    expect(r.fatti.join(' ')).toMatch(/nessun danno, conta l'effetto del colpo; Bruna ha 9 punti ferita su 9\. Bruna perde 1 livello di energia/);
     expect(m.drenaggi!.di('pg_bruna')).toBe(1);
-    expect(m.stato.puntiFerita('pg_bruna')!.massimi).toBe(9 - 3);
+    expect(m.stato.puntiFerita('pg_bruna')).toMatchObject({ massimi: 9 - 3, attuali: 9 - 3 });
     const r2 = await m.risolvi(2, [azione('pg_bruna', 'Colpisco Gelo con la spada')]);
     const t = r2.tiri.find((x) => x.chi === 'pg_bruna' && x.tipo === 'attacco')!;
     // Strength 15 (+1) and the class's +1, then −1.
@@ -30,7 +31,7 @@ describe('energy drain (negative levels)', () => {
   });
 
   it('drained to 0 hit points or less: slain', async () => {
-    const m = contro('png_ombra', ['pg_bruna'], { 20: [20], 8: [1, 8], 6: [1, 6, 6, 1, 1], 4: [1] });
+    const m = contro('png_ombra', ['pg_bruna'], { 20: [20], 8: [1, 8], 6: [1, 6, 6, 1, 1] });
     m.impostaPf('pg_bruna', 3);
     const r = await m.risolvi(1, [azione('pg_bruna', 'Colpisco Gelo con la spada')]);
     expect(m.stato.fuoriGioco('pg_bruna')).toBe('morto');

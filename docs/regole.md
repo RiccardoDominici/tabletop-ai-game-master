@@ -493,7 +493,8 @@ own hit points and weapons. A monster needs no ability scores (the +0 value, no 
   one attack, as before.
 
 - **specials** (prove/poteri.ts usaPotereDiMostro; audit P6-16, P6-18 to P6-20, P6-27): powers of type `mostro`. A line's
-  `colpendo` applies them to the target of a hit that hurt — each target not immune (the power's types, the sheet's
+  `colpendo` applies them to the target of a hit that hurt (a line with `colpendo` and no `danno`, as a manual prints a
+  wight's touch «Damage: energy drain», hits for its riders only: no hit points, not even the set's minimum) — each target not immune (the power's types, the sheet's
   `immune`, a trait, an active effect) rolls its own save, then the typed effects at the monster's hit dice: a ghoul's
   paralysis (a condition lasting turns of the clock), a snake's poison (`morte`), a charm or a fear condition. A line with
   `potere` is a special action: in the step's alternative it costs one of its `usi` of the day (refreshed by a rest) and

@@ -1036,7 +1036,7 @@ mostri:
       - {id: morso, nome: "Morso", danno: "6d6"}
       - {id: soffio, nome: "Soffio", danno: "6d6"}
       - {id: coda, nome: "Coda", danno: "2d4"}
-    per_round: [[artiglio, artiglio, soffio, coda], [artiglio, artiglio, morso, coda]]
+    per_round: [[artiglio, artiglio, morso, coda], [artiglio, artiglio, soffio, coda]]
     movimento: "30' Fly 80' (20')"
     numero: "1, Wild 1, Lair 1d4"
     salva_come: {classe: guerriero, livello: 11}
@@ -1200,8 +1200,8 @@ mostri:
     attacchi:
       - {id: artiglio, nome: "Artiglio", danno: "2d8"}
       - {id: morso, nome: "Morso", danno: "10d6"}
-      - {id: soffio, nome: "Soffio", danno: "30d8"}
-    per_round: [[artiglio, artiglio, morso], [artiglio, artiglio, soffio]]
+      - {id: soffio, nome: "Soffio di vapore", potere: soffio_vapore, usi: 30, ricarica: 2}
+    per_round: [[artiglio, artiglio, soffio], [artiglio, artiglio, morso]]
     movimento: "10' (10') Swim 30' (15')"
     numero: "Wild 1"
     salva_come: {classe: guerriero, livello: 20}
@@ -2408,11 +2408,10 @@ mostri:
     difesa: 13
     dadi_vita: "2*"
     attacchi:
-      - {id: canto_magico, nome: "Canto", potere: canto_ammaliante, usi: 1, in_piu: true}
       - {id: artiglio, nome: "Artiglio", danno: "1d4"}
       - {id: arma, nome: "Arma", danno: "1d6"}
-      - {id: canto, nome: "Canto"}
-    per_round: [[canto_magico, artiglio, artiglio, arma], [canto_magico, artiglio, artiglio, canto]]
+      - {id: canto, nome: "Canto", potere: canto_ammaliante, usi: 1}
+    per_round: [[artiglio, artiglio, canto], [artiglio, artiglio, arma]]
     movimento: "20' Fly 50' (10')"
     numero: "1d6, Wild 2d4, Lair 2d4"
     salva_come: {classe: guerriero, livello: 2}
@@ -4621,9 +4620,11 @@ mostri:
     dadi_vita: "7**"
     attacchi:
       - {id: sguardo, nome: "Sguardo", potere: sguardo_ammaliante, in_piu: true}
-      - {id: arma, nome: "Arma"}
-      - {id: morso, nome: "Morso", colpendo: [risucchio_1]}
+      - {id: arma, nome: "Arma", danno: "1d8"}
+      - {id: morso, nome: "Morso", danno: "1d3", colpendo: [risucchio_1]}
     per_round: [[sguardo, arma], [sguardo, morso]]
+    # The bite's 1d3 is in the description (p. 155); the block prints «1d8 or by weapon or special».
+    controllo: {ignora: ["attacchi[].danno"], motivo: "the bite's 1d3 is printed in the description, not in the block"}
     movimento: "40' Fly 60' (as giant bat, see below)"
     numero: "1d6, Wild 1d6, Lair 1d6"
     salva_come: {classe: guerriero, livello: 7}

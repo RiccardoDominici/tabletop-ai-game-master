@@ -95,6 +95,7 @@ prove:
     esito_mossa: " Esito della mossa «{mossa}»: {esito}"
     armatura: " (armatura −{armatura})"
     danno_set: "{danno}{armatura}; {nome} {stato}"
+    solo_effetti: "nessun danno, conta l'effetto del colpo; {nome} {stato}"
     attacco_automatico: "attacco con {arma} a {bersaglio} ({regola}) → COLPISCE, {danno}."
     attacco_set: "attacco con {arma} a {bersaglio}: {regola} → {esito}."
     attacco_set_colpito: "attacco con {arma} a {bersaglio}: {regola} → {esito}, {danno}."

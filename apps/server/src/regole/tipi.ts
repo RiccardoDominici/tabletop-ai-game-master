@@ -278,6 +278,11 @@ export interface SchedaGenerica {
     perdeIncantesimi?: boolean;
     /** Powers of the set a hit applies to the target, each with the target's save (a ghoul's paralysis, a poison bite). */
     colpendo?: string[];
+    /**
+     * A monster's line printed with no damage but its effect («Damage: energy drain», a wight's touch, Basic Fantasy
+     * p. 158): `colpendo` without `danno`. A hit takes no hit points (not even the set's minimum) and applies the riders.
+     */
+    soloEffetti?: boolean;
     /** A special action instead of an attack roll: this power of the set (a dragon's breath, a gaze). */
     potere?: string;
     /** How many times a day the line can be used (a breath: as many as the hit dice); counted by prove/risorse.ts. */

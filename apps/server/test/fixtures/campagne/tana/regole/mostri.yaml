@@ -102,7 +102,7 @@ mostri:
     difesa: 15
     dadi_vita: "3*"
     attacchi:
-      - {id: tocco, nome: Tocco, danno: "1d4", colpendo: [risucchio]}
+      - {id: tocco, nome: Tocco, colpendo: [risucchio]}
     per_round: [[tocco]]
     salva_come: {classe: guerriero, livello: 3}
     morale: 12

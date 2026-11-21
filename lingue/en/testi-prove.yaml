@@ -89,6 +89,7 @@ prove:
     esito_mossa: " Outcome of the move “{mossa}”: {esito}"
     armatura: " (armor −{armatura})"
     danno_set: "{danno}{armatura}; {nome} {stato}"
+    solo_effetti: "no damage, the hit counts for its effect; {nome} {stato}"
     attacco_automatico: "attack with {arma} on {bersaglio} ({regola}) → HITS, {danno}."
     attacco_set: "attack with {arma} on {bersaglio}: {regola} → {esito}."
     attacco_set_colpito: "attack with {arma} on {bersaglio}: {regola} → {esito}, {danno}."
