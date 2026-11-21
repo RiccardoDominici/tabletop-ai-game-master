@@ -94,3 +94,31 @@ describe('the level-up’s hit points', () => {
     expect(m.esporta().livelli!.pg.find(([id]) => id === 'pg_oreste')![1].daTirare).toEqual([]);
   });
 });
+
+describe('the new level’s spells', () => {
+  it('a spell the package prepares in the new slot is found by its words and cast from it', async () => {
+    const m = motoreCripta({ 6: [4] }, pacchetto({ pg_oreste: { ...oreste2.pg_oreste, incantesimi: ['cura_ferite'] }, pg_gaia: { pf: 3 } }));
+    const r = await m.risolvi(1, [azione('pg_oreste', 'Uso cura ferite su Gaia')]);
+    expect(r.fatti.join(' ')).toMatch(/Oreste usa Cura ferite \(incantesimo di 1° livello: gliene restano 0 di quel livello per oggi\)/);
+    expect(m.stato.puntiFerita('pg_gaia')!.attuali).toBe(8);
+    // Spent: refused by name, nothing cast; a rest gives back the package's spell.
+    const r2 = await m.risolvi(2, [azione('pg_oreste', 'Uso ancora cura ferite su Gaia')]);
+    expect(r2.fatti.join(' ')).toMatch(/Oreste non ha Cura ferite tra gli incantesimi preparati per oggi/);
+    expect(m.riposo('notte')!.ok).toBe(true);
+    const r3 = await m.risolvi(3, [azione('pg_oreste', 'Uso cura ferite su Gaia')]);
+    expect(r3.fatti.join(' ')).toMatch(/Oreste usa Cura ferite/);
+  });
+});
+
+describe('manual rolls after a level-up', () => {
+  it('the dry run sees the package’s prepared spell: the new hit die and the cure’s die are asked together', async () => {
+    const m = motoreCripta({ 6: [4] }, pacchetto({ pg_oreste: { ...oreste2.pg_oreste, incantesimi: ['cura_ferite'] }, pg_tessa: { pf: 2 } }));
+    const d = await m.decidi(1, [azione('pg_oreste', 'Uso cura ferite su Tessa')]);
+    expect(m.richiesteGiocatori(d).map((r) => r.etichetta)).toEqual(['Punti ferita del 2° livello', 'Cura ferite']);
+    // A resume keeps the prepared spell of a sheet that prepares none.
+    const s = m.esporta();
+    const r = motoreCripta({}, pacchetto({ pg_oreste: { ...oreste2.pg_oreste } }));
+    r.importa(s);
+    expect(r.esporta().risorse!.preparati).toContainEqual(['pg_oreste', ['cura_ferite']]);
+  });
+});

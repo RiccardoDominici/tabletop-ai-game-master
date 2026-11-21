@@ -298,7 +298,9 @@ export class Risorse {
       for (const [k, n] of voci) if ((m.has(k) || LIBERA.test(k)) && Number.isInteger(n) && n >= 0) m.set(k, n);
       if (m.size) this.contatori.set(id, m);
     }
-    for (const [id, l] of s.preparati ?? []) if (this.preparati.has(id) && Array.isArray(l)) this.preparati.set(id, l.filter((x) => typeof x === 'string'));
+    // Any character's prepared spells, also one whose sheet prepares none (a package's after a level-up: the dry run of
+    // manual rolls and a resume both come through here, and must see what the real state has).
+    for (const [id, l] of s.preparati ?? []) if (this.schede.has(id) && Array.isArray(l)) this.preparati.set(id, l.filter((x) => typeof x === 'string'));
     for (const u of s.usati ?? []) if (typeof u === 'string') this.usati.add(u);
     // A snapshot from before the inventory keeps the sheet's worn armor.
     if (s.indossati) {

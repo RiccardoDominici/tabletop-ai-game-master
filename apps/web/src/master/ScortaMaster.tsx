@@ -77,7 +77,7 @@ export function ScortaMaster({ id, nome, scorta, catalogo }: { id: string; nome:
           {(scorta.luci ?? []).map((l) => t('master.scorta.luce', { nome: l.nome, restante: l.restante })).join(' · ')}
         </p>
       )}
-      {catalogo && (
+      {catalogo && catalogo.voci.length > 0 && (
         <div className="flex flex-wrap items-center gap-1">
           <label className="sr-only" htmlFor={`scorta-oggetto-${id}`}>
             {t('master.scorta.oggetto_per', { nome })}

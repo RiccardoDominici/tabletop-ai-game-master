@@ -53,7 +53,7 @@ export function EsperienzaMaster({ esperienza }: { esperienza: Vista }) {
             </option>
           ))}
         </select>
-        <input data-testid="master-esperienza-motivo" aria-label={t('master.esperienza.motivo')} value={motivo} placeholder={t('master.esperienza.motivo')} onChange={(e) => setMotivo(e.target.value)} className="min-w-0 flex-1 rounded-md border border-bordo-chiaro bg-notte px-1 py-0.5 text-xs text-pergamena" />
+        <input data-testid="master-esperienza-motivo" aria-label={t('master.esperienza.motivo')} value={motivo} placeholder={t('master.esperienza.motivo')} onChange={(e) => setMotivo(e.target.value)} className="w-40 rounded-md border border-bordo-chiaro bg-notte px-1 py-0.5 text-xs text-pergamena" />
         <button type="button" data-testid="master-esperienza-assegna" disabled={!valido || inCorso} onClick={assegna} className={classePulsante('normale', 'piccolo')}>
           {t('master.esperienza.assegna')}
         </button>

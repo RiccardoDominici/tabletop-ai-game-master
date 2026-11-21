@@ -52,7 +52,7 @@ import { difesaDa } from '../regole/equipaggiamento';
 import { leggiCosto, scriviCosto } from '../regole/catalogo';
 import { applicaEffetti, type ContestoEffetti } from './effetti';
 import { riposa } from './riposo';
-import { Risorse } from './risorse';
+import { chiaveOggetto, Risorse } from './risorse';
 import { Inventario } from './inventario';
 import { TempoDiGioco } from './tempo';
 import { accendi as accendiLuce, luceDellAzione, spegni as spegniLuce, type ContestoLuci } from './luci';
@@ -322,6 +322,9 @@ export class MotoreProve {
         }
       }
       if (s.px !== undefined) this.esperienza?.imposta(id, s.px);
+      // The spells a package prepares are the PC's for this session: a rest gives them back, and a spent one is still
+      // recognised by its words (refused clearly), like the sheet's own.
+      if (s.incantesimi && sch) sch.incantesimi = [...s.incantesimi];
       const ignoti = this.risorse?.inizia(id, s) ?? [];
       if (ignoti.length) this.o.log.warn({ id, ignoti }, 'session: pg_all_inizio names counters the set does not track, ignored');
       // A level gained since the last session: the new row's extra slots are there today.
@@ -1356,7 +1359,10 @@ export class MotoreProve {
    */
   scortaConLuci(id: string, conTempo: boolean): ScortaScheda | null {
     const v = this.vistaInventario(id);
-    if (!v || (!v.oggetti.length && !v.monete.length && !v.contatori.length && !this.generico?.schede.get(id)?.equipaggiamento)) return null;
+    // A PC always has a view when the set tracks gear or coins (an empty purse can still be filled from the panel); an
+    // NPC or a monster only when it carries something.
+    const pg = !this.generico?.schede.get(id)?.di_png;
+    if (!v || (!v.oggetti.length && !v.monete.length && !v.contatori.length && !this.generico?.schede.get(id)?.equipaggiamento && !(pg && this.inventario))) return null;
     const luci = this.tempo.luciDi(id).map((l) => ({ oggetto: l.oggetto, nome: voce(this.sistema.catalogo, l.oggetto)?.nome ?? l.oggetto, restante: conTempo ? this.tempo.durata(l.restanti) : '' }));
     return { ...v, ...(luci.length ? { luci } : {}) };
   }
@@ -1487,8 +1493,9 @@ export class MotoreProve {
       }),
       condizioni: this.regoleCombattimento().condizioni.map((x) => ({ id: x.id, nome: x.nome, icona: x.icona, testo: x.testo })),
       ...(this.tipiDiRiposo().length ? { riposi: this.tipiDiRiposo() } : {}),
-      ...(this.inventario && this.sistema.catalogo
-        ? { catalogo: { voci: this.sistema.catalogo.voci.map((v) => ({ id: v.id, nome: v.nome, tipo: v.tipo, luce: v.tipo === 'attrezzo' && !!v.luce })), monete: (this.sistema.monete?.tagli ?? []).map((t) => ({ id: t.id, nome: t.nome })) } }
+      // The gear controls: the catalog's items, and the coins (a set with coins but no catalog still gets the coins).
+      ...(this.inventario && (this.sistema.catalogo || this.sistema.monete)
+        ? { catalogo: { voci: (this.sistema.catalogo?.voci ?? []).map((v) => ({ id: v.id, nome: v.nome, tipo: v.tipo, luce: v.tipo === 'attrezzo' && !!v.luce })), monete: (this.sistema.monete?.tagli ?? []).map((t) => ({ id: t.id, nome: t.nome })) } }
         : {}),
       ...(() => {
         const t = this.vistaTempo();
@@ -1545,7 +1552,10 @@ export class MotoreProve {
     const g = this.generico;
     const sch = g?.schede.get(pg);
     if (!g || !sch) return [];
-    const suoi = (g.regole.sistema.poteri ?? []).filter((p) => (p.tipo === 'incantesimo' && (sch.incantesimi ?? []).includes(p.id)) || (p.tipo === 'oggetto' && (sch.oggetti?.[p.id] ?? 0) > 0) || p.tipo === 'azione');
+    // The sheet's spells and items, and those the state has now: spells a package prepared (a cleric's first slot after a
+    // level-up), items found in play. A spent one is still found, so the Engine says it is gone instead of no roll.
+    const preparati = new Set([...(sch.incantesimi ?? []), ...(this.risorse?.incantesimiDi(pg) ?? [])]);
+    const suoi = (g.regole.sistema.poteri ?? []).filter((p) => (p.tipo === 'incantesimo' && preparati.has(p.id)) || (p.tipo === 'oggetto' && ((sch.oggetti?.[p.id] ?? 0) > 0 || (this.risorse?.restanti(pg, chiaveOggetto(p.id)) ?? null) !== null)) || p.tipo === 'azione');
     return suoi.map((p) => ({ id: p.id, parole: [...p.parole, p.nome] }));
   }
 

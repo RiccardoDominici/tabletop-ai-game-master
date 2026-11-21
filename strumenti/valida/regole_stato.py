@@ -435,11 +435,15 @@ def _continuita(c: Campagna, e: Esito, stato: dict, fatti: list[dict], dopo: int
             for sid, s in pac["scene"]:
                 if any(str(o["nome"]).lower() in json.dumps(el, ensure_ascii=False).lower() for el in s.get("elementi_interattivi") or []):
                     e.avviso("CONTINUITÀ.oggetto", sid, f"«{o['nome']}» è {o['stato']} nello stato, ma è tra gli elementi della scena")
-    # I PG non tornano indietro.
+    # I PG non tornano indietro. The level a PC plays the next session at is its package's (`pg_all_inizio.<pg>.livello`,
+    # the level-up between sessions: docs/prove.md §12), else pg.yaml's (the campaign sheet stays the first version).
+    inizio = pac["sessione"].get("pg_all_inizio") or {}
     for pg, p in (stato.get("pg") or {}).items():
         attuale = next((x for x in c.personaggi if x.get("id") == pg), {})
-        if isinstance(attuale.get("livello"), int) and isinstance((p or {}).get("livello"), int) and attuale["livello"] < p["livello"]:
-            e.errore("CONTINUITÀ.pg", "pg.yaml", f"{pg} è di livello {attuale['livello']}, ma nello stato è già {p['livello']}")
+        livello = (inizio.get(pg) or {}).get("livello", attuale.get("livello")) if isinstance(inizio.get(pg), dict) else attuale.get("livello")
+        if isinstance(livello, int) and isinstance((p or {}).get("livello"), int) and livello < p["livello"]:
+            dove = f"{nome}/sessione.yaml" if isinstance(inizio.get(pg), dict) and "livello" in inizio[pg] else "pg.yaml"
+            e.errore("CONTINUITÀ.pg", dove, f"{pg} è di livello {livello}, ma nello stato è già {p['livello']}")
 
 
 def _segreti_del_pacchetto(c: Campagna, e: Esito, pac: dict, d: Derivato, schede: dict, in_scena: set[str],

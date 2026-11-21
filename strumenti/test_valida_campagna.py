@@ -837,6 +837,14 @@ def test_continuita_pg_che_torna_indietro(arco):
     assert "CONTINUITÀ.pg" in stato_continuita(arco)[0]
 
 
+def test_continuita_pg_salito_di_livello_nel_pacchetto(arco):
+    """R3: after a level-up the next package says the level (pg_all_inizio.<pg>.livello); pg.yaml stays the first."""
+    modifica(arco, "stato/stato.yaml", lambda d: d["pg"]["pg_tobia"].update(livello=2))
+    assert "CONTINUITÀ.pg" in stato_continuita(arco)[0]
+    modifica(arco, "sessioni/02/sessione.yaml", lambda d: d.update(pg_all_inizio={"pg_tobia": {"livello": 2, "pf_da_tirare": [2]}}))
+    assert "CONTINUITÀ.pg" not in stato_continuita(arco)[0]
+
+
 # --- ARCO (il livello arco preparato prima: riferimenti/arco.md) -----------------------------------
 
 ARCO_MINI = {

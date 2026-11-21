@@ -23,6 +23,7 @@
  * 4. Scrive esperimenti/risultati/<etichetta>/: trascrizione.md (verbatim, [usa] espansi e marcati),
  *    tavolo.md (solo ciò che il tavolo ha sentito e visto, con le carte dei dadi del proiettore dal log, per il giudice cieco), turni.jsonl,
  *    costo.json, riepilogo.json (latenze, fughe di segreti, quota pre-scritta, costo).
+ * Una campagna a pacchetti gioca la sessione di TAGM_SESSIONE (come il server): il copione si controlla su quella.
  * 5. Con --chiudi, «Chiudi la sessione» a copione finito: in riepilogo.json (`serata`) le righe della chiusura,
  *    il riassunto e i turni in cui il narratore ha avuto il consiglio di fine vicina (--ore lo fa arrivare presto).
  */
@@ -322,7 +323,10 @@ function elencoBattute(repertorio: Repertorio | null): string[] {
 async function main(): Promise<void> {
   const o = leggiOpzioni(process.argv.slice(2), process.env);
   const { etichetta, modo } = o;
-  const campagna: Campagna = caricaCampagna(o.cartella ?? path.join(RADICE_REPO, 'campagne', o.campagna));
+  // A campaign of packages plays the session TAGM_SESSIONE says (the server reads the same variable): the script is
+  // checked against that package's scenes.
+  const pacchetto = /^\d+$/.test(process.env['TAGM_SESSIONE'] ?? '') ? Number(process.env['TAGM_SESSIONE']) : null;
+  const campagna: Campagna = caricaCampagna(o.cartella ?? path.join(RADICE_REPO, 'campagne', o.campagna), undefined, { pacchetto });
   const copioneIntero = caricaCopione(o.fileCopione);
   // Prova breve (--turni n): solo i primi n turni del copione.
   const copione: Copione = o.turniMax ? { ...copioneIntero, turni: copioneIntero.turni.slice(0, o.turniMax) } : copioneIntero;

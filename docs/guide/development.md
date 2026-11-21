@@ -213,6 +213,19 @@ TAGM_PORTA=4970 TAGM_SEME_DADI=0123456789abcdef npx tsx apps/server/src/esperime
   --finto --tiri automatico --uscita regole-r1
 ```
 
+A campaign of session packages plays the session `TAGM_SESSIONE` says, in the harness too (the script is checked
+against that package's scenes); with `--chiudi` the evening is closed and the server writes the session's log into the
+package. The rules-engine check of 21 November (R3) plays two sessions this way, with the level-up between them
+(`esperimenti/risultati/regole-r3/README.md`):
+
+```
+TAGM_PORTA=4991 TAGM_SEME_DADI=0123456789abcdef npx tsx apps/server/src/esperimenti/esegui.ts esperimenti/copioni/regole-r3/cripta-1.yaml \
+  A --cartella esperimenti/risultati/regole-r3/campagna/cripta --finto --tiri manuale --seme-giocatori 00112233445566778899aabbccddeeff --chiudi --uscita regole-r3/sessione-1
+python3 strumenti/tra_sessioni.py pacchetto esperimenti/risultati/regole-r3/campagna/cripta 1
+TAGM_PORTA=4992 TAGM_SESSIONE=2 TAGM_SEME_DADI=0123456789abcdef npx tsx apps/server/src/esperimenti/esegui.ts esperimenti/copioni/regole-r3/cripta-2.yaml \
+  A --cartella esperimenti/risultati/regole-r3/campagna/cripta --finto --tiri manuale --seme-giocatori 00112233445566778899aabbccddeeff --uscita regole-r3/sessione-2
+```
+
 ### Examples
 
 ```
