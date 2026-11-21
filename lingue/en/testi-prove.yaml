@@ -306,7 +306,7 @@ prove:
     rialzato: "{nome}'s eyes open again."
     morto: "{nome} dies."
     fuggito: "{nome} flees."
-    buio: "{nome}'s light goes out."
+    buio: "{nome}'s light gutters out."
   # Engine lines that replace a narrator sentence contradicting the cards (narrazione/guardia-esiti.ts).
   guardia:
     manca: "{chi} misses {bersaglio}."

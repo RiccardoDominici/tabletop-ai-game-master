@@ -814,7 +814,10 @@ monsters), and R1 ticked its round durations once per closed window as a stopgap
   when an action has the words of one of `tempo.azioni`; while a PC is dying a window is one round (the table acts in
   the moment), so binding a friend in the next window still comes in time. A rest takes its `durata` (a night: eight
   hours), after the healing. The Game Master moves it from the panel (command `tempo`: `avanza` by a duration, or a
-  `viaggio`). A set without `tempo` keeps the old rule (a window is one round) and the panel shows no clock.
+  `viaggio`). A set without `tempo` keeps the old rule (a window is one round) and the panel shows no clock. The SRD 5.2 has its
+  6-second round and 8-hour long rest as data but no window rule or start hour (`mostra: false`): its clock counts
+  durations and is neither shown nor told. A one-shot's or a package's start hour (`tempo_all_inizio`) is the Engine's,
+  never the narrator's.
 - **What runs on it.** The timed effects (prove/attivi.ts) and the dying window (prove/morte.ts) tick by the whole
   rounds that went by; a duration in turns or hours (hold person's 2d8 turns) is turned into rounds when it is given.
 - **Light.** A catalog item with `luce` is lit by an action's words («accendo una torcia»: the language pack's

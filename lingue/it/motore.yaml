@@ -226,7 +226,7 @@ fatti_dovuti:
   rialzato: [occhi, rialz, alza, sensi, torna, sveglia, risveglia, riprend, rinvien, rinven]
   morto: [mort, muor, morir, spir, esanim, cadaver, uccis, defunt]
   fuggito: [fugg, fuga, scapp, ritir, dilegu, sparisc, sparit, corre, indietreg]
-  buio: [spegn, spent, buio, oscur, consum, luce]
+  buio: [spegn, spens, spent, buio, oscur]
 
 # Elementi nascosti delle schede scena (apps/server/src/campagna/nascosto.ts, strumenti/valida/lingua.py,
 # strumenti/audio/campagna_audio.py): un elemento interattivo con uno di questi marcatori (inizio di parola, maiuscole

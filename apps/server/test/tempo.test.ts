@@ -5,12 +5,16 @@
  * the clock (an owed fact); a lantern burns oil; a duration in turns becomes rounds; the clock rides the snapshot. On
  * the invented bottega fixture.
  */
+import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { caricaCampagna } from '../src/campagna/caricatore';
 import { loggerMuto } from '../src/logger';
 import type { FonteDadi } from '../src/prove/dadi';
-import { fattiDovuti } from '../src/prove/fatti-dovuti';
+import { fattiDovuti, fattiMancanti } from '../src/prove/fatti-dovuti';
+import { TempoDiGioco } from '../src/prove/tempo';
+import { sistemaSrd } from '../src/regole/srd';
 import { MotoreProve } from '../src/prove/motore';
 import { caricaRegole } from '../src/regole/caricatore';
 import { caricaSchedeGeneriche } from '../src/regole/schede';
@@ -146,5 +150,30 @@ describe('travel (the set’s viaggio)', () => {
     const m = motore();
     m.inventarioDelMaster({ tipo: 'inventario', id: 'pg_bice', cosa: 'oggetto', oggetto: 'corda', quante: 11 });
     expect(m.tempoDelMaster({ cosa: 'viaggio', distanza: 5, terreno: 'bosco' })).toMatchObject({ ok: false, fatto: 'Bice porta troppo peso per muoversi: il gruppo non parte.' });
+  });
+});
+
+describe('the owed light-out fact, and the SRD’s hidden clock', () => {
+  it('a line that tells the light going out counts; «fa luce» does not', () => {
+    const dovuto = [{ tipo: 'buio' as const, id: 'pg_aldo', nome: 'Aldo' }];
+    expect(fattiMancanti(dovuto, ['Aldo fa luce con la torcia e scende.'])).toHaveLength(1);
+    expect(fattiMancanti(dovuto, ['La torcia di Aldo si spegne con uno sfrigolio.'])).toEqual([]);
+    expect(fattiMancanti(dovuto, ['Aldo resta al buio.'])).toEqual([]);
+  });
+
+  it('the SRD 5.2 counts its round and rest lengths but shows and tells no time of day', () => {
+    const t = new TempoDiGioco(sistemaSrd().tempo!, { nome: (x) => x, nomeOggetto: (x) => x, log: loggerMuto() });
+    expect(t.mostrato).toBe(false);
+    expect(t.secondiRound).toBe(6);
+  });
+
+  it('a one-shot’s start hour is for the Engine, not the narrator', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bottega-'));
+    fs.cpSync(BOTTEGA, dir, { recursive: true });
+    fs.appendFileSync(path.join(dir, 'campagna.yaml'), 'tempo_all_inizio: {giorno: 1, ora: 17}\n');
+    const c = caricaCampagna(dir);
+    expect(c.statoAllInizio?.tempo).toBe(17 * 3600);
+    expect(c.campagnaNarratore['tempo_all_inizio']).toBeUndefined();
+    fs.rmSync(dir, { recursive: true, force: true });
   });
 });

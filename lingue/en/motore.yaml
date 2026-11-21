@@ -228,7 +228,7 @@ fatti_dovuti:
   rialzato: [eye, wak, rise, rose, stir, conscious, gasp, reviv]
   morto: [dead, die, death, lifeless, kill, corpse, perish]
   fuggito: [flee, fled, run, ran, bolt, escap, retreat, scatter, vanish, away]
-  buio: [out, dark, burn, light, gutter, extinguish]
+  buio: [dark, gutter, extinguish, snuff, sputter]
 
 # Hidden elements of the scene sheets (apps/server/src/campagna/nascosto.ts, strumenti/valida/lingua.py,
 # strumenti/audio/campagna_audio.py): an interactive element with one of these markers (start of a word, any case)

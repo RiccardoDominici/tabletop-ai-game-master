@@ -57,6 +57,8 @@ export class Inventario {
           sch.equipaggiamento = [];
           sch.attacchiPropri = sch.attacchi;
           sch.difesaScritta = sch.difesa;
+          // Its typed AC (a monster's hide, an NPC's) stands until it puts on an armor or a shield.
+          if (sch.difesa !== null) sch.difesaPropria = true;
         }
         applicaDotazione(this.s, sch, this.dotazione(sch.id));
       }

@@ -53,7 +53,7 @@ export class TempoDiGioco {
     inizio: number | null = null,
   ) {
     this.regola = regola ?? SENZA_TEMPO;
-    this.mostrato = regola !== null;
+    this.mostrato = regola !== null && regola.mostra !== false;
     this.inizio = inizio ?? this.regola.inizio;
   }
 

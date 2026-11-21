@@ -37,6 +37,11 @@ export interface RegolaTempo {
   azioni: Array<{ parole: string[]; secondi: number }>;
   /** Seconds after midnight of day 1 at which the session starts. */
   inizio: number;
+  /**
+   * The clock is shown and told (panel, phone, the narrator's «ora è …»). False for a set that has round and rest
+   * lengths but no window rule or start hour (the SRD 5.2): its durations count, its time of day would mean nothing.
+   */
+  mostra?: boolean;
 }
 
 type D = Record<string, unknown>;

@@ -63,8 +63,8 @@ export function sistemaSrd(): SistemaRegole {
     // SRD 5.2, «Long Rest»: at least 8 hours. The long rest takes them on the game clock.
     riposo: [{ id: 'lungo', nome: srd.riposo_lungo, cura: { tipo: 'tutti' }, ricarica: true, durata: 8 * 3600 }],
     // SRD 5.2: a round is 6 seconds. The SRD gives no exploration turn, so a closed window outside a fight is one round,
-    // as before the clock; only a rest or the Game Master moves it further.
-    tempo: { unita: unitaSrd(srd.tempo ?? {}), round: 'round', perFinestra: 6, azioni: [], inizio: 0 },
+    // as before the clock, and no hour: the clock counts durations but is neither shown nor told (`mostra: false`).
+    tempo: { unita: unitaSrd(srd.tempo ?? {}), round: 'round', perFinestra: 6, azioni: [], inizio: 0, mostra: false },
   };
 }
 

@@ -233,3 +233,21 @@ describe('load and movement (the set’s carico and movimento)', () => {
     expect(m.vistaInventario('pg_bice')!.carico).toMatchObject({ fascia: 'Sovraccarico', limite: null, movimento: 0 });
   });
 });
+
+describe('a monster that picks something up keeps its own AC', () => {
+  it('an item and coins on the stone guard: AC 15 stays, through a resume and «Ricomincia»; a shield adds to it', () => {
+    const m = motore([10]);
+    m.inventarioDelMaster({ tipo: 'inventario', id: 'png_guardia', cosa: 'oggetto', oggetto: 'corda' });
+    m.inventarioDelMaster({ tipo: 'inventario', id: 'png_guardia', cosa: 'monete', monete: { mo: 2 } });
+    expect(m.vistaInventario('png_guardia')!.difesa).toBe(15);
+    expect(m.vistaInventario('png_guardia')!.attacchi).toEqual(['Mazza di granito']);
+    const r = motore([10]);
+    r.importa(JSON.parse(JSON.stringify(m.esporta())));
+    expect(r.vistaInventario('png_guardia')!.difesa).toBe(15);
+    r.inventarioDelMaster({ tipo: 'inventario', id: 'png_guardia', cosa: 'oggetto', oggetto: 'scudo' });
+    r.inventarioDelMaster({ tipo: 'inventario', id: 'png_guardia', cosa: 'indossa', oggetto: 'scudo' });
+    expect(r.vistaInventario('png_guardia')!.difesa).toBe(16);
+    r.azzera();
+    expect(r.vistaInventario('png_guardia')!.difesa).toBe(15);
+  });
+});

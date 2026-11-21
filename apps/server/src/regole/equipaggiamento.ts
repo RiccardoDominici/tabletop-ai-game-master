@@ -144,8 +144,10 @@ export function attacchiDa(s: SistemaRegole, sch: SchedaGenerica, d: Dotazione):
  */
 export function applicaDotazione(s: SistemaRegole, sch: SchedaGenerica, d: Dotazione): string | null {
   if (!s.catalogo || !sch.equipaggiamento) return null;
-  const dif = difesaDa(s, sch, d);
-  sch.difesa = dif?.valore ?? sch.difesaScritta ?? null;
+  const vestito = indossate(s, d);
+  // A sheet with its own typed AC (a monster) keeps it, plus a shield it picks up; only a worn armor replaces it.
+  const dif = sch.difesaPropria && !vestito.armatura ? null : difesaDa(s, sch, d);
+  sch.difesa = dif?.valore ?? (sch.difesaScritta !== null && sch.difesaScritta !== undefined ? sch.difesaScritta + (vestito.scudo?.bonus ?? 0) : null);
   sch.attacchi = attacchiDa(s, sch, d);
   return dif?.da ?? null;
 }

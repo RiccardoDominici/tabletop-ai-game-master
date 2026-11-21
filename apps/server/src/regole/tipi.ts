@@ -277,5 +277,10 @@ export interface SchedaGenerica {
   attacchiPropri?: SchedaGenerica['attacchi'];
   /** The AC the sheet writes by hand (kept when gear gives none). */
   difesaScritta?: number | null;
+  /**
+   * The sheet's own AC stands unless it wears an armor or a shield (a monster or an NPC that picked up an item in play:
+   * its typed AC is natural armor, not «no armor»). Set when a sheet without starting gear gains some.
+   */
+  difesaPropria?: boolean;
   avvisi: string[];
 }

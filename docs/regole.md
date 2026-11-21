@@ -278,7 +278,8 @@ attack lines from the catalog, recomputed whenever the gear changes: the worn ar
 `difesa.caratteristica` bonus (capped by `max_caratteristica`) + the worn shield; one line per carried weapon (melee with
 `abilita.mischia` and the damage characteristic; a two-handed line; a missile line with `abilita.distanza`, the bands,
 the ammunition and the rate of fire; a thrown line), in the order the sheet lists them, then the sheet's own lines. A
-sheet without `equipaggiamento` (a monster, a set without a catalog) keeps its typed `difesa` and `attacchi`; one that
+sheet without `equipaggiamento` (a monster, a set without a catalog) keeps its typed `difesa` and `attacchi`, also when
+it picks something up in play (its AC is its own hide: a shield adds to it, only a worn armor replaces it); one that
 types both gets a warning, and the gear's numbers stand.
 
 In play (prove/inventario.ts, prove/gittate.ts; docs/prove.md §10): what each character carries and wears and its coins

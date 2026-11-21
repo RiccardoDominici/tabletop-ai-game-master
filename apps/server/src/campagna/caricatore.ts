@@ -221,7 +221,10 @@ export function caricaCampagna(cartella: string, log?: Logger, opzioni: OpzioniC
   }
 
   // Where the PCs and the clock start this session (the previous log's end, copied by strumenti/tra_sessioni.py).
-  // A one-shot (or a campaign's first session written in campagna.yaml) may say the hour it starts at, the same way.
+  // A one-shot (or a campaign's first session written in campagna.yaml) may say the hour it starts at, the same way;
+  // like a package's, those keys are for the Engine, not the narrator.
+  delete campagnaNarratore['tempo_all_inizio'];
+  delete campagnaNarratore['pg_all_inizio'];
   let inizio: Campagna['statoAllInizio'] | null = null;
   try {
     inizio = scelto && sessioneGrezza ? statoAllInizio(sessioneGrezza, pg.map((p) => p.id), `${relPacchetto}/${FILE_SESSIONE}`) : statoAllInizio(campagnaGrezza, pg.map((p) => p.id), 'campagna.yaml');
