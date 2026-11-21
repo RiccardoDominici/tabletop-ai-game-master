@@ -937,7 +937,7 @@ export class MotoreProve {
       condizioni: (id) => this.combattimento.condizioniDi(id),
       turni: { regole: this.regoleCombattimento().iniziativa.tipo !== 'nessuna', inCorso: this.combattimento.aTurni },
       effetti: this.contestoEffetti(turno, c),
-      ...(this.risorse ? { poteri: { risorse: this.risorse, nemici: (autore: string) => this.nemiciDi(c, autore), alleati: () => c.pgAlTavolo.filter((id) => g.schede.has(id)), immuneAttivo: (id: string, cosa: string) => this.attivi.immune(id, cosa) || this.immuneDiScheda(id, cosa) } } : {}),
+      ...(this.risorse ? { poteri: { risorse: this.risorse, nemici: (autore: string) => this.nemiciDi(c, autore), alleati: () => c.pgAlTavolo.filter((id) => g.schede.has(id)), immuneAttivo: (id: string, cosa: string) => this.attivi.immune(id, cosa) || this.immuneDiScheda(id, cosa), condizioni: (id: string) => this.attivi.condizioni(id) } } : {}),
       extraSalvezza: (id: string, abilita: string) => this.attivi.bonus(id, 'salvezze') + bonusTratti(this.trattiDi(id), { tipo: 'salvezza', colonna: colonnaDi(g.regole.sistema, abilita) }),
       extraAbilita: (id: string, abilita: string) => bonusTratti(this.trattiDi(id), { tipo: 'abilita', abilita }),
       bonusAttivi: (id: string, a: 'difesa' | 'attacchi' | 'danni', contro: 'mischia' | 'distanza') => this.attivi.bonus(id, a, contro),

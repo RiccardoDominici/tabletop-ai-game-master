@@ -825,6 +825,7 @@ poteri:
     tipo: azione
     bersaglio: nemici
     solo_tipi: [non_morto]
+    ostile: true
     parole: [scaccio, scacciare, scacciarli, "simbolo sacro", "non morti"]
     tabella:
       dado: "1d20"

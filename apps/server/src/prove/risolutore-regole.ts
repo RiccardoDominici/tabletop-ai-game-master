@@ -124,7 +124,7 @@ export interface OpzioniRisolutoreRegole {
    * The set's powers and the characters' resources (prove/poteri.ts, prove/risorse.ts): spells, items, ammunition, the
    * once-per-target sneak attack. Absent = no power can be used and nothing is counted (as before).
    */
-  poteri?: Pick<ContestoPoteri, 'risorse' | 'nemici' | 'alleati' | 'immuneAttivo' | 'indossate'>;
+  poteri?: Pick<ContestoPoteri, 'risorse' | 'nemici' | 'alleati' | 'immuneAttivo' | 'indossate' | 'condizioni'>;
   /**
    * What each character wears now and what its class or race restrictions forbid while worn (regole/equipaggiamento.ts,
    * penalitaIndossate): abilities blocked (a thief in metal armor), no spells. Absent = nothing blocked.
@@ -173,7 +173,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
   }
   const { cheCosa, cartaDa, attacca, bersaglioDiSalvezza, salvezzaDelBersaglio, munizioni, aggiustamentoDi } = strumentiRegole(o);
   // The PC's own dice for one roll of an action (manual rolls), or the Engine's.
-  const dadiDelPg = (a: AzioneRisolvibile, per: 'prova' | 'danno', extra: Pick<GruppoDadi, 'etichetta' | 'modificatore'> = {}): FonteDadi =>
+  const dadiDelPg = (a: AzioneRisolvibile, per: 'prova' | 'danno' | 'effetto', extra: Pick<GruppoDadi, 'etichetta' | 'modificatore'> = {}): FonteDadi =>
     o.dadiDeiPg?.fonte({ pg: a.autore, per, azione: a.id, privata: a.privata, ...extra }) ?? o.dadi;
 
   o.azioni.forEach((a, i) => {
@@ -209,7 +209,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
       } else {
         const r = usaPotere(
           { sistema: s, schede: o.schede, effetti: o.effetti, salvezza: salvezzaDelBersaglio, log: o.log, ...(o.indossate ? { indossate: o.indossate } : {}), ...o.poteri },
-          { autore: a.autore, potere: p, bersaglio: d.bersaglio && o.esiste(d.bersaglio) ? d.bersaglio : null, privata: a.privata, dadiAutore: dadiDelPg(a, 'danno', { etichetta: p.nome, modificatore: 0 }), dadiDelPg: (pg) => o.dadiDeiPg?.fonte({ pg, per: 'contesa', azione: a.id, privata: a.privata, etichetta: p.nome }) ?? o.dadi },
+          { autore: a.autore, potere: p, bersaglio: d.bersaglio && o.esiste(d.bersaglio) ? d.bersaglio : null, privata: a.privata, dadiAutore: dadiDelPg(a, 'danno', { etichetta: p.tabella?.colpiti ? testo('prove.scacciare.etichetta_colpiti', { potere: p.nome }) : p.nome, modificatore: 0 }), ...(p.tabella ? { dadiProva: dadiDelPg(a, 'prova'), dadiEffetto: dadiDelPg(a, 'effetto', { etichetta: testo('prove.scacciare.etichetta_danno', { potere: p.nome }), modificatore: 0 }) } : {}), dadiDelPg: (pg) => o.dadiDeiPg?.fonte({ pg, per: 'contesa', azione: a.id, privata: a.privata, etichetta: p.nome }) ?? o.dadi },
         );
         for (const t of r.tiri) aggiungi(t);
         ostili.push(...r.ostili);

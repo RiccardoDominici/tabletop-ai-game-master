@@ -15,6 +15,7 @@ import type { FonteDadi } from './dadi';
 import { applicaEffetti, type ContestoEffetti } from './effetti';
 import { chiaveOggetto, chiaveSlot, type Risorse } from './risorse';
 import type { EsitoTiroGenerico } from '../regole/risoluzione';
+import { usaTabella } from './scacciare';
 
 export interface ContestoPoteri {
   sistema: SistemaRegole;
@@ -31,6 +32,8 @@ export interface ContestoPoteri {
   immuneAttivo?: (id: string, cosa: string) => boolean;
   /** What the caster wears forbids spells (regole/equipaggiamento.ts, penalitaIndossate): a magic-user in armor. */
   indossate?: (id: string) => Penalita & { motivi: string[] };
+  /** The timed conditions on a character (prove/attivi.ts): a table power does not target the already turned. */
+  condizioni?: (id: string) => string[];
   log: Logger;
 }
 
@@ -44,6 +47,10 @@ export interface UsoPotere {
   dadiAutore: FonteDadi;
   /** A PC target's dice for its own save (manual rolls); NPCs use the Engine's. */
   dadiDelPg: (pg: string) => FonteDadi;
+  /** The author's dice for a power's own roll (a table power's d20: the action's test, prove/scacciare.ts). */
+  dadiProva?: FonteDadi;
+  /** The author's dice for a power's second roll after the damage group (a table power's D damage). */
+  dadiEffetto?: FonteDadi;
 }
 
 export interface EsitoPotere {
@@ -145,6 +152,11 @@ export function usaPotere(c: ContestoPoteri, u: UsoPotere): EsitoPotere {
       return out;
     }
     costo = testo('prove.poteri.costo_oggetto', { restanti: c.risorse.restanti(u.autore, chiaveOggetto(p.id)) ?? 0 });
+  }
+  // A power rolled against the author's class table (Turn Undead): its own routine (prove/scacciare.ts).
+  if (p.tabella) {
+    usaTabella(c, u, bersagli(c, u, out.fatti), out);
+    return out;
   }
   out.usato = true;
   out.fatti.push(testo('prove.poteri.usa', { nome: chi, potere: p.nome, costo }));

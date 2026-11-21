@@ -130,6 +130,8 @@ export class GestoreCombattimento {
   private fuggiti: EsitoCombattimento['fuggiti'] = [];
   /** The order rolled in this call of dopoAzioni (start of the fight, or a new round's individual initiative). */
   private ordineTirato: string[] | null = null;
+  /** The combatants of the last fight that ended (until the next one starts). */
+  private ultimiPartecipanti: Partecipante[] = [];
 
   constructor(private readonly d: DipendenzeCombattimento) {}
 
@@ -167,9 +169,12 @@ export class GestoreCombattimento {
     return (this.s?.partecipanti ?? []).filter((p) => p.lato === lato && p.esito === 'in_gioco' && !this.d.stato.aTerra(p.id)).map((p) => p.id);
   }
 
-  /** Every combatant of a side in the fight, standing or not (the XP ledger reads the defeated enemies, prove/esperienza.ts). */
+  /**
+   * Every combatant of a side in the fight, standing or not; after a fight ends, those of the fight just ended (a fight
+   * that starts and ends in one pass: every undead turned at once). The XP ledger reads the defeated (prove/esperienza.ts).
+   */
   partecipanti(lato: Lato): string[] {
-    return (this.s?.partecipanti ?? []).filter((p) => p.lato === lato).map((p) => p.id);
+    return (this.s?.partecipanti ?? this.ultimiPartecipanti).filter((p) => p.lato === lato).map((p) => p.id);
   }
 
   /** Condizioni attive di un personaggio, per i resolver (prove/condizioni.ts). */
@@ -245,6 +250,7 @@ export class GestoreCombattimento {
    * riceve i fatti di chi è già a 0 (l'attacco che ha aperto lo scontro): il morale (B/X).
    */
   inizia(candidati: Array<{ id: string; lato: Lato; mod: number }>, dopo: string[] = [], apre: Lato | null = null): string {
+    this.ultimiPartecipanti = [];
     const r = this.d.regole;
     const dadi = this.d.dadi();
     const partecipanti: Partecipante[] = candidati.map((c) => ({
@@ -736,6 +742,7 @@ export class GestoreCombattimento {
       this.d.log.info({ motivo, round: this.s.round }, 'combattimento: finito');
     }
     fatti.push(testo('prove.combattimento.finito', { motivo }));
+    this.ultimiPartecipanti = this.s ? [...this.s.partecipanti] : [];
     this.s = null;
     this.ordineTirato = null;
     return true;

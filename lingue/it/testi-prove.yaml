@@ -158,6 +158,20 @@ prove:
   # Saving throws pinned to their own number (regole/salvezze.ts).
   salvezze:
     tiro_salvezza: "tiro salvezza"
+  # A power rolled against the author's class table (prove/scacciare.ts): Turn Undead.
+  scacciare:
+    non_sa: "{nome} non sa usare {potere}: la sua classe non ha la tabella."
+    bloccato: "{nome} ha appena fallito {potere}: deve aspettare prima di riprovare."
+    tiro: "{nome} usa {potere}: tira {dado} sulla tabella del suo livello e {esito}."
+    riesce: "riesce su {n} di loro, dal più debole"
+    fallisce: "non riesce su nessuno"
+    colpiti: "Dadi vita colpiti: {dadi}; ne subiscono l'effetto {nomi}."
+    distrutto: "{nome} si sgretola in polvere."
+    attesa: "{potere} è fallito almeno in parte: {nome} non può riprovarci per un po'."
+    cella_no: "impossibile al suo livello"
+    cella_auto: "riesce da sé"
+    etichetta_colpiti: "{potere}: dadi vita colpiti"
+    etichetta_danno: "{potere}: danno ai non morti"
   # The Game Master's secret rolls (M9: abilita[].segreta): the card stays on the panel; the narrator tells it as the
   # character perceives it.
   segreta:

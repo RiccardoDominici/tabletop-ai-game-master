@@ -152,6 +152,20 @@ prove:
   # Saving throws pinned to their own number (regole/salvezze.ts).
   salvezze:
     tiro_salvezza: "saving throw"
+  # A power rolled against the author's class table (prove/scacciare.ts): Turn Undead.
+  scacciare:
+    non_sa: "{nome} cannot use {potere}: their class has no table for it."
+    bloccato: "{nome} has just failed {potere}: they must wait before trying again."
+    tiro: "{nome} uses {potere}: rolls {dado} on their level's table and {esito}."
+    riesce: "it works on {n} of them, weakest first"
+    fallisce: "it works on none"
+    colpiti: "Hit dice affected: {dadi}; affected: {nomi}."
+    distrutto: "{nome} crumbles to dust."
+    attesa: "{potere} failed at least in part: {nome} cannot try again for a while."
+    cella_no: "impossible at their level"
+    cella_auto: "works by itself"
+    etichetta_colpiti: "{potere}: hit dice affected"
+    etichetta_danno: "{potere}: damage to the undead"
   # The Game Master's secret rolls (M9: abilita[].segreta): the card stays on the panel; the narrator tells it as the
   # character perceives it.
   segreta:

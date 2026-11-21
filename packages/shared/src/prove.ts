@@ -140,9 +140,10 @@ export interface TiroMostrato {
 
 /**
  * What a player's roll is for, beyond the action's own test (docs/prove.md §8): the damage of a hit, the second PC's
- * die in a contest, initiative, a death saving throw, a level-up's hit points. Absent = the action's own test.
+ * die in a contest, initiative, a death saving throw, a level-up's hit points, a power's second roll after its damage
+ * (Turn Undead's D damage). Absent = the action's own test.
  */
-export type PerTiro = 'danno' | 'contesa' | 'iniziativa' | 'morte' | 'punti_ferita';
+export type PerTiro = 'danno' | 'contesa' | 'iniziativa' | 'morte' | 'punti_ferita' | 'effetto';
 
 /**
  * A roll the Engine asks a player to make with real dice (docs/prove.md §8, «Manual rolls»): «Fai un tiro di

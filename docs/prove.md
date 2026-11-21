@@ -883,6 +883,17 @@ the XP the party earns (prove/esperienza.ts), by the set's `esperienza`, never t
 - **An NPC's save** against a PC's power is a Game Master roll by `tiri_master` too (R1 kept it always hidden): hidden by
   default, a normal card at the table with `visibili`, and with `a_volte` when its odds are between one in three and two
   in three.
+- **Turn Undead** (prove/scacciare.ts; Basic Fantasy p. 57–58, audit X-TU-01, P5-47, P5-48): a power with a `tabella`,
+  rolled against the author's class rows (`classi[].tabelle.<power>`). A class without rows cannot use it. The targets
+  are the reachable enemies of its `solo_tipi` not already under its condition; each one's column is the one its sheet's
+  `tipo` names, else its hit dice's. The author rolls the table's die once for the group (the action's own roll: the
+  phone asks it), checked from the weakest up and stopping at the first that resists; on a success the author rolls the
+  hit dice affected (`colpiti`, a follow-up request), spent weakest first, at least one creature. A `D` cell's damage
+  (`distrugge`, 1d8 × level) is rolled once (a third request with manual rolls) and dealt to each D target: one at 0
+  crumbles to dust; every affected one still standing gets the power's effects (Basic Fantasy: `scacciato` for 2d4 turns,
+  out of the fight, the duration a Game Master roll). Any target that resisted locks the power for `dopo_fallimento` (a
+  turn: an immunity of the author to `uso:<power>`, ticking on the game clock). The power is `ostile`: it opens a fight,
+  and the turned, out of it, count as defeated for XP when it ends.
 - **Not yet**: the SRD 5.2 has no XP data (its XP by challenge rating are not in the code's set); retainers.
 
 Tests: test/esperienza.test.ts (fixture cripta), test/progressione.test.ts and strumenti/test_valida_progressione.py (the
