@@ -173,6 +173,17 @@ def controlla(r: dict, car: set[str], e: Esito, dove: str = "regole/regole.yaml"
         ids = {x.get("id") for x in c.get("condizioni") or [] if isinstance(x, dict)}
         if resa is not None and not (isinstance(resa, dict) and resa.get("condizione") in ids):
             _err(e, dove, "fine.morale.resa.condizione: una condizione del set")
+    # Subduing damage (Basic Fantasy pp. 55–56): {parole, attacco, danno: meta | normale, a_mani_nude: {danno, parole}, sveglia}.
+    nl = c.get("non_letale")
+    if nl is not None:
+        if not (isinstance(nl, dict) and isinstance(nl.get("parole"), list) and nl["parole"] and all(isinstance(p, str) for p in nl["parole"])):
+            _err(e, dove, "non_letale.parole: le parole di un attacco per tramortire («col piatto»)")
+        elif not isinstance(nl.get("attacco", 0), int) or isinstance(nl.get("attacco", 0), bool):
+            _err(e, dove, "non_letale.attacco: un intero (−4)")
+        elif nl.get("danno", "meta") not in ("meta", "normale"):
+            _err(e, dove, "non_letale.danno: meta o normale")
+        elif "a_mani_nude" in nl and not (isinstance(nl["a_mani_nude"], dict) and formula_valida(nl["a_mani_nude"].get("danno"))):
+            _err(e, dove, "non_letale.a_mani_nude: {danno: \"1d3\", parole: [pugno, …]}")
     # Missiles that miss into a melee (Basic Fantasy p. 55): {alleati: n ≥ 1}.
     nm = c.get("nella_mischia")
     if nm is not None and not (isinstance(nm, dict) and isinstance(nm.get("alleati"), int) and not isinstance(nm.get("alleati"), bool) and nm["alleati"] >= 1):

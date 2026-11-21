@@ -1247,6 +1247,10 @@ combattimento:
   # Tiri che mancano in una mischia (p. 55): il colpo mancato a un nemico in mischia con altri PG va verso di loro, uno
   # dopo l'altro finché uno è colpito (lo tira il master); il manuale non dà un limite, qui tutti quelli in mischia.
   nella_mischia: {alleati: 9}
+  # Danno per tramortire (p. 55–56): col piatto della lama, −4 a colpire e metà danno; a zero punti ferita con un po' di
+  # questo danno (e meno danno vero dei punti ferita massimi) si resta svenuti, non morti, e ci si riprende con un punto
+  # ferita dopo 1d4 turni. A pugni 1d3, sempre per tramortire. Il calcio (1d4, −2) resta fuori.
+  non_letale: {parole: [col piatto, di piatto, tramortirlo, tramortirla, tramortisco, senza ucciderlo, senza ucciderla], attacco: -4, danno: meta, a_mani_nude: {danno: "1d3", parole: [pugno, pugni, a mani nude, cazzotto, cazzotti]}, sveglia: {turno: "1d4"}}
   # Morale (p. 57): 2d6, con più del morale il mostro fugge, o si arrende se è intelligente (`si_arrende` sulla scheda).
   # Si tira quando i mostri incontrano la prima opposizione (il primo attacco di un PG a uno di loro) e a metà forze (per
   # numero; un mostro solo a metà dei punti ferita); un tiro per la parte, letto contro il morale di ciascuno. Lo tira il

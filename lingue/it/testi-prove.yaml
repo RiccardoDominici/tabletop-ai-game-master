@@ -41,6 +41,7 @@ prove:
     pari: "PARI: nessuno prevale, la situazione resta com’era"
   # Righe di fatto per il narratore: l'esito è già deciso, ne racconta la conseguenza.
   fatto:
+    tramortito: " {nome} è tramortito, non morto."
     # A missile that misses into a melee (Basic Fantasy p. 55): the Game Master rolls it at an engaged ally.
     nella_mischia: " Il colpo finisce nella mischia, verso {nome}: {dettagli}"
     attacco: "attacco con {arma}{verso}{vantaggio}: {confronto}{naturale} → {esito}{critico}{danno}{stato}."
@@ -230,6 +231,8 @@ prove:
     # The set's situational modifiers that apply to an attack (regole.yaml → modificatori), after the roll's rule.
     situazioni: " (compresi: {elenco})"
     condizioni: " (condizioni: {elenco})"
+    non_letale: " (per tramortire{malus}, metà danno)"
+    a_mani_nude: " (a mani nude, per tramortire)"
     colpisce: "Colpisce"
   # La sezione «Esiti dei tiri» del messaggio del narratore e del selettore.
   esiti:
@@ -318,6 +321,8 @@ prove:
     lato_png: "i nemici"
     morale_cedono: "Morale dei nemici: {tiro} contro {morale} → CEDONO e fuggono ({nomi})."
     morale_tengono: "Morale dei nemici: {tiro} contro {morale} → tengono."
+    tramortito_dorme: "{nome} è tramortito: resta senza sensi, ma vivo, e si riprenderà da solo."
+    tramortito_sveglio: "{nome} si riprende con 1 punto ferita."
     # Morale per creature (R4, Basic Fantasy p. 57): one 2d6 for the side, read against each one's own score.
     morale_chi: "I nemici"
     morale_etichetta: "Morale"

@@ -10,6 +10,7 @@
 import type { TipoRisoluzione } from '@tabletop-ai-gm/shared';
 import { datiProve } from '../prove/lingua';
 import { leggiFormula, type FormulaDadi } from '../campagna/regole-srd';
+import { leggiDurata, type Durata } from './effetti';
 
 /** Effetti meccanici che il Motore sa applicare (le condizioni li combinano). */
 export const EFFETTI = [
@@ -148,6 +149,13 @@ export interface Combattimento {
    * Absent = a miss is a miss.
    */
   nellaMischia?: { alleati: number } | null;
+  /**
+   * Subduing damage (Basic Fantasy pp. 55–56): an attack whose words say so (`parole`: «col piatto della spada») is made
+   * at `attacco` (−4) for half damage (`danno: meta`) that knocks out instead of killing: a creature brought to 0 with
+   * some subduing damage and less killing damage than its hit points is unconscious, not dead, and wakes with 1 hit
+   * point after `sveglia` (1d4 turns). Bare hands (`a_mani_nude`: their dice and words) are always subduing. Absent = none.
+   */
+  nonLetale?: { parole: string[]; attacco: number; danno: 'meta' | 'normale'; aManiNude: { danno: FormulaDadi; parole: string[] } | null; sveglia: Durata } | null;
 }
 
 /**
@@ -354,6 +362,22 @@ export function leggiCombattimento(v: unknown, base: Combattimento, caratteristi
       const c = resa?.['condizione'];
       if (typeof c !== 'string' || !out.condizioni.some((x) => x.id === c)) errori.push(`combattimento.fine.morale.resa.condizione: «${String(c)}» is not one of the set's conditions`);
       else out.fine.resa = c;
+    }
+  }
+  if (d['non_letale'] !== undefined && d['non_letale'] !== null) {
+    const nl = ogg(d['non_letale']);
+    const parole = Array.isArray(nl?.['parole']) ? (nl!['parole'] as unknown[]).filter((x): x is string => typeof x === 'string' && !!x.trim()) : [];
+    const attacco = nl?.['attacco'] ?? 0;
+    const danno = nl?.['danno'] ?? 'meta';
+    const mn = nl ? ogg(nl['a_mani_nude']) : null;
+    const dm = mn ? leggiFormula(mn['danno']) : null;
+    if (!nl || !parole.length) errori.push('combattimento.non_letale.parole: the words of a subduing attack («col piatto»)');
+    else if (typeof attacco !== 'number' || !Number.isInteger(attacco)) errori.push('combattimento.non_letale.attacco: a whole number (−4)');
+    else if (danno !== 'meta' && danno !== 'normale') errori.push('combattimento.non_letale.danno: meta or normale');
+    else if (nl['a_mani_nude'] !== undefined && (!mn || !dm)) errori.push('combattimento.non_letale.a_mani_nude: {danno: "1d3", parole: [pugno, …]}');
+    else {
+      const parMani = mn && Array.isArray(mn['parole']) ? (mn['parole'] as unknown[]).filter((x): x is string => typeof x === 'string' && !!x.trim()) : [];
+      out.nonLetale = { parole, attacco, danno, aManiNude: dm ? { danno: dm, parole: parMani } : null, sveglia: leggiDurata(nl['sveglia'], 'combattimento.non_letale.sveglia', errori, { tipo: 'tempo', unita: 'turno', dadi: { numero: 1, facce: 4, bonus: 0 } }) };
     }
   }
   if (d['nella_mischia'] !== undefined && d['nella_mischia'] !== null) {

@@ -41,6 +41,8 @@ export interface StatoProveSalvato {
   esperienza?: StatoEsperienzaSalvato;
   /** Each PC's level and maximum hit points, and the level-up's rolls still owed (prove/livelli.ts). */
   livelli?: StatoLivelliSalvato;
+  /** Subduing and killing damage taken since the last full health (Basic Fantasy pp. 55–56): who is knocked out. */
+  danni_tipo?: Array<[string, { non_letali: number; letali: number }]>;
 }
 
 /** Fuori gioco oltre ai PF: morto (finché il master non lo cura), fuggito (finché la scena non cambia). */
@@ -65,6 +67,11 @@ export class StatoProve {
   private readonly usciti = new Map<string, Uscito>();
   private prossimo = 1;
   private recentiTiri: TiroMostrato[] = [];
+  /**
+   * Subduing and killing damage taken, by character (Basic Fantasy p. 55): at 0 hit points with some subduing damage and
+   * less killing damage than its maximum, a character is knocked out, not dead or dying. Healing takes the subduing first.
+   */
+  private readonly tipi = new Map<string, { nonLetali: number; letali: number }>();
 
   /** Schede SRD o del set del manuale: servono solo id e punti ferita massimi. */
   constructor(private readonly schede: ReadonlyMap<string, Pick<SchedaNumerica, 'id' | 'pf_massimi'>>) {
@@ -75,6 +82,7 @@ export class StatoProve {
   azzeraPf(): void {
     this.pf.clear();
     this.usciti.clear();
+    this.tipi.clear();
     for (const s of this.schede.values()) this.pf.set(s.id, s.pf_massimi);
   }
 
@@ -126,11 +134,16 @@ export class StatoProve {
   }
 
   /** Danno: i PF non scendono sotto 0 (SRD 5.2: a 0 il PNG muore o è fuori combattimento, il PG perde i sensi). */
-  danneggia(id: string, n: number): EsitoDannoApplicato | null {
+  danneggia(id: string, n: number, nonLetale = false): EsitoDannoApplicato | null {
     const p = this.puntiFerita(id);
     if (!p) return null;
     const dopo = Math.max(0, p.attuali - Math.max(0, n));
     this.pf.set(id, dopo);
+    // Subduing damage on a character already at 0 is killing damage (p. 55: «someone might be beaten to death»).
+    const t = this.tipi.get(id) ?? { nonLetali: 0, letali: 0 };
+    if (nonLetale && p.attuali > 0) t.nonLetali += Math.max(0, n);
+    else t.letali += Math.max(0, n);
+    this.tipi.set(id, t);
     return { prima: p.attuali, dopo, massimi: p.massimi, a_terra: p.attuali > 0 && dopo === 0 };
   }
 
@@ -139,6 +152,14 @@ export class StatoProve {
     const p = this.puntiFerita(id);
     if (!p) return null;
     this.pf.set(id, Math.min(p.massimi, p.attuali + Math.max(0, n)));
+    // Healing takes away the subduing damage first; back at full health, nothing is left of either.
+    const t = this.tipi.get(id);
+    if (t) {
+      const via = Math.min(t.nonLetali, Math.max(0, n));
+      t.nonLetali -= via;
+      t.letali = Math.max(0, t.letali - (Math.max(0, n) - via));
+      if (this.pf.get(id) === p.massimi || (!t.nonLetali && !t.letali)) this.tipi.delete(id);
+    }
     // Il master che ridà PF a un morto lo riporta in vita: è la sua decisione.
     if (this.usciti.get(id) === 'morto' && this.pf.get(id)! > 0) this.usciti.delete(id);
     return this.puntiFerita(id);
@@ -151,6 +172,16 @@ export class StatoProve {
   curaRegola(id: string, n: number): PuntiFerita | null {
     if (this.usciti.get(id) === 'morto') return null;
     return this.cura(id, n);
+  }
+
+  /**
+   * Knocked out, not dead nor dying (Basic Fantasy p. 55): at 0 hit points with some subduing damage, and less killing
+   * damage than its maximum hit points.
+   */
+  tramortito(id: string): boolean {
+    const p = this.puntiFerita(id);
+    const t = this.tipi.get(id);
+    return !!p && p.attuali <= 0 && !!t && t.nonLetali > 0 && t.letali < p.massimi;
   }
 
   /** Il prossimo id di carta («t1», «t2»…). */
@@ -168,13 +199,14 @@ export class StatoProve {
   }
 
   esporta(seme: string, contatore: number): StatoProveSalvato {
-    return { seme, contatore, pf: [...this.pf], prossimoTiro: this.prossimo, recenti: [...this.recentiTiri], fuori: [...this.usciti] };
+    return { seme, contatore, pf: [...this.pf], prossimoTiro: this.prossimo, recenti: [...this.recentiTiri], fuori: [...this.usciti], ...(this.tipi.size ? { danni_tipo: [...this.tipi].map(([id, t]) => [id, { non_letali: t.nonLetali, letali: t.letali }] as [string, { non_letali: number; letali: number }]) } : {}) };
   }
 
   importa(s: StatoProveSalvato): void {
     this.azzeraPf();
     for (const [id, v] of s.pf ?? []) if (this.schede.has(id) && Number.isFinite(v)) this.pf.set(id, Math.max(0, Math.min(v, this.schede.get(id)!.pf_massimi)));
     for (const [id, u] of s.fuori ?? []) if (u === 'morto' || u === 'fuggito') this.usciti.set(id, u);
+    for (const [id, t] of s.danni_tipo ?? []) if (this.schede.has(id) && t) this.tipi.set(id, { nonLetali: Math.max(0, t.non_letali ?? 0), letali: Math.max(0, t.letali ?? 0) });
     this.prossimo = Math.max(1, s.prossimoTiro ?? 1);
     this.recentiTiri = [...(s.recenti ?? [])].slice(-MAX_RECENTI);
   }

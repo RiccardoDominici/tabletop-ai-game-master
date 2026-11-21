@@ -97,6 +97,11 @@ export class Attivi {
     return testo('prove.attivi.immunita', { nome: this.o.nome(id), fonte, quanto });
   }
 
+  /** Whether `id` has an effect from `fonte` (a knock-out's timer, prove/motore.ts). */
+  daFonte(id: string, fonte: string): boolean {
+    return this.di(id).some((x) => x.fonte === fonte);
+  }
+
   /** The ids of the conditions active on `id` (for the fight and the resolvers). */
   condizioni(id: string): string[] {
     return this.di(id).flatMap((x) => (x.tipo === 'condizione' && x.condizione ? [x.condizione] : []));

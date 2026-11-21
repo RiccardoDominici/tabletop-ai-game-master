@@ -40,3 +40,11 @@ export function modificatoriDellAttacco(s: SistemaRegole, testoAzione: string, a
       trova(m).test(t),
   );
 }
+
+/** Whether the action's words (speech removed, normalised) have one of `parole` at the start of a word. */
+export function haParole(testoAzione: string, parole: readonly string[]): boolean {
+  if (!parole.length) return false;
+  const t = normalizza(senzaParlato(testoAzione));
+  const voci = parole.map((p) => normalizza(p).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  return new RegExp(`(?<![\\p{L}\\p{N}])(${voci.join('|')})`, 'u').test(t);
+}

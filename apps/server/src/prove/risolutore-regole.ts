@@ -47,7 +47,7 @@ import {
 } from './testi';
 import type { AzioneRisolvibile } from './risolutore';
 import { conEffetto, fontiAttacco, valoriAttacco, type CondizioniDi } from './condizioni';
-import { modificatoriDellAttacco } from './modificatori';
+import { haParole, modificatoriDellAttacco } from './modificatori';
 import { applicaEffetti, type ContestoEffetti } from './effetti';
 import { effettiSeFallisce } from '../campagna/prove-scena';
 import type { EffettoTipato } from '../regole/effetti';
@@ -479,17 +479,18 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
    * Danno di un attacco riuscito al bersaglio (armatura se il set la conta): testo per il narratore. `dadiDanno`: the
    * attacking PC's own dice for the damage (manual rolls); an NPC's damage is the Engine's.
    */
-  function colpisci(t: TiroMostrato, attaccante: Attacco, bersaglio: SchedaGenerica, critico: boolean, dadiDanno: FonteDadi = o.dadi, doppio = false, nonFerisce: string | null = null): string {
+  function colpisci(t: TiroMostrato, attaccante: Attacco, bersaglio: SchedaGenerica, critico: boolean, dadiDanno: FonteDadi = o.dadi, doppio = false, nonFerisce: string | null = null, nonLetale: { dimezza: boolean } | null = null): string {
     // Il critico raddoppia i dadi del danno solo se il set lo dice (SRD sì); il danno minimo è del set (Basic Fantasy: 1).
     const d = tiraDanno(dadiDanno, attaccante.danno, 0, critico && s.attacchi.dannoCritico === 'doppio');
     // A situational modifier with `danno: doppio` (Basic Fantasy's charge, p. 52): the damage of the hit is doubled.
-    // An active bonus to damage (prove/attivi.ts) adds to the hit.
-    const base = (doppio ? d.totale * 2 : d.totale) + (o.bonusAttivi?.(t.chi, 'danni', attaccante.distanza ? 'distanza' : 'mischia') ?? 0);
+    // An active bonus to damage (prove/attivi.ts) adds to the hit. A subduing blow with a weapon does half (p. 55).
+    const pieno = (doppio ? d.totale * 2 : d.totale) + (o.bonusAttivi?.(t.chi, 'danni', attaccante.distanza ? 'distanza' : 'mischia') ?? 0);
+    const base = nonLetale?.dimezza ? Math.floor(pieno / 2) : pieno;
     const minimo = Math.max(s.attacchi.dannoMinimo, s.attacchi.armaturaRiduce ? Math.max(0, base - bersaglio.armatura) : base);
     // After the minimum: a weapon that cannot hurt this creature (P6-03) deals nothing, a resistance halves or stops it.
     const resiste = attaccante.tipo_danno ? (bersaglio.resistenze?.[attaccante.tipo_danno] ?? null) : null;
     const ridotto = nonFerisce ? 0 : resiste === 'immune' ? 0 : resiste === 'meta' ? Math.floor(minimo / 2) : minimo;
-    const r = o.stato.danneggia(bersaglio.id, ridotto);
+    const r = o.stato.danneggia(bersaglio.id, ridotto, !!nonLetale);
     // A condition that ends on injury (sleep) ends with this hit.
     const svegli = ridotto > 0 ? (o.effetti?.attivi?.ferito(bersaglio.id) ?? []) : [];
     t.danno = dannoMostrato({ formula: d.formula, dadi: d.dadi, bonus: d.bonus, totale: ridotto, tipo: attaccante.tipo_danno });
@@ -501,7 +502,10 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     void r;
     const sveglio = svegli.map((c) => ` ${testo('prove.effetti.svegliato', { nome: o.nome(bersaglio.id), condizione: c.toLowerCase() })}`).join('');
     const perche = nonFerisce ? testo('prove.mostri.non_ferisce', { arma: attaccante.nome, nome: o.nome(bersaglio.id), solo: nonFerisce }) : resiste ? testo(`prove.mostri.resiste_${resiste}`, { nome: o.nome(bersaglio.id), tipo: tipoDanno(attaccante.tipo_danno!) }) : '';
-    return perche + testo('prove.fatto.danno_set', { danno: fraseDanno(ridotto, attaccante.tipo_danno ? tipoDanno(attaccante.tipo_danno) : null), armatura, nome: o.nome(bersaglio.id), stato }) + sveglio;
+    // Knocked out by subduing damage (p. 55): unconscious, not dead nor dying.
+    const ko = pf.attuali <= 0 && o.stato.tramortito(bersaglio.id) ? testo('prove.fatto.tramortito', { nome: o.nome(bersaglio.id) }) : '';
+    if (ko) o.log.info({ bersaglio: bersaglio.id }, 'prove: knocked out by subduing damage, not dead');
+    return perche + testo('prove.fatto.danno_set', { danno: fraseDanno(ridotto, attaccante.tipo_danno ? tipoDanno(attaccante.tipo_danno) : null), armatura, nome: o.nome(bersaglio.id), stato }) + sveglio + ko;
   }
 
   /**
@@ -560,6 +564,13 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     const sb = o.schede.get(bersaglio);
     if (!sa || !sb) return null;
     let a = arma(sa, idArma);
+    // Subduing damage (Basic Fantasy pp. 55–56): bare hands by their words or with no weapon on the sheet (their own
+    // dice, always subduing); a weapon «col piatto» by the set's words, at −4 for half damage. Only a PC's action has words.
+    const nl = s.combattimento.nonLetale ?? null;
+    const maniNude = !!nl?.aManiNude && ((!!azione && haParole(azione, nl.aManiNude.parole)) || a.id === 'senz_armi');
+    // Brawling rolls with the melee attack ability (the attack bonus and Strength: p. 53), as the bearer's melee lines do.
+    if (maniNude) a = { ...senzArmi(), danno: nl!.aManiNude!.danno, abilita: sa.attacchi.find((x) => !x.distanza && x.abilita)?.abilita ?? s.catalogo?.abilita?.mischia ?? s.bestiario?.abilita[0] ?? null };
+    const nonLetale = !!nl && !a.distanza && (maniNude || (!!azione && haParole(azione, nl.parole)));
     // Ammunition (`consuma`): one per attack, tracked by the Engine (prove/risorse.ts); the caller refuses at 0.
     if (!gratis && a.consuma && o.poteri?.risorse.restanti(chi, a.consuma) !== null) o.poteri?.risorse.spendi(chi, a.consuma);
     // Catalog ammunition (M2): one of the first kind the bearer still has; a shot takes that ammunition's damage when
@@ -627,7 +638,8 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     // Etichetta una volta sola: senza una mossa né un’abilità la «cosa» è l’arma stessa.
     const etichetta = cosa.etichetta === a.nome ? a.nome : `${a.nome}, ${cosa.etichetta}`;
     // A class or race restriction's penalty with this weapon (Basic Fantasy: a magic-user's sword, −5, p. 187).
-    const extra = situazioni.reduce((x, m) => x + m.bonus, 0) + valori.reduce((x, v) => x + v.valore, 0) + (o.bonusAttivi?.(chi, 'attacchi', contro) ?? 0) + (a.penalita ?? 0) + (gittata?.fascia.bonus ?? 0);
+    const malusNonLetale = nonLetale && !maniNude ? nl!.attacco : 0;
+    const extra = situazioni.reduce((x, m) => x + m.bonus, 0) + valori.reduce((x, v) => x + v.valore, 0) + (o.bonusAttivi?.(chi, 'attacchi', contro) ?? 0) + (a.penalita ?? 0) + (gittata?.fascia.bonus ?? 0) + malusNonLetale;
     const e = tiraCol(sist, dadiTiro, cosa.valore + extra, sist === s ? null : ID_DIFESA, v, etichetta, true);
     // A target that is always hit (asleep: Basic Fantasy p. 36) is hit whatever the die.
     const sempre = conEffetto(o.condizioni, bersaglio, 'colpito_automaticamente');
@@ -638,6 +650,7 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     }
     if (situazioni.length) e.regola += testo('prove.regola.situazioni', { elenco: situazioni.map((m) => `${m.nome} ${m.bonus > 0 ? '+' : '−'}${Math.abs(m.bonus)}`).join(', ') });
     if (valori.length) e.regola += testo('prove.regola.condizioni', { elenco: valori.map((v) => `${v.nome} ${v.valore > 0 ? '+' : '−'}${Math.abs(v.valore)}`).join(', ') });
+    if (nonLetale) e.regola += testo(maniNude ? 'prove.regola.a_mani_nude' : 'prove.regola.non_letale', { malus: malusNonLetale ? ` ${malusNonLetale > 0 ? '+' : '−'}${Math.abs(malusNonLetale)}` : '' });
     if (valori.length) o.log.info({ chi, bersaglio, condizioni: valori }, 'prove: the numbers of the conditions on an attack');
     if (gittata) e.regola += testo(gittata.da === 'predefinita' ? 'prove.equipaggiamento.gittata_predefinita' : 'prove.equipaggiamento.gittata', { fascia: gittata.fascia.nome, bonus: gittata.fascia.bonus ? ` ${gittata.fascia.bonus > 0 ? '+' : '−'}${Math.abs(gittata.fascia.bonus)}` : '', distanza: gittata.distanza !== null ? ` ${gittata.distanza} ${s.catalogo!.gittate!.unita}` : '' });
     if (a.penalita) e.regola += testo('prove.equipaggiamento.penalita_arma', { valore: `−${Math.abs(a.penalita)}`, arma: a.nome });
@@ -651,7 +664,7 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
     if (a.distanza) t.a_distanza = true;
     if (!e.riuscita) return { t, testo: testo('prove.fatto.attacco_set', { arma: a.nome, bersaglio: o.nome(bersaglio), regola: e.regola, esito: esitoInParole(e, true) }), esito: e, distanza: a.distanza };
     const nonFerisce = nonFerisceCon(a, sb, munizione);
-    const fatto = colpisci(t, a, sb, e.grado?.id === 'critico' || !!conEffetto(o.condizioni, bersaglio, 'critico_contro'), danno, situazioni.some((m) => m.danno === 'doppio') || doppioAbilita, nonFerisce);
+    const fatto = colpisci(t, a, sb, e.grado?.id === 'critico' || !!conEffetto(o.condizioni, bersaglio, 'critico_contro'), danno, situazioni.some((m) => m.danno === 'doppio') || doppioAbilita, nonFerisce, nonLetale ? { dimezza: !maniNude && nl!.danno === 'meta' } : null);
     // A hit that hurt applies the line's riders (a ghoul's paralysis): the target saves, then the effects.
     const rider = nonFerisce ? { tiri: [], fatti: [] } : colpendo(a, chi, bersaglio, privata);
     const piu = rider.fatti.length ? ` ${rider.fatti.join(' ')}` : '';

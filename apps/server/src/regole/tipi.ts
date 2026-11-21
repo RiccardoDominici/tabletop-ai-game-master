@@ -320,6 +320,8 @@ export interface SchedaGenerica {
   morale?: number | { prima: number; dopo: number };
   /** It surrenders instead of fleeing when its morale breaks (`si_arrende: true`: intelligent monsters, p. 57). */
   siArrende?: boolean;
+  /** Its foes are surprised on 1 to this face (`sorprende: 4`: a stat block's special surprise, Basic Fantasy p. 75…). */
+  sorprende?: number;
   /** The attack bonus a stat block prints when it differs from its hit dice (Basic Fantasy p. 62, «in parentheses»). */
   attacco?: number;
   /** Only weapons of these kinds hurt it (`colpito_solo_da`: argento, magica; Basic Fantasy's (s) and (m), p. 62). */

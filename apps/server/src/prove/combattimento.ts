@@ -110,6 +110,11 @@ export interface DipendenzeCombattimento {
    */
   sorpresaMod?: (id: string) => number;
   /**
+   * A creature that surprises its foes on more faces (a stat block's `sorprende: 4`, Basic Fantasy pp. 75, 84…): the side
+   * facing it rolls against that range at least. Null or absent = the set's.
+   */
+  sorprende?: (id: string) => number | null;
+  /**
    * A PC's own save for the death rule (`tiri_morte.abilita`, Basic Fantasy p. 188): its number, its bonus and whether
    * the save's naturals count. null = no such save on its sheet (the fixed `cd` then).
    */
@@ -118,6 +123,8 @@ export interface DipendenzeCombattimento {
   morente?: (id: string, fatti: string[]) => void;
   /** Every PC is down: nobody can bind the dying ones, so their windows end now (prove/morte.ts). */
   senzaSoccorso?: (fatti: string[]) => void;
+  /** Knocked out by subduing damage (StatoProve.tramortito): it wakes with 1 hit point after the set's `sveglia`. */
+  tramortito?: (id: string, fatti: string[]) => void;
   log: Logger;
 }
 
@@ -358,13 +365,15 @@ export class GestoreCombattimento {
     for (const lato of lati) {
       const membri = s.partecipanti.filter((p) => p.lato === lato && p.esito === 'in_gioco');
       if (!membri.length) continue;
+      // The other side's best ambusher: its foes are surprised on 1 to its `sorprende` (a giant crab spider's 1–4).
+      const agguato = Math.max(0, ...s.partecipanti.filter((p) => p.lato !== lato && p.esito === 'in_gioco').map((p) => this.d.sorprende?.(p.id) ?? 0));
       const valore = dadi.tira(so.dado);
       // One die per side, read against each member's own range (a trait may lower it: the elf's −1).
       // A blinded or deafened one is surprised on more faces (`valori.sorpresa`: 1–4, 1–3; Basic Fantasy p. 59).
-      const colti = membri.filter((p) => valore <= Math.max(so.finoA + (this.d.sorpresaMod?.(p.id) ?? 0), this.valoreCondizioni(p.id, 'sorpresa')));
+      const colti = membri.filter((p) => valore <= Math.max(Math.max(so.finoA, agguato) + (this.d.sorpresaMod?.(p.id) ?? 0), this.valoreCondizioni(p.id, 'sorpresa')));
       const sorpresi = colti.length === membri.length;
       for (const p of colti) this.aggiungiCondizione(p.id, so.condizione, 1);
-      this.d.log.info({ lato, dado: `d${so.dado}`, valore, fino_a: so.finoA, sorpresi: colti.map((p) => p.id), chi: membri.map((p) => p.id) }, 'combattimento: sorpresa');
+      this.d.log.info({ lato, dado: `d${so.dado}`, valore, fino_a: so.finoA, agguato: agguato || null, sorpresi: colti.map((p) => p.id), chi: membri.map((p) => p.id) }, 'combattimento: sorpresa');
       const chi = testo(lato === 'pg' ? 'prove.combattimento.lato_pg' : 'prove.combattimento.lato_png');
       if (colti.length && !sorpresi) fatti.push(testo('prove.combattimento.sorpresi_alcuni', { chi, valore, dado: so.dado, nomi: colti.map((p) => p.nome).join(', '), condizione: nomeCond.toLowerCase() }));
       else fatti.push(testo(sorpresi ? 'prove.combattimento.sorpresi' : 'prove.combattimento.non_sorpresi', { chi, valore, dado: so.dado, condizione: nomeCond.toLowerCase() }));
@@ -742,6 +751,12 @@ export class GestoreCombattimento {
     const r = this.d.regole;
     const cz = r.condizioneAZero;
     if (cz && !p.condizioni.some((c) => c.id === cz)) p.condizioni.push({ id: cz, fino: null });
+    // Knocked out by subduing damage (Basic Fantasy p. 55): unconscious, neither dead nor dying; it wakes later.
+    if (this.d.stato.tramortito(p.id)) {
+      this.d.tramortito?.(p.id, fatti ?? []);
+      if (p.lato === 'png') this.controllaMorale(fatti ?? []);
+      return;
+    }
     if (p.lato === 'pg') {
       if (r.danni.pgAZero === 'tiri_morte' && !p.tiriMorte) p.tiriMorte = { successi: 0, fallimenti: 0 };
       if (r.danni.pgAZero === 'morte') this.esce(p, 'morto');

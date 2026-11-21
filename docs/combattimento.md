@@ -89,6 +89,10 @@ combattimento:
      CM T24: «Livia muore.», then «Ordine del round: Livia, Nespola, Grosso.»). A
      player's «vado per prima» does not change it (the set decides), and the narrator cannot resolve out of order: the
      window opens only for whoever is on turn. Initiative by sides keeps its fact for the narrator only.
+   - **Surprise per creature** (R4): the side's one die is read against each member's own range — the set's `fino_a`,
+     raised to a foe's `sorprende` (a stat block's «surprises on 1–4»: the best ambusher on the other side), moved by a
+     trait `{sorpresa: n}` (an elf, a wraith surprised only on a 1), and at least a condition's `valori.sorpresa`
+     (blinded 1–4, deafened 1–3).
    - **Surprise** (the set's `combattimento.sorpresa`, B/X p. 50; added 15 November): when the fight starts, each side
      that can be surprised rolls the set's die; on `fino_a` or less its combatants get the set's condition for the
      first round (Basic Fantasy: «Sorpreso», which loses the turn). A fight opened by an attack rolls only for the side
@@ -143,6 +147,14 @@ combattimento:
      three) leaves it down for the Game Master. The fall to 0, the save's outcome (dying, stable, dead), the binding and
      a death by the window are owed facts like the fight's (prove/fatti-dovuti.ts, `EsitoTurnoProve.morte`): the table
      hears them even when the narration leaves them out;
+   - **subduing damage** (`non_letale`, Basic Fantasy pp. 55–56): an attack whose words say so («col piatto», «per
+     tramortirlo») is at the set's `attacco` (−4) for half damage; bare hands (their `parole`, or no weapon on the sheet)
+     roll their own dice (1d3) with the melee ability, always subduing, without the −4. The Engine keeps each character's
+     subduing and killing damage (StatoProve, in the snapshot; healing takes the subduing first): at 0 with some subduing
+     damage and less killing damage than its maximum, the character is knocked out — the condition at zero, neither dead
+     nor dying, out of the fight and defeated for XP — and wakes with 1 hit point when the set's `sveglia` (1d4 turns) has
+     passed on the clock. Subduing damage on someone already at 0 is killing damage. A kick (1d4 at −2) and a fist on
+     metal armor hurting the puncher are not data yet;
    - otherwise out of play or dead.
    - The Game Master may restore HP: whoever goes back above 0 gets up.
    - A PC already out of play when the window closes (0 HP, dead) does not act, even if the player writes: the

@@ -71,6 +71,9 @@ import type { SistemaRegole } from '../regole/tipi';
 import { tiraPuntiFeritaMostri } from './bestiario';
 import { mostraTiroDelMaster } from './tiri-master';
 
+/** The source of a knock-out's timed condition (prove/attivi.ts): its end wakes the character with 1 hit point. */
+const FONTE_KO = 'non_letale';
+
 /** Decisione dell'arbitro: SRD 5.2, o col vocabolario del set del manuale. */
 type Decisione = DecisioneProva | DecisioneRegole;
 
@@ -310,10 +313,12 @@ export class MotoreProve {
       // The timed effects' conditions count in the fight; they tick at each new round (prove/attivi.ts).
       condizioniEsterne: (id) => this.attivi.condizioni(id),
       sorpresaMod: (id) => this.trattiDi(id).reduce((n, t) => (t.tipo === 'sorpresa' ? n + t.modificatore : n), 0),
+      sorprende: (id) => this.generico?.schede.get(id)?.sorprende ?? null,
       // A new round of the fight is one round on the game clock: timed effects, the dying and the lights tick.
       nuovoRound: (fatti) => fatti.push(...this.passaTempo(this.tempo.secondiRound, 'round')),
       salvezzaMorte: (id, abilita) => this.salvezzaMorte(id, abilita),
       morente: (id, fatti) => this.iniziaMorente(id, fatti),
+      tramortito: (id, fatti) => this.tramortisci(id, fatti),
       senzaSoccorso: (fatti) => {
         const ids = this.morenti.tutti();
         if (!ids.length) return;
@@ -1032,8 +1037,17 @@ export class MotoreProve {
     const { round, spente } = this.tempo.avanza(secondi, causa);
     const c = this.o.contesto();
     const fatti: string[] = [];
-    const f = Attivi.fatto(this.attivi.passaRound(round), (id) => this.nomeDi(c, id));
+    const scaduti = this.attivi.passaRound(round);
+    const f = Attivi.fatto(scaduti, (id) => this.nomeDi(c, id));
     if (f) fatti.push(f);
+    // A knock-out ran its time: the character wakes with 1 hit point (Basic Fantasy p. 55).
+    for (const x of scaduti) {
+      if (x.fonte !== FONTE_KO || !this.stato.tramortito(x.id)) continue;
+      this.stato.cura(x.id, 1);
+      this.combattimento.dopoCura(x.id);
+      fatti.push(testo('prove.combattimento.tramortito_sveglio', { nome: this.nomeDi(c, x.id) }));
+      this.o.log.info({ id: x.id }, 'combat: woke from a knock-out with 1 HP');
+    }
     fatti.push(...this.passaRoundMorenti(round));
     if (spente.length) {
       fatti.push(...this.tempo.fattiSpente(spente));
@@ -1215,6 +1229,11 @@ export class MotoreProve {
    */
   private aZeroFuoriScontro(id: string, turno: number, fatti: string[], tiri: TiroMostrato[]): void {
     if (this.combattimento.attivo) return;
+    // Knocked out by subduing damage: no rule at zero, it wakes later (p. 55).
+    if (this.stato.tramortito(id)) {
+      this.tramortisci(id, fatti);
+      return;
+    }
     const r = this.regoleCombattimento().danni;
     const nome = this.nomeDi(this.o.contesto(), id);
     const pg = !id.startsWith('png_');
@@ -1242,6 +1261,19 @@ export class MotoreProve {
     this.morteFuori.push({ id, nome, esito: tm.finestra ? 'morente' : 'stabile' });
     if (tm.finestra) this.iniziaMorente(id, fatti);
     else if (tm.perdeIncantesimi && this.risorse?.dimenticaIncantesimi(id)) fatti.push(testo('prove.morte.incantesimi_persi', { nome }));
+  }
+
+  /**
+   * Knocked out by subduing damage (Basic Fantasy p. 55): the set's condition at zero for the set's `sveglia` (1d4 turns
+   * on the game clock); when it ends the character wakes with 1 hit point (passaTempo). Once per knock-out.
+   */
+  private tramortisci(id: string, fatti: string[]): void {
+    const cz = this.regoleCombattimento().condizioneAZero;
+    const nl = this.regoleCombattimento().nonLetale;
+    if (!cz || !nl || this.attivi.daFonte(id, FONTE_KO)) return;
+    this.attivi.aggiungi(id, { tipo: 'condizione', condizione: cz, durata: nl.sveglia, finisceSeFerito: false }, FONTE_KO, 1, this.dadi);
+    fatti.push(testo('prove.combattimento.tramortito_dorme', { nome: this.nomeDi(this.o.contesto(), id) }));
+    this.o.log.info({ id }, 'combat: knocked out by subduing damage, wakes later with 1 HP');
   }
 
   /** A sheet's traits: its race's, its class's, its own (regole/tratti.ts); none on the SRD path. */

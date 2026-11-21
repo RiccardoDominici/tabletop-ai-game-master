@@ -36,6 +36,7 @@ prove:
     perde: "LOSES"
     pari: "TIE: nobody prevails, the situation stays as it was"
   fatto:
+    tramortito: " {nome} is knocked out, not dead."
     # A missile that misses into a melee (Basic Fantasy p. 55): the Game Master rolls it at an engaged ally.
     nella_mischia: " The shot goes into the melee, towards {nome}: {dettagli}"
     attacco: "attack with {arma}{verso}{vantaggio}: {confronto}{naturale} → {esito}{critico}{danno}{stato}."
@@ -221,6 +222,8 @@ prove:
     # The set's situational modifiers that apply to an attack (regole.yaml → modificatori), after the roll's rule.
     situazioni: " (including: {elenco})"
     condizioni: " (conditions: {elenco})"
+    non_letale: " (to subdue{malus}, half damage)"
+    a_mani_nude: " (bare hands, to subdue)"
     meno_armatura: " minus armor"
     colpisce: "Hits"
   esiti:
@@ -305,6 +308,8 @@ prove:
     lato_png: "the enemies"
     morale_cedono: "Enemy morale: {tiro} against {morale} → they BREAK and flee ({nomi})."
     morale_tengono: "Enemy morale: {tiro} against {morale} → they hold."
+    tramortito_dorme: "{nome} is knocked out: unconscious but alive, and will come round alone."
+    tramortito_sveglio: "{nome} comes round with 1 hit point."
     # Morale per creature (R4, Basic Fantasy p. 57): one 2d6 for the side, read against each one's own score.
     morale_chi: "The enemies"
     morale_etichetta: "Morale"
