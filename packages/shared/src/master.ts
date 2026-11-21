@@ -266,6 +266,19 @@ export interface CombattimentoMaster {
   catalogo?: { voci: Array<{ id: string; nome: string; tipo: string; luce: boolean }>; monete: Array<{ id: string; nome: string }> };
   /** The game clock (docs/prove.md §11): the time, the lights with the time left, the set's units and terrains. */
   tempo?: { ora: string; trascorso: string | null; luci: Array<{ chi: string; oggetto: string; nome: string; restante: string }>; unita: Array<{ id: string; nome: string }>; terreni: Array<{ id: string; nome: string }>; unita_viaggio: string | null };
+  /**
+   * Experience points (docs/prove.md §12): each PC's XP, level and next threshold (`sale`: it reaches the next level,
+   * taken between sessions), the treasure found and not yet back to safety, this session's awards. Absent without XP rules.
+   */
+  esperienza?: EsperienzaMaster;
+}
+
+/** The XP box of the panel (CombattimentoMaster.esperienza). */
+export interface EsperienzaMaster {
+  pg: Array<{ id: string; nome: string; px: number; livello: number; prossimo: number | null; sale: boolean }>;
+  /** Treasure waiting to be marked back to safety, written in the set's coins; null = none. */
+  tesoro: string | null;
+  guadagni: Array<{ turno: number; fonte: 'sconfitto' | 'tesoro' | 'master'; motivo: string; totale: number; quote: Record<string, number>; testo: string }>;
 }
 
 /** Un PNG nel pannello: se è in scena, e se il master l'ha deciso a mano (altrimenti dice la scena). */
@@ -410,6 +423,11 @@ export type ComandoMaster =
    * character, `oggetto` a catalog light). Not during a fight, whose rounds are the clock.
    */
   | { tipo: 'tempo'; cosa: 'avanza' | 'viaggio' | 'accendi' | 'spegni'; durata?: Record<string, number>; distanza?: number; terreno?: string; id?: string; oggetto?: string }
+  /**
+   * Experience points (docs/prove.md §12): an award (`assegna`: `px`, to the PC `pg` or, without it, the party in equal
+   * shares, with a reason) or the treasure found so far marked back to safety (`tesoro`, when the set counts it then).
+   */
+  | { tipo: 'esperienza'; cosa: 'assegna' | 'tesoro'; px?: number; pg?: string; motivo?: string }
   /**
    * Manual rolls (docs/prove.md §8): the Game Master enters the dice for a player's open request (`valori`), or switches
    * it to the Engine's dice (`valori: null`); `id: '*'` switches every open request.

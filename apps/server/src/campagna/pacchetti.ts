@@ -9,7 +9,7 @@
  *   riassunto_iniziale   letto all'apertura, prima della prima scena;
  *   scene: [id, ...]     ordine delle scene (la prima apre la sessione);
  *   pieni_all_inizio     {orologio della campagna: segni già pieni} all'inizio di questa sessione;
- *   pg_all_inizio        {pg: {pf, oggetti, monete, indossati, contatori, incantesimi}}: where each PC starts (the
+ *   pg_all_inizio        {pg: {pf, px, oggetti, monete, indossati, contatori, incantesimi}}: where each PC starts (the
  *                        previous log's `pg_alla_fine`, sessione/stato-pg.ts); tempo_all_inizio {giorno, ora, minuto};
  *   orologi, canone, rivelazioni, nodi, colli_di_bottiglia(_nota), ...: si UNISCONO a campagna.yaml
  *   (liste accodate; un id ripetuto è un errore);
@@ -156,8 +156,10 @@ export function statoAllInizio(sessione: DatiYaml, pg: readonly string[], dove: 
       if (!pg.includes(id)) throw new ErrorePacchetto(`${dove}: pg_all_inizio cita «${id}», che non è un PG di pg.yaml`);
       const d = (x ?? {}) as DatiYaml;
       if (d['pf'] !== undefined && !intero(d['pf'])) throw new ErrorePacchetto(`${dove}: pg_all_inizio.${id}.pf dev'essere un intero ≥ 0`);
+      if (d['px'] !== undefined && !intero(d['px'])) throw new ErrorePacchetto(`${dove}: pg_all_inizio.${id}.px dev'essere un intero ≥ 0`);
       const s: StatoPg = {};
       if (d['pf'] !== undefined) s.pf = d['pf'] as number;
+      if (d['px'] !== undefined) s.px = d['px'] as number;
       const oggetti = mappa(d['oggetti'], `${id}.oggetti`);
       const monete = mappa(d['monete'], `${id}.monete`);
       const contatori = mappa(d['contatori'], `${id}.contatori`);

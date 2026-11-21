@@ -1,0 +1,72 @@
+# Invented PCs of the R3 fixture: their attack bonus, thief values and saves come from the class tables of the set
+# (regole/regole.yaml), by class and level; `px` is their XP (the cleric close to the 2nd level).
+situazione_comune: Siete scesi nella cripta sotto il mulino, dove qualcuno ha svegliato i morti.
+personaggi:
+- id: pg_tessa
+  nome: Tessa
+  pronomi: lei
+  specie: folletto
+  classe: ladra
+  livello: 1
+  aspetto: Una piccola donna con un cappuccio scuro e le dita svelte.
+  concetto: Ladra di città che ascolta alle porte per mestiere.
+  aggancio: I ladri di tombe le hanno rubato il colpo.
+  cosa_sai_fare:
+  - ascolti alle porte e trovi le trappole
+  - ti muovi senza farti sentire
+  - colpisci alle spalle chi non ti vede
+  scheda:
+    caratteristiche: {forza: 9, destrezza: 16, costituzione: 12, intelligenza: 12, saggezza: 10}
+    classe: ladro
+    livello: 1
+    px: 0
+    razza: folletto
+    pf: 4
+    difesa: 14
+    attacchi:
+    - {nome: Pugnale, danno: "1d4", abilita: mischia}
+    - {nome: Pugnale alle spalle, danno: "1d4", abilita: furtivo}
+- id: pg_oreste
+  nome: Oreste
+  pronomi: lui
+  specie: umano
+  classe: chierico
+  livello: 1
+  aspetto: Un uomo robusto col saio e un simbolo sacro di ferro al collo.
+  concetto: Chierico del mulino, che benedice le macine e scaccia i morti.
+  aggancio: La cripta è sotto la sua chiesa.
+  cosa_sai_fare:
+  - scacci i non morti col simbolo sacro
+  - fasci chi sta morendo
+  scheda:
+    caratteristiche: {forza: 13, destrezza: 9, costituzione: 13, intelligenza: 10, saggezza: 16}
+    classe: chierico
+    livello: 1
+    px: 100
+    razza: umano
+    pf: 6
+    difesa: 15
+    attacchi:
+    - {nome: Mazza, danno: "1d6+1", abilita: mischia}
+- id: pg_gaia
+  nome: Gaia
+  pronomi: lei
+  specie: umana
+  classe: guerriera
+  livello: 1
+  aspetto: Una donna alta con una lancia e uno scudo rotondo.
+  concetto: Guardia del mulino, che non ha paura dei morti.
+  aggancio: Ha giurato di proteggere il mulino.
+  cosa_sai_fare:
+  - combatti con la lancia e lo scudo
+  - tieni la prima fila
+  scheda:
+    caratteristiche: {forza: 15, destrezza: 12, costituzione: 14, intelligenza: 9, saggezza: 10}
+    classe: guerriero
+    livello: 1
+    px: 0
+    razza: umano
+    pf: 9
+    difesa: 16
+    attacchi:
+    - {nome: Lancia, danno: "1d6+1", abilita: mischia}

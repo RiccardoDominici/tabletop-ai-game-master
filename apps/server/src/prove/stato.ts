@@ -10,6 +10,7 @@ import type { StatoRisorseSalvato } from './risorse';
 import type { StatoAttiviSalvato } from './attivi';
 import type { StatoMorentiSalvato } from './morte';
 import type { StatoTempoSalvato } from './tempo';
+import type { StatoEsperienzaSalvato } from './esperienza';
 
 export interface StatoProveSalvato {
   seme: string;
@@ -35,6 +36,8 @@ export interface StatoProveSalvato {
   morenti?: StatoMorentiSalvato;
   /** The game clock and the lights burning (prove/tempo.ts). Absent in older snapshots: the clock starts again. */
   tempo?: StatoTempoSalvato;
+  /** XP earned, creatures counted, treasure waiting for safety, this session's awards (prove/esperienza.ts). */
+  esperienza?: StatoEsperienzaSalvato;
 }
 
 /** Fuori gioco oltre ai PF: morto (finché il master non lo cura), fuggito (finché la scena non cambia). */

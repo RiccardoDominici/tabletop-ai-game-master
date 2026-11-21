@@ -28,6 +28,8 @@ export interface OpzioniInventario {
   risorse: Risorse;
   nome: (id: string) => string;
   log: Logger;
+  /** Coins a character gained (a find, an effect, the panel), worth `valore` in the smallest coin: treasure XP. */
+  trovate?: (chi: string, valore: number) => void;
 }
 
 export class Inventario {
@@ -236,6 +238,8 @@ export class Inventario {
     }
     for (const [id, n] of Object.entries(piu)) this.o.risorse.aggiungi(chi, chiaveMoneta(id), n);
     this.o.log.info({ chi, monete: m }, 'inventory: coins gained or paid');
+    const valore = Object.entries(piu).reduce((x, [id, n]) => x + n * (s.tagli.find((t) => t.id === id)?.vale ?? 0), 0);
+    if (valore > 0) this.o.trovate?.(chi, valore);
     const parti = [Object.keys(piu).length ? testo('prove.inventario.riceve', { nome: this.o.nome(chi), monete: this.scriviMonete(piu) }) : '', meno > 0 ? testo('prove.inventario.paga_monete', { nome: this.o.nome(chi), costo: scriviCosto(s, meno) }) : ''];
     return { ok: true, fatto: parti.filter(Boolean).join(' ') };
   }

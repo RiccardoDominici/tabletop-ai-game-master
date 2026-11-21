@@ -1,0 +1,35 @@
+id: png_ossa
+nome: Ossa
+pronuncia: Ossa
+alias: [scheletro]
+livello: supporto
+ruolo: un non morto della cripta
+aspetto:
+  lettura: Uno scheletro coi denti rotti e una spada arrugginita.
+  invarianti: [denti rotti, spada arrugginita]
+personalita:
+  superficie: [muto]
+  sotto_pressione: [avanza]
+  contraddizione: Sembra morto ma si muove.
+desiderio: Cacciare i vivi dalla cripta.
+voce:
+  tts: {voce_id: dario}
+  registro: tu
+  stile: Non parla.
+  battuta_campione: …
+sa: [f_cripta]
+non_sa: [f_voci]
+atteggiamento_pg:
+  pg_tessa: {stato: ostile, perche: viva, vuole: niente}
+  pg_oreste: {stato: ostile, perche: vivo, vuole: niente}
+  pg_gaia: {stato: ostile, perche: viva, vuole: niente}
+scheda:
+  caratteristiche: {forza: 12, destrezza: 9, costituzione: 12, intelligenza: 3, saggezza: 3}
+  dadi_vita: 1
+  tipo: [non_morto, scheletro]
+  salva_come: {classe: guerriero, livello: 1}
+  pf: 6
+  difesa: 13
+  morale: 12
+  attacchi:
+  - {nome: Spada arrugginita, danno: "1d6", abilita: mischia}

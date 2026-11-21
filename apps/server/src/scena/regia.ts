@@ -3913,6 +3913,19 @@ export class Regia {
     return { ok: true };
   }
 
+  /**
+   * Experience points from the panel (docs/prove.md §12): an award or the treasure back to safety. The panel hears the
+   * outcome in its event list; no line for the table or the narrator (XP are out of the story).
+   */
+  esperienza(c: Parameters<MotoreProve['esperienzaDelMaster']>[0]): Esito {
+    const r = this.prove?.esperienzaDelMaster(c, this.turno);
+    if (!r) return { ok: false, errore: testoFisso('regia.errori.esperienza_non_valida') };
+    if (!r.ok) return { ok: false, errore: r.fatto || testoFisso('regia.errori.esperienza_non_valida') };
+    this.o.log.info({ turno: this.turno, cosa: c.cosa, px: c.px ?? null, pg: c.pg ?? null, fatto: r.fatto }, 'xp: from the panel');
+    this.notifica();
+    return { ok: true };
+  }
+
   /** The game clock from the panel (docs/prove.md §11): time passes, a journey, a light lit or put out. */
   tempo(c: Parameters<MotoreProve['tempoDelMaster']>[0]): Esito {
     const r = this.prove?.tempoDelMaster(c);

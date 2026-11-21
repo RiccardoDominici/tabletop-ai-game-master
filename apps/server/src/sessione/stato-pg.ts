@@ -19,6 +19,8 @@ export interface StatoPg {
   contatori?: Record<string, number>;
   /** Prepared spells left (vancian). */
   incantesimi?: string[];
+  /** Experience points now (prove/esperienza.ts): the next package's level-up step reads them. */
+  px?: number;
 }
 
 /** The game clock as a day and a time of day (day 1 is the first). */
@@ -43,6 +45,7 @@ export function pgAllaFine(prove: StatoProveSalvato | undefined, pg: readonly st
   const contatori = new Map(prove.risorse?.contatori ?? []);
   const preparati = new Map(prove.risorse?.preparati ?? []);
   const vestiti = new Map(prove.risorse?.indossati ?? []);
+  const px = new Map(prove.esperienza?.px ?? []);
   const out = pg.flatMap((id) => {
     const voci = contatori.get(id) ?? [];
     const per = (pref: string): Record<string, number> => Object.fromEntries(voci.filter(([k]) => k.startsWith(pref)).map(([k, n]) => [k.slice(pref.length), n]).sort(([a], [b]) => (a as string).localeCompare(b as string)));
@@ -54,6 +57,7 @@ export function pgAllaFine(prove: StatoProveSalvato | undefined, pg: readonly st
     if (vestiti.get(id)?.length) s.indossati = [...vestiti.get(id)!].sort();
     if (Object.keys(altri).length) s.contatori = altri;
     if (preparati.has(id)) s.incantesimi = [...preparati.get(id)!];
+    if (px.has(id)) s.px = px.get(id)!;
     return Object.keys(s).length > 1 ? [s] : [];
   });
   return out.length ? out : null;

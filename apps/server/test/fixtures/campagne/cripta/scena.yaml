@@ -1,0 +1,44 @@
+id: scena_cripta
+nodo: n_cripta
+nome: La cripta del mulino
+descrizione: Una cripta bassa con due nicchie scavate nella roccia. In una nicchia c'è uno scheletro, nell'altra un morto putrido avvolto in un sudario. In fondo una porta di ferro chiusa; accanto, un sacco di monete abbandonato.
+domanda_drammatica: Il gruppo fermerà i ladri di tombe prima che spariscano col bottino?
+intensita: 3
+sensi:
+- Odore di terra bagnata e di cera.
+- Una goccia che cade sulla pietra.
+- Il ferro freddo della porta.
+elementi_interattivi:
+- cosa: la porta di ferro
+  dove: in fondo alla cripta
+  azioni: si ascolta, si apre
+- cosa: il sacco di monete
+  dove: accanto alla porta
+  azioni: si prende
+png_presenti:
+- png_ossa
+- png_putrido
+orologi_attivi:
+- o_ladri
+indizi:
+- id: i_voci
+  conclusione: r_ladri
+  tipo: dialogo
+  nodo: n_cripta
+  essenziale: false
+  tiro: nessuno
+  modi: 1
+  come_si_trova: Dietro la porta di ferro si sentono due voci che contano monete.
+prove:
+- id: p_porta
+  quando: un PG ascolta alla porta di ferro
+  abilita: origliare
+  difficolta: normale
+  nome: Ascoltare alla porta
+  se_fallisce: dietro la porta non si sente niente
+  parole: [ascolto, porta, origlio]
+mossa_morbida_pronta: Dietro la porta di ferro una sedia striscia sul pavimento.
+apertura: Lo scheletro e il morto putrido si alzano dalle nicchie. Dietro la porta di ferro qualcuno smette di parlare. Che fate?
+musica:
+  tag: tensione
+taglio: Si chiude quando il gruppo apre la porta di ferro o risale.

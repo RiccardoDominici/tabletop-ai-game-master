@@ -167,6 +167,11 @@ export class GestoreCombattimento {
     return (this.s?.partecipanti ?? []).filter((p) => p.lato === lato && p.esito === 'in_gioco' && !this.d.stato.aTerra(p.id)).map((p) => p.id);
   }
 
+  /** Every combatant of a side in the fight, standing or not (the XP ledger reads the defeated enemies, prove/esperienza.ts). */
+  partecipanti(lato: Lato): string[] {
+    return (this.s?.partecipanti ?? []).filter((p) => p.lato === lato).map((p) => p.id);
+  }
+
   /** Condizioni attive di un personaggio, per i resolver (prove/condizioni.ts). */
   condizioniDi(id: string): Array<{ nome: string; effetti: Effetto[] }> {
     const p = this.part(id);

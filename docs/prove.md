@@ -834,3 +834,31 @@ monsters), and R1 ticked its round durations once per closed window as a stopgap
 
 Tests: test/tempo.test.ts (fixture bottega), test/manuale-basic-fantasy.test.ts (the Basic Fantasy numbers).
 
+
+## 12. Experience points and levels (21 November, rules-engine package R3)
+
+The audit found no XP anywhere (P4-38 … P4-42, P6-05, P6-14, P8-19, P8-20): a campaign could not grow past the level the
+Preparer wrote. The class tables now carry the XP of each level (docs/regole.md §2 «Progressione»), and the Engine counts
+the XP the party earns (prove/esperienza.ts), by the set's `esperienza`, never the model.
+
+- **Defeated creatures.** Each enemy of a fight that is dead, fled or at zero, and — when the fight ends with the PCs
+  standing — each one out of it by a condition with `fuori_combattimento` (asleep, charmed, turned: Basic Fantasy counts
+  them as down, p. 57), is worth its sheet's `px`, or the set's `per_dadi_vita` row for its `dadi_vita` (a classed NPC:
+  the larger of hit dice and level) plus `speciale` per asterisk (`speciali`), once.
+- **Treasure** (only when the set has `esperienza.tesoro`): the coins a PC gains (a typed effect `monete`, the panel's
+  coins control) are worth the set's rate; with `quando: al_sicuro` (Basic Fantasy p. 190, an optional rule) they wait
+  until the Game Master presses «Tesoro al sicuro» in the panel, with `trovato` they count at once. Purchases and sales
+  are not treasure.
+- **The Game Master's award** from the panel (command `esperienza`, `cosa: assegna`, `px`, a PC or the party, a reason):
+  a non-combat challenge, gems the catalog does not list, a correction (negative).
+- **Shares.** The party's XP are divided equally among the PCs at the table who are not dead («divided by the number of
+  adventurers», p. 49; retainers' half shares are not modelled), each share raised by the PC's XP traits (the humans'
+  +10%) and held one short of the level after next when the set has `un_livello_per_avventura` (here: one session).
+- **Where it shows.** The panel's combat box has a «Punti esperienza» part: each PC's XP and level, the XP of the next
+  level and «sale di livello alla prossima sessione» when it is reached, the treasure waiting, the award form and the
+  session's awards. The narrator hears nothing of it (XP are out of the story). The snapshot keeps it; the session log
+  writes each PC's total in `pg_alla_fine[].px` and the session's awards in `esperienza`.
+- **Not yet**: the SRD 5.2 has no XP data (its XP by challenge rating are not in the code's set); retainers.
+
+Tests: test/esperienza.test.ts (fixture cripta), test/progressione.test.ts and strumenti/test_valida_progressione.py (the
+tables and the level maths, the same cases for both), test/manuale-basic-fantasy.test.ts (the Basic Fantasy numbers).

@@ -49,7 +49,7 @@ import { comeCaratteristica } from '../campagna/regole-srd';
 import { modCaratteristica } from '../campagna/schede';
 import type { ComandoMaster, CombattimentoMaster, CombattimentoPubblico, RichiestaTiroMaster, ScortaScheda } from '@tabletop-ai-gm/shared';
 import { difesaDa } from '../regole/equipaggiamento';
-import { leggiCosto } from '../regole/catalogo';
+import { leggiCosto, scriviCosto } from '../regole/catalogo';
 import { applicaEffetti, type ContestoEffetti } from './effetti';
 import { riposa } from './riposo';
 import { Risorse } from './risorse';
@@ -59,6 +59,7 @@ import { accendi as accendiLuce, luceDellAzione, spegni as spegniLuce, type Cont
 import { secondiDi } from '../regole/tempo';
 import { voce } from '../regole/catalogo';
 import { Attivi } from './attivi';
+import { Esperienza, type VistaPxPg, type VoceEsperienza } from './esperienza';
 import { Morenti } from './morte';
 import type { EsitoMorte } from './fatti-dovuti';
 import { danno as tiraDanno } from './regole';
@@ -219,6 +220,12 @@ export class MotoreProve {
   readonly tempo: TempoDiGioco;
   /** Lights that went out since the last resolved turn: owed facts the table must hear (prove/fatti-dovuti.ts). */
   private luciSpente: Array<{ id: string; nome: string }> = [];
+  /** The XP the party earns (prove/esperienza.ts). Null with the SRD path (its XP are not data yet). */
+  readonly esperienza: Esperienza | null;
+  /** The turn being resolved, or the last one: what a panel command between two turns is dated with. */
+  private turnoCorrente = 0;
+  /** The enemies seen in the fight in progress: at its end those out of it count as defeated (prove/esperienza.ts). */
+  private readonly nemiciDelloScontro = new Set<string>();
 
   constructor(private readonly o: OpzioniMotoreProve) {
     this.gregari = new Map((o.gregari ?? []).map((g) => [g.id, g]));
@@ -226,7 +233,17 @@ export class MotoreProve {
     this.stato = new StatoProve(this.generico ? this.generico.schede : o.schede);
     this.risorse = this.generico ? new Risorse(this.generico.regole.sistema, this.generico.schede) : null;
     const sist = this.generico?.regole.sistema;
-    this.inventario = this.generico && this.risorse && (sist?.catalogo || sist?.monete) ? new Inventario({ sistema: sist, schede: this.generico.schede, risorse: this.risorse, nome: (id) => this.nomeDi(this.o.contesto(), id), log: o.log.child({ modulo: 'inventario' }) }) : null;
+    this.inventario = this.generico && this.risorse && (sist?.catalogo || sist?.monete) ? new Inventario({ sistema: sist, schede: this.generico.schede, risorse: this.risorse, nome: (id) => this.nomeDi(this.o.contesto(), id), log: o.log.child({ modulo: 'inventario' }), trovate: (chi, valore) => void this.esperienza?.tesoroTrovato(chi, valore, this.turnoCorrente) }) : null;
+    this.esperienza = this.generico && sist
+      ? new Esperienza({
+          sistema: sist,
+          schede: this.generico.schede,
+          // The party's shares: the PCs at the table with a sheet, not dead (p. 49: «divided by the number of adventurers»).
+          compagni: () => this.o.contesto().pgAlTavolo.filter((id) => this.generico!.schede.has(id) && this.stato.fuoriGioco(id) !== 'morto'),
+          nome: (id) => this.nomeDi(this.o.contesto(), id),
+          log: o.log.child({ modulo: 'esperienza' }),
+        })
+      : null;
     this.tempo = new TempoDiGioco(this.sistema.tempo ?? null, { nome: (id) => this.nomeDi(this.o.contesto(), id), nomeOggetto: (id) => voce(this.sistema.catalogo, id)?.nome ?? id, log: o.log.child({ modulo: 'tempo' }) }, o.allInizio?.tempo ?? null);
     this.attivi = new Attivi({
       nome: (id) => this.nomeDi(this.o.contesto(), id),
@@ -294,6 +311,7 @@ export class MotoreProve {
           else if (s.pf > p.attuali) this.stato.cura(id, s.pf - p.attuali);
         }
       }
+      if (s.px !== undefined) this.esperienza?.imposta(id, s.px);
       const ignoti = this.risorse?.inizia(id, s) ?? [];
       if (ignoti.length) this.o.log.warn({ id, ignoti }, 'session: pg_all_inizio names counters the set does not track, ignored');
     }
@@ -785,6 +803,7 @@ export class MotoreProve {
     const { turno, azioni, decisioni } = d;
     const c = this.o.contesto();
     this.tavolo = tavolo;
+    this.turnoCorrente = turno;
     try {
       // Outside a fight a closed window costs game time (prove/tempo.ts): the set's `per_finestra`, longer actions by
       // their words, one round while someone is dying. It passes before the actions, so binding a dying friend in this
@@ -809,6 +828,8 @@ export class MotoreProve {
       const comb = this.combattimento.dopoAzioni({ turno, attacchi, autori: azioni.filter((a) => !a.id.startsWith('m_')).map((a) => a.autore), candidati: () => this.candidati(c, attacchi), apri: this.scontroChiesto });
       // The panel's fight started in this pass (the real one, or the dry run on its copy): the request is used up.
       if (this.combattimento.attivo) this.scontroChiesto = false;
+      // The defeated enemies are worth XP (prove/esperienza.ts), counted once; then the fight's end.
+      this.contaSconfitti(!!comb.finito, !!comb.sconfitta, turno);
       // The fight ended: the once-per-target uses and the per-fight resources come back.
       if (comb.finito) this.risorse?.ricarica('scontro');
       r.fatti.push(...comb.fatti);
@@ -961,6 +982,58 @@ export class MotoreProve {
       this.luciSpente.push(...spente.map((l) => ({ id: l.chi, nome: this.nomeDi(c, l.chi) })));
     }
     return fatti;
+  }
+
+  /**
+   * The enemies of the fight that are defeated now (prove/esperienza.ts): dead, fled, at zero, and — when the fight ends
+   * with the PCs standing — those out of it by a condition (asleep, charmed, paralysed, turned: Basic Fantasy counts
+   * them as down, p. 57). Each is worth its XP once.
+   */
+  private contaSconfitti(finito: boolean, sconfitta: boolean, turno: number): void {
+    const e = this.esperienza;
+    if (!e?.attiva) return;
+    for (const id of this.combattimento.partecipanti('png')) this.nemiciDelloScontro.add(id);
+    // The fight's own conditions and the timed effects' (prove/attivi.ts), which outlast its end.
+    const fuori = (id: string): boolean => this.combattimento.condizioniDi(id).some((x) => x.effetti.includes('fuori_combattimento'));
+    for (const id of this.nemiciDelloScontro) {
+      const f = this.stato.fuoriGioco(id);
+      if (f === 'morto' || f === 'fuggito' || f === 'a_terra' || (finito && !sconfitta && fuori(id))) e.sconfitto(id, turno);
+    }
+    if (finito) this.nemiciDelloScontro.clear();
+  }
+
+  /**
+   * The Game Master's XP from the panel (docs/prove.md §12): an award to one PC or to the party (`px`, with a reason), or
+   * the treasure found so far marked back to safety. The panel hears the outcome; the narrator does not (XP are out of
+   * the story). Null without XP rules.
+   */
+  esperienzaDelMaster(c: { cosa: 'assegna' | 'tesoro'; px?: number; pg?: string | null; motivo?: string }, turno: number): { ok: boolean; fatto: string } | null {
+    const e = this.esperienza;
+    if (!this.attivo || !e?.attiva) return null;
+    const v =
+      c.cosa === 'tesoro'
+        ? e.tesoroAlSicuro(turno)
+        : c.px && (!c.pg || this.generico?.schede.has(c.pg))
+          ? e.premia('master', c.motivo?.trim() || testo('prove.esperienza.premio_master'), c.px, c.pg ? [c.pg] : null, turno)
+          : null;
+    if (!v) return { ok: false, fatto: c.cosa === 'tesoro' ? testo('prove.esperienza.nessun_tesoro') : '' };
+    return { ok: true, fatto: this.fattoEsperienza(v) };
+  }
+
+  /** One line for the panel's log: who got how many XP, for what. */
+  private fattoEsperienza(v: VoceEsperienza): string {
+    const c = this.o.contesto();
+    const quote = Object.entries(v.quote).map(([id, n]) => testo('prove.esperienza.quota', { nome: this.nomeDi(c, id), px: n })).join(', ');
+    return testo('prove.esperienza.premio', { motivo: v.motivo, px: v.totale, quote });
+  }
+
+  /** The XP for the panel: each PC's total, level and next threshold, the treasure waiting, this session's awards. */
+  vistaEsperienza(): { pg: VistaPxPg[]; tesoro: string | null; guadagni: Array<VoceEsperienza & { testo: string }> } | null {
+    const e = this.esperienza;
+    if (!e?.attiva) return null;
+    const m = this.sistema.monete;
+    const tesoro = e.tesoro && m ? scriviCosto(m, e.tesoro) : null;
+    return { pg: e.vista(), tesoro, guadagni: e.registro().map((v) => ({ ...v, testo: this.fattoEsperienza(v) })) };
   }
 
   /**
@@ -1399,6 +1472,10 @@ export class MotoreProve {
         const t = this.vistaTempo();
         return t ? { tempo: { ...t, unita: this.tempo.regola.unita.map((u) => ({ id: u.id, nome: u.nome })), terreni: (this.sistema.viaggio?.terreni ?? []).map((x) => ({ id: x.id, nome: x.nome })), unita_viaggio: this.sistema.viaggio?.unita ?? null } } : {};
       })(),
+      ...(() => {
+        const e = this.vistaEsperienza();
+        return e ? { esperienza: e } : {};
+      })(),
     };
   }
 
@@ -1588,7 +1665,7 @@ export class MotoreProve {
   // ------------------------------------------------------------------ sessione
 
   esporta(): StatoProveSalvato {
-    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta(), ...(this.tempo.mostrato ? { tempo: this.tempo.esporta() } : {}) };
+    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta(), ...(this.tempo.mostrato ? { tempo: this.tempo.esporta() } : {}), ...(this.esperienza?.attiva ? { esperienza: this.esperienza.esporta() } : {}) };
   }
 
   importa(s: StatoProveSalvato): void {
@@ -1601,6 +1678,7 @@ export class MotoreProve {
     this.attivi.importa(s.attivi);
     this.morenti.importa(s.morenti);
     this.tempo.importa(s.tempo);
+    this.esperienza?.importa(s.esperienza);
     if (!this.o.dadi && s.seme && /^[0-9a-f]{8,128}$/i.test(s.seme)) this.dadi = this.nuoviDadi(s.seme, s.contatore ?? 0);
     const ultimo = s.recenti?.at(-1)?.turno;
     this.ultimoTurno = ultimo !== undefined ? { turno: ultimo, tiri: (s.recenti ?? []).filter((t) => t.turno === ultimo) } : null;
@@ -1619,6 +1697,8 @@ export class MotoreProve {
     this.morenti.azzera();
     this.tempo.azzera();
     this.luciSpente = [];
+    this.esperienza?.azzera();
+    this.nemiciDelloScontro.clear();
     this.applicaInizio();
     this.intestazione = null;
     this.cache.clear();

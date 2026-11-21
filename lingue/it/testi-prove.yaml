@@ -156,6 +156,13 @@ prove:
   # Saving throws pinned to their own number (regole/salvezze.ts).
   salvezze:
     tiro_salvezza: "tiro salvezza"
+  # Experience points counted by the Engine (prove/esperienza.ts): the panel's lines, never the narrator's.
+  esperienza:
+    tesoro: "tesoro portato al sicuro"
+    premio_master: "premio del master"
+    nessun_tesoro: "Nessun tesoro in attesa di tornare al sicuro."
+    quota: "{nome} {px}"
+    premio: "PX per {motivo}: {px} in tutto ({quote})."
   # A rest from the Game Master panel (prove/riposo.ts).
   riposo:
     fatto: "Riposo ({riposo}): {elenco}."

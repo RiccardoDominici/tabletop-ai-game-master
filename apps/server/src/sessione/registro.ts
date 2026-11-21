@@ -17,6 +17,7 @@
  * dice un avviso, invece di inventarle.
  */
 import { pgAllaFine, tempoAllaFine, type OraDiGioco, type StatoPg } from './stato-pg';
+import type { VoceEsperienza } from '../prove/esperienza';
 import type { NotaRegia, VoceTrascrizione } from '@tabletop-ai-gm/shared';
 import type { Azione } from '../azioni/tipi';
 import type { Campagna, DatiYaml } from '../campagna/tipi';
@@ -125,6 +126,11 @@ export interface RegistroSessione {
   pg_alla_fine?: Array<{ id: string } & StatoPg>;
   /** The game clock at the end (day and time), for the next package's `tempo_all_inizio`. Absent without a clock. */
   tempo_alla_fine?: OraDiGioco;
+  /**
+   * The XP awarded in this session (prove/esperienza.ts), in order: what for, the total and each PC's share. Absent when
+   * the set counts no XP or nothing was earned.
+   */
+  esperienza?: VoceEsperienza[];
   pg: Array<{ id: string; nome: string; azioni_pubbliche: AzioneRegistrata[]; azioni_private: AzioneRegistrata[] }>;
   /** I turni in cui il Motore ha registrato un cambiamento, con le righe dette e le azioni che c'erano. */
   momenti: Array<{ turno: number; cosa: string[]; azioni: Array<{ id: string; pg: string; privata: boolean }>; righe: Array<{ chi: string; testo: string }> }>;
@@ -475,7 +481,8 @@ export function estraiRegistro(s: SessioneDaRegistrare, eventi: readonly EventoD
     ...(() => {
       const fine = pgAllaFine(ultima?.prove, def.pg.map((p) => p.id));
       const ora = ultima?.prove?.tempo ? tempoAllaFine(ultima.prove) : null;
-      return { ...(fine ? { pg_alla_fine: fine } : {}), ...(ora ? { tempo_alla_fine: ora } : {}) };
+      const px = ultima?.prove?.esperienza?.guadagni ?? [];
+      return { ...(fine ? { pg_alla_fine: fine } : {}), ...(ora ? { tempo_alla_fine: ora } : {}), ...(px.length ? { esperienza: px.map((v) => ({ ...v, quote: { ...v.quote } })) } : {}) };
     })(),
     avvisi,
   };

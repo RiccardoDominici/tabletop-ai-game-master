@@ -81,6 +81,7 @@ regia:
     pericolo_non_valido: "Pericolo non valido: serve un personaggio con la scheda e un danno come 2d6, o un'altezza."
     inventario_non_valido: "Equipaggiamento non valido: serve un personaggio con la scheda e un set con il catalogo."
     tempo_non_valido: "Tempo non valido: serve un set con il tempo di gioco (e il catalogo per le luci)."
+    esperienza_non_valida: "Punti esperienza non disponibili: serve un set di regole che li conti (le tabelle della classe o esperienza)."
   # Segnali audio automatici nell'elenco degli eventi del pannello ({origine}: «battuta <id>» o quella del segnale).
   audio:
     origine_battuta: "battuta {id}"
@@ -286,6 +287,7 @@ master:
     pericolo_non_valido: "Pericolo non valido: personaggio, cosa (danno, cura, caduta) e valore."
     inventario_non_valido: "Equipaggiamento non valido: personaggio, cosa (oggetto, monete, compra, vendi, indossa, togli) e l'oggetto."
     tempo_non_valido: "Tempo non valido: cosa (avanza, viaggio, accendi, spegni) e i suoi campi."
+    esperienza_non_valida: "PX non validi: cosa (assegna, tesoro), i PX (un intero, non zero) e il PG (vuoto = il gruppo)."
     tiro_non_valido: "Tiro non valido."
     prova_non_valida: "Prova, difficoltà o personaggio non validi (serve un PG con la scheda)."
     tiro_nessuna: "Nessun tiro in attesa con questo nome."
@@ -348,6 +350,7 @@ master:
     pericolo: "{id}: {cosa} {valore} ({fonte})"
     inventario: "{id}: {cosa} {oggetto}"
     tempo: "tempo: {cosa}"
+    esperienza: "PX: {cosa} {px} {pg}"
     condizione_tolta: "{id}: {condizione} tolta"
     tiro_inserito: "{id}: dadi {valori} inseriti dal master"
     tiro_automatico: "{id}: tira il Motore"

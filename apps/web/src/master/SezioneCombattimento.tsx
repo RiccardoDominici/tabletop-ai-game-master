@@ -19,6 +19,7 @@ import { classePulsante } from './stili';
 import { valorePericolo } from './pericolo';
 import { ScortaMaster } from './ScortaMaster';
 import { TempoMaster } from './TempoMaster';
+import { EsperienzaMaster } from './EsperienzaMaster';
 import { t } from '../lingua';
 
 export function SezioneCombattimento({ stato }: { stato: StatoMaster }) {
@@ -78,6 +79,8 @@ export function SezioneCombattimento({ stato }: { stato: StatoMaster }) {
       )}
 
       {cmb.tempo && <TempoMaster tempo={cmb.tempo} attivo={attivo} nomi={new Map(cmb.schede.map((s) => [s.id, s.nome]))} />}
+
+      {cmb.esperienza && <EsperienzaMaster esperienza={cmb.esperienza} />}
 
       {!attivo && !chiesto && riposi.length > 0 && (
         <div className="flex flex-wrap gap-1.5">

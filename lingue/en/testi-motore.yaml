@@ -80,6 +80,7 @@ regia:
     pericolo_non_valido: "Invalid hazard: it needs a character with a sheet and damage like 2d6, or a height."
     inventario_non_valido: "Invalid gear change: it needs a character with a sheet and a set with a catalog."
     tempo_non_valido: "Invalid time change: the set needs a game clock (and a catalog for lights)."
+    esperienza_non_valida: "Experience points are not available: the rule set must count them (class tables or esperienza)."
   # Automatic audio cues in the panel's event list ({origine}: "line <id>" or the cue's own origin).
   audio:
     origine_battuta: "line {id}"
@@ -285,6 +286,7 @@ master:
     pericolo_non_valido: "Invalid hazard: character, kind (danno, cura, caduta) and value."
     inventario_non_valido: "Invalid gear change: character, kind (oggetto, monete, compra, vendi, indossa, togli) and the item."
     tempo_non_valido: "Invalid time change: kind (avanza, viaggio, accendi, spegni) and its fields."
+    esperienza_non_valida: "Invalid XP: cosa (assegna, tesoro), the XP (a whole number, not zero) and the PC (empty = the party)."
     tiro_non_valido: "Invalid roll."
     prova_non_valida: "Invalid check, difficulty or character (it needs a PC with a sheet)."
     tiro_nessuna: "No roll is waiting with this name."
@@ -347,6 +349,7 @@ master:
     pericolo: "{id}: {cosa} {valore} ({fonte})"
     inventario: "{id}: {cosa} {oggetto}"
     tempo: "time: {cosa}"
+    esperienza: "XP: {cosa} {px} {pg}"
     condizione_tolta: "{id}: {condizione} removed"
     tiro_inserito: "{id}: dice {valori} entered by the Game Master"
     tiro_automatico: "{id}: the Engine rolls"

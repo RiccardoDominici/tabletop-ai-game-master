@@ -64,6 +64,7 @@ const TIPI: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>([
   'pericolo',
   'inventario',
   'tempo',
+  'esperienza',
   'tiro',
   'chiedi_prova',
 ]);
@@ -415,6 +416,18 @@ export class ControlliMaster {
         const esito = regia.tempo(comando);
         if (!esito.ok) return rifiuto(esito.errore);
         return { esito, dettagli: dettaglio('tempo', { cosa: comando.cosa }), dati: { ...comando } };
+      }
+      case 'esperienza': {
+        // Experience points (docs/prove.md §12): an award to a PC or the party, or the treasure back to safety.
+        const cosa = c.cosa === 'assegna' || c.cosa === 'tesoro' ? c.cosa : null;
+        const px = Number.isInteger(c.px) && c.px !== 0 && Math.abs(c.px as number) <= 1_000_000 ? (c.px as number) : null;
+        const pg = typeof c.pg === 'string' && c.pg !== '' ? (ID_VALIDO.test(c.pg) ? c.pg : null) : undefined;
+        const motivo = typeof c.motivo === 'string' ? c.motivo.trim().slice(0, 120) : undefined;
+        if (!cosa || (cosa === 'assegna' && (px === null || pg === null))) return rifiutoDi('esperienza_non_valida');
+        const comando = { cosa, ...(cosa === 'assegna' ? { px: px as number, ...(pg ? { pg } : {}), ...(motivo ? { motivo } : {}) } : {}) };
+        const esito = regia.esperienza(comando);
+        if (!esito.ok) return rifiuto(esito.errore);
+        return { esito, dettagli: dettaglio('esperienza', { cosa, px: px ?? '', pg: pg ?? '' }), dati: { ...comando } };
       }
       case 'effetto': {
         const id = typeof c.id === 'string' && ID_VALIDO.test(c.id) ? c.id : '';
