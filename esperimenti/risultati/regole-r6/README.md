@@ -4,8 +4,7 @@ Rules-engine package R6 (docs/prove.md §14–15, docs/regole.md §2 «Esplorazi
 pages: projector, phones and the Game Master panel in a browser (Playwright), the scripted narrator, **manual rolls**
 (every PC roll typed on the phone). Redone from scratch by `rifai.sh` (it copies the campaigns to the scratch folder,
 starts two test servers on ports 5031 and 5032 with a fresh panel token, runs `apps/web/e2e/esplorazione.spec.ts`,
-extracts the evidence and stops the servers). The run recorded here is on the final code of the package (85dc5c7 and
-after).
+extracts the evidence and stops the servers). The run recorded here is on the final code of the package (5ef5f52).
 
 | file | what it is |
 |---|---|
@@ -29,9 +28,9 @@ replaying the crawl's windows on the Engine: with it the torch burns out before 
 | 4 | Check at 18:30 (two turns after arriving at 18:10): 6 on 1d6, nothing (a hidden Game Master card) | `controllo` every `ogni` |
 | 6 | The torch burns out: the owed line «La luce di Aldo si spegne.», then «È buio pesto… Dora vede al buio fino a 18 metri, in bianco e nero. Non vedono nulla: Aldo, Bice.»; check at 18:50: 6, nothing (`03-torcia-spenta.png`) | the narrator told what the party sees when it changes |
 | 8 | Check at 19:10: **1** → the tunnel's table (1d6 = 1: giant rat), 1d4 = 1: one rat joins the scene as `png_ratto_gigante_inc1_1` with 4 hit points from the session seed; the narration did not tell it, so the Engine said «Arriva qualcuno: Ratto.» (`04-incontro.png`, `05-incontro-proiettore.png`; the transcript's lines in `09-viaggio-nel-bosco.png`) | the encounter table, the creatures as combatants, the owed `incontro` fact |
-| 9 | Past an hour without a rest the PCs are weary. Aldo attacks the rat in the dark: d20 **−3** (Strength +1, class +1, «Affaticato −1», «Accecato −4») 17 → 14 against AC 12, hit, 4 damage, the rat down. Dora's phone shows the card with −3 (`06-scontro-al-buio-telefono.png`); the rule line with the conditions is in `fatti-e-tiri-cunicolo.md` (the table's card does not show the AC) | the dark's condition for whoever has no light and no darkvision; the rest rule's condition |
+| 9 | Past an hour without a rest the PCs are weary («Riposo: i PG sono stanchi (affaticato)» on the panel). Aldo attacks the rat in the dark: d20 **−3** (Strength +1, class +1, «Affaticato −1», «Accecato −4») 17 → 14 against AC 12, hit, 4 damage, the rat down. Dora's phone shows the card with −3 (`06-scontro-al-buio-telefono.png`); the rule line with the conditions is in `fatti-e-tiri-cunicolo.md` (the table's card does not show the AC) | the dark's condition for whoever has no light and no darkvision; the rest rule's condition |
 | 10 | «Ci riposiamo un momento contro la parete»: the window costs the rule's turn, «Il gruppo si ferma a riprendere fiato: la stanchezza passa.» (`08-stanchi.png` before it) | `esplorazione.riposo` (the fixture's) |
-| — | A day in the woods from the panel: 9 miles at Aldo's pace (chain mail: 6 m a round, 6 miles a day), Dora leading. Her course check (the fixture's `orientarsi`, d20 6) fails: only the panel says «Dora ha perso la strada (tiro del master): decidi tu dove arriva il gruppo.». Nine wilderness checks every 3 hours, none a hit. At midnight Aldo and Dora open a pack (2 days left) and drink a waterskin, Bice has no food (a day within the grace: «Bice: 1 giorni senza cibo» on the panel) and drinks her only waterskin (`09-viaggio-nel-bosco.png`; Dora's sheet in `10-dora-scheda.png`) | the journey's checks on the terrain's table; the leader's secret check; food and water at each midnight |
+| — | A day in the woods from the panel: 9 miles at Aldo's pace (chain mail: 6 m a round, 6 miles a day), Dora leading. Her course check (the fixture's `orientarsi`, d20 6) fails: only the panel says «Dora ha perso la strada (tiro del master): decidi tu dove arriva il gruppo.». Nine wilderness checks every 3 hours, none a hit. At midnight Aldo and Dora open a pack (2 days left) and drink a waterskin, Bice has no food (a day within the grace: «Bice: senza cibo da un giorno» on the panel) and drinks her only waterskin (`09-viaggio-nel-bosco.png`; Dora's sheet in `10-dora-scheda.png`) | the journey's checks on the terrain's table; the leader's secret check; food and water at each midnight |
 
 ## Run 2: torre-mozza with Basic Fantasy's rules (port 5032)
 
@@ -43,9 +42,9 @@ A copy of torre-mozza with creation at the table (`creazione: {modo: entrambi}`)
 | | the magic-user's book (read magic and magic missile, p. 8); hit points a **d6** = 5 (p. 6); 150 gp; chain mail with no «niente incantesimi» on it, a longsword, a week of rations and a waterskin (`12-tm-acquisti-guerriero-mago.png`); one more language for Intelligence 14; Fiordaliso, approved (`13-tm-pronto.png`) | p. 6, 3–4, 10–12 |
 | sheet | the created PC's «Scheda» on the phone: race, class and level, the scores, the languages, the spellbook, then the gear (`14-tm-scheda-fiordaliso.png`). Before 85dc5c7 it showed only the gear | — |
 | light | the Game Master sets the sheepfold's light to «buio»: «Fiordaliso vede al buio fino a 18 metri» (nobody blind) | darkvision 60', p. 5, 43 |
-| encounter | «Tira un incontro» on the first dungeon level's table (p. 180): 1d12 = 2, **Goblin**, 2d4 = 7: seven goblins join the scene with their bestiary numbers (`15-tm-incontro-e-buio.png`) | pp. 180, 75 |
-| journey | 8 miles through the forest (×2/3: 8 miles a day at 6 m a round), Fiordaliso leading: the save vs. Death Ray with Wisdom, rolled by the Game Master in secret (d20 8: lost; the panel only); a wilderness check at 4 hours (5, nothing); midnight: a ration day from the week's pack (6 left) and the waterskin (`16-tm-viaggio-foresta.png`) | pp. 44–45, 181 |
-| turn 1 | «Lancio il dardo incantato contro goblin» in chain mail: the spell is cast (no armor refusal for a fighter/magic-user), the player's die 4: Goblin 1 down. The goblins were not surprised (3 on 1d6), held their morale (4 against 7) and attacked: one hit (2 damage) (`17-tm-dardo-in-armatura.png`) | p. 6; pp. 50, 57 |
+| encounter | «Tira un incontro» on the first dungeon level's table (p. 180): 1d12 = 10, **Snake, Cobra**, 1d6 = 6: six spitting cobras join the scene with the bestiary's numbers and hit points 6, 2, 5, 5, 2, 3 (`15-tm-incontro-e-buio.png`) | p. 180 |
+| journey | 8 miles through the forest (×2/3: 8 miles a day at 6 m a round), Fiordaliso leading: the save vs. Death Ray with Wisdom, rolled by the Game Master in secret (d20 18: on course; the panel only); a wilderness check at 4 hours (4, nothing); midnight: a ration day from the week's pack (6 left) and the waterskin (`16-tm-viaggio-foresta.png`) | pp. 44–45, 181 |
+| turn 1 | Magic missile at the cobra in chain mail: the spell is cast (no armor refusal for a fighter/magic-user), the player's die 4: Cobra sputante 1 (6 hit points) badly hurt. The fight opens: the cobras roll 2 on 1d6 and are surprised (they lose the first round), hold their morale (5 against 7) (`17-tm-dardo-in-armatura.png`) | p. 6; pp. 50, 57 |
 
 ## What the runs found, and what changed
 
@@ -53,14 +52,21 @@ A copy of torre-mozza with creation at the table (`creazione: {modo: entrambi}`)
   allow-list of command types). Fixed in 85dc5c7, with a server test that sends the three over the socket.
 - **A spell «contro goblin» hit Zirrà**, torre-mozza's goblin chief, who was not in the scene, instead of the six
   wandering goblins standing there (an earlier run): the rules arbiter preferred any NPC named by its alias. Now an NPC
-  here comes first, then the scene's minions, an NPC elsewhere last (85dc5c7). The run above hit Goblin 1.
+  here comes first, then the scene's minions, an NPC elsewhere last (85dc5c7).
 - **A created PC's «Scheda» showed only its gear** (R5 never opened it): it now shows the sheet's data (85dc5c7).
 - Basic Fantasy's numbers are hard on a lone level-1 caster: an earlier run met six goblins with the chief and the elf
   died; another bought no waterskin, travelled two days and dropped to 0 from thirst (1d4 a day from the first day,
   p. 44). The spec now buys rations and water and travels one day.
+- **A review after the runs** (5ef5f52): the wandering creatures had no end (an avoided encounter stayed as enemies,
+  joined later fights, followed the party into the next scene). Changing scene now leaves them behind, and the panel's
+  «Se ne vanno» sends the last encounter's creatures off; neither run changed scene after an encounter, so this path is
+  checked by the unit tests and by the socket test (esplorazione-server.test.ts), not here. The same commit worded the
+  counts in the Italian lines («un giorno», «1 punto ferita»), put the count in the owed line («Arrivano in 6: …»),
+  and made `a_volte` show a check by its odds, not by what it rolled.
 - Not changed (other packages' choices): the table's card hides the rule line that names the conditions, since it
   shows the AC (the players see the total modifier, −3); a spitting cobra's «Sputo» line has no damage nor power (one
-  of the bestiary specials no power expresses yet: the sheet warns, the Engine uses 1d4); the journey's public line
+  of the bestiary specials no power expresses yet: each cobra's sheet warns in `log-esplorazione.jsonl`, the Engine uses
+  1d4); the journey's public line
   rounds the time to the largest unit («dura 1 giorno» for a day and four hours).
 
 ## Rerun

@@ -1,6 +1,6 @@
 # Facts the narrator received, and the cards of each turn
 
-From `logs/porta-5031/server.jsonl` (records `prove: tiri del turno` after 2026-11-22T17:46:23). What the table heard: the transcript in the panel screenshots (playwright/).
+From `logs/porta-5031/server.jsonl` (records `prove: tiri del turno` after 2026-11-22T18:02:08). What the table heard: the transcript in the panel screenshots (playwright/).
 
 ## Turn 1
 
