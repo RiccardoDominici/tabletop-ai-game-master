@@ -129,7 +129,7 @@ Master (docs/creazione.md); the ability-roll target by level (X-OPT-05), the x-i
 (C-RACE-26/27, docs/da-fare.md), the thief's point allocation (X-OPT-07), learning spells after the start (X-OPT-03),
 retainers. Evidence: esperimenti/risultati/regole-r5/.
 
-**Update, 22 November (rules-engine package R6, commits 0a8d4a1 … 4077374; recounted by script; before: 108 / 2 / 0 / 17 /
+**Update, 22 November (rules-engine package R6, commits 0a8d4a1 … 85dc5c7; recounted by script; before: 108 / 2 / 0 / 17 /
 25).** The elves' combination classes (C-RACE-26, C-RACE-27: `classi[].combinazione`, the rows derived from both base
 classes, creation and play) and darkvision (C-RACE-04, C-RACE-09: the race trait `{scurovisione: 18}` read against the
 scene's light) → `impl+test` («R6 <hash>»). Still open here: the thief's point allocation (X-OPT-07, an option, skipped),
