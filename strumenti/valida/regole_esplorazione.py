@@ -6,7 +6,10 @@ Mirrors apps/server/src/regole/esplorazione.ts:
 - `incontri` (inline in regole.yaml, and regole/incontri.yaml next to it): tables with their dice and one entry for
   every roll, each either a bestiary creature (`mostro`, `numero`), a group without a stat block (`gruppo`) or a
   nested roll (`scelta`);
-- a scene's `esplorazione: {ambiente, livello | tabella}`: an environment and a table of the set.
+- a scene's `esplorazione: {ambiente, livello | tabella}`: an environment and a table of the set;
+- `esplorazione.provviste` (daily food and water: catalog items and how many days each feeds, going without) and
+  `esplorazione.riposo` (an exploration rest rule: durations of the clock, a condition of the fight);
+- the journey's exploration in `viaggio`: its environment, each terrain's table, the leader's check against getting lost.
 """
 
 from __future__ import annotations
@@ -190,7 +193,63 @@ def ambienti_del_set(r: dict, unita: set[str] | None, tabelle: set[str], e: Esit
             imb = s.get("imboscata")
             if imb is not None and not (_intero(imb) and 1 <= imb <= s["dado"]):
                 _err(e, dove, f"{d}.sorpresa_prima.imboscata: la fascia su cui sorprende un agguato")
+        if "provviste" in a and not isinstance(a["provviste"], bool):
+            _err(e, dove, f"{d}.provviste: true o false (in città: false)")
     return out
+
+
+def _durata(v, unita: set[str] | None) -> bool:
+    return isinstance(v, dict) and bool(v) and all((unita is None or k in unita) and isinstance(n, (int, float)) and not isinstance(n, bool) and n > 0 for k, n in v.items())
+
+
+def provviste_e_riposo(r: dict, unita: set[str] | None, e: Esito, dove: str) -> None:
+    """`esplorazione.provviste` against the catalog's items, `esplorazione.riposo` against the clock and the conditions."""
+    es = r.get("esplorazione")
+    if not isinstance(es, dict):
+        return
+    cat = r.get("catalogo") or {}
+    oggetti = {o.get("id") for sez in ("armi", "armature", "scudi", "munizioni", "attrezzatura") for o in (cat.get(sez) or []) if isinstance(o, dict)}
+    for i, p in enumerate(es.get("provviste") or [], 1):
+        d = f"esplorazione.provviste[{i}]"
+        ogg = p.get("oggetti") if isinstance(p, dict) else None
+        senza = p.get("senza") if isinstance(p, dict) else None
+        if not (isinstance(p, dict) and isinstance(p.get("id"), str) and RE_ID.match(p["id"]) and isinstance(ogg, list) and ogg and isinstance(senza, dict)
+                and _intero(senza.get("dopo")) and senza["dopo"] >= 0 and ("danno" not in senza or _formula(senza["danno"]) is not None)
+                and ("guarigione" not in senza or isinstance(senza["guarigione"], bool))):
+            _err(e, dove, f"{d}: {{id, nome, oggetti: [{{id: un oggetto del catalogo, giorni}}], senza: {{dopo: giorni, danno, guarigione}}}}")
+            continue
+        for x in ogg:
+            if not (isinstance(x, dict) and isinstance(x.get("id"), str) and _intero(x.get("giorni")) and x["giorni"] >= 1):
+                _err(e, dove, f"{d}.oggetti: {{id, giorni: da 1}}")
+            elif x["id"] not in oggetti:
+                _err(e, dove, f"{d}.oggetti: «{x['id']}» non è un oggetto del catalogo")
+    rp = es.get("riposo")
+    if rp is not None:
+        cond = {c.get("id") for c in ((r.get("combattimento") or {}).get("condizioni") or []) if isinstance(c, dict)}
+        if not (isinstance(rp, dict) and _durata(rp.get("ogni"), unita) and _durata(rp.get("durata"), unita) and isinstance(rp.get("condizione"), str)):
+            _err(e, dove, "esplorazione.riposo: {ogni, durata: durate dell'orologio, parole: [parole di un riposo], condizione}")
+        elif rp["condizione"] not in cond:
+            _err(e, dove, f"esplorazione.riposo.condizione: «{rp['condizione']}» non è una condizione di combattimento.condizioni")
+
+
+def viaggio(r: dict, ambienti: dict[str, dict], tabelle: set[str], e: Esito, dove: str) -> None:
+    """The journey's exploration: `viaggio.ambiente`, each terrain's `incontri` and `smarrirsi`, `viaggio.smarrirsi`."""
+    v = r.get("viaggio")
+    if not isinstance(v, dict):
+        return
+    if "ambiente" in v and v["ambiente"] not in ambienti:
+        _err(e, dove, f"viaggio.ambiente: «{v['ambiente']}» non è un ambiente di esplorazione.ambienti")
+    abi = {a.get("id") for a in r.get("abilita") or [] if isinstance(a, dict)}
+    sm = v.get("smarrirsi")
+    if sm is not None and not (isinstance(sm, dict) and sm.get("abilita") in abi):
+        _err(e, dove, "viaggio.smarrirsi: {abilita: la prova che tira chi guida (un salvezza del set)}")
+    for i, t in enumerate(v.get("terreni") or [], 1):
+        if not isinstance(t, dict):
+            continue
+        if "incontri" in t and t["incontri"] not in tabelle:
+            _err(e, dove, f"viaggio.terreni[{i}].incontri: «{t['incontri']}» non è una tabella degli incontri")
+        if "smarrirsi" in t and not isinstance(t["smarrirsi"], bool):
+            _err(e, dove, f"viaggio.terreni[{i}].smarrirsi: true (senza strade) o false")
 
 
 def scene(c, ambienti: dict[str, dict], tabelle: set[str], e: Esito) -> None:
@@ -215,4 +274,6 @@ def controlla(c, r: dict, cartella_regole: Path, mostri: set[str], unita: set[st
     """Every exploration check of a non-SRD set: the tables, the environments, the scenes that explore."""
     tabelle = tabelle_del_set(cartella_regole, r, mostri, e)
     ambienti = ambienti_del_set(r, unita, tabelle, e, dove)
+    provviste_e_riposo(r, unita, e, dove)
+    viaggio(r, ambienti, tabelle, e, dove)
     scene(c, ambienti, tabelle, e)

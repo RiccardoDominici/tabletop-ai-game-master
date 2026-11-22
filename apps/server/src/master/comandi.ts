@@ -415,8 +415,10 @@ export class ControlliMaster {
         const oggetto = typeof c.oggetto === 'string' && /^[a-z0-9_]{1,64}$/.test(c.oggetto) ? c.oggetto : null;
         const terreno = typeof c.terreno === 'string' && /^[a-z0-9_]{1,64}$/.test(c.terreno) ? c.terreno : null;
         const distanza = typeof c.distanza === 'number' && c.distanza > 0 && c.distanza <= 100000 ? c.distanza : null;
+        // The journey's leader (Basic Fantasy p. 45: their check keeps the party on course); absent = the first at the table.
+        const guida = typeof c.guida === 'string' && ID_VALIDO.test(c.guida) ? c.guida : null;
         const comando =
-          cosa === 'avanza' && durata ? { cosa, durata } : cosa === 'viaggio' && terreno && distanza ? { cosa, distanza, terreno } : (cosa === 'accendi' || cosa === 'spegni') && id && oggetto ? { cosa, id, oggetto } : null;
+          cosa === 'avanza' && durata ? { cosa, durata } : cosa === 'viaggio' && terreno && distanza ? { cosa, distanza, terreno, ...(guida ? { guida } : {}) } : (cosa === 'accendi' || cosa === 'spegni') && id && oggetto ? { cosa, id, oggetto } : null;
         if (!comando) return rifiutoDi('tempo_non_valido');
         const esito = regia.tempo(comando);
         if (!esito.ok) return rifiuto(esito.errore);

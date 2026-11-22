@@ -35,6 +35,7 @@ abilita:
   - {id: furtivo, nome: Colpo furtivo, caratteristica: forza, danno: doppio, una_volta_per_bersaglio: true, ripiego: mischia}
   - {id: scassinare, nome: Scassinare, caratteristica: null, soglia: {dado: 100}}
   - {id: ts_morte, nome: Salvezza contro la morte, caratteristica: null, salvezza: morte}
+  - {id: orientarsi, nome: Salvezza per orientarsi, caratteristica: intelligenza, salvezza: morte}
 difficolta:
   - {id: facile, nome: Facile, valore: 11}
   - {id: normale, nome: Normale, valore: 15}
@@ -89,13 +90,17 @@ tempo:
   azioni:
     - {parole: [frugo, perquisisco], durata: {turno: 3}}
   inizio: {ora: 18}
+# Travel through the wilderness: its wandering checks, each terrain's table, and the leader's save to keep the course
+# off the road.
 viaggio:
   unita: miglia
   per_movimento: 2
   ore_al_giorno: 8
+  ambiente: selvaggio
+  smarrirsi: {abilita: orientarsi}
   terreni:
-    - {id: strada, nome: Strada, per: 1.5}
-    - {id: bosco, nome: Bosco, per: 0.5}
+    - {id: strada, nome: Strada, per: 1.5, incontri: bosco}
+    - {id: bosco, nome: Bosco, per: 0.5, incontri: bosco, smarrirsi: true}
 parole_chiave:
   scassinare: [scassino, grimaldello]
 
@@ -205,6 +210,7 @@ combattimento:
     tiri_morte: {cd: 10, successi: 1, fallimenti: 1, venti_rialza: false, uno_doppio: false, abilita: ts_morte, finestra: "2d10"}
   condizioni:
     - {id: svenuto, nome: Svenuto, icona: SV, effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio], testo: A terra senza sensi.}
+    - {id: affaticato, nome: Affaticato, icona: AF, effetti: [], valori: {attacchi: -1}, testo: Ha bisogno di una pausa.}
   condizione_a_zero: svenuto
   fine: {morale: true}
 
@@ -231,3 +237,13 @@ esplorazione:
       nome: Terre selvagge
       controllo: {ogni: {ora: 3}, dado: 6, fino_a: 1}
       sorpresa_prima: {dado: 6, fino_a: 2, imboscata: 4}
+    - id: villaggio
+      nome: Villaggio
+      provviste: false
+  # A day's food (a pack of three days' rations) and water (a full waterskin); without food nothing for two days, then 1
+  # a day and no natural healing; without water 1d4 from the first day, no natural healing.
+  provviste:
+    - {id: cibo, nome: Cibo, oggetti: [{id: razioni, giorni: 3}], senza: {dopo: 2, danno: "1", guarigione: false}}
+    - {id: acqua, nome: Acqua, oggetti: [{id: otre, giorni: 1}], senza: {dopo: 0, danno: "1d4", guarigione: false}}
+  # The fixture's rest rule (Basic Fantasy has none): a turn of rest every hour of exploring, or −1 to attacks.
+  riposo: {ogni: {ora: 1}, durata: {turno: 1}, parole: [ci riposiamo, riposiamo, riprendiamo fiato], condizione: affaticato}

@@ -449,6 +449,22 @@ prove:
     toglie: "{nome} si toglie {oggetto}: Classe d'Armatura {ca}."
     sovraccarico: "Sovraccarico"
     carico: "{nome} ora ha un {fascia} ({peso} {unita}): si muove di {movimento} {unita_movimento} a round."
+  # Daily food and water (prove/provviste.ts; docs/prove.md §14).
+  provviste:
+    ultima: "{nome} ha consumato l'ultimo giorno di {provvista} ({oggetto})."
+    senza: "{nome} passa un giorno senza {provvista} ({giorni})."
+    danno: "{nome} è senza {provvista} da {giorni} giorni: perde {danno} punti ferita."
+    danno_ferite: "{nome} è senza {provvista} da {giorni} giorni: perde {danno} punti ferita e le ferite non guariscono da sole."
+    di_nuovo: "{nome} ha di nuovo {provvista}: le ferite tornano a guarire."
+    nutrito: "{nome} mangia e beve a sazietà: le ferite tornano a guarire."
+    non_guarisce: "{nome} non guarisce riposando: è senza {provvista}."
+    vista: "{nome}: {giorni} giorni senza {provvista}"
+  # The exploration rest rule (prove/fatica.ts; docs/prove.md §14).
+  fatica:
+    stanchi: "Il gruppo esplora da troppo senza fermarsi: i personaggi sono stanchi ({condizione}) finché non riposano."
+    riposati: "Il gruppo si ferma a riprendere fiato: la stanchezza passa."
+    vista: "Riposo: l'ultimo {da} fa; ne serve uno di {durata} ogni {ogni}"
+    vista_stanchi: "Riposo: i PG sono {condizione} (nessun riposo da {da}); serve una pausa di {durata}"
   # Wandering monsters on the clock (prove/esplorazione.ts; docs/prove.md §14).
   esplorazione:
     chi: "Il master"
@@ -459,6 +475,7 @@ prove:
       scelta: "Quale, tra le varianti"
       numero: "Quanti"
       sorpresa: "Sorpresa, in anticipo"
+      orientamento: "Orientarsi ({ambiente})"
     incontro_uno: "Mostri erranti (tiro del master): arriva {nome}."
     incontro_molti: "Mostri erranti (tiro del master): arrivano {quanti} creature, {nome}."
     incontro_gruppo: "Un incontro (tiro del master): {gruppo}{quanti}; il master lo prepara."
@@ -480,6 +497,9 @@ prove:
     non_valido: "Viaggio non valido: il set ha bisogno di viaggio e movimento, e servono una distanza e un terreno del set."
     fermo: "{nome} porta troppo peso per muoversi: il gruppo non parte."
     fatto: "Il viaggio di {distanza} {unita} ({terreno}) dura {quanto}: {al_giorno} {unita} al giorno, al passo di {nome} ({movimento} {unita_movimento} a round)."
+    interrotto: "Il gruppo percorre {fatta} delle {distanza} {unita} ({terreno}): ora è {ora}."
+    smarriti: "{nome} ha perso la strada (tiro del master): decidi tu dove arriva il gruppo."
+    in_rotta: "{nome} tiene la rotta (tiro del master)."
   luci:
     non_fa_luce: "{oggetto} non fa luce."
     gia_accesa: "{nome} ha già la {oggetto} accesa."

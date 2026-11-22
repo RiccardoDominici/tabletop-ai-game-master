@@ -978,11 +978,35 @@ need. Now the set says which environments the party explores and how often the G
   last encounter with its time. «Tira un incontro» in the Tiri box (command `incontro`, `tabella` optional) rolls an
   encounter now on the scene's table or any of the set's — a town's, which the manual gives no frequency for, or a
   meeting the Game Master wants — with the same dice, cards, creatures and fact; refused during a fight.
+- **Journeys** (the panel's «Viaggio», §11): the set's `viaggio.ambiente` (the wilderness) and the terrain's table
+  (`viaggio.terreni[].incontri`). The checks of the whole journey are rolled ahead; the first encounter stops it there:
+  the clock moves to that moment, the public line says how far the party went («Il gruppo percorre 9 delle 24 miglia
+  (bosco): ora è giorno 2, 00:00.»), the narrator hears who arrives. In a trackless terrain (`smarrirsi: true`) the
+  leader the panel names (else the first PC at the table) rolls the set's check against getting lost (Basic Fantasy
+  p. 45: a save vs. Death Ray with Wisdom), as the Game Master's secret roll: only the panel says «Aldo ha perso la
+  strada: decidi tu dove arriva il gruppo», since what getting lost means is the Game Master's.
+- **Food and water** (prove/provviste.ts; audit P4-22, P4-23): at each midnight where the party lives off its supplies
+  (an environment that does not say `provviste: false`, or a journey), each PC at the table spends a day of each of the
+  set's `provviste` — the open pack's days first (a week's rations), then a new item (a full waterskin is one day) —
+  and the narrator hears when the last day goes. Without, the days are counted: within the grace a line says so; past
+  it each day deals its damage (Basic Fantasy: food 1 a day from the third, water 1d4 from the first) and natural healing
+  stops: the panel's rest says who does not heal. A day with the need met, or a day in a town or a scene that explores
+  nothing (the place feeds the party), ends it. A PC dropped to 0 rolls the death rule at the next window.
+- **An exploration rest rule** (prove/fatica.ts; `esplorazione.riposo`, absent in Basic Fantasy): the windows and rounds
+  of play in an environment add up; past `ogni` the PCs carry the set's condition (its numbers on the cards, «Affaticato
+  −1») and the narrator hears it; a window whose action says the rule's words («ci riposiamo») costs at least its
+  `durata` and clears it, and so does a panel rest at least as long. The panel's box says how long since the last rest.
 - **Data.** torre-mozza carries pp. 180–182: the dungeon (every 3 turns), the wilderness (every 4 hours, surprise in
   advance, an ambush on 1–4) and the 17 tables (six dungeon levels, nine terrains, the city's day and night), each
   creature an entry of its bestiary with the block's «No. Appearing» (underground the first formula, outdoors the «Wild»
   one), checked against the PDF by strumenti/regole/test_incontri_bf.py. The city has no frequency in the manual: no
-  automatic check.
+  automatic check, and it feeds the party. Also pp. 44–45: a week's pack of rations and a waterskin a day, the grace and
+  damage of going without, the ten terrains of the travel table each with its encounter table and whether it is
+  trackless (roads and trails are not), and the leader's save vs. Death Ray with Wisdom (`ts_morte_saggezza`). Not
+  modelled: the forced march (a daily save the player rolls outside a window), foraging and hunting (the manual has
+  none), encounter distance (none), the pursuit after an evasion (p. 52: only the surprise in advance's «they have not
+  noticed you» reaches the narrator), waterborne and air travel.
 
-Tests: test/esplorazione.test.ts (fixture cunicolo), strumenti/test_valida_esplorazione.py, strumenti/regole/test_incontri_bf.py.
+Tests: test/esplorazione.test.ts and test/esplorazione-viaggio.test.ts (fixture cunicolo), test/manuale-basic-fantasy.test.ts
+(«exploration»), strumenti/test_valida_esplorazione.py, strumenti/regole/test_incontri_bf.py.
 

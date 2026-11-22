@@ -251,7 +251,11 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[], fileMostr
   // Exploration (P8-01 to P8-04): the environments' wandering monster checks and the encounter tables they roll on.
   const esplorazione = leggiEsplorazione(d['esplorazione'], tempo, errori);
   const incontri = leggiIncontri([{ v: d['incontri'], dove: 'incontri' }, { v: fileIncontri, dove: 'regole/incontri.yaml' }], new Set(mostri.map((m) => m.id)), errori);
-  controllaEsplorazione(esplorazione, incontri, errori);
+  controllaEsplorazione(esplorazione, incontri, errori, { oggetti: catalogo ? new Set(catalogo.voci.map((v) => v.id)) : null, condizioni: new Set(combattimento.condizioni.map((c) => c.id)) });
+  // A journey's exploration (R6): its environment, its terrains' tables, the leader's check against getting lost.
+  if (viaggio?.ambiente && !esplorazione?.ambienti.some((a) => a.id === viaggio.ambiente)) errori.push(`viaggio.ambiente: «${viaggio.ambiente}» is not an environment of esplorazione.ambienti`);
+  for (const t of viaggio?.terreni ?? []) if (t.incontri && !incontri.some((x) => x.id === t.incontri)) errori.push(`viaggio.terreni.${t.id}.incontri: «${t.incontri}» is not an encounter table (incontri)`);
+  if (viaggio?.smarrirsi && !abilita.some((a) => a.id === viaggio.smarrirsi!.abilita)) errori.push(`viaggio.smarrirsi.abilita: «${viaggio.smarrirsi.abilita}» is not an ability of the set`);
   // Energy drain (Basic Fantasy pp. 58–59): what each negative level costs on the rolls.
   const ln = ogg(d['livelli_negativi']);
   if (d['livelli_negativi'] !== undefined && (!ln || ![ln['d20'] ?? 0, ln['percentuali'] ?? 0].every((x) => typeof x === 'number' && Number.isInteger(x)))) errori.push('livelli_negativi: {d20: −1, percentuali: −5} (whole numbers)');

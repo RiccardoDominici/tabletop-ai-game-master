@@ -59,7 +59,7 @@ import { Drenaggi } from './drenaggio';
 import { Inventario } from './inventario';
 import { TempoDiGioco } from './tempo';
 import { accendi as accendiLuce, luceDellAzione, spegni as spegniLuce, type ContestoLuci } from './luci';
-import { secondiDi } from '../regole/tempo';
+import { secondiDi, type TerrenoViaggio } from '../regole/tempo';
 import { voce } from '../regole/catalogo';
 import { Attivi } from './attivi';
 import { Esperienza, type VistaPxPg, type VoceEsperienza } from './esperienza';
@@ -75,6 +75,8 @@ import { mostraTiroDelMaster } from './tiri-master';
 import { Esplorazione, type IncontroUscito } from './esplorazione';
 import { carteEsplorazione, fattoIncontro } from './esplorazione-testi';
 import { creaVagante, leggiVaganti, MASSIMO_VAGANTI, vagantiDellIncontro, type Vagante } from './vaganti';
+import { Provviste } from './provviste';
+import { Fatica } from './fatica';
 import { doveDellaScena, type DoveEsplorazione } from '../regole/esplorazione';
 
 /** The source of a knock-out's timed condition (prove/attivi.ts): its end wakes the character with 1 hit point. */
@@ -198,6 +200,12 @@ export interface VistaIncontri {
   /** A check fell due during the fight: rolled when it ends. */
   in_attesa?: boolean;
   ultimo?: { testo: string; ora: string };
+  /** The exploration rest rule: how long since the last rest, or that the PCs are overdue (prove/fatica.ts). */
+  fatica?: string;
+  /** The last journey's course check (the Game Master's secret): on course, or lost. */
+  orientamento?: string;
+  /** Who has gone days without food or water (prove/provviste.ts). */
+  provviste?: string[];
 }
 
 export class MotoreProve {
@@ -262,6 +270,16 @@ export class MotoreProve {
   private incontriDovuti: Array<{ id: string; nome: string }> = [];
   /** Where a journey runs while the panel's travel moves the clock (its environment and table), else null: the scene's. */
   private doveInViaggio: DoveEsplorazione | null = null;
+  /** A journey rolled its wandering checks ahead (to stop at the encounter): the clock's advance does not roll them again. */
+  private saltaControlli = false;
+  /** Daily food and water where the party lives off its supplies (prove/provviste.ts). Null without the set's provviste. */
+  readonly provviste: Provviste | null;
+  /** The exploration rest rule (prove/fatica.ts): overdue PCs carry its condition. */
+  readonly fatica: Fatica;
+  /** This window's actions say the rest rule's words: the window is the party's rest. */
+  private riposoInFinestra = false;
+  /** The last journey's course check, for the panel only (the Game Master decides what getting lost means). */
+  private orientamento: { guida: string; smarriti: boolean } | null = null;
   /** The XP the party earns (prove/esperienza.ts). Null with the SRD path (its XP are not data yet). */
   readonly esperienza: Esperienza | null;
   /** Each PC's level and maximum hit points, the level-up's rolls still owed (prove/livelli.ts). Null with the SRD. */
@@ -307,6 +325,23 @@ export class MotoreProve {
     });
     this.dadi = o.dadi ?? this.nuoviDadi(o.seme);
     this.esplorazione = new Esplorazione({ dadi: () => this.dadi, log: o.log.child({ modulo: 'esplorazione' }) });
+    this.fatica = new Fatica({ regola: this.sistema.esplorazione?.riposo ?? null, log: o.log.child({ modulo: 'fatica' }) });
+    this.provviste = this.sistema.esplorazione?.provviste.length && this.inventario
+      ? new Provviste({
+          regole: this.sistema.esplorazione.provviste,
+          dadi: () => this.dadi,
+          nome: (id) => this.nomeDi(this.o.contesto(), id),
+          nomeOggetto: (id) => voce(this.sistema.catalogo, id)?.nome ?? id,
+          quanti: (chi, id) => this.risorse?.restanti(chi, chiaveOggetto(id)) ?? 0,
+          spendi: (chi, id) => void this.inventario?.oggetto(chi, id, -1),
+          // Hunger and thirst can drop a PC to 0: the rule at zero is rolled at the next closed window.
+          danneggia: (chi, n) => {
+            this.stato.danneggia(chi, n);
+            if (this.stato.aTerra(chi) && !this.zeroDaTirare.includes(chi)) this.zeroDaTirare.push(chi);
+          },
+          log: o.log.child({ modulo: 'provviste' }),
+        })
+      : null;
     // Monsters without written hit points roll them once, from this session's seed (prove/bestiario.ts).
     if (this.tiraMostri(this.dadi.seme)) this.stato.azzeraPf();
     this.combattimento = new GestoreCombattimento({
@@ -348,7 +383,8 @@ export class MotoreProve {
       // manual rolls, the Engine's otherwise.
       dadiDelPg: (pg, gruppo) => this.tavolo?.fonte({ pg, azione: null, privata: false, ...gruppo }) ?? null,
       // The timed effects' conditions count in the fight; they tick at each new round (prove/attivi.ts).
-      condizioniEsterne: (id) => this.attivi.condizioni(id),
+      // The exploration's conditions too: an overdue rest (prove/fatica.ts).
+      condizioniEsterne: (id) => [...this.attivi.condizioni(id), ...this.condizioniDiEsplorazione(id)],
       sorpresaMod: (id) => this.trattiDi(id).reduce((n, t) => (t.tipo === 'sorpresa' ? n + t.modificatore : n), 0),
       sorprende: (id) => this.generico?.schede.get(id)?.sorprende ?? null,
       // A new round of the fight is one round on the game clock: timed effects, the dying and the lights tick.
@@ -908,6 +944,7 @@ export class MotoreProve {
       // their words, one round while someone is dying. It passes before the actions, so binding a dying friend in this
       // window still comes in time; the timed effects, the dying and the lights tick on it.
       const finiti = this.combattimento.attivo ? [] : this.passaTempo(this.costoFinestra(azioni, c, decisioni), 'finestra');
+      this.riposoInFinestra = false;
       // A light lit or put out by the action's words («accendo la torcia»): before the resolver, so it burns from now.
       const luci = this.luciDalleAzioni(azioni);
       const r = this.passaRisolutore(turno, c, azioni, decisioni, { dadiDeiPg: tavolo });
@@ -1123,8 +1160,36 @@ export class MotoreProve {
       fatti.push(...this.tempo.fattiSpente(spente));
       this.luciSpente.push(...spente.map((l) => ({ id: l.chi, nome: this.nomeDi(c, l.chi) })));
     }
-    fatti.push(...this.controllaIncontri(prima, causa));
+    const dove = this.doveEsplorazione();
+    // A day's food and water at each midnight, where the party lives off its supplies (prove/provviste.ts).
+    if (this.provviste) fatti.push(...this.provviste.passa(this.tempo.inizio + prima, this.tempo.adesso(), !!dove?.ambiente.provviste, this.pgVivi(c)));
+    // The exploration rest rule (prove/fatica.ts): this window is the rest, or the exploring time adds up — the windows and
+    // rounds of play only: a journey's days and the panel's hours have their own pace.
+    if (this.fatica.regola && dove) {
+      if (causa === 'finestra' && this.riposoInFinestra) {
+        if (this.fatica.riposa()) fatti.push(testo('prove.fatica.riposati'));
+      } else if ((causa === 'finestra' || causa === 'round') && this.fatica.passa(secondi)) fatti.push(testo('prove.fatica.stanchi', { condizione: this.nomeCondizione(this.fatica.regola.condizione) }));
+    }
+    // A wandering encounter is the narrator's to tell, never a public system line (an ambush laid must not show on the
+    // phones before the story says it): it waits with the panel's facts and reaches the narrator in this or the next turn.
+    if (!this.saltaControlli) this.fattiInSospeso.push(...this.controllaIncontri(prima, causa));
     return fatti;
+  }
+
+  /** The PCs at the table with a sheet who are not dead (who eats, who drinks). */
+  private pgVivi(c: ContestoProve): string[] {
+    return c.pgAlTavolo.filter((id) => (this.generico ? this.generico.schede.has(id) : this.o.schede.has(id)) && this.stato.fuoriGioco(id) !== 'morto');
+  }
+
+  /** A combat condition's name in the set (its id if unknown). */
+  private nomeCondizione(id: string): string {
+    return (this.regoleCombattimento().condizioni.find((x) => x.id === id)?.nome ?? id).toLowerCase();
+  }
+
+  /** The conditions exploration gives a character now: the overdue rest's, for the PCs. */
+  private condizioniDiEsplorazione(id: string): string[] {
+    const f = this.fatica.condizione;
+    return f && !id.startsWith('png_') ? [f] : [];
   }
 
   /** Where the party explores now: the journey's environment while travelling, else the scene's `esplorazione`. */
@@ -1208,9 +1273,10 @@ export class MotoreProve {
     // The environment: the scene's, else the first whose tables name this one, else that of a scene of the campaign that
     // rolls on it (the woods' table belongs to the wilderness), else a bare one (no surprise in advance).
     const daScene = (): DoveEsplorazione['ambiente'] | undefined => this.o.contesto().campagna.scene.map((x) => doveDellaScena(this.sistema, x.dati['esplorazione'])).find((d) => d?.tabella?.id === tabella.id)?.ambiente;
-    const ambiente = scena?.ambiente ?? this.sistema.esplorazione?.ambienti.find((a) => a.tabelle.some((t) => t.tabella === tabella.id)) ?? daScene() ?? { id: 'master', nome: '', controllo: null, tabelle: [], sorpresaPrima: null };
+    const ambiente = scena?.ambiente ?? this.sistema.esplorazione?.ambienti.find((a) => a.tabelle.some((t) => t.tabella === tabella.id)) ?? daScene() ?? { id: 'master', nome: '', controllo: null, tabelle: [], sorpresaPrima: null, provviste: false };
     const { tiri, incontro } = this.esplorazione.incontroDelMaster({ ambiente, tabella, livello: scena?.livello ?? null }, this.tempo.trascorsi);
     this.carteDelTempo.push(...carteEsplorazione(tiri, { turno: this.turnoCorrente, nuovoId: () => this.stato.nuovoIdTiro(), modo: this.o.tiriMaster?.() ?? 'nascosti', ambiente: ambiente.nome }));
+    // For the narrator (next turn) and the panel's log: never a public line (the creatures' surprise is the Game Master's).
     const fatto = this.raccontaIncontro(incontro, 'master_incontro');
     this.fattiInSospeso.push(fatto);
     this.carteDelTempoAlPannello();
@@ -1296,6 +1362,9 @@ export class MotoreProve {
     if (errori.length) this.o.log.warn({ errori }, 'time: the scene\'s tempo_per_finestra is malformed, the set\'s applies');
     const testi = azioni.map((a) => normalizza(senzaParlato(a.testo)));
     const lunghe = t.azioni.filter((x) => testi.some((w) => x.parole.some((p) => w.includes(normalizza(p))))).map((x) => x.secondi);
+    // The exploration rest rule's words («ci riposiamo»): the window is the party's rest, at least its length.
+    this.riposoInFinestra = !!this.fatica.regola && azioni.some((a) => this.fatica.eRiposo(a.testo));
+    if (this.riposoInFinestra) lunghe.push(this.fatica.regola!.durata);
     return Math.max(base, ...lunghe);
   }
 
@@ -1341,13 +1410,20 @@ export class MotoreProve {
     const dove = this.doveEsplorazione();
     const p = this.esplorazione.prossimo(dove, this.tempo.trascorsi);
     const u = this.esplorazione.ultimoIncontro;
-    if (!p && !u) return null;
+    const r = this.fatica.regola;
+    const fatica = r && dove ? testo(this.fatica.condizione ? 'prove.fatica.vista_stanchi' : 'prove.fatica.vista', { da: this.fatica.daUltimo ? this.tempo.durata(this.fatica.daUltimo) : testo('prove.esplorazione.adesso'), ogni: this.tempo.durata(r.ogni), durata: this.tempo.durata(r.durata), condizione: this.nomeCondizione(r.condizione) }) : null;
+    const orientamento = this.orientamento ? testo(this.orientamento.smarriti ? 'prove.viaggio.smarriti' : 'prove.viaggio.in_rotta', { nome: this.nomeDi(this.o.contesto(), this.orientamento.guida) }) : null;
+    const provviste = this.provviste ? this.pgVivi(this.o.contesto()).flatMap((id) => Object.entries(this.provviste!.vista(id).senza).filter(([, n]) => n > 0).map(([k, n]) => testo('prove.provviste.vista', { nome: this.nomeDi(this.o.contesto(), id), provvista: (this.sistema.esplorazione?.provviste.find((x) => x.id === k)?.nome ?? k).toLowerCase(), giorni: n }))) : [];
+    if (!p && !u && !fatica && !orientamento && !provviste.length) return null;
     const nomeMostro = (id: string): string => (this.sistema.mostri ?? []).find((m) => m.id === id)?.nome ?? id;
     return {
       ...(p && dove
         ? { ambiente: dove.ambiente.nome, tabella: dove.tabella?.nome ?? null, prossimo: p.tra > 0 ? this.tempo.durata(p.tra) : testo('prove.esplorazione.adesso'), ogni: this.tempo.durata(p.ogni), probabilita: testo('prove.esplorazione.probabilita', { fino_a: p.finoA, dado: p.dado }), in_attesa: this.combattimento.attivo && p.tra === 0 }
         : {}),
       ...(u ? { ultimo: { testo: fattoIncontro(u, { nomeMostro, quando: null }), ora: this.tempo.testoOraDi(this.tempo.inizio + u.quando) } } : {}),
+      ...(fatica ? { fatica } : {}),
+      ...(orientamento ? { orientamento } : {}),
+      ...(provviste.length ? { provviste } : {}),
     };
   }
 
@@ -1355,14 +1431,14 @@ export class MotoreProve {
    * The Game Master lights or puts out a light (docs/prove.md §11), or lets time pass (`avanza`: {unit: amount} of the
    * set's clock; never during a fight, whose rounds are the clock). Facts to the transcript and the narrator next turn.
    */
-  tempoDelMaster(c: { cosa: 'accendi' | 'spegni'; id: string; oggetto: string } | { cosa: 'avanza'; durata: Record<string, number> } | { cosa: 'viaggio'; distanza: number; terreno: string }): { ok: boolean; fatto: string } | null {
+  tempoDelMaster(c: { cosa: 'accendi' | 'spegni'; id: string; oggetto: string } | { cosa: 'avanza'; durata: Record<string, number> } | { cosa: 'viaggio'; distanza: number; terreno: string; guida?: string | null }): { ok: boolean; fatto: string } | null {
     if (!this.attivo) return null;
     let e: { ok: boolean; fatto: string };
     if (c.cosa === 'viaggio') {
       if (this.combattimento.attivo) return { ok: false, fatto: testo('prove.tempo.in_combattimento') };
       const v = this.viaggio(c.distanza, c.terreno);
       if (!v.ok) return v;
-      e = { ok: true, fatto: [v.fatto, ...this.passaTempo(v.secondi, 'viaggio')].join(' ') };
+      e = { ok: true, fatto: this.percorri(v, c.guida ?? null) };
     } else if (c.cosa === 'avanza') {
       if (this.combattimento.attivo) return { ok: false, fatto: testo('prove.tempo.in_combattimento') };
       const errori: string[] = [];
@@ -1386,7 +1462,53 @@ export class MotoreProve {
    * times the set's `per_movimento` and the terrain's factor, gives the distance of a travel day; the clock moves by the
    * whole days and the hours of the last one. Refused without the set's `viaggio`, or when someone cannot move.
    */
-  private viaggio(distanza: number, terreno: string): { ok: true; fatto: string; secondi: number } | { ok: false; fatto: string } {
+  /**
+   * A journey on the clock (docs/prove.md §14): the leader's secret check against getting lost in a trackless terrain
+   * (the panel only: the Game Master decides what it means), the wandering checks of the journey's environment rolled
+   * ahead on the terrain's table — the journey stops at an encounter, the clock at its moment — and the day's food and
+   * water as the days pass. Returns the public line: how far the party went and the time now.
+   */
+  private percorri(v: { fatto: string; secondi: number; terreno: TerrenoViaggio; distanza: number; alGiorno: number }, guida: string | null): string {
+    const s = this.sistema;
+    const c = this.o.contesto();
+    const prima = this.tempo.trascorsi;
+    const ambiente = s.viaggio?.ambiente ? (s.esplorazione?.ambienti.find((a) => a.id === s.viaggio!.ambiente) ?? null) : null;
+    const tabella = v.terreno.incontri ? ((s.incontri ?? []).find((t) => t.id === v.terreno.incontri) ?? null) : null;
+    // Off roads and landmarks (p. 45): the leader's save, rolled by the Game Master in secret; what failing means is his.
+    this.orientamento = null;
+    if (v.terreno.smarrirsi && s.viaggio?.smarrirsi) {
+      const chi = guida && this.pgVivi(c).includes(guida) ? guida : this.pgVivi(c)[0];
+      const t = chi ? this.provaDelPng(chi, `abilita:${s.viaggio.smarrirsi.abilita}`, null, this.turnoCorrente) : null;
+      if (chi && t) {
+        this.orientamento = { guida: chi, smarriti: !t.riuscita };
+        this.carteDelTempo.push(...carteEsplorazione([{ cosa: 'orientamento', facce: t.facce, dadi: [t.dado], totale: t.dado, riuscito: t.riuscita }], { turno: this.turnoCorrente, nuovoId: () => this.stato.nuovoIdTiro(), modo: this.o.tiriMaster?.() ?? 'nascosti', ambiente: this.nomeDi(c, chi) }));
+        this.o.log.info({ guida: chi, abilita: s.viaggio.smarrirsi.abilita, dado: t.dado, riuscita: t.riuscita }, 'travel: the leader\'s check against getting lost (Game Master roll)');
+      }
+    }
+    // The wandering checks of the whole journey, ahead: the first encounter stops it there.
+    const dove: DoveEsplorazione | null = ambiente ? { ambiente, tabella, livello: null } : null;
+    const pre = this.esplorazione.passa(dove, prima, prima + v.secondi, false);
+    const fino = pre.incontro ? Math.max(0, pre.incontro.quando - prima) : v.secondi;
+    this.doveInViaggio = dove;
+    this.saltaControlli = true;
+    let fatti: string[];
+    try {
+      fatti = this.passaTempo(fino, 'viaggio');
+    } finally {
+      this.saltaControlli = false;
+    }
+    if (pre.tiri.length) this.carteDelTempo.push(...carteEsplorazione(pre.tiri, { turno: this.turnoCorrente, nuovoId: () => this.stato.nuovoIdTiro(), modo: this.o.tiriMaster?.() ?? 'nascosti', ambiente: ambiente?.nome ?? '' }));
+    if (pre.incontro) this.fattiInSospeso.push(this.raccontaIncontro(pre.incontro, 'viaggio'));
+    this.doveInViaggio = null;
+    if (!pre.incontro) return [v.fatto, ...fatti].join(' ');
+    // Interrupted: the travel hours of the days gone by, at the day's rate.
+    const giorni = Math.floor(fino / 86400);
+    const ore = giorni * (s.viaggio?.oreAlGiorno ?? 8) + Math.min((fino - giorni * 86400) / 3600, s.viaggio?.oreAlGiorno ?? 8);
+    const fatta = Math.min(v.distanza, Math.round((ore * v.alGiorno * 10) / (s.viaggio?.oreAlGiorno ?? 8)) / 10);
+    return [testo('prove.viaggio.interrotto', { fatta, distanza: v.distanza, unita: s.viaggio?.unita ?? '', terreno: v.terreno.nome.toLowerCase(), ora: this.tempo.testoOra() }), ...fatti].join(' ');
+  }
+
+  private viaggio(distanza: number, terreno: string): { ok: true; fatto: string; secondi: number; terreno: TerrenoViaggio; distanza: number; alGiorno: number } | { ok: false; fatto: string } {
     const s = this.sistema;
     const t = s.viaggio?.terreni.find((x) => x.id === terreno);
     const c = this.o.contesto();
@@ -1401,7 +1523,7 @@ export class MotoreProve {
     const secondi = Math.round(interi * 86400 + (giorni - interi) * s.viaggio.oreAlGiorno * 3600);
     this.o.log.info({ distanza, terreno, lento: lento.id, movimento: lento.mv, al_giorno: alGiorno, giorni }, 'travel: the journey by the slowest member');
     const quanto = this.tempo.durata(secondi);
-    return { ok: true, secondi, fatto: testo('prove.viaggio.fatto', { distanza, unita: s.viaggio.unita, terreno: t.nome.toLowerCase(), quanto, al_giorno: Math.round(alGiorno * 10) / 10, nome: this.nomeDi(c, lento.id), movimento: lento.mv, unita_movimento: s.movimento?.unita ?? '' }) };
+    return { ok: true, secondi, terreno: t, distanza, alGiorno, fatto: testo('prove.viaggio.fatto', { distanza, unita: s.viaggio.unita, terreno: t.nome.toLowerCase(), quanto, al_giorno: Math.round(alGiorno * 10) / 10, nome: this.nomeDi(c, lento.id), movimento: lento.mv, unita_movimento: s.movimento?.unita ?? '' }) };
   }
 
   private passaRoundMorenti(k = 1): string[] {
@@ -1580,7 +1702,15 @@ export class MotoreProve {
     const r = (this.sistema.riposo ?? []).find((x) => x.id === id);
     if (!r) return { ok: false, motivo: 'sconosciuto' };
     const c = this.o.contesto();
-    const ids = [...(this.generico ? this.generico.schede.keys() : this.o.schede.keys())];
+    // Hunger or thirst past the grace stops natural healing (prove/provviste.ts): those characters rest without healing.
+    const tutti = [...(this.generico ? this.generico.schede.keys() : this.o.schede.keys())];
+    const fermi = tutti.flatMap((x) => {
+      const n = this.provviste?.senzaGuarigione(x);
+      return n ? [{ id: x, provvista: n }] : [];
+    });
+    const ids = tutti.filter((x) => !fermi.some((f) => f.id === x));
+    // A rest at least as long as the exploration rule's clears the overdue condition (prove/fatica.ts).
+    const riposati = this.fatica.regola && r.durata && r.durata >= this.fatica.regola.durata && this.fatica.riposa() ? [testo('prove.fatica.riposati')] : [];
     // Back above 0 by the rest: on its feet, and no longer dying (prove/morte.ts).
     const rialzato = (x: string): void => {
       this.combattimento.dopoCura(x);
@@ -1592,7 +1722,8 @@ export class MotoreProve {
     const finiti = Attivi.fatto(this.attivi.riposo(), (x) => this.nomeDi(c, x));
     // The rest takes its time on the clock (a night: eight hours): lights left burning burn down meanwhile.
     const tempo = r.durata ? [...this.passaTempo(r.durata, 'riposo'), ...(this.tempo.mostrato ? [testo('prove.tempo.passa', { quanto: this.tempo.durata(r.durata), ora: this.tempo.testoOra() })] : [])] : [];
-    const fatto = [e.fatto, ricaricati.length ? testo('prove.riposo.ricarica') : '', finiti ?? '', ...tempo].filter(Boolean).join(' ');
+    const senzaCure = fermi.map((f) => testo('prove.provviste.non_guarisce', { nome: this.nomeDi(c, f.id), provvista: f.provvista.toLowerCase() }));
+    const fatto = [e.fatto, ...senzaCure, ricaricati.length ? testo('prove.riposo.ricarica') : '', finiti ?? '', ...riposati, ...tempo].filter(Boolean).join(' ');
     if (ricaricati.length) this.o.log.info({ riposo: r.id }, 'rest: resources and spells refreshed');
     this.fattiInSospeso.push(fatto);
     this.carteDelTempoAlPannello();
@@ -1895,7 +2026,7 @@ export class MotoreProve {
         : {}),
       ...(() => {
         const t = this.vistaTempo();
-        return t ? { tempo: { ...t, unita: this.tempo.regola.unita.map((u) => ({ id: u.id, nome: u.nome })), terreni: (this.sistema.viaggio?.terreni ?? []).map((x) => ({ id: x.id, nome: x.nome })), unita_viaggio: this.sistema.viaggio?.unita ?? null } } : {};
+        return t ? { tempo: { ...t, unita: this.tempo.regola.unita.map((u) => ({ id: u.id, nome: u.nome })), terreni: (this.sistema.viaggio?.terreni ?? []).map((x) => ({ id: x.id, nome: x.nome })), unita_viaggio: this.sistema.viaggio?.unita ?? null, ...(this.sistema.viaggio?.smarrirsi ? { guide: this.pgVivi(this.o.contesto()).map((id) => ({ id, nome: this.nomeDi(this.o.contesto(), id) })) } : {}) } } : {};
       })(),
       ...(() => {
         const e = this.vistaEsperienza();
@@ -2099,7 +2230,7 @@ export class MotoreProve {
   // ------------------------------------------------------------------ sessione
 
   esporta(): StatoProveSalvato {
-    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta(), ...(this.tempo.mostrato ? { tempo: this.tempo.esporta() } : {}), ...(this.esperienza?.attiva ? { esperienza: this.esperienza.esporta() } : {}), ...(this.livelli?.attivo ? { livelli: this.livelli.esporta() } : {}), ...(this.drenaggi?.attivo ? { drenaggi: this.drenaggi.esporta() } : {}), ...(this.zeroDaTirare.length ? { zero_da_tirare: [...this.zeroDaTirare] } : {}), ...(this.sistema.esplorazione ? { esplorazione: this.esplorazione.esporta() } : {}), ...(this.vaganti.length ? { vaganti: this.vaganti.map((v) => ({ ...v })) } : {}), ...(this.carteDelTempo.length ? { carte_del_tempo: [...this.carteDelTempo] } : {}), ...(this.incontriDovuti.length ? { incontri_dovuti: [...this.incontriDovuti] } : {}) };
+    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta(), ...(this.tempo.mostrato ? { tempo: this.tempo.esporta() } : {}), ...(this.esperienza?.attiva ? { esperienza: this.esperienza.esporta() } : {}), ...(this.livelli?.attivo ? { livelli: this.livelli.esporta() } : {}), ...(this.drenaggi?.attivo ? { drenaggi: this.drenaggi.esporta() } : {}), ...(this.zeroDaTirare.length ? { zero_da_tirare: [...this.zeroDaTirare] } : {}), ...(this.sistema.esplorazione ? { esplorazione: this.esplorazione.esporta() } : {}), ...(this.vaganti.length ? { vaganti: this.vaganti.map((v) => ({ ...v })) } : {}), ...(this.provviste ? { provviste: this.provviste.esporta() } : {}), ...(this.fatica.regola ? { fatica: this.fatica.esporta() } : {}), ...(this.orientamento ? { orientamento: { ...this.orientamento } } : {}), ...(this.carteDelTempo.length ? { carte_del_tempo: [...this.carteDelTempo] } : {}), ...(this.incontriDovuti.length ? { incontri_dovuti: [...this.incontriDovuti] } : {}) };
   }
 
   importa(s: StatoProveSalvato): void {
@@ -2121,6 +2252,9 @@ export class MotoreProve {
     this.morenti.importa(s.morenti);
     this.tempo.importa(s.tempo);
     this.esplorazione.importa(s.esplorazione);
+    this.provviste?.importa(s.provviste);
+    this.fatica.importa(s.fatica);
+    this.orientamento = s.orientamento && typeof s.orientamento.guida === 'string' ? { guida: s.orientamento.guida, smarriti: s.orientamento.smarriti === true } : null;
     this.carteDelTempo = Array.isArray(s.carte_del_tempo) ? [...s.carte_del_tempo] : [];
     this.incontriDovuti = Array.isArray(s.incontri_dovuti) ? [...s.incontri_dovuti] : [];
     this.esperienza?.importa(s.esperienza);
@@ -2151,6 +2285,9 @@ export class MotoreProve {
     this.tempo.azzera();
     this.luciSpente = [];
     this.esplorazione.azzera();
+    this.provviste?.azzera();
+    this.fatica.azzera();
+    this.orientamento = null;
     this.carteDelTempo = [];
     this.incontriDovuti = [];
     this.esperienza?.azzera();

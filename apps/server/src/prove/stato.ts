@@ -14,6 +14,8 @@ import type { StatoEsperienzaSalvato } from './esperienza';
 import type { StatoLivelliSalvato } from './livelli';
 import type { StatoDrenaggiSalvato } from './drenaggio';
 import type { StatoEsplorazioneSalvato } from './esplorazione';
+import type { StatoProvvisteSalvato } from './provviste';
+import type { StatoFaticaSalvato } from './fatica';
 
 export interface StatoProveSalvato {
   seme: string;
@@ -59,6 +61,12 @@ export interface StatoProveSalvato {
   carte_del_tempo?: TiroMostrato[];
   /** Encounters not yet told by the narrator: owed facts of the next turn. */
   incontri_dovuti?: Array<{ id: string; nome: string }>;
+  /** Daily food and water: the open packs and the days without (prove/provviste.ts). */
+  provviste?: StatoProvvisteSalvato;
+  /** The exploration rest rule: time since the last rest, overdue (prove/fatica.ts). */
+  fatica?: StatoFaticaSalvato;
+  /** The last journey's course check, for the panel. */
+  orientamento?: { guida: string; smarriti: boolean };
   /** The creatures wandering encounters brought into their scenes (prove/vaganti.ts), rebuilt on resume. */
   vaganti?: Array<{ id: string; mostro: string; nome: string; scena: string; incontro: number }>;
 }

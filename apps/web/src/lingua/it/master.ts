@@ -310,6 +310,8 @@ export const master = {
   'master.tempo.distanza': 'Distanza del viaggio',
   'master.tempo.terreno': 'Terreno',
   'master.tempo.viaggio': 'Viaggio',
+  'master.tempo.guida': 'Chi guida il gruppo',
+  'master.tempo.guida_prima': 'guida: il primo al tavolo',
   'master.tempo.incontri': 'Mostri erranti ({ambiente}{tabella}): prossimo controllo tra {prossimo}, ogni {ogni}, {probabilita}',
   'master.tempo.incontri_attesa': 'Mostri erranti ({ambiente}): un controllo è dovuto, si tira a fine scontro',
   'master.tempo.incontro_ultimo': 'Ultimo incontro ({ora}): {testo}',

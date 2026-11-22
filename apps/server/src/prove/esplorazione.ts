@@ -23,7 +23,7 @@ import type { FonteDadi } from './dadi';
 
 /** One die the Game Master rolled for exploration (the check, the table, the nested roll, the number, the surprise). */
 export interface TiroEsplorazione {
-  cosa: 'controllo' | 'tabella' | 'scelta' | 'numero' | 'sorpresa';
+  cosa: 'controllo' | 'tabella' | 'scelta' | 'numero' | 'sorpresa' | 'orientamento';
   /** Faces of each die and the dice themselves (a 2d8 table: two values). */
   facce: number;
   dadi: number[];

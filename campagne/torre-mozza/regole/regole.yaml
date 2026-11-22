@@ -85,6 +85,8 @@ abilita:
   - {id: ts_morte, nome: "Tiro salvezza contro raggio della morte o veleno", caratteristica: null, salvezza: morte}
   # Lo stesso salvezza con la Destrezza, come il manuale lo chiede per fosse, cadute e inseguimenti (p. 43, 52).
   - {id: ts_morte_destrezza, nome: "Tiro salvezza contro raggio della morte, con la Destrezza", caratteristica: destrezza, salvezza: morte}
+  # E con la Saggezza di chi guida il gruppo, per non perdersi fuori dalle strade (p. 45): lo tira il master in segreto.
+  - {id: ts_morte_saggezza, nome: "Tiro salvezza contro raggio della morte, con la Saggezza (orientarsi)", caratteristica: saggezza, salvezza: morte}
   - {id: ts_bacchette, nome: "Tiro salvezza contro bacchette magiche", caratteristica: null, salvezza: bacchette}
   - {id: ts_paralisi, nome: "Tiro salvezza contro paralisi o pietrificazione", caratteristica: null, salvezza: paralisi}
   - {id: ts_soffio, nome: "Tiro salvezza contro soffio del drago", caratteristica: null, salvezza: soffio}
@@ -1050,16 +1052,30 @@ tempo:
   round: round
   per_finestra: {turno: 1}
 # Viaggio (p. 45): miglia al giorno = 0,6 × il movimento d'incontro in piedi (40' → 24 miglia), cioè 2 per ogni metro del
-# movimento in metri del set; un giorno di viaggio è di otto ore; il gruppo va al passo del più lento; il terreno moltiplica.
+# movimento in metri del set; un giorno di viaggio è di otto ore; il gruppo va al passo del più lento; il terreno moltiplica
+# (giungla, montagna e palude ×1/3; deserto, foresta e colline ×2/3; terreno aperto, pianura e sentiero ×1; strada
+# lastricata ×1 1/3). Il viaggio è nelle terre selvagge (i mostri erranti ogni quattro ore, p. 181) e ogni terreno tira sulla
+# sua tabella degli incontri (p. 181–182; le colline su quella delle montagne, il terreno aperto e la pianura sulla prateria,
+# il sentiero e la strada sui territori abitati: scelta del set, il master ne può tirare un'altra dal pannello). Fuori dalle
+# strade e dai punti di riferimento (p. 45) il master tira in segreto il salvezza contro raggio della morte di chi guida, con
+# la sua Saggezza; che cosa vuol dire perdersi lo decide lui. Lungo strade e sentieri non ci si perde.
 viaggio:
   unita: miglia
   per_movimento: 2
   ore_al_giorno: 8
+  ambiente: selvaggio
+  smarrirsi: {abilita: ts_morte_saggezza}
   terreni:
-    - {id: giungla_montagna_palude, nome: "Giungla, montagna o palude", per: 0.333}
-    - {id: deserto_bosco_colline, nome: "Deserto, bosco o colline", per: 0.667}
-    - {id: pianura_sentiero, nome: "Pianura aperta o sentiero", per: 1}
-    - {id: strada, nome: "Strada lastricata", per: 1.333}
+    - {id: giungla, nome: "Giungla", per: 0.333, incontri: selvaggio_giungla, smarrirsi: true}
+    - {id: montagna, nome: "Montagna", per: 0.333, incontri: selvaggio_montagna, smarrirsi: true}
+    - {id: palude, nome: "Palude", per: 0.333, incontri: selvaggio_palude, smarrirsi: true}
+    - {id: deserto, nome: "Deserto", per: 0.667, incontri: selvaggio_deserto, smarrirsi: true}
+    - {id: foresta, nome: "Foresta", per: 0.667, incontri: selvaggio_bosco, smarrirsi: true}
+    - {id: colline, nome: "Colline", per: 0.667, incontri: selvaggio_montagna, smarrirsi: true}
+    - {id: aperto, nome: "Terreno aperto", per: 1, incontri: selvaggio_prateria, smarrirsi: true}
+    - {id: pianura, nome: "Pianura", per: 1, incontri: selvaggio_prateria, smarrirsi: true}
+    - {id: sentiero, nome: "Sentiero", per: 1, incontri: selvaggio_abitato}
+    - {id: strada, nome: "Strada lastricata", per: 1.333, incontri: selvaggio_abitato}
 
 # Esplorazione (p. 180–181): nei sotterranei il master controlla i mostri erranti ogni 3 turni, un incontro con 1 su 1d6;
 # nelle terre selvagge circa ogni quattro ore (tre controlli di giorno e tre di notte), sempre 1 su 1d6, e la sorpresa si
@@ -1086,6 +1102,14 @@ esplorazione:
       sorpresa_prima: {dado: 6, fino_a: 2, imboscata: 4}
     - id: citta
       nome: "Città, paese o villaggio"
+      provviste: false
+  # Sopravvivenza (p. 44, e l'otre di p. 12): ogni giorno una razione e almeno un quarto d'acqua (un otre pieno). Senza
+  # cibo i primi due giorni non succede niente, poi 1 punto ferita al giorno e le ferite non guariscono da sole (la magia sì)
+  # finché non si mangia di nuovo per un giorno; senz'acqua dopo un solo giorno 1d4, poi 1d4 al giorno, e la guarigione si
+  # ferma col primo dado. Una confezione di razioni secche dura una settimana. In città o al villaggio si mangia e si beve.
+  provviste:
+    - {id: cibo, nome: "Cibo", oggetti: [{id: razioni, giorni: 7}], senza: {dopo: 2, danno: "1", guarigione: false}}
+    - {id: acqua, nome: "Acqua", oggetti: [{id: otre, giorni: 1}], senza: {dopo: 0, danno: "1d4", guarigione: false}}
 
 # Monete (p. 10): 1 pp = 5 gp, 1 gp = 10 sp, 1 ep = 5 sp, 1 sp = 10 cp. Il valore è in rame (il taglio più piccolo vale 1).
 # Peso: una moneta pesa 1/20 di libbra, quindi 20 monete = 1 unità di carico (1 libbra).

@@ -3856,7 +3856,7 @@ export class Regia {
   incontro(c: { tabella: string | null }): Esito & { fatto?: string } {
     const r = this.prove?.incontroDelMaster({ tabella: c.tabella });
     if (!r?.ok) return { ok: false, errore: testoFisso(r && !r.ok && r.motivo === 'combattimento' ? 'regia.errori.incontro_combattimento' : 'regia.errori.incontro_non_valido') };
-    this.rigaDiSistema(this.turno, r.fatto);
+    // No public line: the narrator tells who arrives (and whether they lie in ambush) in the next turn.
     this.notifica();
     return { ok: true, fatto: r.fatto };
   }

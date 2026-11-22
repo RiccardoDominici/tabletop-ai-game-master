@@ -322,6 +322,10 @@ viaggio:                                    # optional [V]: overland travel (Bas
   per_movimento: 2                          # a day's distance per unit of the round's movement (12 m → 24 miles)
   ore_al_giorno: 8
   terreni: [{id: strada, nome: "Strada lastricata", per: 1.333}, {id: montagna, nome: "Montagna", per: 0.333}]
+  ambiente: selvaggio                       # optional [V] (R6): the environment of esplorazione a journey is in (its checks)
+  smarrirsi: {abilita: ts_morte_saggezza}   # optional [V] (R6): the leader's check off roads (p. 45), a Game Master roll
+                                            #   terreni[].incontri [V]: the terrain's encounter table; terreni[].smarrirsi:
+                                            #   true = trackless (the leader's check), false/absent = roads and trails
 esplorazione:                               # optional [V] (R6): the environments explored (regole/esplorazione.ts;
                                             #   Basic Fantasy pp. 180–181); needs tempo
   ambienti:
@@ -335,6 +339,16 @@ esplorazione:                               # optional [V] (R6): the environment
       controllo: {ogni: {ora: 4}, dado: 6, fino_a: 1}
       sorpresa_prima: {dado: 6, fino_a: 2, imboscata: 4}  # optional [V]: the creatures' surprise checked at the encounter
                                             #   (p. 181); not surprised, they ambush and surprise on 1–`imboscata`
+    - {id: citta, nome: "Città", provviste: false}   # [V] a town feeds the party: no daily food and water from packs
+  provviste:                                # optional [V]: what each character eats and drinks each day where the party
+                                            #   lives off its supplies (Basic Fantasy p. 44)
+    - {id: cibo, nome: "Cibo", oggetti: [{id: razioni, giorni: 7}], senza: {dopo: 2, danno: "1", guarigione: false}}
+    - {id: acqua, nome: "Acqua", oggetti: [{id: otre, giorni: 1}], senza: {dopo: 0, danno: "1d4", guarigione: false}}
+                                            # [V] oggetti: catalog items and the days one feeds; senza: after `dopo` days
+                                            #   without, `danno` a day; guarigione false = no natural healing meanwhile
+  riposo: {ogni: {ora: 1}, durata: {turno: 1}, parole: [ci riposiamo], condizione: affaticato}   # optional [V]: an
+                                            #   exploration rest rule (none in Basic Fantasy): past `ogni` without a rest of
+                                            #   `durata`, the PCs carry the fight's condition (its `valori`)
 incontri:                                   # optional [V] (R6): encounter tables; also in regole/incontri.yaml
   - id: sotterraneo_1                       # [V] snake_case, unique
     nome: "Sotterraneo, livello 1"
@@ -632,7 +646,14 @@ no check runs there (a village, a talk), so existing campaigns are unchanged. Wh
 with a `controllo`, the Engine counts the game clock and makes the Game Master's hidden roll each `ogni`; on a hit it
 rolls the table, the nested roll, how many appear (`numero`, one when absent), and the surprise in advance. A check due
 during a fight waits for its end; an advance that spans several checks rolls them in order and stops at the first
-encounter (one per advance, at the moment its check fell). The validator checks the environments, every table's
+encounter (one per advance, at the moment its check fell). Each midnight the clock passes where the party lives off its
+supplies (an environment without `provviste: false`, or a journey) costs every PC at the table a day of each
+`provviste` from what it carries (an open pack's days first); without, the days are counted, and past `dopo` each day
+deals `danno` and, with `guarigione: false`, a rest heals nothing until a day with it. A day in a town, or in a scene
+that explores nothing, feeds everyone. A journey (`viaggio`) rolls its environment's checks ahead on the terrain's
+table and stops at the first encounter (the clock at that moment, the distance covered said); in a trackless terrain
+the leader's `smarrirsi.abilita` is the Game Master's secret roll, shown only on the panel. The exploration rest rule
+counts the windows and rounds of play only (a journey's days and the panel's hours have their own pace). The validator checks the environments, every table's
 entries (one per roll, a creature of the bestiary, one kind per entry) and each scene's environment and table
 (strumenti/valida/regole_esplorazione.py). The numbers of torre-mozza's tables are checked against the PDF by
 `strumenti/regole/test_incontri_bf.py`.

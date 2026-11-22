@@ -131,12 +131,35 @@ export function quantita(v: unknown): FormulaDadi | null {
  *     per_movimento: 2                     # per unit of movement.unita (12 m → 24 miles)
  *     ore_al_giorno: 8                     # the travel day
  *     terreni: [{id: strada, nome: "Strada lastricata", per: 1.333}, {id: montagna, nome: "Montagna", per: 0.333}]
+ *
+ * And, for exploration (R6; regole/esplorazione.ts, prove/esplorazione.ts): the environment a journey's wandering checks
+ * use, each terrain's encounter table and whether it is trackless, and the check that keeps the party on course
+ * (Basic Fantasy p. 45: off roads and landmarks the Game Master secretly rolls the leader's save vs. Death Ray with the
+ * Wisdom bonus):
+ *
+ *     ambiente: selvaggio
+ *     smarrirsi: {abilita: ts_morte_saggezza}
+ *     terreni: [{id: foresta, nome: "Foresta", per: 0.667, incontri: selvaggio_bosco, smarrirsi: true}]
  */
+export interface TerrenoViaggio {
+  id: string;
+  nome: string;
+  per: number;
+  /** The encounter table a journey through it rolls on (R6); null = none. */
+  incontri: string | null;
+  /** Off roads and landmarks: the leader's check against getting lost (R6). */
+  smarrirsi: boolean;
+}
+
 export interface RegolaViaggio {
   unita: string;
   perMovimento: number;
   oreAlGiorno: number;
-  terreni: Array<{ id: string; nome: string; per: number }>;
+  terreni: TerrenoViaggio[];
+  /** The environment of the set's `esplorazione` a journey is in (its wandering checks); null = no checks on the way. */
+  ambiente: string | null;
+  /** The ability the leader rolls, secretly, to keep the party on course in a trackless terrain; null = no rule. */
+  smarrirsi: { abilita: string } | null;
 }
 
 export function leggiViaggio(v: unknown, errori: string[]): RegolaViaggio | null {
@@ -145,7 +168,11 @@ export function leggiViaggio(v: unknown, errori: string[]): RegolaViaggio | null
   const num = (x: unknown): x is number => typeof x === 'number' && Number.isFinite(x) && x > 0;
   const terreni = (Array.isArray(o?.['terreni']) ? (o!['terreni'] as unknown[]) : []).flatMap((x, i) => {
     const t = ogg(x);
-    if (t && typeof t['id'] === 'string' && ID.test(t['id']) && num(t['per'])) return [{ id: t['id'], nome: typeof t['nome'] === 'string' ? t['nome'] : t['id'], per: t['per'] }];
+    if (t && typeof t['id'] === 'string' && ID.test(t['id']) && num(t['per'])) {
+      if (t['incontri'] !== undefined && !(typeof t['incontri'] === 'string' && ID.test(t['incontri']))) errori.push(`viaggio.terreni[${i + 1}].incontri: the id of an encounter table`);
+      if (t['smarrirsi'] !== undefined && typeof t['smarrirsi'] !== 'boolean') errori.push(`viaggio.terreni[${i + 1}].smarrirsi: true (trackless) or false`);
+      return [{ id: t['id'], nome: typeof t['nome'] === 'string' ? t['nome'] : t['id'], per: t['per'], incontri: typeof t['incontri'] === 'string' ? t['incontri'] : null, smarrirsi: t['smarrirsi'] === true }];
+    }
     errori.push(`viaggio.terreni[${i + 1}]: {id, nome, per: the terrain's factor}`);
     return [];
   });
@@ -153,5 +180,9 @@ export function leggiViaggio(v: unknown, errori: string[]): RegolaViaggio | null
     errori.push('viaggio: {unita, per_movimento, ore_al_giorno, terreni: [{id, nome, per}]}');
     return null;
   }
-  return { unita: o['unita'], perMovimento: o['per_movimento'], oreAlGiorno: o['ore_al_giorno'], terreni };
+  const amb = o['ambiente'];
+  if (amb !== undefined && !(typeof amb === 'string' && ID.test(amb))) errori.push('viaggio.ambiente: the id of an environment of esplorazione.ambienti');
+  const sm = o['smarrirsi'] === undefined ? null : ogg(o['smarrirsi']);
+  if (o['smarrirsi'] !== undefined && !(sm && typeof sm['abilita'] === 'string' && ID.test(sm['abilita']))) errori.push('viaggio.smarrirsi: {abilita: the check the leader rolls (a save of the set)}');
+  return { unita: o['unita'], perMovimento: o['per_movimento'], oreAlGiorno: o['ore_al_giorno'], terreni, ambiente: typeof amb === 'string' ? amb : null, smarrirsi: sm && typeof sm['abilita'] === 'string' ? { abilita: sm['abilita'] } : null };
 }

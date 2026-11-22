@@ -57,3 +57,25 @@ def test_ambienti_e_scene_rotti(tmp_path: Path) -> None:
     assert "esplorazione.ambienti[2].sorpresa_prima: {dado" in errori
     assert "esplorazione.ambiente: «deserto» non è un ambiente del set" in errori
     assert "esplorazione.tabella: «galleria_9» non è una tabella degli incontri del set" in errori
+
+
+def test_provviste_riposo_e_viaggio_rotti(tmp_path: Path) -> None:
+    dest = copia(CUNICOLO, tmp_path)
+
+    def rompi(d: dict) -> None:
+        es = d["esplorazione"]
+        es["provviste"][0]["oggetti"] = [{"id": "pane", "giorni": 3}]
+        es["provviste"][1]["senza"] = {"dopo": -1}
+        es["riposo"]["condizione"] = "stremato"
+        d["viaggio"]["ambiente"] = "mare"
+        d["viaggio"]["smarrirsi"] = {"abilita": "bussola"}
+        d["viaggio"]["terreni"][1]["incontri"] = "foresta_nera"
+    modifica(dest, "regole/regole.yaml", rompi)
+    errori = " | ".join(regole_di(dest))
+    assert "esplorazione.provviste[1].oggetti: «pane» non è un oggetto del catalogo" in errori
+    assert "esplorazione.provviste[2]: {id, nome, oggetti" in errori
+    assert "esplorazione.riposo.condizione: «stremato» non è una condizione" in errori
+    assert "viaggio.ambiente: «mare» non è un ambiente" in errori
+    assert "viaggio.smarrirsi: {abilita" in errori
+    assert "viaggio.terreni[2].incontri: «foresta_nera» non è una tabella degli incontri" in errori
+

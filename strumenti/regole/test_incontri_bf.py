@@ -9,7 +9,10 @@ from the page with `pdftotext -layout`, cut into its columns by the header's pos
 - an entry with `mostro` names an entry of the bestiary (regole/mostri.yaml) whose printed name starts with the same
   creature (the «see Unicorn» cells: the creature pointed to), and its `numero` is the bestiary's «No. Appearing» by the
   rule the file states: in a dungeon the first formula, in the wilderness the «Wild» one (when the block has it);
-- the environments of `esplorazione` in regole.yaml carry the pages' checks (1 on 1d6 every 3 turns, every 4 hours).
+- the environments of `esplorazione` in regole.yaml carry the pages' checks (1 on 1d6 every 3 turns, every 4 hours);
+- the rest of the exploration chapter: dungeon survival (p. 44: a day's rations and a quart of water, two harmless days
+  without food then 1 a day, water 1d4 from the first day, no natural healing) and the wilderness (p. 45: the terrain
+  table, getting lost by the leader's save vs. Death Ray with Wisdom) against `esplorazione.provviste` and `viaggio`.
 
 The PDF is not in the repository (manuali/ is ignored): without it, or without `pdftotext`, the test skips.
 
@@ -44,6 +47,12 @@ SET = yaml.safe_load((CARTELLA / "regole.yaml").read_text(encoding="utf-8"))
 def pagina(stampata: int) -> list[str]:
     n = stampata + SCARTO
     return subprocess.run(["pdftotext", "-f", str(n), "-l", str(n), "-layout", str(PDF), "-"], capture_output=True, text=True, check=True).stdout.splitlines()
+
+
+def frasi(stampata: int) -> str:
+    """The printed page read column by column (no layout), on one line: for the sentences that give a number."""
+    n = stampata + SCARTO
+    return piatto(subprocess.run(["pdftotext", "-f", str(n), "-l", str(n), str(PDF), "-"], capture_output=True, text=True, check=True).stdout)
 
 
 def blocco(righe: list[str], intestazione: str, colonne: list[str]) -> dict[str, dict[int, str]]:
@@ -164,3 +173,39 @@ def test_i_controlli_delle_pagine_180_181() -> None:
     assert amb["sotterraneo"]["controllo"] == {"ogni": {"turno": 3}, "dado": 6, "fino_a": 1}
     assert amb["selvaggio"]["controllo"] == {"ogni": {"ora": 4}, "dado": 6, "fino_a": 1}
     assert [(r["da"], r["tabella"]) for r in amb["sotterraneo"]["tabelle"]] == [(1, "sotterraneo_1"), (2, "sotterraneo_2"), (3, "sotterraneo_3"), (4, "sotterraneo_4_5"), (6, "sotterraneo_6_7"), (8, "sotterraneo_8")]
+
+
+def test_sopravvivenza_p44() -> None:
+    t = frasi(44)
+    assert "consume one day's worth of rations (or equivalent food) and at least one quart of water per day" in t
+    assert "does not significantly affect a character for the first two days, after which they suffer 1 point of damage per day" in t
+    assert "loses the ability to heal wounds normally" in t
+    assert "after a single day without adequate water, the character loses 1d4 hit points" in t
+    assert "Healing ability is lost when the first die of damage is rolled" in t
+    p = {x["id"]: x for x in SET["esplorazione"]["provviste"]}
+    assert p["cibo"]["senza"] == {"dopo": 2, "danno": "1", "guarigione": False}
+    assert p["acqua"]["senza"] == {"dopo": 0, "danno": "1d4", "guarigione": False}
+    # A week's pack of dry rations (p. 12), a waterskin holds one quart, «the minimum amount required … in a single day».
+    t12 = frasi(12)
+    assert "sufficient for one character for a week" in t12 and "one quart of liquid, which is the minimum amount required by a normal character in a single day" in t12
+    assert p["cibo"]["oggetti"] == [{"id": "razioni", "giorni": 7}] and p["acqua"]["oggetti"] == [{"id": "otre", "giorni": 1}]
+
+
+def test_terreni_e_smarrirsi_p45() -> None:
+    t = piatto(" ".join(pagina(45)))
+    for riga in ("Jungle, Mountains, Swamp x1/3", "Desert, Forest, Hills x2/3", "Clear, Plains, Trail x1", "Road (Paved) x1 1/3"):
+        assert riga in t, riga
+    per = {x["id"]: x["per"] for x in SET["viaggio"]["terreni"]}
+    assert [per[k] for k in ("giungla", "montagna", "palude")] == [0.333] * 3
+    assert [per[k] for k in ("deserto", "foresta", "colline")] == [0.667] * 3
+    assert [per[k] for k in ("aperto", "pianura", "sentiero")] == [1] * 3 and per["strada"] == 1.333
+    f = frasi(45)
+    assert "Secretly roll a save vs. Death Ray, adjusted by the Wisdom of the party leader" in f
+    assert SET["viaggio"]["smarrirsi"] == {"abilita": "ts_morte_saggezza"}
+    ab = {a["id"]: a for a in SET["abilita"]}
+    assert ab["ts_morte_saggezza"]["caratteristica"] == "saggezza" and ab["ts_morte_saggezza"]["salvezza"] == "morte"
+    # Roads, rivers and trails: «unlikely to become lost»; the rest of the terrains are trackless.
+    assert "following roads, rivers, or other obvious landmarks are unlikely to become lost" in f
+    persi = {x["id"] for x in SET["viaggio"]["terreni"] if x.get("smarrirsi")}
+    assert persi == {"giungla", "montagna", "palude", "deserto", "foresta", "colline", "aperto", "pianura"}
+

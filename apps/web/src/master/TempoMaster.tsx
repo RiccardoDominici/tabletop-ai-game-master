@@ -15,6 +15,7 @@ import { t } from '../lingua';
 export function TempoMaster({ tempo, attivo, nomi }: { tempo: NonNullable<CombattimentoMaster['tempo']>; attivo: boolean; nomi: ReadonlyMap<string, string> }) {
   const [distanza, setDistanza] = useState('');
   const [terreno, setTerreno] = useState(tempo.terreni[0]?.id ?? '');
+  const [guida, setGuida] = useState('');
   const inCorso = useInCorso('tempo');
   const d = Number(distanza);
   const dValida = distanza.trim() !== '' && d > 0 && d <= 100000;
@@ -40,6 +41,11 @@ export function TempoMaster({ tempo, attivo, nomi }: { tempo: NonNullable<Combat
             : t('master.tempo.incontri', { ambiente: tempo.incontri.ambiente, tabella: tempo.incontri.tabella ? `, ${tempo.incontri.tabella}` : '', prossimo: tempo.incontri.prossimo ?? '', ogni: tempo.incontri.ogni ?? '', probabilita: tempo.incontri.probabilita ?? '' })}
         </p>
       )}
+      {[tempo.incontri?.fatica, tempo.incontri?.orientamento, ...(tempo.incontri?.provviste ?? [])].filter(Boolean).map((r, i) => (
+        <p key={i} className="text-xs text-candela" data-testid="master-tempo-esplorazione">
+          {r}
+        </p>
+      ))}
       {tempo.incontri?.ultimo && (
         <p className="text-xs text-pergamena-2" data-testid="master-tempo-incontro">
           {t('master.tempo.incontro_ultimo', { ora: tempo.incontri.ultimo.ora, testo: tempo.incontri.ultimo.testo })}
@@ -62,7 +68,17 @@ export function TempoMaster({ tempo, attivo, nomi }: { tempo: NonNullable<Combat
                   </option>
                 ))}
               </select>
-              <button type="button" data-testid="master-tempo-viaggio" disabled={!dValida || !terreno || inCorso} onClick={() => { void inviaComando({ tipo: 'tempo', cosa: 'viaggio', distanza: d, terreno }); setDistanza(''); }} className={classePulsante('normale', 'piccolo')}>
+              {tempo.guide && tempo.guide.length > 0 && (
+                <select data-testid="master-tempo-guida" aria-label={t('master.tempo.guida')} value={guida} onChange={(e) => setGuida(e.target.value)} className="rounded-md border border-bordo-chiaro bg-notte px-1 py-0.5 text-xs text-pergamena">
+                  <option value="">{t('master.tempo.guida_prima')}</option>
+                  {tempo.guide.map((x) => (
+                    <option key={x.id} value={x.id}>
+                      {x.nome}
+                    </option>
+                  ))}
+                </select>
+              )}
+              <button type="button" data-testid="master-tempo-viaggio" disabled={!dValida || !terreno || inCorso} onClick={() => { void inviaComando({ tipo: 'tempo', cosa: 'viaggio', distanza: d, terreno, ...(guida ? { guida } : {}) }); setDistanza(''); }} className={classePulsante('normale', 'piccolo')}>
                 {t('master.tempo.viaggio')}
               </button>
             </>

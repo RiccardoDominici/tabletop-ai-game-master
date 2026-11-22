@@ -310,6 +310,8 @@ export const master = {
   'master.tempo.distanza': 'Distance of the journey',
   'master.tempo.terreno': 'Terrain',
   'master.tempo.viaggio': 'Journey',
+  'master.tempo.guida': 'Who leads the party',
+  'master.tempo.guida_prima': 'leader: the first at the table',
   'master.tempo.incontri': 'Wandering monsters ({ambiente}{tabella}): next check in {prossimo}, every {ogni}, {probabilita}',
   'master.tempo.incontri_attesa': 'Wandering monsters ({ambiente}): a check is due, rolled when the fight ends',
   'master.tempo.incontro_ultimo': 'Last encounter ({ora}): {testo}',

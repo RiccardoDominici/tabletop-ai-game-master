@@ -437,6 +437,22 @@ prove:
     sovraccarico: "Overloaded"
     carico: "{nome} now has a {fascia} ({peso} {unita}): moves {movimento} {unita_movimento} a round."
   # The game clock and the lights (prove/tempo.ts, prove/luci.ts; docs/prove.md §11).
+  # Daily food and water (prove/provviste.ts; docs/prove.md §14).
+  provviste:
+    ultima: "{nome} has used up the last day of {provvista} ({oggetto})."
+    senza: "{nome} goes a day without {provvista} ({giorni})."
+    danno: "{nome} has had no {provvista} for {giorni} days: loses {danno} hit points."
+    danno_ferite: "{nome} has had no {provvista} for {giorni} days: loses {danno} hit points, and wounds no longer heal by themselves."
+    di_nuovo: "{nome} has {provvista} again: wounds heal again."
+    nutrito: "{nome} eats and drinks their fill: wounds heal again."
+    non_guarisce: "{nome} does not heal by resting: no {provvista}."
+    vista: "{nome}: {giorni} days without {provvista}"
+  # The exploration rest rule (prove/fatica.ts; docs/prove.md §14).
+  fatica:
+    stanchi: "The party has explored too long without stopping: the characters are weary ({condizione}) until they rest."
+    riposati: "The party stops to catch its breath: the weariness passes."
+    vista: "Rest: the last one {da} ago; one of {durata} is needed every {ogni}"
+    vista_stanchi: "Rest: the PCs are {condizione} (no rest for {da}); a break of {durata} is needed"
   # Wandering monsters on the clock (prove/esplorazione.ts; docs/prove.md §14).
   esplorazione:
     chi: "The Game Master"
@@ -447,6 +463,7 @@ prove:
       scelta: "Which variant"
       numero: "How many"
       sorpresa: "Surprise, in advance"
+      orientamento: "Keeping the course ({ambiente})"
     incontro_uno: "Wandering monsters (Game Master roll): {nome} arrives."
     incontro_molti: "Wandering monsters (Game Master roll): {quanti} creatures arrive, {nome}."
     incontro_gruppo: "An encounter (Game Master roll): {gruppo}{quanti}; the Game Master prepares it."
@@ -467,6 +484,9 @@ prove:
     non_valido: "Invalid journey: the set needs viaggio and movimento, and a distance and one of its terrains."
     fermo: "{nome} is too loaded to move: the group does not set off."
     fatto: "The journey of {distanza} {unita} ({terreno}) takes {quanto}: {al_giorno} {unita} a day, at {nome}'s pace ({movimento} {unita_movimento} a round)."
+    interrotto: "The party covers {fatta} of the {distanza} {unita} ({terreno}): it is now {ora}."
+    smarriti: "{nome} has lost the way (Game Master roll): you decide where the party ends up."
+    in_rotta: "{nome} keeps the course (Game Master roll)."
   luci:
     non_fa_luce: "{oggetto} gives no light."
     gia_accesa: "{nome} already has the {oggetto} lit."

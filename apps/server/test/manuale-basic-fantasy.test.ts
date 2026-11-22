@@ -269,7 +269,30 @@ describe('time, light and travel (pp. 42, 45)', () => {
     const s = set();
     expect(12 * s.viaggio!.perMovimento).toBe(24);
     expect(s.viaggio!.oreAlGiorno).toBe(8);
-    expect(s.viaggio!.terreni.map((t) => t.per)).toEqual([0.333, 0.667, 1, 1.333]);
+    expect(s.viaggio!.terreni.map((t) => t.per)).toEqual([0.333, 0.333, 0.333, 0.667, 0.667, 0.667, 1, 1, 1, 1.333]);
+  });
+});
+
+describe('exploration (pp. 44–45, 180–182)', () => {
+  it('wandering monsters every 3 turns underground and every 4 hours outdoors, 1 on 1d6; the tables by level and terrain', () => {
+    const s = set();
+    const a = Object.fromEntries(s.esplorazione!.ambienti.map((x) => [x.id, x]));
+    expect(a['sotterraneo']!.controllo).toEqual({ ogni: 1800, dado: 6, finoA: 1 });
+    expect(a['selvaggio']!.controllo).toEqual({ ogni: 4 * 3600, dado: 6, finoA: 1 });
+    expect(a['selvaggio']!.sorpresaPrima).toEqual({ dado: 6, finoA: 2, imboscata: 4 });
+    expect(a['citta']!.provviste).toBe(false);
+    // Level 1 (p. 180): 1 Bee, Giant … 12 Wolf; the woods (p. 182): 2 Dragon, Forest … 16 Unicorn.
+    const t = Object.fromEntries(s.incontri!.map((x) => [x.id, x]));
+    expect(t['sotterraneo_1']!.voci.map((v) => v.creatura?.mostro ?? v.gruppo?.nome)).toHaveLength(12);
+    expect(t['sotterraneo_1']!.voci[0]!.creatura).toMatchObject({ mostro: 'ape_gigante' });
+    expect(t['selvaggio_bosco']!.voci.at(-1)!.manuale).toBe('Unicorn');
+    expect(s.viaggio!.terreni.find((x) => x.id === 'foresta')).toMatchObject({ per: 0.667, incontri: 'selvaggio_bosco', smarrirsi: true });
+    expect(s.viaggio!.terreni.find((x) => x.id === 'strada')).toMatchObject({ smarrirsi: false });
+  });
+  it('a day\'s rations (a week a pack) and a quart of water; without food 2 days harmless then 1 a day, water 1d4 at once', () => {
+    const p = Object.fromEntries(set().esplorazione!.provviste.map((x) => [x.id, x]));
+    expect(p['cibo']).toMatchObject({ oggetti: [{ id: 'razioni', giorni: 7 }], senza: { dopo: 2, danno: { numero: 0, facce: 0, bonus: 1 }, guarigione: false } });
+    expect(p['acqua']).toMatchObject({ oggetti: [{ id: 'otre', giorni: 1 }], senza: { dopo: 0, danno: { numero: 1, facce: 4, bonus: 0 }, guarigione: false } });
   });
 });
 

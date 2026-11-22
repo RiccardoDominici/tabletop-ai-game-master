@@ -27,6 +27,19 @@
  *
  * A scene says where it is (`esplorazione: {ambiente: sotterraneo, livello: 1}` or `{ambiente: selvaggio, tabella:
  * selvaggio_bosco}`); a scene that says nothing is not explored and no check runs there (a village, a talk).
+ *
+ * Where the party lives off its supplies (every environment unless it says `provviste: false`, a town), each day that
+ * passes on the clock costs each character the set's `provviste` (Basic Fantasy p. 44): a day's food and water, or the
+ * damage and the lost healing of going without (prove/provviste.ts). A set may also give an exploration rest rule
+ * (`riposo`: rest so long every so often, or a condition; Basic Fantasy has none) (prove/fatica.ts).
+ *
+ *   esplorazione:
+ *     provviste:
+ *       - id: cibo
+ *         nome: "Cibo"
+ *         oggetti: [{id: razioni, giorni: 7}]                # a catalog item feeds one character this many days
+ *         senza: {dopo: 2, danno: "1", guarigione: false}     # after 2 days without: 1 a day, no natural healing
+ *     riposo: {ogni: {ora: 1}, durata: {turno: 1}, parole: [ci riposiamo], condizione: affaticato}
  */
 import { leggiFormula, type FormulaDadi } from '../campagna/regole-srd';
 import { secondiDi, type RegolaTempo } from './tempo';
@@ -49,6 +62,25 @@ export interface AmbienteEsplorazione {
    * surprised they have had time to set an ambush and surprise on `imboscata` (null: the fight's own surprise only).
    */
   sorpresaPrima: (Possibilita & { imboscata: number | null }) | null;
+  /** The party lives off its supplies here (daily food and water); false in a town. */
+  provviste: boolean;
+}
+
+/** One daily need (food, water): the catalog items that meet it and for how many days each, and going without. */
+export interface Provvista {
+  id: string;
+  nome: string;
+  oggetti: Array<{ id: string; giorni: number }>;
+  /** After `dopo` days without, `danno` each day; `guarigione: false` = no natural healing until a day with it. */
+  senza: { dopo: number; danno: FormulaDadi | null; guarigione: boolean };
+}
+
+/** An exploration rest rule: after `ogni` seconds of exploring without a rest of `durata`, the PCs take `condizione`. */
+export interface RiposoEsplorazione {
+  ogni: number;
+  durata: number;
+  parole: string[];
+  condizione: string;
 }
 
 /** One way of meeting a creature: a bestiary entry and how many of it. */
@@ -79,6 +111,8 @@ export interface TabellaIncontri {
 
 export interface RegolaEsplorazione {
   ambienti: AmbienteEsplorazione[];
+  provviste: Provvista[];
+  riposo: RiposoEsplorazione | null;
 }
 
 /** Where a scene says the party is (scene `esplorazione:`), read against the set. */
@@ -171,10 +205,39 @@ export function leggiEsplorazione(v: unknown, tempo: RegolaTempo | null, errori:
       if (imb !== undefined && (!intero(imb) || imb < 1 || (p && imb > p.dado))) errori.push(`${dove}.sorpresa_prima.imboscata: the range an ambush surprises on`);
       if (p) sorpresaPrima = { ...p, imboscata: intero(imb) ? imb : null };
     }
-    ambienti.push({ id, nome: str(a['nome']) ?? id, controllo, tabelle, sorpresaPrima });
+    if (a['provviste'] !== undefined && typeof a['provviste'] !== 'boolean') errori.push(`${dove}.provviste: true or false (a town: false)`);
+    ambienti.push({ id, nome: str(a['nome']) ?? id, controllo, tabelle, sorpresaPrima, provviste: a['provviste'] !== false });
   }
   if (!ambienti.length) errori.push('esplorazione.ambienti: at least one environment {id, nome, controllo}');
-  return { ambienti };
+  const provviste: Provvista[] = [];
+  for (const [i, x] of (Array.isArray(o['provviste']) ? (o['provviste'] as unknown[]) : []).entries()) {
+    const p = ogg(x);
+    const id = str(p?.['id']);
+    const dove = `esplorazione.provviste[${i + 1}]`;
+    const oggetti = (Array.isArray(p?.['oggetti']) ? (p!['oggetti'] as unknown[]) : []).flatMap((y) => {
+      const q = ogg(y);
+      const k = str(q?.['id']);
+      return q && k && intero(q['giorni']) && q['giorni'] >= 1 ? [{ id: k, giorni: q['giorni'] }] : [];
+    });
+    const senza = ogg(p?.['senza']);
+    const danno = senza?.['danno'] === undefined ? null : leggiFormula(senza['danno']);
+    if (!p || !id || !ID.test(id) || !oggetti.length || !senza || !intero(senza['dopo']) || senza['dopo'] < 0 || (senza['danno'] !== undefined && !danno)) {
+      errori.push(`${dove}: {id, nome, oggetti: [{id: a catalog item, giorni}], senza: {dopo: days, danno, guarigione}}`);
+      continue;
+    }
+    provviste.push({ id, nome: str(p['nome']) ?? id, oggetti, senza: { dopo: senza['dopo'] as number, danno, guarigione: senza['guarigione'] !== false } });
+  }
+  let riposo: RiposoEsplorazione | null = null;
+  if (o['riposo'] !== undefined) {
+    const r = ogg(o['riposo']);
+    const ogni = tempo && r ? secondiDi(tempo.unita, r['ogni'], 'esplorazione.riposo.ogni', errori) : null;
+    const durata = tempo && r ? secondiDi(tempo.unita, r['durata'], 'esplorazione.riposo.durata', errori) : null;
+    const parole = Array.isArray(r?.['parole']) ? (r!['parole'] as unknown[]).filter((w): w is string => typeof w === 'string' && !!w.trim()) : [];
+    const condizione = str(r?.['condizione']);
+    if (!r || !ogni || !durata || !condizione || !ID.test(condizione)) errori.push('esplorazione.riposo: {ogni, durata: durations of the clock, parole: [words of a rest], condizione: the condition of the overdue}');
+    else riposo = { ogni, durata, parole, condizione };
+  }
+  return { ambienti, provviste, riposo };
 }
 
 /** The encounter tables (`incontri:` inline, then regole/incontri.yaml). `mostri`: the bestiary's ids, to check them. */
@@ -254,11 +317,16 @@ export function leggiIncontri(fonti: Array<{ v: unknown; dove: string }>, mostri
   return out;
 }
 
-/** Cross-checks: each environment's tables exist. */
-export function controllaEsplorazione(e: RegolaEsplorazione | null, tabelle: readonly TabellaIncontri[], errori: string[]): void {
+/**
+ * Cross-checks: each environment's tables exist, the supplies are catalog items, the rest's condition is one of the
+ * fight's (`condizioni`: the set's combat conditions).
+ */
+export function controllaEsplorazione(e: RegolaEsplorazione | null, tabelle: readonly TabellaIncontri[], errori: string[], ctx: { oggetti?: ReadonlySet<string> | null; condizioni?: ReadonlySet<string> } = {}): void {
   if (!e) return;
   const ids = new Set(tabelle.map((t) => t.id));
   for (const a of e.ambienti) for (const t of a.tabelle) if (!ids.has(t.tabella)) errori.push(`esplorazione.ambienti.${a.id}.tabelle: «${t.tabella}» is not an encounter table (incontri)`);
+  for (const p of e.provviste) for (const x of p.oggetti) if (!ctx.oggetti?.has(x.id)) errori.push(`esplorazione.provviste.${p.id}.oggetti: «${x.id}» is not an item of the catalog`);
+  if (e.riposo && ctx.condizioni && !ctx.condizioni.has(e.riposo.condizione)) errori.push(`esplorazione.riposo.condizione: «${e.riposo.condizione}» is not a condition of combattimento.condizioni`);
 }
 
 /** The entry a roll picks, or null (a hole in the table: the validator refuses it). */

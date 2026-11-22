@@ -4,58 +4,12 @@
  * the nested roll and how many, surprise in advance in the wilderness, a long advance that stops at the first encounter,
  * a check deferred by a fight, the panel's next check, the snapshot. On the invented cunicolo fixture.
  */
-import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { caricaCampagna } from '../src/campagna/caricatore';
-import { conScena, type Campagna } from '../src/campagna/tipi';
-import { loggerMuto } from '../src/logger';
-import type { FonteDadi } from '../src/prove/dadi';
 import { fattiDovuti } from '../src/prove/fatti-dovuti';
-import { MotoreProve } from '../src/prove/motore';
 import { caricaRegole } from '../src/regole/caricatore';
 import { doveDellaScena, leggiEsplorazione, leggiIncontri } from '../src/regole/esplorazione';
-import { caricaSchedeGeneriche } from '../src/regole/schede';
 import { leggiTempo } from '../src/regole/tempo';
-import { orologioDiSistema } from '../src/turni/orologio';
-
-const CUNICOLO = path.join(import.meta.dirname, 'fixtures', 'campagne', 'cunicolo');
-
-/** Dice by faces: each face count has its own sequence (cycled); anything else rolls 1. */
-class DadiPerFacce implements FonteDadi {
-  readonly seme = 'facce';
-  contatore = 0;
-  private readonly i = new Map<number, number>();
-  constructor(private readonly valori: Record<number, number[]>) {}
-  tira(facce: number): number {
-    this.contatore++;
-    const l = this.valori[facce];
-    if (!l?.length) return 1;
-    const k = this.i.get(facce) ?? 0;
-    this.i.set(facce, k + 1);
-    return l[k % l.length]!;
-  }
-  clona(): DadiPerFacce {
-    const d = new DadiPerFacce(this.valori);
-    for (const [k, v] of this.i) d.i.set(k, v);
-    d.contatore = this.contatore;
-    return d;
-  }
-}
-
-/** The Engine on the fixture, in the scene `scena` (switchable through `vai`). */
-function motore(dadi: Record<number, number[]>, scena = 'scena_galleria'): { m: MotoreProve; vai: (id: string) => void; c: () => Campagna } {
-  const base = caricaCampagna(CUNICOLO);
-  const regole = caricaRegole(CUNICOLO);
-  expect(regole.sistema.id).toBe('cunicolo-prova');
-  const schede = caricaSchedeGeneriche(regole.sistema, base);
-  let c = conScena(base, scena);
-  const nome = (id: string): string => c.pg.find((p) => p.id === id)?.nome ?? id;
-  const m = new MotoreProve({ schede: new Map(), regole: { regole, schede }, arbitro: null, log: loggerMuto(), orologio: orologioDiSistema, attivo: true, conIndizi: false, contesto: () => ({ campagna: c, scenaPubblica: '', narrazione: '', versione: 1, pgAlTavolo: ['pg_aldo', 'pg_bice', 'pg_dora'], nome }), dadi: new DadiPerFacce(dadi) });
-  return { m, vai: (id) => void (c = conScena(base, id)), c: () => c };
-}
-
-let n = 0;
-const azione = (autore: string, testo: string) => ({ id: `a${++n}`, autore, testo, privata: false, revisione: 1 });
+import { azione, CUNICOLO, motoreCunicolo as motore } from './aiuti/cunicolo';
 
 describe('exploration as rule-set data', () => {
   const tempo = leggiTempo({ unita: [{ id: 'round', secondi: 10 }, { id: 'turno', secondi: 600 }, { id: 'ora', secondi: 3600 }], round: 'round' }, [])!;
@@ -88,7 +42,7 @@ describe('exploration as rule-set data', () => {
 
   it('the fixture loads: its environments, its tables, every creature in its bestiary', () => {
     const r = caricaRegole(CUNICOLO);
-    expect(r.sistema.esplorazione!.ambienti.map((a) => a.id)).toEqual(['sotterraneo', 'selvaggio']);
+    expect(r.sistema.esplorazione!.ambienti.map((a) => a.id)).toEqual(['sotterraneo', 'selvaggio', 'villaggio']);
     expect(r.sistema.incontri!.map((t) => t.id)).toEqual(['galleria_1', 'galleria_2', 'bosco']);
   });
 });
@@ -153,18 +107,22 @@ describe('wandering monster checks on the clock', () => {
     // The woods' table 1d4 = 1 (wolves), how many 1d4 = 2, surprise in advance 1d6 = 5: not surprised, an ambush.
     const { m } = motore({ 6: [6, 1, 5], 4: [1, 2] }, 'scena_bosco');
     const e = m.tempoDelMaster({ cosa: 'avanza', durata: { ora: 9 } })!;
-    expect(e.fatto).toMatch(/arrivano 2 creature, lupo\. Succede verso giorno 2, 00:00\. Si sono accorti del gruppo per primi e hanno teso un agguato\./);
+    // The public line says the time; who arrives (and the ambush) is the narrator's, in the next turn.
+    expect(e.fatto).toMatch(/^Tempo trascorso: 9 ore; ora è giorno 2, 03:00\./);
+    expect(e.fatto).not.toMatch(/lupo/);
+    expect(m.esporta().fatti_in_sospeso!.join(' ')).toMatch(/arrivano 2 creature, lupo\. Succede verso giorno 2, 00:00\. Si sono accorti del gruppo per primi e hanno teso un agguato\./);
     // The next check counts from the encounter: three hours after it, which is now (rolled at the next advance).
     expect(m.vistaTempo()!.incontri!.prossimo).toBe('adesso');
     expect(m.tiriDelMaster().filter((t) => t.del_master).map((t) => t.etichetta)).toEqual(['Mostri erranti (Terre selvagge)', 'Mostri erranti (Terre selvagge)', 'Tabella degli incontri', 'Quanti', 'Sorpresa, in anticipo']);
   });
 
-  it('surprised in advance: the party may avoid them', () => {
+  it('surprised in advance: the party may avoid them', async () => {
     // d6: the check (1), how many rats (1d6 = 4), their surprise (2: surprised); d4: the table (3: rats).
     const { m } = motore({ 6: [1, 4, 2], 4: [3] }, 'scena_bosco');
-    const e = m.tempoDelMaster({ cosa: 'avanza', durata: { ora: 3 } })!;
-    // The check falls at the end of the advance: no «when» to say.
-    expect(e.fatto).toMatch(/arrivano 4 creature, ratto gigante\. Non si sono accorti del gruppo: i personaggi possono evitarli\./);
+    m.tempoDelMaster({ cosa: 'avanza', durata: { ora: 3 } });
+    // The check falls at the end of the advance: no «when» to say. The narrator hears it in the next turn.
+    const r = await m.risolvi(1, [azione('pg_aldo', 'Ascolto')]);
+    expect(r.fatti.join(' ')).toMatch(/arrivano 4 creature, ratto gigante\. Non si sono accorti del gruppo: i personaggi possono evitarli\./);
   });
 
   it('the schedule and the last encounter survive a resume; «Ricomincia» clears them', async () => {

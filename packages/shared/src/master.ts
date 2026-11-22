@@ -283,7 +283,9 @@ export interface CombattimentoMaster {
      * Wandering monsters (docs/prove.md §14): the scene's environment and table, when the next check falls and its odds
      * (`in_attesa`: due, rolled when the fight ends), the session's last encounter. Absent where nothing is explored.
      */
-    incontri?: { ambiente?: string; tabella?: string | null; prossimo?: string; ogni?: string; probabilita?: string; in_attesa?: boolean; ultimo?: { testo: string; ora: string } };
+    incontri?: { ambiente?: string; tabella?: string | null; prossimo?: string; ogni?: string; probabilita?: string; in_attesa?: boolean; ultimo?: { testo: string; ora: string }; fatica?: string; orientamento?: string; provviste?: string[] };
+    /** The PCs who can lead a journey (its course check is the leader's): absent where the set has no such check. */
+    guide?: Array<{ id: string; nome: string }>;
   };
   /**
    * Experience points (docs/prove.md §12): each PC's XP, level and next threshold (`sale`: it reaches the next level,
@@ -441,7 +443,7 @@ export type ComandoMaster =
    * (`viaggio`: `distanza` in the set's unit and a `terreno` id), or a light lit or put out (`accendi`, `spegni`: `id` the
    * character, `oggetto` a catalog light). Not during a fight, whose rounds are the clock.
    */
-  | { tipo: 'tempo'; cosa: 'avanza' | 'viaggio' | 'accendi' | 'spegni'; durata?: Record<string, number>; distanza?: number; terreno?: string; id?: string; oggetto?: string }
+  | { tipo: 'tempo'; cosa: 'avanza' | 'viaggio' | 'accendi' | 'spegni'; durata?: Record<string, number>; distanza?: number; terreno?: string; id?: string; oggetto?: string; guida?: string }
   /**
    * Experience points (docs/prove.md §12): an award (`assegna`: `px`, to the PC `pg` or, without it, the party in equal
    * shares, with a reason) or the treasure found so far marked back to safety (`tesoro`, when the set counts it then).
