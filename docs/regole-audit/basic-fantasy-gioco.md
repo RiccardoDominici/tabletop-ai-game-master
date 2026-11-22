@@ -87,7 +87,7 @@ reaction roll as the manual's 2d6 table rolled by the Game Master (P5-05: its DE
 2d6 table (P4-31). Every roll kind's formula and page is in docs/prove.md §13. The counts before the update were 84 / 9 /
 8 / 4 / 90. Evidence: esperimenti/risultati/regole-r5/.
 
-**Update, 22 November (rules-engine package R6, commits 0a8d4a1 … 85dc5c7; recounted by script).** Eleven rows
+**Update, 22 November (rules-engine package R6, commits 0a8d4a1 … 5ef5f52; recounted by script).** Eleven rows
 of this half changed status («R6 <hash>»): the wandering monster checks on the clock
 and the encounter tables of pp. 180–183 (P8-01 to P8-04), food and water each day (P4-22, P4-23), getting lost (P4-27),
 darkvision and the dark (P4-18; P4-17 lost its gap), locked doors (P4-11) and the Game Master's morale adjustment (P5-46)

@@ -224,7 +224,7 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
 - **Rules engine after R6 (22 November 2026; docs/prove.md §14–15, docs/regole.md §6).** Exploration on the clock
   (wandering checks, encounter tables as data with the creatures as combatants, food and water, getting lost, the
   scene's light and darkvision), elf combination classes, the Game Master's ±2 morale, waking a subdued character
-  early: done (0a8d4a1 … R6's last commit). Open:
+  early: done (0a8d4a1 … 5ef5f52). Open:
   - not in Basic Fantasy, so no data: a rest rule underground, the encounter distance, foraging and hunting;
   - in the manual, not done: forced march, pursuit and evasion (P4-17), magical darkness and light spells as light
     sources, NPCs carrying their own torches, the journey's encounter placed somewhere other than the current scene
