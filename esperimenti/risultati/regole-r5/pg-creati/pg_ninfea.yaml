@@ -1,4 +1,4 @@
-# Personaggio creato al tavolo (2026-11-22 14:36): passi e tiri in «creazione», scheda come in pg.yaml.
+# Personaggio creato al tavolo (2026-11-22 15:10): passi e tiri in «creazione», scheda come in pg.yaml.
 # Non finisce nel repository (campagne/*/pg-creati/ è in .gitignore): può avere il nome vero di un giocatore.
 id: pg_ninfea
 nome: Ninfea
@@ -6,7 +6,7 @@ specie: Elfo
 classe: Mago
 livello: 1
 creazione:
-  quando: 2026-11-22T14:36:20.003Z
+  quando: 2026-11-22T15:10:48.072Z
   metodo: in_ordine
   tiri:
     - passo: caratteristiche

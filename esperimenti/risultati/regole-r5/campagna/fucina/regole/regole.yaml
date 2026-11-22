@@ -31,11 +31,22 @@ abilita:
   - {id: mischia, nome: Attacco in mischia, caratteristica: forza}
   - {id: distanza, nome: Attacco a distanza, caratteristica: agilita}
   - {id: ts_morte, nome: Salvezza contro la morte, caratteristica: null, salvezza: morte}
+  # x-in-6 chances the set derives from the sheet (R5): a stuck door 1 + the Forza bonus; a hidden door 1, one more with
+  # Mente 15 and one more for the small race (its trait).
+  - {id: forzare, nome: Forzare una porta, caratteristica: null, soglia: {dado: 6, predefinita: 1, piu: [{caratteristica: forza}]}}
+  - {id: cercare, nome: Cercare porte nascoste, caratteristica: null, soglia: {dado: 6, predefinita: 1, piu: [{caratteristica: mente, da: 15, valore: 1}]}}
+  # A trained listener's percentage; anyone else 1 in 1d6, rolled in secret by the Game Master (R5).
+  - {id: origliare, nome: Origliare, caratteristica: null, soglia: {dado: 100, senza: {dado: 6, valore: 1}}, segreta: niente}
 difficolta:
   - {id: facile, nome: Facile, valore: 11}
   - {id: normale, nome: Normale, valore: 15}
   - {id: difficile, nome: Difficile, valore: 18}
 difficolta_predefinita: normale
+# A check's number falls with the level (R5): 15 at the first level, 14 from the second, 12 from the fourth.
+difficolta_per_livello:
+  - {da: 0, valore: 15}
+  - {da: 2, valore: 14}
+  - {da: 4, valore: 12}
 vantaggio: {tipo: bonus, valore: 2}
 attacchi: {tipo: prova, danno_critico: normale, danno_minimo: 1}
 danni: {nome: Punti ferita, a_zero: a zero si cade}
@@ -73,6 +84,7 @@ razze:
     lingue: [comune, piccolese]
     tratti:
       - {dado_vita_massimo: 6}
+      - {tiro: abilita, abilita: [cercare], bonus: 1}
 lingue:
   - {id: comune, nome: Comune}
   - {id: piccolese, nome: Piccolese}
@@ -153,3 +165,13 @@ creazione:
   incantesimi:
     - {classe: arcano, fissi: [leggere_rune], a_scelta: 1, livello: 1, come: scelta}
   lingue: {caratteristica: mente}
+# A reaction table (R5): 2d6 + the lead PC's Mente, the Game Master's roll; the attitude follows the band.
+reazioni:
+  - id: reazione
+    nome: Reazione all'incontro
+    dadi: "2d6"
+    caratteristica: mente
+    fasce:
+      - {fino_a: 4, nome: Ostile, atteggiamento: ostile}
+      - {fino_a: 9, nome: Diffidente, atteggiamento: indifferente}
+      - {fino_a: null, nome: Cordiale, atteggiamento: amichevole}

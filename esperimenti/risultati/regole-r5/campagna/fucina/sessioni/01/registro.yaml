@@ -6,10 +6,10 @@ campagna: fucina
 titolo: La fucina di Orsola
 sessione: 1
 archivio:
-  id: 2026-11-22T14:36:04.107Z
+  id: 2026-11-22T15:10:30.970Z
   modo: improvvisa
-  creata: 2026-11-22T14:36:04.107Z
-  ultimo_evento: 2026-11-22T14:36:05.107Z
+  creata: 2026-11-22T15:10:30.970Z
+  ultimo_evento: 2026-11-22T15:10:32.195Z
   stato: chiusa
   motivo_chiusura: fine sessione
   eventi: 8

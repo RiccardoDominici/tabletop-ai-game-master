@@ -10,7 +10,8 @@ cd "$(dirname "$0")/../../.."
 R=esperimenti/risultati/regole-r5
 C=$R/campagna/fucina
 TM=${TMPDIR:-/tmp}/tagm-r5-torre-mozza
-TOKEN=prova_creazione
+# A fresh Game Master token for each run (the servers' logs print it; it must never be a string tracked in git).
+TOKEN=$(python3 -c 'import secrets; print(secrets.token_hex(12))')
 
 # 1. The fucina copy as a campaign of packages: sessioni/01 from its scena.yaml.
 rm -rf "$C" "$R/playwright" "$R/pacchetto-02.txt"
