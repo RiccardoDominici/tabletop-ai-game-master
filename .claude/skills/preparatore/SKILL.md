@@ -138,8 +138,24 @@ the work of the Preparatore, and the form of the fields is in `riferimenti/schem
   → `regole: {tiri_giocatori: manuale|automatico}` (docs/prove.md §8). The same for the Engine's own rolls for the
   world (`tiri_master: nascosti|a_volte|visibili`, default nascosti, docs/prove.md §9): `a_volte` when the brief wants
   the table to feel fate at work.
+- **Who makes the PCs** (docs/creazione.md). By default you write pregenerated PCs (`regole.creazione` absent, or
+  `modo: pregenerati`). If the request wants the players to build their characters at the table («creano i personaggi
+  al tavolo», «tirano le caratteristiche»), and the rule set has a creation procedure (`creazione`, step 1b), write
+  `regole: {creazione: {modo: al_tavolo}}` (pg.yaml with `personaggi: []`) or `modo: entrambi` (your pregenerated PCs
+  and the phones' new ones), with the Game Master's choices the request names (`metodo`, `opzioni` such as point
+  swapping, `punti_ferita: massimo`, `livello` for a party already grown); write the choice in the brief too
+  (`creazione_pg`). The PCs built at the table are saved in `pg-creati/` (gitignored), never written by you.
 - **PG**: `scheda` in `pg.yaml`, at level 1 or 2. Characteristics, skills, saving throws, armour, HP and attacks
-  that belong to the character. Modifiers are not written: the code calculates them.
+  that belong to the character. Modifiers are not written: the code calculates them. With a manual's set that has
+  `creazione`, **build each pregenerated PC by the same steps a player follows at the table**, and the validator holds
+  it to them (`REGOLE.creazione.*`, the same check the Engine uses on the phones): scores the set's method can give
+  (3d6: 3–18) — roll them or pick plausible ones, never above the method; a race and a class the scores open (the
+  class's `requisiti`, the race's `requisiti` and its `classi`); hit points within the class die + the characteristic
+  (exactly the die's maximum if the campaign says `punti_ferita: massimo`); gear bought from the catalog with no more
+  than the best starting roll (3d6 × 10 gp = 180 gp; write in a comment the roll you chose and what is left); a
+  caster's `libro` with the set's fixed spells and its starting choice, today's `incantesimi` from it; `lingue` with the
+  race's own and at most the bonus more. Write no number the set derives (attack bonus, thief percentages, the x-in-6
+  chances of doors and stonework that `soglia.piu` and the race traits give).
 - **PNG**: `scheda` in `png/*.yaml`, with a low CR (they are the extras of the place): AC, HP and attacks
   consistent with the CR.
 - **Minions**: every creature the PCs may fight has stats. A nameless foe (sentries, wolves, thugs) gets a stat line
@@ -274,6 +290,22 @@ here only the order.
      gives** (no attack bonus, no thief percentage: the validator warns, strict, when one is copied by hand, because it
      would not grow at the next level); its `pf` must be within what its hit dice can give. Monsters and NPCs give
      `dadi_vita` and `speciali` (the asterisks) or their own `px` value.
+   - **Character creation as the manual's procedure** (`docs/regole.md` §2, «Creazione»; docs/creazione.md): each
+     class's `requisiti` (the Prime Requisite: `{saggezza: 9}`), each race's `requisiti` (`{costituzione: {min: 9},
+     carisma: {max: 17}}`), its allowed `classi`, its `lingue` and any `aggiustamenti` to the scores; the set's `lingue`
+     (the languages a PC may know); and `creazione`: the steps in the manual's order (`passi`, from the closed list), how
+     scores are generated (`caratteristiche.metodi`: dice in order, dice to assign, keep the best, a fixed array, a point
+     buy — the first is the default), the Game Master's options the manual lists (`opzioni`: point swapping, swapping two
+     scores, the full shuffle), the hopeless character's remedies (`senza_speranza`), the first level's hit die (`tira` or
+     `massimo`), the starting money (`monete: {dadi, per, moneta}`), what a caster starts with (`incantesimi: [{classe,
+     fissi, a_scelta, livello, come}]`) and the extra languages (`lingue: {caratteristica}`). The validator checks the
+     procedure and every PC against it.
+   - **Every roll's number as the manual's** (docs/prove.md §13): the ability-roll target by level if the manual has one
+     (`difficolta_per_livello`, the default rung's number per level: the other rungs move with it); the x-in-6 chances
+     the manual derives (`soglia.piu`: a characteristic's bonus or points from a score up; a race's trait to the ability;
+     `soglia.senza` when those without the value roll another die, as a non-thief listening on 1 in 1d6); the manual's
+     reaction tables (`reazioni`: dice, the characteristic, the bands with the attitude they give), which the Game Master
+     rolls from the panel.
    - **The Game Master's secret rolls** (M9): an ability the manual says the GM rolls for the player (Basic Fantasy:
      Listen, Find Traps, Move Silently, Hide) is `segreta: niente` (a failure notices nothing) or `segreta: riuscita`
      (the character believes it worked); a failure band the manual names (pick pockets noticed above twice the target)

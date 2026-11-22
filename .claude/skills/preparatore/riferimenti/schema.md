@@ -321,8 +321,16 @@ code in `strumenti/valida/regole_schede.py`, tables in `srd.py`).
 - `campagna.yaml` → `regole: {mostra_cd: true|false}`. Default: false, in both roll modes: the table's cards never show
   the DC, the AC or the threshold, only the Game Master panel does. Write true only if the brief asks to show them
   (`SCHEDA.regole` accepts only a boolean).
+- `campagna.yaml` → `regole: {creazione: {modo: pregenerati|al_tavolo|entrambi, metodo?, opzioni?, senza_speranza?,
+  punti_ferita?, livello?, incantesimi?}}` (docs/creazione.md). Default: pregenerati. `al_tavolo` and `entrambi` need a
+  rule set with `creazione` [V `SCHEDA.regole`]; `metodo` and `opzioni` are ids of the set's [V `REGOLE.creazione`];
+  with `al_tavolo` pg.yaml has `personaggi: []`.
 - `pg.yaml` → `personaggi[].scheda`: characteristics, skills, mastery, saving throws, armour or AC, hit points, attacks.
-  The level is `personaggi[].livello`.
+  The level is `personaggi[].livello`. With a manual's set: `classe`, `livello`, `px`, `razza`, `pf`, `equipaggiamento`,
+  `monete`, `incantesimi` (today's), `libro` (the spells it knows, a caster's book), `lingue`; checked by the set's
+  creation rules [V `REGOLE.creazione.*`: requirements, the race's classes, scores, hit points, forbidden gear, money
+  spent, the starting book, languages]. A PC built at the table lives in `pg-creati/<id>.yaml` (same shape, plus
+  `creazione` with its rolls), written by the server, gitignored.
 - `png/<id>.yaml` → `scheda`: CR, characteristics, armour or AC, hit points, attacks, optional `influenza: {cd}`.
 - `campagna.yaml` → `gregari`: stat lines of nameless foes by type, `[{tipo: goblin, nome: "goblin", parole: [goblin,
   sentinella], scheda: {…an NPC sheet of the set…}}]`; `scena.yaml` / `scene/*.yaml` → `gregari: [{tipo, quanti}]`
