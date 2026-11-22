@@ -43,4 +43,12 @@ server: the sheet and every die entered), `pg_alla_fine-01.yaml` (the log's end 
 Not shown live (covered by unit tests: apps/server/test/creazione-bozza.test.ts, creazione-server.test.ts): the Game
 Master's options (point and score swapping), the hopeless character's flip, automatic rolls with the draft's own dice,
 the Game Master's undo of a step and its reroll, a player's refused redo after the hit points, a campaign `al_tavolo`
-with no PC that does not start, `come: tiro` and `come: master` for the starting spells.
+with no PC that does not start, `come: tiro` and `come: master` for the starting spells, and **a PC approved
+mid-session** (creazione-server.test.ts: the session resumes from its snapshot with the hit points the Game Master
+changed, the new PC writes at once and is called from the next window; it found the quiet-moment check refusing every
+open window, fixed in 5f757f0).
+
+**After the check** (207ad19): the full strict validator on a copy of torre-mozza with `creazione: {modo: entrambi}` and
+`pg-creati/pg_ninfea.yaml` gave 7 errors (no arc, no NPC attitude, no pronunciation for her): the checks of prepared
+content now skip a PC built at the table; the same copy gives 0 errors. A session package's merged view now links the
+campaign's `regole/`.
