@@ -12,6 +12,7 @@
 import type { ScortaScheda } from './prove';
 import type { StatoAzione, StatoTavolo } from './dominio';
 import type { RichiestaTiroMaster, TiroMostrato } from './prove';
+import type { CreazioneMaster, PassoCreazione } from './creazione';
 
 /** Orologio di una minaccia, con i segni scritti (il master li conosce tutti). */
 export interface OrologioMaster {
@@ -193,6 +194,8 @@ export interface StatoMaster {
   mondo?: MondoMaster;
   /** The coherence ledger (docs/coerenza.md): what is true now and what changed. Absent on servers that do not have it. */
   coerenza?: CoerenzaMaster;
+  /** The PCs being built at the table (docs/creazione.md), one per phone. Absent when the campaign has no creation. */
+  creazione?: CreazioneMaster[];
 }
 
 /** The coherence ledger as the Game Master sees it (docs/coerenza.md §2): every character, the journal, the violations. */
@@ -451,7 +454,12 @@ export type ComandoMaster =
    * Sets an NPC's attitude by hand (docs/mondo.md §4, A25): towards one PC or every PC (`tutti`), any state, no limits;
    * cause `master` in the log, the snapshot and registro.yaml.
    */
-  | { tipo: 'atteggiamento'; id_png: string; id_pg: string; stato: 'ostile' | 'indifferente' | 'amichevole' };
+  | { tipo: 'atteggiamento'; id_png: string; id_pg: string; stato: 'ostile' | 'indifferente' | 'amichevole' }
+  /**
+   * Creation at the table (docs/creazione.md): approve or undo one step of a phone's draft, approve the finished PC (it
+   * joins the campaign), discard a draft, or give the starting spells when the set says the Game Master picks them.
+   */
+  | { tipo: 'creazione'; azione: 'approva' | 'scarta' | 'approva_passo' | 'annulla_passo' | 'incantesimi'; id: string; passo?: PassoCreazione; libro?: string[] };
 
 export type TipoComandoMaster = ComandoMaster['tipo'];
 

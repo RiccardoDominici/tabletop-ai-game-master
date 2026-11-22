@@ -53,7 +53,10 @@ import { collegaMaster } from './trasporto/master';
 import { ArchivioSessioni } from './sessione/archivio';
 import { SessioneSuArchivio, type MemoriaSessione } from './sessione/memoria';
 import { ricostruisci, type StatoRicostruito } from './sessione/tipi';
-import { CicloSessioni } from './sessione/ciclo';
+import { cartellaPgCreati } from './creazione/archivio';
+import { creaServizioCreazione, creazioneDelTavolo } from './creazione/collega';
+import { collegaCreazione, notificaCreazione } from './trasporto/creazione';
+import { ATTESA_CAMBIO_MS, CicloSessioni } from './sessione/ciclo';
 import { scegliPacchetto, type SceltaPacchetto } from './sessione/scelta-pacchetto';
 import { loggerMuto } from './logger';
 import { ControlliMaster } from './master/comandi';
@@ -119,6 +122,8 @@ export interface Sostituzioni {
    * Assente = il pannello non può cambiare pacchetto (lo dice).
    */
   passaA?: (numero: number) => void;
+  /** Rebuilds the server on the same package (a PC built at the table joins, docs/creazione.md); absent = at the next start. */
+  ricarica?: () => void;
 }
 
 /** Campagna pronta da giocare: pacchetto caricato, repertorio, parole segrete, cataloghi, contesto. */
@@ -134,6 +139,16 @@ interface CampagnaPronta {
   lingua: Lingua;
 }
 
+/** A test instance: another port than the real game's, or its own log folder (its play data stay in its logs). */
+function istanzaDiProva(config: ConfigServer): boolean {
+  return config.porta !== PORTA_SERVER || path.resolve(config.cartellaLog) !== path.resolve(CARTELLA_LOG);
+}
+
+/** Where this instance keeps the PCs built at the table: the campaign's `pg-creati/`, a test instance's logs, or TAGM_PG_CREATI. */
+export function cartellaPgCreatiDi(config: ConfigServer): string {
+  return cartellaPgCreati(config.cartellaCampagna, istanzaDiProva(config) ? config.cartellaLog : null);
+}
+
 /**
  * Carica la campagna (col pacchetto `numero`, se è a più sessioni) come la gioca il server, con tutti i
  * controlli che fermano l'avvio: repertorio valido in modalità B e nessuna parola segreta nel
@@ -141,9 +156,10 @@ interface CampagnaPronta {
  */
 function preparaCampagna(config: ConfigServer, numero: number | null, log: Logger): CampagnaPronta {
   // La lingua della configurazione serve già al caricamento (frasi dell'apertura) se campagna.yaml non la scrive.
-  const campagna = caricaCampagna(config.cartellaCampagna, log.child({ modulo: 'campagna' }), { pacchetto: numero, linguaConfigurazione: config.lingua });
+  // The PCs built at the table come with the campaign's (docs/creazione.md), from the play folder's store.
+  const campagna = caricaCampagna(config.cartellaCampagna, log.child({ modulo: 'campagna' }), { pacchetto: numero, linguaConfigurazione: config.lingua, pgCreati: cartellaPgCreatiDi(config) });
   // A test instance (another port, or its own log folder) keeps its play data in its logs, never in campagne/<id>/.
-  if (config.porta !== PORTA_SERVER || path.resolve(config.cartellaLog) !== path.resolve(CARTELLA_LOG)) {
+  if (istanzaDiProva(config)) {
     campagna.cartellaGioco = config.cartellaLog;
     log.info({ cartella: config.cartellaLog }, 'campagna: test instance, the play data go to its log folder');
   }
@@ -367,7 +383,10 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   // dello sceneggiatore, così un nome aggiunto in gioco vale subito per tutti e due.
   // Le grafie seguono il motore della voce in uso (Qwen e drama-3 non leggono allo stesso modo le maiuscole).
   const lessico = new LessicoVivo({ campagna, log: log.child({ modulo: 'pronuncia' }), motore: () => voce.nome });
+  // Creation at the table (docs/creazione.md): the phones' «build a PC» card, when the campaign and its set have it.
+  const creazioneTavolo = creazioneDelTavolo(campagna, regole.sistema, log.child({ modulo: 'creazione' }));
   const regia = new Regia({
+    ...(creazioneTavolo ? { creazione: creazioneTavolo } : {}),
     lingue: { interfaccia: config.lingua, contenuti: pronta.lingua },
     lessico,
     memoria,
@@ -479,6 +498,7 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
   const ciclo = new CicloSessioni({
     cartellaCampagna: config.cartellaCampagna,
     cartellaLog: config.cartellaLog,
+    pgCreati: cartellaPgCreatiDi(config),
     campagna,
     archivio,
     regia,
@@ -487,7 +507,24 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     passaA: sost.passaA ?? null,
     log: log.child({ modulo: 'sessioni' }),
   });
+  const creazione = creaServizioCreazione({
+    campagna,
+    sistema: regole.sistema,
+    manuale: tiri.giocatori === 'manuale',
+    cartella: cartellaPgCreatiDi(config),
+    semeFisso: config.semeDadi,
+    momento: () => {
+      const s = regia.stato();
+      return { fase: s.fase, azioniInFinestra: s.finestra.aperta ? s.finestra.azioni.length : 0 };
+    },
+    ricarica: sost.ricarica ? () => setTimeout(() => sost.ricarica!(), ATTESA_CAMBIO_MS) : null,
+    notifica: notificaCreazione(app.io),
+    aggiornaPannello: () => regia.notificaEsterna(),
+    log: log.child({ modulo: 'creazione' }),
+  });
+  collegaCreazione(app.io, creazione, log.child({ modulo: 'creazione' }));
   const controlliMaster = new ControlliMaster({
+    ...(creazione ? { creazione } : {}),
     regia,
     ciclo,
     campagna,

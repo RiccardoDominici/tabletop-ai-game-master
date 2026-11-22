@@ -400,3 +400,20 @@ def controlla_scheda(s: dict, dove: str, r: dict, e: Esito, creato: bool = False
             e.errore(f"REGOLE.creazione.{codice}", dove, msg)
         else:
             e.avviso(f"REGOLE.creazione.{codice}", dove, msg, rigoroso=True)
+
+
+def opzioni_campagna(c, r: dict, e: Esito) -> None:
+    """campagna.yaml → regole.creazione against the set: the method and the options are the set's."""
+    regole = c.campagna.get("regole") if isinstance(c.campagna, dict) else None
+    v = regole.get("creazione") if isinstance(regole, dict) else None
+    cr = _ogg(r.get("creazione"))
+    if not isinstance(v, dict) or cr is None:
+        return
+    car = _ogg(cr.get("caratteristiche")) or {}
+    metodi = {m.get("id") for m in car.get("metodi") or [] if isinstance(m, dict)}
+    opzioni = {o.get("id") for o in car.get("opzioni") or [] if isinstance(o, dict)}
+    if isinstance(v.get("metodo"), str) and v["metodo"] not in metodi:
+        e.errore("REGOLE.creazione", "campagna.yaml", f"regole.creazione.metodo: «{v['metodo']}» non è un metodo del set ({', '.join(sorted(metodi))})")
+    for o in v.get("opzioni") or []:
+        if o not in opzioni:
+            e.errore("REGOLE.creazione", "campagna.yaml", f"regole.creazione.opzioni: «{o}» non è un'opzione del set ({', '.join(sorted(opzioni)) or 'nessuna'})")

@@ -31,9 +31,11 @@ export class ServerConCiclo {
     const fisso: ConfigServer = { ...config, tokenMaster: config.tokenMaster ?? nuovoToken() };
     let ciclo: ServerConCiclo | null = null;
     const passaA = (n: number): void => void ciclo?.passaA(n);
-    const primo = await costruisciServer(fisso, log, { ...sost, passaA });
+    // A PC built at the table joins by a rebuild on the same package (docs/creazione.md).
+    const ricarica = (): void => void ciclo?.ricarica();
+    const primo = await costruisciServer(fisso, log, { ...sost, passaA, ricarica });
     await primo.avvia();
-    ciclo = new ServerConCiclo(fisso, log, { ...sost, passaA }, primo);
+    ciclo = new ServerConCiclo(fisso, log, { ...sost, passaA, ricarica }, primo);
     return ciclo;
   }
 
@@ -60,7 +62,19 @@ export class ServerConCiclo {
     return this.cambio;
   }
 
-  private async ricostruisci(numero: number): Promise<void> {
+  /**
+   * Rebuilds the server on the package it plays (null for a one-shot): the session in progress resumes from its
+   * snapshot, as after a restart, and the campaign is loaded again with the PCs built at the table (docs/creazione.md).
+   */
+  ricarica(): Promise<void> {
+    if (this.cambio) return this.cambio;
+    this.cambio = this.ricostruisci(this.server.campagna.pacchetto?.numero ?? null).finally(() => {
+      this.cambio = null;
+    });
+    return this.cambio;
+  }
+
+  private async ricostruisci(numero: number | null): Promise<void> {
     const prima = this.server.campagna.pacchetto?.numero ?? null;
     this.log.info({ da: prima, a: numero }, 'sessioni: il server si ricostruisce sul pacchetto dopo');
     await this.server.chiudi();

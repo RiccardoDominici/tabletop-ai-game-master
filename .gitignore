@@ -25,3 +25,6 @@ manuali/*
 
 # Scelte dei provider di questo computer (scripts/configura.sh, docs/provider.md)
 config/locale.yaml
+
+# PCs built at the table (docs/creazione.md): play data that may carry a player's real name, never in the repository.
+campagne/*/pg-creati/

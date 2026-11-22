@@ -1,0 +1,16 @@
+# Invented fixture of the rules-engine work R5 (docs/creazione.md): a forge where new adventurers are equipped. The
+# players build their PCs on the phones (creation at the table) or take the one pregenerated PC. Generic: no
+# campaign's content.
+id: fucina
+regole:
+  dadi: true
+  tiri_giocatori: manuale
+  creazione:
+    modo: entrambi
+    opzioni: [scambio_punti, scambio]
+canone:
+- id: f_fucina
+  noto_ai_pg: true
+  testo: La fucina di Orsola vende spade, scudi e corde a chi parte per la strada.
+sessione:
+  riassunto_iniziale: Siete alla fucina di Orsola, pronti a partire.

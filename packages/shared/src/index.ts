@@ -4,3 +4,4 @@ export * from './eventi';
 export * from './master';
 export * from './prove';
 export * from './regole';
+export * from './creazione';

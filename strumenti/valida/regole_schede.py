@@ -91,6 +91,37 @@ def _regole(c: Campagna, e: Esito) -> None:
         if "mostra_cd" in regole and not isinstance(regole["mostra_cd"], bool):
             e.errore("SCHEDA.regole", "campagna.yaml", "regole.mostra_cd è true (le carte al tavolo mostrano CD e CA) "
                                                        "o false (default: le vede solo il pannello del master)")
+        # Who makes the PCs (docs/creazione.md): pregenerated (default), built at the table, or both.
+        if "creazione" in regole:
+            _creazione(c, regole["creazione"], e)
+
+
+def _creazione(c: Campagna, v, e: Esito) -> None:
+    """campagna.yaml → regole.creazione: the shape here; the ids against the set in regole_creazione.opzioni_campagna."""
+    d = "campagna.yaml"
+    if not isinstance(v, dict):
+        e.errore("SCHEDA.regole", d, "regole.creazione è un oggetto: {modo: pregenerati|al_tavolo|entrambi, metodo, opzioni, "
+                                     "senza_speranza, punti_ferita, livello, incantesimi}")
+        return
+    modo = v.get("modo", "pregenerati")
+    if modo not in ("pregenerati", "al_tavolo", "entrambi"):
+        e.errore("SCHEDA.regole", d, "regole.creazione.modo è pregenerati (default), al_tavolo o entrambi")
+    elif modo != "pregenerati" and not (isinstance(c.regole, dict) and isinstance(c.regole.get("creazione"), dict)):
+        e.errore("SCHEDA.regole", d, "regole.creazione.modo: la creazione al tavolo vuole un set di regole con «creazione» "
+                                     "(regole/regole.yaml, docs/regole.md §2)")
+    for k in ("opzioni", "senza_speranza"):
+        if k in v and not (isinstance(v[k], list) and all(isinstance(x, str) for x in v[k])):
+            e.errore("SCHEDA.regole", d, f"regole.creazione.{k}: un elenco di id")
+    if any(x not in ("ritira", "ribalta") for x in v.get("senza_speranza") or [] if isinstance(x, str)):
+        e.errore("SCHEDA.regole", d, "regole.creazione.senza_speranza: ritira e/o ribalta")
+    if "punti_ferita" in v and v["punti_ferita"] not in ("tira", "massimo"):
+        e.errore("SCHEDA.regole", d, "regole.creazione.punti_ferita è tira o massimo")
+    if "livello" in v and not (isinstance(v["livello"], int) and not isinstance(v["livello"], bool) and v["livello"] >= 1):
+        e.errore("SCHEDA.regole", d, "regole.creazione.livello: un intero da 1")
+    if "incantesimi" in v and v["incantesimi"] not in ("scelta", "master", "tiro"):
+        e.errore("SCHEDA.regole", d, "regole.creazione.incantesimi è scelta, master o tiro")
+    if "metodo" in v and not isinstance(v["metodo"], str):
+        e.errore("SCHEDA.regole", d, "regole.creazione.metodo: l'id di un metodo del set")
 
 
 def _punteggi(e: Esito, dove: str, v, massimo: int) -> dict[str, int] | None:

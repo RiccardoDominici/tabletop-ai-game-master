@@ -50,6 +50,7 @@ regia:
   errori:
     nessuna_sessione: "Nessuna sessione in corso da chiudere."
     telefono_sconosciuto: "Telefono sconosciuto."
+    nessun_pg: "Nessun personaggio ancora: create i personaggi sui telefoni e fateli approvare dal master."
     personaggio_sconosciuto: "Personaggio sconosciuto."
     umore_senza_brano: "Nessun brano per l'umore «{umore}»."
     nessuna_situazione: "Nessuna situazione sul proiettore."
@@ -266,6 +267,7 @@ tavolo:
 master:
   # Errore mostrato al pannello quando un comando è rifiutato (master/comandi.ts).
   rifiuti:
+    creazione_spenta: "In questa campagna i personaggi sono già pronti: niente creazione al tavolo."
     comando_sconosciuto: "Comando sconosciuto."
     errore_interno: "Errore interno del server."
     luogo_sconosciuto: "Luogo sconosciuto."

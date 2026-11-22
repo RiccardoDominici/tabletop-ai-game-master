@@ -15,6 +15,7 @@ Un file illeggibile diventa un errore STRUTTURA e la validazione prosegue con ci
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import os
 from pathlib import Path
 from typing import Any
 
@@ -50,10 +51,14 @@ class Campagna:
     rivelazioni: dict[str, dict] = field(default_factory=dict)
     per_id: dict[str, dict] = field(default_factory=dict)               # battute per id
 
+    # PCs built at the table (pg-creati/<id>.yaml, docs/creazione.md): one pg.yaml entry each, marked `_creato` (the file)
+    pg_creati: list[dict] = field(default_factory=list)
+
     @property
     def personaggi(self) -> list[dict]:
+        """pg.yaml's PCs, then the ones built at the table (every reader sees them all, as the Engine's loader does)."""
         p = self.pg.get("personaggi") if isinstance(self.pg, dict) else self.pg
-        return [x for x in (p or []) if isinstance(x, dict)]
+        return [x for x in (p or []) if isinstance(x, dict)] + self.pg_creati
 
     @property
     def pg_ids(self) -> list[str]:
@@ -106,6 +111,26 @@ def _trova_voci(cartella: Path) -> Path | None:
     return None
 
 
+def cartella_pg_creati(cartella: Path) -> Path:
+    """Where the PCs built at the table live: TAGM_PG_CREATI, else the campaign's pg-creati/ (creazione/archivio.ts)."""
+    # The old CANTASTORIE_ name too, as the other tools read it (apps/server/src/variabili-legacy.ts).
+    forzata = (os.environ.get("TAGM_PG_CREATI") or os.environ.get("CANTASTORIE_PG_CREATI") or "").strip()
+    return Path(forzata).resolve() if forzata else Path(cartella) / "pg-creati"
+
+
+def pg_creati(cartella: Path, esito: Esito) -> list[dict]:
+    """The PCs built at the table (one pg.yaml entry per file), each marked with its file in `_creato`."""
+    dove = cartella_pg_creati(cartella)
+    out: list[dict] = []
+    for f in sorted(dove.glob("*.yaml")) if dove.is_dir() else []:
+        d = _leggi(f, esito, False)
+        if isinstance(d, dict) and isinstance(d.get("id"), str):
+            out.append({**d, "_creato": f"pg-creati/{f.name}"})
+        else:
+            esito.errore("PG.forma", f"pg-creati/{f.name}", "un personaggio creato al tavolo è una voce come quelle di pg.yaml, con id")
+    return out
+
+
 def carica(cartella: Path, esito: Esito, voci: Path | None = None) -> Campagna:
     cartella = Path(cartella)
     c = Campagna(cartella=cartella)
@@ -124,6 +149,7 @@ def carica(cartella: Path, esito: Esito, voci: Path | None = None) -> Campagna:
         codice = LINGUA_PREDEFINITA
     c.lingua, c.prosa = codice, carica_prosa(codice)
     c.pg = _leggi(cartella / "pg.yaml", esito, True) or {}
+    c.pg_creati = pg_creati(cartella, esito)
     c.regole = _leggi(cartella / "regole" / "regole.yaml", esito, False)
 
     file_scene = [cartella / "scena.yaml"] if (cartella / "scena.yaml").exists() else []

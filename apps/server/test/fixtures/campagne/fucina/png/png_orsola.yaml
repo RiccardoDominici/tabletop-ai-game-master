@@ -1,0 +1,28 @@
+id: png_orsola
+nome: Orsola
+pronuncia: Orsòla
+livello: supporto
+ruolo: la fabbra
+aspetto:
+  lettura: Una donna robusta col grembiule di cuoio e le braccia bruciacchiate.
+  invarianti: [grembiule di cuoio]
+personalita:
+  superficie: [sbrigativa]
+  sotto_pressione: [ride]
+  contraddizione: Burbera, ma regala sempre qualcosa.
+desiderio: Vendere tutto prima dell'inverno.
+voce:
+  tts: {voce_id: dario}
+  registro: tu
+  stile: Frasi corte.
+  battuta_campione: Questa spada non si piega.
+sa: [f_fucina]
+non_sa: []
+atteggiamento_pg:
+  pg_brina: {stato: amichevole, perche: cliente, vuole: vendere}
+scheda:
+  caratteristiche: {forza: 15, mente: 11, agilita: 10, tempra: 14}
+  pf: 8
+  difesa: 11
+  attacchi:
+  - {nome: Martello, danno: "1d6", abilita: mischia}

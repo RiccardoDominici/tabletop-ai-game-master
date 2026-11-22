@@ -29,6 +29,8 @@ export const ATTESA_CAMBIO_MS = 300;
 export interface OpzioniCiclo {
   cartellaCampagna: string;
   cartellaLog: string;
+  /** The store of the PCs built at the table (creazione/archivio.ts): the log reads them like pg.yaml's. */
+  pgCreati?: string;
   campagna: Campagna;
   archivio: ArchivioSessioni | null;
   regia: {
@@ -125,7 +127,7 @@ export class CicloSessioni {
       return;
     }
     try {
-      const scritto = registraSessione({ archivio: this.o.archivio, sessione, cartellaCampagna: this.o.cartellaCampagna, cartellaLog: this.o.cartellaLog, log: this.o.log });
+      const scritto = registraSessione({ archivio: this.o.archivio, sessione, cartellaCampagna: this.o.cartellaCampagna, cartellaLog: this.o.cartellaLog, ...(this.o.pgCreati ? { pgCreati: this.o.pgCreati } : {}), log: this.o.log });
       this.ultimoRegistro = { sessione, file: scritto.registro, turni: scritto.estratto.registro.archivio.ultimo_turno };
       scriviRiassuntoSerata(path.dirname(scritto.registro), s, this.o.log);
     } catch (err) {
@@ -143,7 +145,7 @@ export class CicloSessioni {
   private scrivi(sessione: string): EsitoCiclo {
     if (!this.o.archivio) return { ok: false, errore: frase('registro_spento') };
     try {
-      const scritto = registraSessione({ archivio: this.o.archivio, sessione, cartellaCampagna: this.o.cartellaCampagna, cartellaLog: this.o.cartellaLog, log: this.o.log });
+      const scritto = registraSessione({ archivio: this.o.archivio, sessione, cartellaCampagna: this.o.cartellaCampagna, cartellaLog: this.o.cartellaLog, ...(this.o.pgCreati ? { pgCreati: this.o.pgCreati } : {}), log: this.o.log });
       this.ultimoRegistro = { sessione, file: scritto.registro, turni: scritto.estratto.registro.archivio.ultimo_turno };
       return { ok: true, dettagli: frase('sessione_chiusa', { sessione, file: scritto.registro }), registro: scritto };
     } catch (err) {

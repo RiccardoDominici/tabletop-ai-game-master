@@ -18,6 +18,7 @@ import {
   type SituazioneMaster,
   type StatoMaster,
 } from '@tabletop-ai-gm/shared';
+import type { CreazioneMaster } from '@tabletop-ai-gm/shared';
 import type { Azione } from '../azioni/tipi';
 import { STATI_VIVI } from '../azioni/tipi';
 import type { CatalogoImmagini } from '../campagna/immagini';
@@ -37,6 +38,8 @@ export interface FonteVistaMaster {
   eventi: readonly EventoMaster[];
   /** Pacchetti, fine sessione e ultimo registro (assente nei test che non lo usano). */
   ciclo?: CicloSessioni | undefined;
+  /** The PCs being built at the table (docs/creazione.md); absent when the campaign has no creation. */
+  creazione?: { vistaMaster(): CreazioneMaster[] } | undefined;
 }
 
 /** Quante azioni già chiuse (del turno precedente) mostrare oltre a quelle vive. */
@@ -71,6 +74,7 @@ export function statoMaster(f: FonteVistaMaster): StatoMaster {
       telefoni: regia.dispositiviRicordati.map((t) => ({ ...t, nome: campagna.pg.find((p) => p.id === t.id_pg)?.nome ?? t.id_pg })),
     },
     ...(f.audio ? { audio: audioMaster(tavolo.scena.audio, f.audio) } : {}),
+    ...(f.creazione ? { creazione: f.creazione.vistaMaster() } : {}),
   };
 }
 

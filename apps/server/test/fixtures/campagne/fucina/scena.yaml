@@ -1,0 +1,19 @@
+id: scena_fucina
+nodo: n_fucina
+nome: La fucina
+descrizione: Una fucina col fuoco acceso, un'incudine e una rastrelliera di spade. Orsola martella una lama.
+domanda_drammatica: Chi parte con che cosa?
+intensita: 2
+sensi:
+- Odore di carbone e ferro caldo.
+- Il colpo del martello sull'incudine.
+elementi_interattivi:
+- cosa: la rastrelliera
+  dove: contro il muro
+  azioni: si guarda, si prende una spada
+png_presenti:
+- png_orsola
+apertura: Orsola alza gli occhi dall'incudine. «Chi parte, oggi?» Che fate?
+musica:
+  tag: calma
+taglio: Si chiude quando il gruppo esce dalla fucina.

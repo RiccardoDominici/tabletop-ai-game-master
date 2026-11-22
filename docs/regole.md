@@ -522,7 +522,9 @@ the book (`fissi`, then exactly `a_scelta` more of spell level `livello` or lowe
 prepared spell from it, the race's languages and no more extra ones than the bonus gives. A PC built at the table also
 starts at the procedure's level with that level's XP. One case file, apps/server/test/fixtures/creazione/casi.yaml, is
 read by the Engine's test and by the validator's, so the two give the same codes. In the validator a pregenerated PC
-breaking a rule is an error, a missing detail (no book, no languages) a strict warning.
+breaking a rule is an error, a missing detail (no book, no languages) a strict warning. The players can build their PCs
+on the phones by these steps (the campaign's `regole.creazione`; docs/creazione.md): the same check refuses an illegal
+one, and a PC built at the table (`pg-creati/`) is held to it strictly.
 
 **The bestiary in play** (regole/bestiario.ts, regole/schede.ts, prove/bestiario.ts; audit P5-20, P5-21, P6-00 to P6-07). An
 NPC's or a minion type's sheet writes `mostro: <id>` and the entry's keys come under its own: Zirrà can be a goblin with her

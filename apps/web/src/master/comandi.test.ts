@@ -38,6 +38,7 @@ const UNO_PER_TIPO: Record<TipoComandoMaster, ComandoMaster> = {
   esperienza: { tipo: 'esperienza', cosa: 'assegna', px: 50 },
   tiro: { tipo: 'tiro', id: 'r_a3', valori: [14] },
   chiedi_prova: { tipo: 'chiedi_prova', id_pg: 'pg_anna', cosa: 'abilita:percezione', difficolta: null },
+  creazione: { tipo: 'creazione', azione: 'approva_passo', id: 'cr_0a1b2c3d', passo: 'razza' },
 };
 
 describe('zone ed etichette dei comandi', () => {

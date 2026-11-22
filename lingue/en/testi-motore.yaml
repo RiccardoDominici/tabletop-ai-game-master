@@ -49,6 +49,7 @@ regia:
   errori:
     nessuna_sessione: "No session in progress to close."
     telefono_sconosciuto: "Unknown phone."
+    nessun_pg: "No character yet: build the characters on the phones and have the Game Master approve them."
     personaggio_sconosciuto: "Unknown character."
     umore_senza_brano: "No track for the mood “{umore}”."
     nessuna_situazione: "No situation on the projector."
@@ -265,6 +266,7 @@ tavolo:
 master:
   # Error shown in the panel when a command is refused (master/comandi.ts).
   rifiuti:
+    creazione_spenta: "In this campaign the characters are ready-made: no creation at the table."
     comando_sconosciuto: "Unknown command."
     errore_interno: "Internal server error."
     luogo_sconosciuto: "Unknown place."

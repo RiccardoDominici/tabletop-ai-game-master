@@ -51,7 +51,7 @@ import { fuoriDallaFinzione } from '../narrazione/finzione';
 import { MOTIVO_FINE_SESSIONE } from '../sessione/archivio';
 import type { MemoriaSessione } from '../sessione/memoria';
 import type { FotografiaSessione, StatoRicostruito, StatoTavoloSalvato } from '../sessione/tipi';
-import type { RiassuntoSerata, SerataMaster } from '@tabletop-ai-gm/shared';
+import type { CreazioneTavolo, RiassuntoSerata, SerataMaster } from '@tabletop-ai-gm/shared';
 import { collegaSituazioni, type SituazioneCollegata } from '../campagna/situazioni';
 import type { Logger } from '../logger';
 import type { Narratore } from '../llm/tipi';
@@ -165,6 +165,8 @@ function segnoDovutoDi(b: Battuta, dovuti: ReadonlySet<string> | undefined): boo
 
 export interface OpzioniRegia {
   campagna: Campagna;
+  /** The players may build a PC on their phone (docs/creazione.md): told to the phones in the table state. */
+  creazione?: CreazioneTavolo;
   /** Lessico di pronuncia condiviso (voce/lessico-vivo.ts); assente = uno della campagna, solo per questa regia. */
   lessico?: LessicoVivo;
   /** Lingue della partita (docs/lingue.md); assente = la configurazione e i contenuti nella lingua attiva. */
@@ -2652,6 +2654,7 @@ export class Regia {
       ...(this.prove?.attivo ? { dadi: true, tiri: this.prove.tiriPubblici(), ...(this.tiriGiocatori.manuali ? { tiri_manuali: true, tiri_richiesti: this.tiriGiocatori.pubbliche() } : {}) } : {}),
       ...(this.prove?.inCombattimento ? { combattimento: this.prove.vistaCombattimento() } : {}),
       ...this.serata.pubblico(this.finoraStasera()),
+      ...(this.o.creazione ? { creazione: this.o.creazione } : {}),
     };
   }
 
@@ -2744,6 +2747,12 @@ export class Regia {
   schermoInizia(socketId: string): Esito {
     this.schermi.add(socketId);
     this.o.log.info({ socket: socketId, fase: this.fase, schermi: this.schermi.size }, 'schermo: audio sbloccato');
+    // A campaign whose PCs are built at the table starts with none: the story waits for the first one (docs/creazione.md).
+    if (this.fase === 'attesa' && !this.campagna.pg.length) {
+      this.o.log.info({ socket: socketId }, 'start refused: no PC yet (creation at the table)');
+      this.notifica();
+      return { ok: false, errore: testoFisso('regia.errori.nessun_pg') };
+    }
     if (this.fase === 'attesa' && this.daRiprendere) this.riprendiSessione();
     else if (this.fase === 'attesa') this.avviaScena();
     else this.notifica();

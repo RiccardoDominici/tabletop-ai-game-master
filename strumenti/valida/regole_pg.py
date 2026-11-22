@@ -41,15 +41,31 @@ def controlla(c: Campagna, e: Esito) -> None:
     if not (isinstance(c.pg, dict) and c.pg.get("situazione_comune")):
         e.errore("PG.campo", "pg.yaml", "manca situazione_comune (sul telefono di tutti)")
     pers = c.personaggi
+    # A campaign that builds its PCs at the table (regole.creazione.modo: al_tavolo, docs/creazione.md) may have none yet.
+    al_tavolo = ((c.campagna.get("regole") or {}).get("creazione") or {}).get("modo") == "al_tavolo" if isinstance(c.campagna.get("regole"), dict) else False
     if not pers:
-        e.errore("PG.nessuno", "pg.yaml", "nessun personaggio")
+        if not al_tavolo:
+            e.errore("PG.nessuno", "pg.yaml", "nessun personaggio")
+        return
+    creati = [p for p in pers if p.get("_creato")]
+    pers = [p for p in pers if not p.get("_creato")]
+    for p in creati:
+        # A PC built at the table: its sheet is checked with the set's (regole_creazione), its words are the player's.
+        if not re.fullmatch(r"pg_[a-z0-9_]+", str(p.get("id"))):
+            e.errore("PG.id", p["_creato"], "id nella forma pg_nome, ascii minuscolo")
+        if not p.get("nome") or "scheda" not in p:
+            e.errore("PG.campo", p["_creato"], "un personaggio creato al tavolo ha almeno nome e scheda")
+    if al_tavolo and pers:
+        e.avviso("PG.numero", "pg.yaml", "regole.creazione.modo è al_tavolo ma pg.yaml ha dei PG: con al_tavolo pg.yaml resta "
+                 "vuoto (i PG vengono dai telefoni); per offrire pregenerati e nuovi c'è «entrambi»")
+    if not pers:
         return
     _nomi_nei_testi_preparati(c, e, pers)
     massimo = _massimo_giocatori((c.brief or {}).get("giocatori"))
     if massimo and len(pers) < massimo + 1:
         e.avviso("PG.numero", "pg.yaml", f"{len(pers)} PG per un massimo di {massimo} giocatori: ne serve uno in più, "
                                          "perché la scena regga con qualunque sottoinsieme", rigoroso=True)
-    ids = [p.get("id") for p in pers]
+    ids = [p.get("id") for p in pers + creati]
     for x in {i for i in ids if ids.count(i) > 1}:
         e.errore("PG.id", "pg.yaml", f"id ripetuto {x}")
     nomi_png = {d.get("nome", "").split()[0] for _, d in c.png.values() if d.get("nome")}

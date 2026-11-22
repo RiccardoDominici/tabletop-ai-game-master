@@ -357,7 +357,7 @@ def _schede(c: Campagna, e: Esito, car: set[str], abi: set[str], dadi: bool, tab
     scheda con `mostro:` si controlla con le chiavi del mostro del bestiario sotto le sue (regole_bestiario)."""
     soglie = soglie or {}
     mostri = mostri or {}
-    da_controllare = [(f"pg.yaml {p.get('id', '?')}", p) for p in c.personaggi if "scheda" in p]
+    da_controllare = [(p["_creato"] if p.get("_creato") else f"pg.yaml {p.get('id', '?')}", p) for p in c.personaggi if "scheda" in p]
     da_controllare += [(nome, d) for _, (nome, d) in c.png.items() if "scheda" in d]
     for p in c.personaggi:
         if "scheda" not in p and dadi:
@@ -522,6 +522,7 @@ def controlla(c: Campagna, e: Esito) -> None:
     razze = regole_classi.razze_del_set(r, abi, set(colonne), e, dove)
     # Creation (M7): languages, the classes' and races' requirements and allow-lists, the procedure.
     regole_creazione.creazione_del_set(r, car, set(classi), set(razze), e, dove)
+    regole_creazione.opzioni_campagna(c, r, e)
     regole_progressione.progressione_del_set(r, abi, car, poteri, e, dove)
     regole_progressione.esperienza_del_set(r, e, dove)
     catalogo = regole_catalogo.catalogo_del_set(r, car, abi, set(classi), set(razze), None, e, dove)
@@ -540,10 +541,16 @@ def controlla(c: Campagna, e: Esito) -> None:
         regole_classi.controlla_scheda(s, d, classi, col_abil, tabelle, e, razze, abi, set(colonne))
         regole_poteri.controlla_scheda(s, d, r, poteri, risorse, e)
         regole_catalogo.controlla_scheda(s, d, r, catalogo, e)
-        regole_progressione.controlla_scheda(s, d, r, e, di_png=not d.startswith("pg.yaml"))
-        if d.startswith("pg.yaml"):
-            # A pregenerated PC against the set's creation rules: built by the same steps a player follows at the table.
-            regole_creazione.controlla_scheda(s, d, r, e, creato=False)
+        di_pg = d.startswith("pg.yaml") or d.startswith("pg-creati/")
+        regole_progressione.controlla_scheda(s, d, r, e, di_png=not di_pg)
+        if di_pg:
+            # A PC against the set's creation rules: a pregenerated one is built by the same steps a player follows at the
+            # table; one built at the table (pg-creati/) is held to them strictly, at the campaign's starting level.
+            opz = ((c.campagna.get("regole") or {}).get("creazione") or {}) if isinstance(c.campagna.get("regole"), dict) else {}
+            creato = d.startswith("pg-creati/")
+            regole_creazione.controlla_scheda(s, d, r, e, creato=creato,
+                                              livello_iniziale=opz.get("livello") if isinstance(opz.get("livello"), int) else None,
+                                              punti_ferita=opz.get("punti_ferita") if opz.get("punti_ferita") in ("tira", "massimo") else None)
     _schede(c, e, car, abi, dadi_attivi(c), tabella_modificatori(r), soglie_abilita(r), per_scheda=per_scheda, mostri=mostri)
     _prove_di_scena(c, e, car, abi, mosse, diff, condizioni_del_set(r))
     controlla_cadute(r, e, dove)

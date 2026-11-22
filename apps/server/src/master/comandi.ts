@@ -15,6 +15,7 @@ import type { Regia } from '../scena/regia';
 import type { CicloSessioni } from '../sessione/ciclo';
 import { testo } from '../lingua';
 import { luoghiMaster, statoMaster } from './vista';
+import type { ServizioCreazione } from '../creazione/servizio';
 
 export interface OpzioniControlliMaster {
   regia: Regia;
@@ -30,6 +31,8 @@ export interface OpzioniControlliMaster {
   log: Logger;
   /** Eventi tenuti per il pannello (i più recenti). */
   maxEventi?: number;
+  /** Creation at the table (docs/creazione.md); absent = the `creazione` command is refused. */
+  creazione?: ServizioCreazione;
 }
 
 const TIPI: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>([
@@ -67,6 +70,7 @@ const TIPI: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>([
   'esperienza',
   'tiro',
   'chiedi_prova',
+  'creazione',
 ]);
 
 /** Comandi che non lasciano stato da salvare dopo (un effetto) o lo salvano da sé (sessioni). */
@@ -101,7 +105,7 @@ export class ControlliMaster {
 
   /** Istantanea completa per il pannello. */
   stato(): StatoMaster {
-    return statoMaster({ regia: this.o.regia, campagna: this.o.campagna, immagini: this.o.immagini, audio: this.o.audio, eventi: this.eventi, ...(this.o.ciclo ? { ciclo: this.o.ciclo } : {}) });
+    return statoMaster({ regia: this.o.regia, campagna: this.o.campagna, immagini: this.o.immagini, audio: this.o.audio, eventi: this.eventi, ...(this.o.ciclo ? { ciclo: this.o.ciclo } : {}), ...(this.o.creazione ? { creazione: this.o.creazione } : {}) });
   }
 
   /** Esegue un comando del pannello e lo registra come evento. `origine`: id del socket. */
@@ -428,6 +432,13 @@ export class ControlliMaster {
         const esito = regia.esperienza(comando);
         if (!esito.ok) return rifiuto(esito.errore);
         return { esito, dettagli: dettaglio('esperienza', { cosa, px: px ?? '', pg: pg ?? '' }), dati: { ...comando } };
+      }
+      case 'creazione': {
+        // Creation at the table (docs/creazione.md): the service checks the draft, the step and the moment.
+        if (!this.o.creazione) return rifiutoDi('creazione_spenta');
+        const e = this.o.creazione.comando(c);
+        if (!e.ok) return rifiuto(e.errore);
+        return { esito: { ok: true }, dettagli: e.dettagli, dati: { azione: c.azione, bozza: c.id, ...(c.passo ? { passo: c.passo } : {}) } };
       }
       case 'effetto': {
         const id = typeof c.id === 'string' && ID_VALIDO.test(c.id) ? c.id : '';

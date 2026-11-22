@@ -452,6 +452,7 @@ export const master = {
   'master.tiri.da_master': 'inserito dal master',
   'master.tiri.da_motore': 'tirato dal Motore',
   'master.cmd.chiedi_prova': 'Chiedi una prova',
+  'master.cmd.creazione': 'Creazione al tavolo',
   'master.tiri.chiesta': '{nome}: {cosa}, al prossimo turno',
   'master.tiri.chiedi_titolo': 'Chiedi una prova',
   'master.tiri.chi': 'Chi tira…',

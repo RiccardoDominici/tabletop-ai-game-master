@@ -29,13 +29,14 @@ export class ErroreRegistro extends Error {
 }
 
 /** L'estratto di una sessione dell'archivio e la cartella dove va (senza scrivere niente). */
-export function estraiSessione(o: { archivio: ArchivioSessioni; sessione: string; cartellaCampagna: string; cartellaLog: string }): { info: InfoSessione; estratto: EstrattoRegistro; cartella: string } {
+export function estraiSessione(o: { archivio: ArchivioSessioni; sessione: string; cartellaCampagna: string; cartellaLog: string; pgCreati?: string }): { info: InfoSessione; estratto: EstrattoRegistro; cartella: string } {
   const info = o.archivio.sessione(o.sessione);
   if (!info) throw new ErroreRegistro(`sessione ${o.sessione} non trovata nell'archivio`);
   const pacchetti = elencoPacchetti(o.cartellaCampagna);
   const pacchetto = info.pacchetto === null ? null : (pacchetti.find((p) => p.numero === info.pacchetto) ?? null);
   if (info.pacchetto !== null && !pacchetto) throw new ErroreRegistro(`la sessione ${o.sessione} ha giocato il pacchetto ${info.pacchetto}, che non c'è più in sessioni/`);
-  const campagna = caricaCampagna(o.cartellaCampagna, undefined, { pacchetto: info.pacchetto });
+  // The PCs built at the table too (docs/creazione.md), from the instance's store.
+  const campagna = caricaCampagna(o.cartellaCampagna, undefined, { pacchetto: info.pacchetto, ...(o.pgCreati ? { pgCreati: o.pgCreati } : {}) });
   let repertorio: ReturnType<typeof caricaRepertorio> | undefined;
   const avvisi: string[] = [];
   if (info.modo === 'repertorio') {
@@ -52,7 +53,7 @@ export function estraiSessione(o: { archivio: ArchivioSessioni; sessione: string
 }
 
 /** Estrae e scrive (pannello del master, «Fine sessione»). `uscita` sostituisce la cartella predefinita. */
-export function registraSessione(o: { archivio: ArchivioSessioni; sessione: string; cartellaCampagna: string; cartellaLog: string; uscita?: string; log?: Logger }): RegistroScritto {
+export function registraSessione(o: { archivio: ArchivioSessioni; sessione: string; cartellaCampagna: string; cartellaLog: string; pgCreati?: string; uscita?: string; log?: Logger }): RegistroScritto {
   const { info, estratto, cartella } = estraiSessione(o);
   const file = scriviRegistro(o.uscita ?? cartella, estratto, o.log);
   return { sessione: info.id, pacchetto: info.pacchetto, ...file, estratto };

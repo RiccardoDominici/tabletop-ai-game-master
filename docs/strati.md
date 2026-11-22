@@ -55,6 +55,7 @@ campagne/<id>/
   mondo/      regioni.yaml fazioni.yaml storia.yaml          # only from the «campagna» and «saga» levels (campaign and saga)
   png/        sheets of recurring NPCs (a single session's extras live in the session)
   pg.yaml     PCs, with growth
+  pg-creati/  PCs built at the table on the phones (docs/creazione.md): one pg.yaml entry per file; in .gitignore
   stato/      stato.yaml                                     # canonical game log: grows after every session
   sessioni/<nn>/                                             # the package: what the Engine plays
     sessione.yaml (title, riassunto_iniziale, scenes in order, pieni_all_inizio, and the session part of
@@ -104,8 +105,12 @@ does not exist):
   being secret); without a file in the package, the campaign's applies.
 - **Images and audio**: the campaign and package manifests together; on an equal id the package wins (an aged
   portrait); a file name already used by an entry from the other folder is discarded.
-- **PCs**: `pg.yaml` of the campaign, in every session; the phones find again the PC of the previous session (the
-  master changes or forgets it from the panel, «Telefoni ricordati» (Remembered phones)).
+- **PCs**: `pg.yaml` of the campaign, then the PCs built at the table (`pg-creati/*.yaml` of the play folder:
+  `campagne/<id>/pg-creati/` for the real game, a test instance's logs, or `TAGM_PG_CREATI`; docs/creazione.md), in
+  every session; the phones find again the PC of the previous session (the master changes or forgets it from the
+  panel, «Telefoni ricordati» (Remembered phones)). A PC approved during a session joins at once (the server rebuilds
+  on the same package and resumes); `pg_all_inizio` and the log treat it like any PC. `campagne/*/pg-creati/` is in
+  .gitignore: those files are play data and may carry a player's real name.
 
 ### Which session is played
 The archive keeps it (`sessioni.sqlite`, `pacchetto` column of every session played; apps/server/src/sessione/

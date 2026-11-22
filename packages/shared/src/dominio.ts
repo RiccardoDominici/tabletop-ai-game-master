@@ -7,6 +7,7 @@
  */
 
 import type { CombattimentoPubblico, PuntiFerita, RichiestaTiro, TiroMostrato } from './prove';
+import type { CreazioneTavolo } from './creazione';
 
 /** Fasi della scena, nell'ordine in cui normalmente si susseguono. */
 export type FaseScena =
@@ -357,6 +358,8 @@ export interface StatoTavolo {
    * DC. A player's own requests, private ones included, reach their phone through `tiri:richiesti`.
    */
   tiri_richiesti?: RichiestaTiro[];
+  /** The players may build a PC on their phone (docs/creazione.md): the campaign's `regole.creazione.modo`. */
+  creazione?: CreazioneTavolo;
 }
 
 /** Misure di latenza di un turno (stessi campi di logs/turni.jsonl, docs/f0-contratti.md). */

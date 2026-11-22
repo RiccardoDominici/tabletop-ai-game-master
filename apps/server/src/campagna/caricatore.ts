@@ -16,6 +16,8 @@ import { comeLingua, linguaAttiva, testo, type Lingua } from '../lingua';
 import fs from 'node:fs';
 import path from 'node:path';
 import YAML from 'yaml';
+import { cartellaPgCreati, leggiPgCreati } from '../creazione/archivio';
+import { opzioniCreazione } from '../creazione/opzioni';
 import { dividiTesto } from '../narrazione/frasi';
 import type { Logger } from '../logger';
 import { CARTELLA_SESSIONI, elencoPacchetti, ErrorePacchetto, FILE_SESSIONE, ordinaScene, statoAllInizio, unisciSessione, type Pacchetto } from './pacchetti';
@@ -81,6 +83,11 @@ export interface OpzioniCaricamento {
    * se campagna.yaml non scrive `lingua` (docs/lingue.md). Assente = la lingua attiva del processo.
    */
   linguaConfigurazione?: Lingua;
+  /**
+   * The folder of the PCs built at the table (creazione/archivio.ts): the server passes its play folder's (a test
+   * instance's logs); absent = TAGM_PG_CREATI or the campaign's own `pg-creati/`.
+   */
+  pgCreati?: string;
 }
 
 /** Id della campagna senza caricarla tutta (serve per l'archivio prima di scegliere il pacchetto). */
@@ -184,11 +191,16 @@ export function caricaCampagna(cartella: string, log?: Logger, opzioni: OpzioniC
   const doppie = voci.filter((v, i) => voci.indexOf(v) !== i);
   if (doppie.length) avvisa(`voce_id ripetuti tra i PNG: ${[...new Set(doppie)].join(', ')}`);
 
-  // --- PG: lista oppure {personaggi|pg|elementi: [...]}.
+  // --- PG: lista oppure {personaggi|pg|elementi: [...]}, then the PCs built at the table (pg-creati/, docs/creazione.md):
+  // the same entries, so every session after the approval loads them like the pregenerated ones.
   const elencoPg = (pgGrezzo['personaggi'] ?? pgGrezzo['pg'] ?? pgGrezzo['elementi']) as unknown;
-  if (!Array.isArray(elencoPg) || elencoPg.length === 0) throw new ErroreCampagna('pg.yaml: nessun personaggio giocante');
+  const creati = leggiPgCreati(opzioni.pgCreati ?? cartellaPgCreati(cartella), avvisa);
+  // A campaign that builds its PCs at the table may start with none: they come from the phones (docs/creazione.md).
+  const alTavolo = opzioniCreazione(campagnaGrezza).modo !== 'pregenerati';
+  const lista: unknown[] = Array.isArray(elencoPg) ? elencoPg : [];
+  if (!alTavolo && (!Array.isArray(elencoPg) || lista.length + creati.length === 0)) throw new ErroreCampagna('pg.yaml: nessun personaggio giocante');
   const pg: PgCaricato[] = [];
-  for (const voce of elencoPg) {
+  for (const voce of [...lista, ...creati]) {
     const d = oggetto(voce);
     const idPg = stringa(d?.['id']);
     if (!d || !idPg) {

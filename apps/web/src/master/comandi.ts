@@ -10,7 +10,7 @@ import { turni } from './etichette';
 import { tabella } from './tabella';
 
 /** Zona del pannello in cui si mostra l'esito di un comando. */
-export type ZonaComando = 'controlli' | 'scena' | 'situazioni' | 'orologi' | 'finestra' | 'azioni' | 'note' | 'audio' | 'sessione' | 'combattimento' | 'tiri' | 'mondo';
+export type ZonaComando = 'controlli' | 'scena' | 'situazioni' | 'orologi' | 'finestra' | 'azioni' | 'note' | 'audio' | 'sessione' | 'combattimento' | 'tiri' | 'mondo' | 'creazione';
 
 export const ZONA_COMANDO: Record<TipoComandoMaster, ZonaComando> = {
   pausa: 'controlli',
@@ -47,6 +47,7 @@ export const ZONA_COMANDO: Record<TipoComandoMaster, ZonaComando> = {
   esperienza: 'combattimento',
   tiro: 'tiri',
   chiedi_prova: 'tiri',
+  creazione: 'creazione',
 };
 
 /** Nome del comando come lo legge il master (pulsanti, esiti, registro degli eventi). */
@@ -85,6 +86,7 @@ export const ETICHETTA_COMANDO: Record<TipoComandoMaster, string> = tabella({
   esperienza: 'master.cmd.esperienza',
   tiro: 'master.cmd.tiro',
   chiedi_prova: 'master.cmd.chiedi_prova',
+  creazione: 'master.cmd.creazione',
 });
 
 /**
@@ -134,6 +136,9 @@ export function chiaveComando(comando: ComandoMaster): string {
     case 'inventario':
       // One gear change at a time on a character.
       return `inventario:${comando.id}`;
+    case 'creazione':
+      // One command at a time on a draft (a step's approval and the PC's are the same button row).
+      return `creazione:${comando.id}`;
     default:
       // «umore»: una chiave sola, due umori di fila non si accavallano.
       return comando.tipo;

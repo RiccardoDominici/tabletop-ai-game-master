@@ -452,6 +452,7 @@ export const master = {
   'master.tiri.da_master': 'entered by the Game Master',
   'master.tiri.da_motore': 'rolled by the Engine',
   'master.cmd.chiedi_prova': 'Ask for a check',
+  'master.cmd.creazione': 'Creation at the table',
   'master.tiri.chiesta': '{nome}: {cosa}, next turn',
   'master.tiri.chiedi_titolo': 'Ask for a check',
   'master.tiri.chi': 'Who rolls…',

@@ -17,6 +17,7 @@ import type { AzionePrivata, MisureTurno, SchedaPg, StatoTavolo } from './domini
 import type { ComandoMaster, EsitoEntrataMaster, StatoMaster } from './master';
 import type { RegolePubbliche, RispostaRegola } from './regole';
 import type { RichiestaTiro, ScortaScheda } from './prove';
+import type { AzioneCreazione, EsitoCreazione, VistaCreazione } from './creazione';
 
 /** Risposta standard agli eventi con conferma (ack). */
 export type Esito = { ok: true } | { ok: false; errore: string };
@@ -144,6 +145,11 @@ export interface EventiServerVersoClient {
    * chosen. Never in the table state, which every phone and the projector receive. null = no gear view.
    */
   'pg:scorta': (scorta: ScortaScheda | null) => void;
+  /**
+   * To the phone building a PC (docs/creazione.md): its draft after a change it did not ask for (the Game Master
+   * approved or undid a step, approved the PC). Its own actions get the draft in the ack.
+   */
+  'creazione:bozza': (bozza: VistaCreazione) => void;
   'metriche:turno': (misure: MisureTurno) => void;
   avviso: (avviso: { livello: 'info' | 'errore'; testo: string }) => void;
   'audio:frase': (frase: AudioFrase) => void;
@@ -191,6 +197,11 @@ export interface EventiClientVersoServer {
    * Only for the phone's own PC. Refused: an unknown or closed request, the wrong number of dice, a die off its faces.
    */
   'tiro:inserisci': (dati: { id_pg: string; id: string; valori: number[]; dettato?: boolean }, ack: (esito: Esito) => void) => void;
+  /**
+   * Creation at the table (docs/creazione.md): one action on this phone's draft, keyed by the phone's device token. The
+   * ack carries the whole draft, or the reason it was refused (an illegal choice, dice off their faces).
+   */
+  'creazione:azione': (dati: { dispositivo: string; azione: AzioneCreazione }, ack: (esito: EsitoCreazione) => void) => void;
   /** «Confermo» / «Tengo» su un'azione da confermare. */
   'azione:conferma': (dati: { id_pg: string }, ack: (esito: Esito) => void) => void;
   /**
