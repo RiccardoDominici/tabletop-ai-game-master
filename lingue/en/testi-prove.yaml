@@ -385,6 +385,7 @@ prove:
     morto: "{nome} dies."
     fuggito: "{nome} flees."
     buio: "{nome}'s light gutters out."
+    incontro: "Someone arrives: {nome}."
   # Engine lines that replace a narrator sentence contradicting the cards (narrazione/guardia-esiti.ts).
   guardia:
     manca: "{chi} misses {bersaglio}."
@@ -436,6 +437,26 @@ prove:
     sovraccarico: "Overloaded"
     carico: "{nome} now has a {fascia} ({peso} {unita}): moves {movimento} {unita_movimento} a round."
   # The game clock and the lights (prove/tempo.ts, prove/luci.ts; docs/prove.md §11).
+  # Wandering monsters on the clock (prove/esplorazione.ts; docs/prove.md §14).
+  esplorazione:
+    chi: "The Game Master"
+    qualcuno: "someone"
+    etichetta:
+      controllo: "Wandering monsters ({ambiente})"
+      tabella: "Encounter table"
+      scelta: "Which variant"
+      numero: "How many"
+      sorpresa: "Surprise, in advance"
+    incontro_uno: "Wandering monsters (Game Master roll): {nome} arrives."
+    incontro_molti: "Wandering monsters (Game Master roll): {quanti} creatures arrive, {nome}."
+    incontro_gruppo: "An encounter (Game Master roll): {gruppo}{quanti}; the Game Master prepares it."
+    incontro_vuoto: "An encounter (Game Master roll): the Game Master decides who arrives."
+    quando: "It happens around {quando}."
+    sorpresi: "They have not noticed the party: the characters can avoid them."
+    non_sorpresi: "They have noticed the party."
+    imboscata: "They noticed the party first and have laid an ambush."
+    adesso: "now"
+    probabilita: "{fino_a} in 1d{dado}"
   tempo:
     ora: "day {giorno}, {ora}"
     spenta: "{nome}'s light goes out ({oggetto})."

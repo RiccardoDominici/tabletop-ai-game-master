@@ -1,0 +1,18 @@
+# A dark tunnel, the first level of a dungeon: wandering monsters by the set's dungeon checks, no light but the party's.
+id: scena_galleria
+nodo: n_galleria
+nome: La galleria sotto la collina
+descrizione: Un cunicolo stretto scavato nella roccia, senza una luce.
+domanda_drammatica: Il gruppo troverà l'uscita?
+intensita: 2
+sensi:
+- Gocce d'acqua nel buio.
+elementi_interattivi:
+- cosa: le pareti
+  dove: ai lati
+  azioni: si toccano
+png_presenti: []
+apertura: Il buio vi avvolge. Che fate?
+taglio: Si chiude quando il gruppo esce.
+esplorazione: {ambiente: sotterraneo, livello: 1}
+luce: buio

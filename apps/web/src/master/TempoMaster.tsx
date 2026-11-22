@@ -2,7 +2,8 @@
  * The game clock in the Game Master panel (docs/prove.md §11): the day and time, how long the session has played in
  * game time, the lights burning with the time left (a Game Master roll), buttons to let one unit of the set's clock pass
  * (a turn, an hour, a day) and a journey (distance and terrain, when the set has travel rules). Hidden while a fight
- * is on: its rounds are the clock.
+ * is on: its rounds are the clock. Where the scene explores (docs/prove.md §14), when the next wandering monster check
+ * falls and the session's last encounter.
  */
 import { useState } from 'react';
 import type { CombattimentoMaster } from '@tabletop-ai-gm/shared';
@@ -30,6 +31,18 @@ export function TempoMaster({ tempo, attivo, nomi }: { tempo: NonNullable<Combat
       {tempo.luci.length > 0 && (
         <p className="text-xs text-candela" data-testid="master-tempo-luci">
           {tempo.luci.map((l) => t('master.tempo.luce', { chi: nomi.get(l.chi) ?? l.chi, nome: l.nome, restante: l.restante })).join(' · ')}
+        </p>
+      )}
+      {tempo.incontri?.ambiente && (
+        <p className="text-xs text-cenere" data-testid="master-tempo-incontri">
+          {tempo.incontri.in_attesa
+            ? t('master.tempo.incontri_attesa', { ambiente: tempo.incontri.ambiente })
+            : t('master.tempo.incontri', { ambiente: tempo.incontri.ambiente, tabella: tempo.incontri.tabella ? `, ${tempo.incontri.tabella}` : '', prossimo: tempo.incontri.prossimo ?? '', ogni: tempo.incontri.ogni ?? '', probabilita: tempo.incontri.probabilita ?? '' })}
+        </p>
+      )}
+      {tempo.incontri?.ultimo && (
+        <p className="text-xs text-pergamena-2" data-testid="master-tempo-incontro">
+          {t('master.tempo.incontro_ultimo', { ora: tempo.incontri.ultimo.ora, testo: tempo.incontri.ultimo.testo })}
         </p>
       )}
       {!attivo && (

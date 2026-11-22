@@ -945,3 +945,36 @@ tables and sentences from the PDF (when it is present) and compares them with th
 | ability scores at creation | 3d6 in order, each score (the player) | `creazione.caratteristiche` | p. 3 |
 | starting money | 3d6 × 10 gp (the player) | `creazione.monete` | p. 3 |
 
+## 14. Exploration on the clock (22 November, rules-engine package R6)
+
+The audit's P8-01 to P8-03: the manual's wandering monsters had no place, though the clock of §11 counts the turns they
+need. Now the set says which environments the party explores and how often the Game Master checks there
+(docs/regole.md §2, «Esplorazione»), and the encounter tables those checks roll on; prove/esplorazione.ts runs them.
+
+- **Where.** A scene sheet's `esplorazione: {ambiente, livello | tabella}` says the party explores there; a scene without
+  it explores nothing (no checks: a village, a talk). The count starts when the party arrives and restarts in another
+  environment.
+- **The check.** Every `controllo.ogni` of game time (Basic Fantasy: 3 turns underground, about 4 hours in the
+  wilderness), a Game Master roll on the set's die (1 on 1d6). Its card is the Game Master's: hidden by default, shown as
+  `regole.tiri_master` says (`a_volte` by the check's odds), listed on the panel with the turn. A check that falls due
+  during a fight waits for its end and is rolled at the first advance after it; an advance that spans several checks (a
+  night's rest, the panel's hours) rolls them in order and stops at the first encounter, saying when it happened.
+- **The encounter.** On a hit, the scene's table (`incontri`, by the scene's dungeon level or named by the scene): its
+  dice, the entry's nested roll when it has one (a roc's size), how many (`numero`), and, where the environment says so,
+  the creatures' surprise in advance (p. 181: surprised, the party may avoid them; not surprised, they ambush and surprise
+  on 1–4). Every die is a Game Master card. A group without a stat block (NPC adventurers, the city's watch) is named for
+  the Game Master to build.
+- **What the table hears.** A fact for the narrator in the turn («Mostri erranti (tiro del master): arrivano 3 creature,
+  goblin.»), owed like a light going out (prove/fatti-dovuti.ts, type `incontro`): if the narration does not tell it, the
+  Engine says «Arriva qualcuno: Goblin.».
+- **The panel** («Tempo di gioco» box): the environment and table of the scene, when the next check falls («prossimo
+  controllo tra 2 turni, ogni 3 turni, 1 su 1d6»), or that one is due and waits for the fight's end, and the session's
+  last encounter with its time.
+- **Data.** torre-mozza carries pp. 180–182: the dungeon (every 3 turns), the wilderness (every 4 hours, surprise in
+  advance, an ambush on 1–4) and the 17 tables (six dungeon levels, nine terrains, the city's day and night), each
+  creature an entry of its bestiary with the block's «No. Appearing» (underground the first formula, outdoors the «Wild»
+  one), checked against the PDF by strumenti/regole/test_incontri_bf.py. The city has no frequency in the manual: no
+  automatic check.
+
+Tests: test/esplorazione.test.ts (fixture cunicolo), strumenti/test_valida_esplorazione.py, strumenti/regole/test_incontri_bf.py.
+

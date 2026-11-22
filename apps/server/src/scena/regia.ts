@@ -4274,7 +4274,7 @@ export class Regia {
     // Mossa del mondo (nessuna azione): la narrazione resta nella finzione (narrazione/finzione.ts).
     const mossaDelMondo = r.azioni.length === 0;
     // Colpi, cadute e tiri contro la morte del turno: il Motore controlla che il tavolo li senta.
-    const dovuti = tiri ? fattiDovuti(tiri.tiri, [...(tiri.combattimento?.morte ?? []), ...(tiri.morte ?? [])], tiri.combattimento?.fuggiti ?? [], tiri.luci ?? []) : [];
+    const dovuti = tiri ? fattiDovuti(tiri.tiri, [...(tiri.combattimento?.morte ?? []), ...(tiri.morte ?? [])], tiri.combattimento?.fuggiti ?? [], tiri.luci ?? [], tiri.incontri ?? []) : [];
     // Also on a turn without rolls: someone out of play may still be told acting (narrazione/guardia-fuori.ts).
     // The guard keeps per-call state (who already had a state line, the carried subject): each private reply gets one of
     // its own, so a reply that names the fallen NPC first does not use up the line the table must hear.

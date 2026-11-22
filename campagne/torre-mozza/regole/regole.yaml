@@ -1061,6 +1061,32 @@ viaggio:
     - {id: pianura_sentiero, nome: "Pianura aperta o sentiero", per: 1}
     - {id: strada, nome: "Strada lastricata", per: 1.333}
 
+# Esplorazione (p. 180–181): nei sotterranei il master controlla i mostri erranti ogni 3 turni, un incontro con 1 su 1d6;
+# nelle terre selvagge circa ogni quattro ore (tre controlli di giorno e tre di notte), sempre 1 su 1d6, e la sorpresa si
+# controlla in anticipo: le creature sorprese (1–2 su 1d6, p. 50) non si sono accorte del gruppo, quelle non sorprese hanno
+# avuto il tempo di tendere un agguato, e un agguato ben preparato sorprende con 1–4 (p. 50; «a scelta del master», p. 181:
+# il Motore lo applica, il master può ignorarlo). Le tabelle degli incontri (p. 180–182) sono in regole/incontri.yaml:
+# nei sotterranei una per livello, nelle terre selvagge una per terreno (la scena la nomina), in città una di giorno e una
+# di notte (il manuale non dà una frequenza: le tira il master).
+esplorazione:
+  ambienti:
+    - id: sotterraneo
+      nome: "Sotterraneo"
+      controllo: {ogni: {turno: 3}, dado: 6, fino_a: 1}
+      tabelle:
+        - {da: 1, tabella: sotterraneo_1}
+        - {da: 2, tabella: sotterraneo_2}
+        - {da: 3, tabella: sotterraneo_3}
+        - {da: 4, tabella: sotterraneo_4_5}
+        - {da: 6, tabella: sotterraneo_6_7}
+        - {da: 8, tabella: sotterraneo_8}
+    - id: selvaggio
+      nome: "Terre selvagge"
+      controllo: {ogni: {ora: 4}, dado: 6, fino_a: 1}
+      sorpresa_prima: {dado: 6, fino_a: 2, imboscata: 4}
+    - id: citta
+      nome: "Città, paese o villaggio"
+
 # Monete (p. 10): 1 pp = 5 gp, 1 gp = 10 sp, 1 ep = 5 sp, 1 sp = 10 cp. Il valore è in rame (il taglio più piccolo vale 1).
 # Peso: una moneta pesa 1/20 di libbra, quindi 20 monete = 1 unità di carico (1 libbra).
 monete:

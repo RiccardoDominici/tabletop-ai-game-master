@@ -24,6 +24,7 @@ import type { Mostro, RegolaBestiario } from './bestiario';
 import type { Durata } from './effetti';
 import type { RegolaCreazione } from './creazione';
 import type { TabellaReazione } from './reazioni';
+import type { RegolaEsplorazione, TabellaIncontri } from './esplorazione';
 
 export interface Voce {
   id: string;
@@ -245,6 +246,10 @@ export interface SistemaRegole {
   creazione?: RegolaCreazione | null;
   /** The manual's reaction tables (regole.yaml → reazioni; regole/reazioni.ts): the Game Master's 2d6 + Charisma rolls. */
   reazioni?: TabellaReazione[];
+  /** The environments explored and their wandering monster checks (regole.yaml → esplorazione; regole/esplorazione.ts). */
+  esplorazione?: RegolaEsplorazione | null;
+  /** The encounter tables (regole.yaml → incontri, regole/incontri.yaml; regole/esplorazione.ts). */
+  incontri?: TabellaIncontri[];
 }
 
 /** Un passo del manuale (regole/estratti/*.md), per l'arbitro e per «Chiedi una regola». */

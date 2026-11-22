@@ -35,6 +35,7 @@ import { leggiTempo, leggiViaggio, secondiDi } from './tempo';
 import { leggiFileMostri, leggiMostri, leggiRegolaBestiario } from './bestiario';
 import { leggiCreazione, leggiLingue } from './creazione';
 import { leggiReazioni } from './reazioni';
+import { controllaEsplorazione, leggiEsplorazione, leggiIncontri } from './esplorazione';
 
 export const CARTELLA_REGOLE = 'regole';
 const TIPI: readonly TipoRisoluzione[] = ['d20_cd', '2d6_fasce', 'sotto_soglia'];
@@ -64,7 +65,7 @@ function voci(v: unknown, dove: string, errori: string[]): Voce[] {
  * Legge e controlla regole.yaml. Gli errori rendono il set inutilizzabile (si torna all'SRD). `fileMostri`: the entries of
  * the set folder's regole/mostri.yaml (the bestiary, regole/bestiario.ts), read by caricaRegole.
  */
-export function leggiSistema(d: D, errori: string[], avvisi: string[], fileMostri?: unknown): SistemaRegole | null {
+export function leggiSistema(d: D, errori: string[], avvisi: string[], fileMostri?: unknown, fileIncontri?: unknown): SistemaRegole | null {
   const id = str(d['id']);
   if (!id || !/^[a-z0-9][a-z0-9.-]*$/.test(id)) errori.push('id: serve un id come «pbta-2d6» (minuscole, cifre, - e .)');
   if (id === ID_SRD) return sistemaSrd();
@@ -247,6 +248,10 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[], fileMostr
   // The bestiary (P6-00): the rules that turn a stat block into a sheet, and the entries (inline, then regole/mostri.yaml).
   const bestiario = leggiRegolaBestiario(d['bestiario'], new Set(abilita.map((a) => a.id)), errori);
   const mostri = leggiMostri([{ v: d['mostri'], dove: 'mostri' }, { v: fileMostri, dove: 'regole/mostri.yaml' }], errori);
+  // Exploration (P8-01 to P8-04): the environments' wandering monster checks and the encounter tables they roll on.
+  const esplorazione = leggiEsplorazione(d['esplorazione'], tempo, errori);
+  const incontri = leggiIncontri([{ v: d['incontri'], dove: 'incontri' }, { v: fileIncontri, dove: 'regole/incontri.yaml' }], new Set(mostri.map((m) => m.id)), errori);
+  controllaEsplorazione(esplorazione, incontri, errori);
   // Energy drain (Basic Fantasy pp. 58–59): what each negative level costs on the rolls.
   const ln = ogg(d['livelli_negativi']);
   if (d['livelli_negativi'] !== undefined && (!ln || ![ln['d20'] ?? 0, ln['percentuali'] ?? 0].every((x) => typeof x === 'number' && Number.isInteger(x)))) errori.push('livelli_negativi: {d20: −1, percentuali: −5} (whole numbers)');
@@ -343,6 +348,8 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[], fileMostr
     ...(lingue.length ? { lingue } : {}),
     ...(creazione ? { creazione } : {}),
     ...(reazioni.length ? { reazioni } : {}),
+    ...(esplorazione ? { esplorazione } : {}),
+    ...(incontri.length ? { incontri } : {}),
   };
 }
 
@@ -436,6 +443,19 @@ function leggiParoleChiave(v: unknown, ids: ReadonlySet<string>, errori: string[
 }
 
 /** Il set della campagna (o l'SRD), con riassunto e passi. Non lancia: torna all'SRD con un errore nel log. */
+/** The encounter tables file of a rule set's folder (regole/incontri.yaml, beside the bestiary), if any, as YAML. */
+function leggiFileIncontri(cartella: string, errori: string[]): unknown {
+  const file = path.join(cartella, 'incontri.yaml');
+  if (!fs.existsSync(file)) return undefined;
+  try {
+    const d = YAML.parse(fs.readFileSync(file, 'utf8'));
+    return ogg(d)?.['incontri'] ?? d;
+  } catch (err) {
+    errori.push(`regole/incontri.yaml: YAML non valido (${(err as Error).message})`);
+    return undefined;
+  }
+}
+
 export function caricaRegole(cartellaCampagna: string, log?: Logger): RegoleCampagna {
   const cartella = path.join(cartellaCampagna, CARTELLA_REGOLE);
   const file = path.join(cartella, 'regole.yaml');
@@ -453,7 +473,7 @@ export function caricaRegole(cartellaCampagna: string, log?: Logger): RegoleCamp
     return srdBase('regole.yaml non valido');
   }
   const errori: string[] = [];
-  const sistema = leggiSistema(dati, errori, avvisi, leggiFileMostri(cartella, errori));
+  const sistema = leggiSistema(dati, errori, avvisi, leggiFileMostri(cartella, errori), leggiFileIncontri(cartella, errori));
   if (!sistema || errori.length) {
     log?.error({ file, errori }, 'regole: set non valido, si gioca con l’SRD 5.2');
     return srdBase('set non valido');

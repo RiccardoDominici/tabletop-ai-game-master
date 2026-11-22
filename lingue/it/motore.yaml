@@ -227,6 +227,7 @@ fatti_dovuti:
   morto: [mort, muor, morir, spir, esanim, cadaver, uccis, defunt]
   fuggito: [fugg, fuga, scapp, ritir, dilegu, sparisc, sparit, corre, indietreg]
   buio: [spegn, spens, spent, buio, oscur]
+  incontro: [arriv, avvicin, compar, spunt, sbuc, appar, soprag, emerg, sbarr, incontr]
 
 # Elementi nascosti delle schede scena (apps/server/src/campagna/nascosto.ts, strumenti/valida/lingua.py,
 # strumenti/audio/campagna_audio.py): un elemento interattivo con uno di questi marcatori (inizio di parola, maiuscole

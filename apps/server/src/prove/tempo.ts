@@ -118,7 +118,11 @@ export class TempoDiGioco {
 
   /** «Giorno 1, 18:40»: the day and the time of day (the day's 24 hours are physical, whatever the set's units). */
   testoOra(): string {
-    const t = this.adesso();
+    return this.testoOraDi(this.adesso());
+  }
+
+  /** «giorno 2, 02:00» for an absolute game second (since midnight of day 1). */
+  testoOraDi(t: number): string {
     const giorno = Math.floor(t / 86400) + 1;
     const h = Math.floor((t % 86400) / 3600);
     const m = Math.floor((t % 3600) / 60);

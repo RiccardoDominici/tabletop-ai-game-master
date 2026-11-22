@@ -1,0 +1,12 @@
+# Invented fixture for the rules-engine work R6 (docs/regole.md §2, «Esplorazione»; docs/prove.md §14): a village inn,
+# a dark tunnel under the hill and the woods beyond it. Exploration on the game clock: wandering monster checks, the
+# encounter tables, light and darkness, darkvision, rations and water, getting lost, resting. Generic: no campaign's
+# content.
+id: cunicolo
+canone:
+- id: f_cunicolo
+  noto_ai_pg: true
+  testo: Sotto la collina corre un cunicolo buio; oltre la collina c'è un bosco senza sentieri.
+orologi: []
+sessione:
+  riassunto_iniziale: Siete alla locanda, pronti a scendere nel cunicolo.

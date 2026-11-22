@@ -322,6 +322,29 @@ viaggio:                                    # optional [V]: overland travel (Bas
   per_movimento: 2                          # a day's distance per unit of the round's movement (12 m → 24 miles)
   ore_al_giorno: 8
   terreni: [{id: strada, nome: "Strada lastricata", per: 1.333}, {id: montagna, nome: "Montagna", per: 0.333}]
+esplorazione:                               # optional [V] (R6): the environments explored (regole/esplorazione.ts;
+                                            #   Basic Fantasy pp. 180–181); needs tempo
+  ambienti:
+    - id: sotterraneo                       # [V] snake_case, unique
+      nome: "Sotterraneo"
+      controllo: {ogni: {turno: 3}, dado: 6, fino_a: 1}   # [V] the wandering monster check: every `ogni` of the clock,
+                                            #   an encounter on `fino_a` or less on 1d`dado`; absent = no checks (a town)
+      tabelle: [{da: 1, tabella: sotterraneo_1}, {da: 4, tabella: sotterraneo_4_5}]   # [V] the table by the scene's level
+    - id: selvaggio
+      nome: "Terre selvagge"
+      controllo: {ogni: {ora: 4}, dado: 6, fino_a: 1}
+      sorpresa_prima: {dado: 6, fino_a: 2, imboscata: 4}  # optional [V]: the creatures' surprise checked at the encounter
+                                            #   (p. 181); not surprised, they ambush and surprise on 1–`imboscata`
+incontri:                                   # optional [V] (R6): encounter tables; also in regole/incontri.yaml
+  - id: sotterraneo_1                       # [V] snake_case, unique
+    nome: "Sotterraneo, livello 1"
+    dadi: "1d12"                            # [V] the table's dice: every roll they can give has one entry
+    pagina: 180
+    voci:
+      - {tiro: 1, manuale: "Bee, Giant", mostro: ape_gigante, numero: "1d6"}   # [V] a bestiary entry and how many
+      - {tiro: 5, manuale: "NPC Party: Adventurer", gruppo: "Gruppo di PNG: avventurieri"}   # no stat block
+      - {tiro: [6, 7], mostro: goblin, numero: "2d4"}                          # a list of rolls for one entry
+      - {tiro: 3, scelta: {dadi: "1d6", voci: [{tiro: [1, 2, 3], mostro: roc_grande, numero: "1"}]}}   # a nested roll
 monete:                                     # optional [V]: the manual's coins (regole/catalogo.ts; Basic Fantasy p. 10)
   base: mo                                  # the coin a price is written in when it names none
   prezzi: [mo, ma, mr]                      # optional: the coins prices are written in and change is given in
@@ -601,6 +624,18 @@ blocks by position (`strumenti/regole/blocchi_mostri.py`) and compares them both
 block).
 
 With the SRD 5.2 the sheets remain those of docs/prove.md §2 (scores, proficiencies, calculated AC).
+
+**Exploration in play** (regole/esplorazione.ts, prove/esplorazione.ts; audit P8-01 to P8-04; docs/prove.md §14). A
+scene says where the party is: `esplorazione: {ambiente: sotterraneo, livello: 1}` (the environment's table for that
+level) or `{ambiente: selvaggio, tabella: selvaggio_bosco}` (a table named). A scene that says nothing explores nothing:
+no check runs there (a village, a talk), so existing campaigns are unchanged. While the party is in an environment
+with a `controllo`, the Engine counts the game clock and makes the Game Master's hidden roll each `ogni`; on a hit it
+rolls the table, the nested roll, how many appear (`numero`, one when absent), and the surprise in advance. A check due
+during a fight waits for its end; an advance that spans several checks rolls them in order and stops at the first
+encounter (one per advance, at the moment its check fell). The validator checks the environments, every table's
+entries (one per roll, a creature of the bestiary, one kind per entry) and each scene's environment and table
+(strumenti/valida/regole_esplorazione.py). The numbers of torre-mozza's tables are checked against the PDF by
+`strumenti/regole/test_incontri_bf.py`.
 
 **Checks of the scene** with a non-SRD set, in `scena.yaml → prove`:
 `{id: p_…, quando, mossa | abilita | caratteristica (set id), difficolta (set id), se_fallisce, parole, aggiustamento}`.

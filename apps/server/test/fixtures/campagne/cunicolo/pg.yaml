@@ -1,0 +1,69 @@
+situazione_comune: Siete alla locanda, pronti a scendere nel cunicolo.
+personaggi:
+- id: pg_aldo
+  nome: Aldo
+  pronomi: lui
+  specie: umano
+  classe: guerriero
+  livello: 1
+  aspetto: Un uomo robusto con una cotta di maglia.
+  concetto: Guerriero che porta sempre le torce.
+  aggancio: Ha promesso di trovare l'uscita.
+  cosa_sai_fare:
+  - combatti con la spada
+  scheda:
+    caratteristiche: {forza: 15, destrezza: 13, costituzione: 12, intelligenza: 10}
+    classe: guerriero
+    livello: 1
+    razza: umano
+    abilita: {mischia: 1, distanza: 1}
+    pf: 9
+    equipaggiamento:
+    - maglia
+    - spada
+    - {id: torcia, quante: 2}
+    - {id: razioni, quante: 1}
+    - {id: otre, quante: 2}
+    - zaino
+    monete: {mo: 5}
+- id: pg_bice
+  nome: Bice
+  pronomi: lei
+  specie: umana
+  classe: maga
+  livello: 1
+  aspetto: Una giovane donna con un mantello verde.
+  concetto: Maga che ha paura del buio.
+  aggancio: Cerca un'erba nel bosco.
+  cosa_sai_fare:
+  - lanci scintilla una volta al giorno
+  scheda:
+    caratteristiche: {forza: 8, destrezza: 9, costituzione: 10, intelligenza: 16}
+    classe: mago
+    livello: 1
+    razza: umano
+    abilita: {mischia: 1, distanza: 1}
+    pf: 4
+    incantesimi: [scintilla]
+    equipaggiamento: [pugnale, {id: otre, quante: 1}]
+    monete: {mo: 3}
+- id: pg_dora
+  nome: Dora
+  pronomi: lei
+  specie: nana
+  classe: guerriera
+  livello: 1
+  aspetto: Una nana con l'ascia e la barba intrecciata.
+  concetto: Guerriera nana che vede al buio.
+  aggancio: Conosce le gallerie.
+  cosa_sai_fare:
+  - vedi al buio
+  scheda:
+    caratteristiche: {forza: 14, destrezza: 10, costituzione: 15, intelligenza: 10}
+    classe: guerriero
+    livello: 1
+    razza: nano
+    abilita: {mischia: 1, distanza: 1}
+    pf: 8
+    equipaggiamento: [giubba, mazza, {id: razioni, quante: 1}, {id: otre, quante: 1}]
+    monete: {mo: 2}

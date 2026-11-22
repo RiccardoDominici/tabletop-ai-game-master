@@ -1,0 +1,16 @@
+id: scena_locanda
+nodo: n_locanda
+nome: La locanda del villaggio
+descrizione: Una sala calda con il fuoco acceso; si mangia e si beve a volontà.
+domanda_drammatica: Il gruppo partirà prima di sera?
+intensita: 1
+sensi:
+- Odore di zuppa.
+elementi_interattivi:
+- cosa: il banco
+  dove: in fondo alla sala
+  azioni: si mangia e si beve
+png_presenti: []
+apertura: Il fuoco scoppietta. Che fate?
+taglio: Si chiude quando il gruppo parte.
+situazione_comune: Siete alla locanda del villaggio.

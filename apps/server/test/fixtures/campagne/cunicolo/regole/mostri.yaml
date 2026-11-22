@@ -1,0 +1,41 @@
+# The fixture's invented bestiary (regole/bestiario.ts): three creatures the encounter tables point at.
+mostri:
+  - id: ratto_gigante
+    nome: Ratto gigante
+    manuale: "Giant rat"
+    pagina: 1
+    difesa: 12
+    dadi_vita: "½"
+    attacchi:
+      - {id: morso, nome: Morso, danno: "1d3"}
+    per_round: [[morso]]
+    numero: "2d6"
+    salva_come: {classe: guerriero, livello: 0}
+    morale: 7
+    px: 5
+  - id: goblin
+    nome: Goblin
+    manuale: "Goblin"
+    pagina: 1
+    difesa: 13
+    dadi_vita: "1-1"
+    attacchi:
+      - {id: arma, nome: Lancia corta, danno: "1d6"}
+    per_round: [[arma]]
+    numero: "2d4"
+    salva_come: {classe: guerriero, livello: 0}
+    morale: 7
+    px: 10
+  - id: lupo
+    nome: Lupo
+    manuale: "Wolf"
+    pagina: 2
+    difesa: 13
+    dadi_vita: "2"
+    attacchi:
+      - {id: morso, nome: Morso, danno: "1d6"}
+    per_round: [[morso]]
+    numero: "1d4"
+    salva_come: {classe: guerriero, livello: 2}
+    morale: 8
+    px: 25

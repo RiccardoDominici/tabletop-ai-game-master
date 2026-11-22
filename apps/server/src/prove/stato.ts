@@ -13,6 +13,7 @@ import type { StatoTempoSalvato } from './tempo';
 import type { StatoEsperienzaSalvato } from './esperienza';
 import type { StatoLivelliSalvato } from './livelli';
 import type { StatoDrenaggiSalvato } from './drenaggio';
+import type { StatoEsplorazioneSalvato } from './esplorazione';
 
 export interface StatoProveSalvato {
   seme: string;
@@ -52,6 +53,12 @@ export interface StatoProveSalvato {
   zero_da_tirare?: string[];
   /** Damage taken by type, by character (a troll's fire and acid, which it cannot regenerate). */
   danni_per_tipo?: Array<[string, Array<[string, number]>]>;
+  /** Wandering monster checks: the schedule and the session's encounters (prove/esplorazione.ts). */
+  esplorazione?: StatoEsplorazioneSalvato;
+  /** The Game Master's exploration cards rolled between two turns, not yet shown with a turn. */
+  carte_del_tempo?: TiroMostrato[];
+  /** Encounters not yet told by the narrator: owed facts of the next turn. */
+  incontri_dovuti?: Array<{ id: string; nome: string }>;
 }
 
 /** Fuori gioco oltre ai PF: morto (finché il master non lo cura), fuggito (finché la scena non cambia). */

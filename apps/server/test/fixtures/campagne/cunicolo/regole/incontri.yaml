@@ -1,0 +1,24 @@
+# The fixture's invented encounter tables (regole/esplorazione.ts): two dungeon levels and the woods. Every roll of the
+# dice has its entry: a creature and how many, a group without a stat block, a nested roll.
+incontri:
+  - id: galleria_1
+    nome: Galleria, primo livello
+    dadi: "1d6"
+    voci:
+      - {tiro: [1, 2], manuale: "Giant rat", mostro: ratto_gigante, numero: "1d4"}
+      - {tiro: 3, manuale: "Goblin", mostro: goblin, numero: "2d4"}
+      - {tiro: 4, manuale: "Adventurers", gruppo: "Altri avventurieri", numero: "1d4"}
+      - {tiro: 5, manuale: "Rat or goblin", scelta: {dadi: "1d6", voci: [{tiro: [1, 2, 3, 4], mostro: ratto_gigante, numero: "2"}, {tiro: [5, 6], mostro: goblin, numero: "1"}]}}
+      - {tiro: 6, manuale: "Wolf", mostro: lupo, numero: "1"}
+  - id: galleria_2
+    nome: Galleria, secondo livello
+    dadi: "1d4"
+    voci:
+      - {tiro: [1, 2, 3, 4], manuale: "Goblin", mostro: goblin, numero: "1d6"}
+  - id: bosco
+    nome: Bosco
+    dadi: "1d4"
+    voci:
+      - {tiro: 1, manuale: "Wolf", mostro: lupo, numero: "1d4"}
+      - {tiro: 2, manuale: "Goblin", mostro: goblin, numero: "1d6"}
+      - {tiro: [3, 4], manuale: "Giant rat", mostro: ratto_gigante, numero: "1d6"}

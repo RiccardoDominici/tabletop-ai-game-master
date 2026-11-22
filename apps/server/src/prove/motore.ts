@@ -72,6 +72,9 @@ import { leggiEffetto } from '../regole/effetti';
 import type { SistemaRegole } from '../regole/tipi';
 import { tiraPuntiFeritaMostri } from './bestiario';
 import { mostraTiroDelMaster } from './tiri-master';
+import { Esplorazione, type IncontroUscito } from './esplorazione';
+import { carteEsplorazione, fattoIncontro } from './esplorazione-testi';
+import { doveDellaScena, type DoveEsplorazione } from '../regole/esplorazione';
 
 /** The source of a knock-out's timed condition (prove/attivi.ts): its end wakes the character with 1 hit point. */
 const FONTE_KO = 'non_letale';
@@ -183,6 +186,19 @@ export function dadiAttiviRegole(c: Campagna, schede: ReadonlyMap<string, Scheda
   return { attivo: true, motivo: `set «${nomeSet}»: ${pg}/${c.pg.length} PG e ${[...schede.values()].filter((s) => s.di_png).length} PNG con la scheda` };
 }
 
+/** The panel's line about wandering monsters (MotoreProve.vistaTempo): the next check and the last encounter. */
+export interface VistaIncontri {
+  ambiente?: string;
+  tabella?: string | null;
+  /** How long until the next check, in the set's units (or «now»: it falls due when the fight ends). */
+  prossimo?: string;
+  ogni?: string;
+  probabilita?: string;
+  /** A check fell due during the fight: rolled when it ends. */
+  in_attesa?: boolean;
+  ultimo?: { testo: string; ora: string };
+}
+
 export class MotoreProve {
   readonly stato: StatoProve;
   private dadi: FonteDadi;
@@ -235,6 +251,14 @@ export class MotoreProve {
   readonly tempo: TempoDiGioco;
   /** Lights that went out since the last resolved turn: owed facts the table must hear (prove/fatti-dovuti.ts). */
   private luciSpente: Array<{ id: string; nome: string }> = [];
+  /** Wandering monster checks on the clock (prove/esplorazione.ts): the schedule, the encounters of the session. */
+  readonly esplorazione: Esplorazione;
+  /** The Game Master's exploration cards rolled while time passed, waiting for the turn (or the panel command) that shows them. */
+  private carteDelTempo: TiroMostrato[] = [];
+  /** Encounters since the last resolved turn: owed facts the table must hear (prove/fatti-dovuti.ts). */
+  private incontriDovuti: Array<{ id: string; nome: string }> = [];
+  /** Where a journey runs while the panel's travel moves the clock (its environment and table), else null: the scene's. */
+  private doveInViaggio: DoveEsplorazione | null = null;
   /** The XP the party earns (prove/esperienza.ts). Null with the SRD path (its XP are not data yet). */
   readonly esperienza: Esperienza | null;
   /** Each PC's level and maximum hit points, the level-up's rolls still owed (prove/livelli.ts). Null with the SRD. */
@@ -279,6 +303,7 @@ export class MotoreProve {
       },
     });
     this.dadi = o.dadi ?? this.nuoviDadi(o.seme);
+    this.esplorazione = new Esplorazione({ dadi: () => this.dadi, log: o.log.child({ modulo: 'esplorazione' }) });
     // Monsters without written hit points roll them once, from this session's seed (prove/bestiario.ts).
     if (this.tiraMostri(this.dadi.seme)) this.stato.azzeraPf();
     this.combattimento = new GestoreCombattimento({
@@ -883,6 +908,8 @@ export class MotoreProve {
       // A light lit or put out by the action's words («accendo la torcia»): before the resolver, so it burns from now.
       const luci = this.luciDalleAzioni(azioni);
       const r = this.passaRisolutore(turno, c, azioni, decisioni, { dadiDeiPg: tavolo });
+      // The Game Master's exploration rolls since the last turn (this window's checks, the panel's hours): this turn's cards.
+      if (this.carteDelTempo.length) r.tiri.unshift(...this.carteDelTempo.splice(0).map((t) => ({ ...t, turno })));
       if (luci.length) r.fatti.unshift(...luci);
       if (finiti.length) r.fatti.unshift(...finiti);
       // What the Game Master applied from the panel since the last turn (a rest, a hazard) comes first for the narrator.
@@ -917,6 +944,11 @@ export class MotoreProve {
       if (this.luciSpente.length) {
         r.luci = this.luciSpente;
         this.luciSpente = [];
+      }
+      // A wandering encounter (prove/esplorazione.ts): owed too, so the table hears who arrives.
+      if (this.incontriDovuti.length) {
+        r.incontri = this.incontriDovuti;
+        this.incontriDovuti = [];
       }
       this.intestazione = comb.intestazione;
       this.stato.registraTiri(r.tiri);
@@ -1056,6 +1088,7 @@ export class MotoreProve {
    * went by, and the lights whose time is up go out. Returns the facts for the narrator.
    */
   private passaTempo(secondi: number, causa: string): string[] {
+    const prima = this.tempo.trascorsi;
     const { round, spente } = this.tempo.avanza(secondi, causa);
     const c = this.o.contesto();
     const fatti: string[] = [];
@@ -1087,7 +1120,49 @@ export class MotoreProve {
       fatti.push(...this.tempo.fattiSpente(spente));
       this.luciSpente.push(...spente.map((l) => ({ id: l.chi, nome: this.nomeDi(c, l.chi) })));
     }
+    fatti.push(...this.controllaIncontri(prima, causa));
     return fatti;
+  }
+
+  /** Where the party explores now: the journey's environment while travelling, else the scene's `esplorazione`. */
+  doveEsplorazione(): DoveEsplorazione | null {
+    if (this.doveInViaggio) return this.doveInViaggio;
+    const errori: string[] = [];
+    const d = doveDellaScena(this.sistema, this.o.contesto().campagna.scena.dati['esplorazione'], errori);
+    if (errori.length) this.o.log.warn({ errori }, 'exploration: the scene\'s esplorazione is malformed, no checks');
+    return d;
+  }
+
+  /**
+   * The wandering monster checks due since `prima` (session seconds) on the clock (prove/esplorazione.ts): the Game
+   * Master's cards wait for the turn that shows them; an encounter is a fact for the narrator (owed: the table must hear
+   * it) and the panel's line.
+   */
+  private controllaIncontri(prima: number, causa: string): string[] {
+    if (!this.tempo.mostrato) return [];
+    const dove = this.doveEsplorazione();
+    const { tiri, incontro } = this.esplorazione.passa(dove, prima, this.tempo.trascorsi, this.combattimento.attivo);
+    if (!tiri.length) return [];
+    this.carteDelTempo.push(...carteEsplorazione(tiri, { turno: this.turnoCorrente, nuovoId: () => this.stato.nuovoIdTiro(), modo: this.o.tiriMaster?.() ?? 'nascosti', ambiente: dove?.ambiente.nome ?? '' }));
+    if (!incontro) return [];
+    return [this.raccontaIncontro(incontro, causa)];
+  }
+
+  /** The encounter's fact, its owed line, and when it happened when the advance was long. */
+  private raccontaIncontro(i: IncontroUscito, causa: string): string {
+    const nomeMostro = (id: string): string => (this.sistema.mostri ?? []).find((m) => m.id === id)?.nome ?? id;
+    // A long advance (a rest, a journey, the panel's hours): the moment the check fell, as the clock tells it.
+    const lunga = causa !== 'finestra' && causa !== 'round' && this.tempo.trascorsi - i.quando >= this.tempo.secondiRound;
+    const quando = lunga ? this.tempo.testoOraDi(this.tempo.inizio + i.quando) : null;
+    const fatto = fattoIncontro(i, { nomeMostro, quando });
+    this.incontriDovuti.push({ id: `incontro_${i.n}`, nome: i.mostro ? nomeMostro(i.mostro) : (i.gruppo ?? testo('prove.esplorazione.qualcuno')) });
+    this.o.log.info({ n: i.n, ambiente: i.ambiente, tabella: i.tabella, tiro: i.tiro, mostro: i.mostro, gruppo: i.gruppo, quanti: i.quanti, sorpresi: i.sorpresi, quando: i.quando }, 'exploration: a wandering encounter');
+    return fatto;
+  }
+
+  /** The exploration cards rolled outside a turn (the panel's time, a rest): listed now for the panel. */
+  private carteDelTempoAlPannello(): void {
+    for (const t of this.carteDelTempo.splice(0)) this.aggiungiCartaDelMaster({ ...t, turno: this.turnoCorrente });
   }
 
   /**
@@ -1184,12 +1259,33 @@ export class MotoreProve {
    * The game clock for the Game Master's panel (docs/prove.md §11): the day and time, and every light burning with the
    * time it has left (a Game Master roll: the phones see only that it is lit). Null when the set has no clock.
    */
-  vistaTempo(): { ora: string; trascorso: string | null; luci: Array<{ chi: string; oggetto: string; nome: string; restante: string }> } | null {
+  vistaTempo(): { ora: string; trascorso: string | null; luci: Array<{ chi: string; oggetto: string; nome: string; restante: string }>; incontri?: VistaIncontri } | null {
     if (!this.tempo.mostrato) return null;
+    const incontri = this.vistaIncontri();
     return {
+      ...(incontri ? { incontri } : {}),
       ora: this.tempo.testoOra(),
       trascorso: this.tempo.trascorsi > 0 ? this.tempo.durata(this.tempo.trascorsi) : null,
       luci: this.tempo.tutteLeLuci().map((l) => ({ chi: l.chi, oggetto: l.oggetto, nome: voce(this.sistema.catalogo, l.oggetto)?.nome ?? l.oggetto, restante: this.tempo.durata(l.restanti) })),
+    };
+  }
+
+  /**
+   * The wandering monster checks for the panel (docs/prove.md §14): the environment and table of the scene, when the
+   * next check falls and its odds, and the session's last encounter. Null when the scene explores nothing and none
+   * happened.
+   */
+  private vistaIncontri(): VistaIncontri | null {
+    const dove = this.doveEsplorazione();
+    const p = this.esplorazione.prossimo(dove, this.tempo.trascorsi);
+    const u = this.esplorazione.ultimoIncontro;
+    if (!p && !u) return null;
+    const nomeMostro = (id: string): string => (this.sistema.mostri ?? []).find((m) => m.id === id)?.nome ?? id;
+    return {
+      ...(p && dove
+        ? { ambiente: dove.ambiente.nome, tabella: dove.tabella?.nome ?? null, prossimo: p.tra > 0 ? this.tempo.durata(p.tra) : testo('prove.esplorazione.adesso'), ogni: this.tempo.durata(p.ogni), probabilita: testo('prove.esplorazione.probabilita', { fino_a: p.finoA, dado: p.dado }), in_attesa: this.combattimento.attivo && p.tra === 0 }
+        : {}),
+      ...(u ? { ultimo: { testo: fattoIncontro(u, { nomeMostro, quando: null }), ora: this.tempo.testoOraDi(this.tempo.inizio + u.quando) } } : {}),
     };
   }
 
@@ -1218,6 +1314,7 @@ export class MotoreProve {
       e = c.cosa === 'accendi' ? accendiLuce(ctx, c.id, c.oggetto) : spegniLuce(ctx, c.id, c.oggetto);
     }
     if (e.ok) this.fattiInSospeso.push(e.fatto);
+    this.carteDelTempoAlPannello();
     this.o.log.info({ ...c, ok: e.ok }, 'time: the Game Master moves the clock or a light');
     return e;
   }
@@ -1436,6 +1533,7 @@ export class MotoreProve {
     const fatto = [e.fatto, ricaricati.length ? testo('prove.riposo.ricarica') : '', finiti ?? '', ...tempo].filter(Boolean).join(' ');
     if (ricaricati.length) this.o.log.info({ riposo: r.id }, 'rest: resources and spells refreshed');
     this.fattiInSospeso.push(fatto);
+    this.carteDelTempoAlPannello();
     return { ok: true, fatto };
   }
 
@@ -1939,7 +2037,7 @@ export class MotoreProve {
   // ------------------------------------------------------------------ sessione
 
   esporta(): StatoProveSalvato {
-    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta(), ...(this.tempo.mostrato ? { tempo: this.tempo.esporta() } : {}), ...(this.esperienza?.attiva ? { esperienza: this.esperienza.esporta() } : {}), ...(this.livelli?.attivo ? { livelli: this.livelli.esporta() } : {}), ...(this.drenaggi?.attivo ? { drenaggi: this.drenaggi.esporta() } : {}), ...(this.zeroDaTirare.length ? { zero_da_tirare: [...this.zeroDaTirare] } : {}) };
+    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta(), ...(this.tempo.mostrato ? { tempo: this.tempo.esporta() } : {}), ...(this.esperienza?.attiva ? { esperienza: this.esperienza.esporta() } : {}), ...(this.livelli?.attivo ? { livelli: this.livelli.esporta() } : {}), ...(this.drenaggi?.attivo ? { drenaggi: this.drenaggi.esporta() } : {}), ...(this.zeroDaTirare.length ? { zero_da_tirare: [...this.zeroDaTirare] } : {}), ...(this.sistema.esplorazione ? { esplorazione: this.esplorazione.esporta() } : {}), ...(this.carteDelTempo.length ? { carte_del_tempo: [...this.carteDelTempo] } : {}), ...(this.incontriDovuti.length ? { incontri_dovuti: [...this.incontriDovuti] } : {}) };
   }
 
   importa(s: StatoProveSalvato): void {
@@ -1956,6 +2054,9 @@ export class MotoreProve {
     this.attivi.importa(s.attivi);
     this.morenti.importa(s.morenti);
     this.tempo.importa(s.tempo);
+    this.esplorazione.importa(s.esplorazione);
+    this.carteDelTempo = Array.isArray(s.carte_del_tempo) ? [...s.carte_del_tempo] : [];
+    this.incontriDovuti = Array.isArray(s.incontri_dovuti) ? [...s.incontri_dovuti] : [];
     this.esperienza?.importa(s.esperienza);
     this.drenaggi?.importa(s.drenaggi);
     this.zeroDaTirare = Array.isArray(s.zero_da_tirare) ? s.zero_da_tirare.filter((x): x is string => typeof x === 'string') : [];
@@ -1982,6 +2083,9 @@ export class MotoreProve {
     this.morenti.azzera();
     this.tempo.azzera();
     this.luciSpente = [];
+    this.esplorazione.azzera();
+    this.carteDelTempo = [];
+    this.incontriDovuti = [];
     this.esperienza?.azzera();
     this.drenaggi?.azzera();
     this.zeroDaTirare = [];

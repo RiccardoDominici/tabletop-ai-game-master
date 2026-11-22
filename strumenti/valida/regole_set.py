@@ -23,6 +23,7 @@ from . import regole_progressione
 from . import regole_poteri
 from . import regole_catalogo
 from . import regole_bestiario
+from . import regole_esplorazione
 from . import regole_creazione
 from .regole_effetti import controlla_cadute, controlla_effetti, controlla_riposo
 from .regole_repertorio import blocchi_richiede
@@ -594,6 +595,8 @@ def controlla(c: Campagna, e: Esito) -> None:
             else:
                 regole_catalogo.durata_in_unita(sc["tempo_per_finestra"], unita_tempo, "tempo_per_finestra", e, nome)
     regole_catalogo.viaggio_del_set(r, e, dove)
+    # Exploration (R6): the encounter tables, the environments' wandering monster checks, the scenes that explore.
+    regole_esplorazione.controlla(c, r, c.cartella / "regole", set(mostri), unita_tempo, e, dove)
 
     def per_scheda(s: dict, d: str) -> None:
         regole_classi.controlla_scheda(s, d, classi, col_abil, tabelle, e, razze, abi, set(colonne))

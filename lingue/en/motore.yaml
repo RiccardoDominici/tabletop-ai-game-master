@@ -229,6 +229,7 @@ fatti_dovuti:
   morto: [dead, die, death, lifeless, kill, corpse, perish]
   fuggito: [flee, fled, run, ran, bolt, escap, retreat, scatter, vanish, away]
   buio: [dark, gutter, extinguish, snuff, sputter]
+  incontro: [arriv, approach, appear, emerg, come, comes, came, coming, show, loom, step]
 
 # Hidden elements of the scene sheets (apps/server/src/campagna/nascosto.ts, strumenti/valida/lingua.py,
 # strumenti/audio/campagna_audio.py): an interactive element with one of these markers (start of a word, any case)

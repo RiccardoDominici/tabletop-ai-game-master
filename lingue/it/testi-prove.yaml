@@ -398,6 +398,7 @@ prove:
     morto: "{nome} muore."
     fuggito: "{nome} fugge."
     buio: "La luce di {nome} si spegne."
+    incontro: "Arriva qualcuno: {nome}."
   # Engine lines that replace a narrator sentence contradicting the cards (narrazione/guardia-esiti.ts).
   guardia:
     manca: "{chi} manca {bersaglio}."
@@ -448,6 +449,26 @@ prove:
     toglie: "{nome} si toglie {oggetto}: Classe d'Armatura {ca}."
     sovraccarico: "Sovraccarico"
     carico: "{nome} ora ha un {fascia} ({peso} {unita}): si muove di {movimento} {unita_movimento} a round."
+  # Wandering monsters on the clock (prove/esplorazione.ts; docs/prove.md §14).
+  esplorazione:
+    chi: "Il master"
+    qualcuno: "qualcuno"
+    etichetta:
+      controllo: "Mostri erranti ({ambiente})"
+      tabella: "Tabella degli incontri"
+      scelta: "Quale, tra le varianti"
+      numero: "Quanti"
+      sorpresa: "Sorpresa, in anticipo"
+    incontro_uno: "Mostri erranti (tiro del master): arriva {nome}."
+    incontro_molti: "Mostri erranti (tiro del master): arrivano {quanti} creature, {nome}."
+    incontro_gruppo: "Un incontro (tiro del master): {gruppo}{quanti}; il master lo prepara."
+    incontro_vuoto: "Un incontro (tiro del master): il master decide chi arriva."
+    quando: "Succede verso {quando}."
+    sorpresi: "Non si sono accorti del gruppo: i personaggi possono evitarli."
+    non_sorpresi: "Si sono accorti del gruppo."
+    imboscata: "Si sono accorti del gruppo per primi e hanno teso un agguato."
+    adesso: "adesso"
+    probabilita: "{fino_a} su 1d{dado}"
   # The game clock and the lights (prove/tempo.ts, prove/luci.ts; docs/prove.md §11).
   tempo:
     ora: "giorno {giorno}, {ora}"

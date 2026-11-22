@@ -270,7 +270,19 @@ export interface CombattimentoMaster {
   /** The set's catalog and coins for the gear controls (docs/prove.md §10). Absent = the set has none. */
   catalogo?: { voci: Array<{ id: string; nome: string; tipo: string; luce: boolean }>; monete: Array<{ id: string; nome: string }> };
   /** The game clock (docs/prove.md §11): the time, the lights with the time left, the set's units and terrains. */
-  tempo?: { ora: string; trascorso: string | null; luci: Array<{ chi: string; oggetto: string; nome: string; restante: string }>; unita: Array<{ id: string; nome: string }>; terreni: Array<{ id: string; nome: string }>; unita_viaggio: string | null };
+  tempo?: {
+    ora: string;
+    trascorso: string | null;
+    luci: Array<{ chi: string; oggetto: string; nome: string; restante: string }>;
+    unita: Array<{ id: string; nome: string }>;
+    terreni: Array<{ id: string; nome: string }>;
+    unita_viaggio: string | null;
+    /**
+     * Wandering monsters (docs/prove.md §14): the scene's environment and table, when the next check falls and its odds
+     * (`in_attesa`: due, rolled when the fight ends), the session's last encounter. Absent where nothing is explored.
+     */
+    incontri?: { ambiente?: string; tabella?: string | null; prossimo?: string; ogni?: string; probabilita?: string; in_attesa?: boolean; ultimo?: { testo: string; ora: string } };
+  };
   /**
    * Experience points (docs/prove.md §12): each PC's XP, level and next threshold (`sale`: it reaches the next level,
    * taken between sessions), the treasure found and not yet back to safety, this session's awards. Absent without XP rules.

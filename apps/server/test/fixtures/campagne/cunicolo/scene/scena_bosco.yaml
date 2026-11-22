@@ -1,0 +1,17 @@
+# The woods beyond the hill, in daylight: the wilderness checks roll on the woods' table.
+id: scena_bosco
+nodo: n_bosco
+nome: Il bosco oltre la collina
+descrizione: Alberi fitti, nessun sentiero.
+domanda_drammatica: Il gruppo ritroverà la strada?
+intensita: 2
+sensi:
+- Il vento tra le foglie.
+elementi_interattivi:
+- cosa: gli alberi
+  dove: ovunque
+  azioni: si scalano
+png_presenti: []
+apertura: Il bosco è silenzioso. Che fate?
+taglio: Si chiude quando il gruppo esce dal bosco.
+esplorazione: {ambiente: selvaggio, tabella: bosco}

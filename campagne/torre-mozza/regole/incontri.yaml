@@ -1,0 +1,335 @@
+# Tabelle degli incontri casuali di Basic Fantasy Role-Playing Game, 4ª edizione, release 142 (CC BY-SA 4.0,
+# basicfantasy.org), pp. 180–183. Una tabella per colonna stampata; `manuale` è il nome stampato nella cella (asterisco
+# compreso), `mostro` la voce del bestiario (regole/mostri.yaml), `numero` quanti se ne incontrano: nei sotterranei il
+# primo «No. Appearing» del blocco, nelle terre selvagge quello «Wild», in città quello della descrizione di p. 183.
+# Le voci senza un blocco di statistiche (i gruppi di PNG, pp. 184–185) hanno `gruppo`: il master li prepara.
+incontri:
+  - id: sotterraneo_1
+    nome: "Sotterraneo, livello 1"
+    pagina: 180
+    dadi: "1d12"
+    voci:
+      - {tiro: 1, manuale: "Bee, Giant", mostro: ape_gigante, numero: "1d6"}
+      - {tiro: 2, manuale: "Goblin", mostro: goblin, numero: "2d4"}
+      - {tiro: 3, manuale: "Jelly, Green*", mostro: gelatina_verde, numero: "1"}
+      - {tiro: 4, manuale: "Kobold", mostro: coboldo, numero: "4d4"}
+      - {tiro: 5, manuale: "NPC Party: Adventurer", gruppo: "Gruppo di PNG: avventurieri", pagina: 184}
+      - {tiro: 6, manuale: "NPC Party: Bandit", gruppo: "Gruppo di PNG: banditi", pagina: 184}
+      - {tiro: 7, manuale: "Orc", mostro: orco, numero: "2d4"}
+      - {tiro: 8, manuale: "Stirge", mostro: stirge, numero: "1d10"}
+      - {tiro: 9, manuale: "Skeleton", mostro: scheletro, numero: "3d6"}
+      - {tiro: 10, manuale: "Snake, Cobra", mostro: cobra_sputante, numero: "1d6"}
+      - {tiro: 11, manuale: "Spider, Giant Crab", mostro: ragno_granchio_gigante, numero: "1d4"}
+      - {tiro: 12, manuale: "Wolf", mostro: lupo, numero: "2d6"}
+  - id: sotterraneo_2
+    nome: "Sotterraneo, livello 2"
+    pagina: 180
+    dadi: "1d12"
+    voci:
+      - {tiro: 1, manuale: "Beetle, Giant Bombardier", mostro: coleottero_bombardiere_gigante, numero: "1d8"}
+      - {tiro: 2, manuale: "Fly, Giant", mostro: mosca_gigante, numero: "1d6"}
+      - {tiro: 3, manuale: "Ghoul", mostro: ghoul, numero: "1d6"}
+      - {tiro: 4, manuale: "Gnoll", mostro: gnoll, numero: "1d6"}
+      - {tiro: 5, manuale: "Jelly, Gray", mostro: melma_grigia, numero: "1"}
+      - {tiro: 6, manuale: "Hobgoblin", mostro: hobgoblin, numero: "1d6"}
+      - {tiro: 7, manuale: "Lizard Man", mostro: uomo_lucertola_comune, numero: "2d4"}
+      - {tiro: 8, manuale: "NPC Party: Adventurer", gruppo: "Gruppo di PNG: avventurieri", pagina: 184}
+      - {tiro: 9, manuale: "Snake, Pit Viper", mostro: vipera_a_fossette, numero: "1d4"}
+      - {tiro: 10, manuale: "Spider, Giant Black Widow", mostro: ragno_vedova_nera_gigante, numero: "1d3"}
+      - {tiro: 11, manuale: "Lizard Man, Subterranean", mostro: uomo_lucertola_sotterraneo, numero: "1d8"}
+      - {tiro: 12, manuale: "Zombie", mostro: zombi, numero: "2d4"}
+  - id: sotterraneo_3
+    nome: "Sotterraneo, livello 3"
+    pagina: 180
+    dadi: "1d12"
+    voci:
+      - {tiro: 1, manuale: "Ant, Giant", mostro: formica_gigante, numero: "2d6"}
+      - {tiro: 2, manuale: "Ape, Carnivorous", mostro: scimmia_carnivora, numero: "1d6"}
+      - {tiro: 3, manuale: "Beetle, Giant Tiger", mostro: scarabeo_gigante_tigre, numero: "1d6"}
+      - {tiro: 4, manuale: "Bugbear", mostro: bugbear, numero: "2d4"}
+      - {tiro: 5, manuale: "Doppleganger", mostro: doppelganger, numero: "1d6"}
+      - {tiro: 6, manuale: "Gargoyle*", mostro: gargoyle, numero: "1d6"}
+      - {tiro: 7, manuale: "Jelly, Glass", mostro: cubo_gelatinoso, numero: "1"}
+      - {tiro: 8, manuale: "Lycanthrope, Wererat*", mostro: licantropo_ratto, numero: "1d8"}
+      - {tiro: 9, manuale: "Ogre", mostro: ogre, numero: "1d6"}
+      - {tiro: 10, manuale: "Shadow*", mostro: ombra, numero: "1d10"}
+      - {tiro: 11, manuale: "Tentacle Worm", mostro: verme_tentacolare, numero: "1d3"}
+      - {tiro: 12, manuale: "Wight*", mostro: wight, numero: "1d6"}
+  - id: sotterraneo_4_5
+    nome: "Sotterraneo, livelli 4–5"
+    pagina: 180
+    dadi: "1d12"
+    voci:
+      - {tiro: 1, manuale: "Bear, Cave", mostro: orso_delle_caverne, numero: "1d2"}
+      - {tiro: 2, manuale: "Caecilia, Giant", mostro: cecilia_gigante, numero: "1d3"}
+      - {tiro: 3, manuale: "Cockatrice", mostro: cocatrice, numero: "1d4"}
+      - {tiro: 4, manuale: "Doppleganger", mostro: doppelganger, numero: "1d6"}
+      - {tiro: 5, manuale: "Jelly, Gray", mostro: melma_grigia, numero: "1"}
+      - {tiro: 6, manuale: "Hellhound", mostro: segugio_infernale_3, numero: "2d4"}
+      - {tiro: 7, manuale: "Rust Monster*", mostro: mostro_ruggine, numero: "1d4"}
+      - {tiro: 8, manuale: "Lycanthrope, Werewolf*", mostro: licantropo_lupo, numero: "1d6"}
+      - {tiro: 9, manuale: "Minotaur", mostro: minotauro, numero: "1d6"}
+      - {tiro: 10, manuale: "Jelly, Ochre*", mostro: gelatina_ocra, numero: "1"}
+      - {tiro: 11, manuale: "Owlbear", mostro: orso_gufo, numero: "1d4"}
+      - {tiro: 12, manuale: "Wraith*", mostro: ombra_spettrale, numero: "1d4"}
+  - id: sotterraneo_6_7
+    nome: "Sotterraneo, livelli 6–7"
+    pagina: 180
+    dadi: "1d12"
+    voci:
+      - {tiro: 1, manuale: "Basilisk", mostro: basilisco_comune, numero: "1d6"}
+      - {tiro: 2, manuale: "Jelly, Black", mostro: gelatina_nera, numero: "1"}
+      - {tiro: 3, manuale: "Caecilia, Giant", mostro: cecilia_gigante, numero: "1d3"}
+      - {tiro: 4, manuale: "Deceiver", mostro: ingannatore_comune, numero: "1d4"}
+      - {tiro: 5, manuale: "Hydra", mostro: idra_5, numero: "1"}
+      - {tiro: 6, manuale: "Rust Monster*", mostro: mostro_ruggine, numero: "1d4"}
+      - {tiro: 7, manuale: "Lycanthrope, Weretiger*", mostro: licantropo_tigre, numero: "1d4"}
+      - {tiro: 8, manuale: "Mummy*", mostro: mummia, numero: "1d4"}
+      - {tiro: 9, manuale: "Owlbear", mostro: orso_gufo, numero: "1d4"}
+      - {tiro: 10, manuale: "Scorpion, Giant", mostro: scorpione_gigante, numero: "1d6"}
+      - {tiro: 11, manuale: "Spectre*", mostro: spettro, numero: "1d4"}
+      - {tiro: 12, manuale: "Troll", mostro: troll, numero: "1d8"}
+  - id: sotterraneo_8
+    nome: "Sotterraneo, livello 8 e oltre"
+    pagina: 180
+    dadi: "1d12"
+    voci:
+      - {tiro: 1, manuale: "Basilisk, Greater*", mostro: basilisco_maggiore, numero: "1"}
+      - {tiro: 2, manuale: "Chimera", mostro: chimera, numero: "1d2"}
+      - {tiro: 3, manuale: "Deceiver, Greater", mostro: ingannatore_maggiore, numero: "1d4"}
+      - {tiro: 4, manuale: "Giant, Hill", mostro: gigante_collina, numero: "1d4"}
+      - {tiro: 5, manuale: "Giant, Stone", mostro: gigante_pietra, numero: "1d2"}
+      - {tiro: 6, manuale: "Hydra", mostro: idra_5, numero: "1"}
+      - {tiro: 7, manuale: "Jelly, Black", mostro: gelatina_nera, numero: "1"}
+      - {tiro: 8, manuale: "Lycanthrope, Wereboar*", mostro: licantropo_cinghiale, numero: "1d4"}
+      - {tiro: 9, manuale: "Purple Worm", mostro: verme_viola, numero: "1d2"}
+      - {tiro: 10, manuale: "Salamander, Flame*", mostro: salamandra_di_fuoco, numero: "1d4+1"}
+      - {tiro: 11, manuale: "Salamander, Frost*", mostro: salamandra_di_gelo, numero: "1d3"}
+      - {tiro: 12, manuale: "Vampire*", mostro: vampiro, numero: "1d6"}
+  - id: selvaggio_deserto
+    nome: "Deserto o terre aride"
+    pagina: 181
+    dadi: "2d8"
+    voci:
+      - {tiro: 2, manuale: "Dragon, Desert", mostro: drago_deserto, numero: "1"}
+      - {tiro: 3, manuale: "Hellhound", mostro: segugio_infernale_3, numero: "2d4"}
+      - {tiro: 4, manuale: "Giant, Fire", mostro: gigante_fuoco, numero: "1d3"}
+      - {tiro: 5, manuale: "Purple Worm", mostro: verme_viola, numero: "1d4"}
+      - {tiro: 6, manuale: "Fly, Giant", mostro: mosca_gigante, numero: "2d6"}
+      - {tiro: 7, manuale: "Scorpion, Giant", mostro: scorpione_gigante, numero: "1d6"}
+      - {tiro: 8, manuale: "Camel", mostro: camello, numero: "2d4"}
+      - {tiro: 9, manuale: "Spider, Giant Tarantula", mostro: ragno_tarantola_gigante, numero: "1d3"}
+      - {tiro: 10, manuale: "NPC Party: Merchant", gruppo: "Gruppo di PNG: mercanti", pagina: 184}
+      - {tiro: 11, manuale: "Hawk", mostro: sparviero, numero: "1d6"}
+      - {tiro: 12, manuale: "NPC Party: Bandit", gruppo: "Gruppo di PNG: banditi", pagina: 184}
+      - {tiro: 13, manuale: "Ogre", mostro: ogre, numero: "2d6"}
+      - {tiro: 14, manuale: "Griffon", mostro: grifone, numero: "2d8"}
+      - {tiro: 15, manuale: "Gnoll", mostro: gnoll, numero: "3d6"}
+      - {tiro: 16, manuale: "Dragon, Mountain", mostro: drago_montagna, numero: "1"}
+  - id: selvaggio_prateria
+    nome: "Prateria"
+    pagina: 181
+    dadi: "2d8"
+    voci:
+      - {tiro: 2, manuale: "Dragon, Plains", mostro: drago_pianura, numero: "1"}
+      - {tiro: 3, manuale: "Troll", mostro: troll, numero: "1d8"}
+      - {tiro: 4, manuale: "Fly, Giant", mostro: mosca_gigante, numero: "2d6"}
+      - {tiro: 5, manuale: "Scorpion, Giant", mostro: scorpione_gigante, numero: "1d6"}
+      - {tiro: 6, manuale: "NPC Party: Bandit", gruppo: "Gruppo di PNG: banditi", pagina: 184}
+      - {tiro: 7, manuale: "Lion", mostro: leone, numero: "1d8"}
+      - {tiro: 8, manuale: "Boar, Wild", mostro: cinghiale, numero: "1d6"}
+      - {tiro: 9, manuale: "NPC Party: Merchant", gruppo: "Gruppo di PNG: mercanti", pagina: 184}
+      - {tiro: 10, manuale: "Wolf", mostro: lupo, numero: "3d6"}
+      - {tiro: 11, manuale: "Bee, Giant", mostro: ape_gigante, numero: "1d6"}
+      - {tiro: 12, manuale: "Gnoll", mostro: gnoll, numero: "3d6"}
+      - {tiro: 13, manuale: "Goblin", mostro: goblin, numero: "6d10"}
+      - {tiro: 14, manuale: "Flicker Beast", mostro: cane_saltatore, numero: "1d6"}
+      - {tiro: 15, manuale: "Wolf, Dire", mostro: lupo_crudele, numero: "2d4"}
+      - {tiro: 16, manuale: "Giant, Hill", mostro: gigante_collina, numero: "2d4"}
+  - id: selvaggio_abitato
+    nome: "Territori abitati"
+    pagina: 181
+    dadi: "2d8"
+    voci:
+      - {tiro: 2, manuale: "Dragon, Cloud", mostro: drago_nuvola, numero: "1"}
+      - {tiro: 3, manuale: "Ghoul", mostro: ghoul, numero: "2d8"}
+      - {tiro: 4, manuale: "Bugbear", mostro: bugbear, numero: "5d4"}
+      - {tiro: 5, manuale: "Goblin", mostro: goblin, numero: "6d10"}
+      - {tiro: 6, manuale: "Centaur", mostro: centauro, numero: "2d10"}
+      - {tiro: 7, manuale: "NPC Party: Bandit", gruppo: "Gruppo di PNG: banditi", pagina: 184}
+      - {tiro: 8, manuale: "NPC Party: Merchant", gruppo: "Gruppo di PNG: mercanti", pagina: 184}
+      - {tiro: 9, manuale: "NPC Party: Pilgrim", gruppo: "Gruppo di PNG: pellegrini", pagina: 185}
+      - {tiro: 10, manuale: "NPC Party: Noble", gruppo: "Gruppo di PNG: nobili", pagina: 185}
+      - {tiro: 11, manuale: "Dog", mostro: cane, numero: "3d4"}
+      - {tiro: 12, manuale: "Gargoyle*", mostro: gargoyle, numero: "2d4"}
+      - {tiro: 13, manuale: "Gnoll", mostro: gnoll, numero: "3d6"}
+      - {tiro: 14, manuale: "Ogre", mostro: ogre, numero: "2d6"}
+      - {tiro: 15, manuale: "Minotaur", mostro: minotauro, numero: "1d8"}
+      - {tiro: 16, manuale: "Vampire*", mostro: vampiro, numero: "1d6"}
+  - id: selvaggio_giungla
+    nome: "Giungla"
+    pagina: 181
+    dadi: "2d8"
+    voci:
+      - {tiro: 2, manuale: "Dragon, Forest", mostro: drago_foresta, numero: "1"}
+      - {tiro: 3, manuale: "NPC Party: Bandit", gruppo: "Gruppo di PNG: banditi", pagina: 184}
+      - {tiro: 4, manuale: "Goblin", mostro: goblin, numero: "6d10"}
+      - {tiro: 5, manuale: "Hobgoblin", mostro: hobgoblin, numero: "2d4"}
+      - {tiro: 6, manuale: "Centipede, Giant", mostro: centopiede_gigante, numero: "2d4"}
+      - {tiro: 7, manuale: "Snake, Giant Python", mostro: pitone, numero: "1d3"}
+      - {tiro: 8, manuale: "Elephant", mostro: elefante_asiatico, numero: "1d20"}
+      - {tiro: 9, manuale: "Antelope", mostro: antilope, numero: "3d10"}
+      - {tiro: 10, manuale: "Jaguar", mostro: giaguaro, numero: "1d6"}
+      - {tiro: 11, manuale: "Stirge", mostro: stirge, numero: "3d12"}
+      - {tiro: 12, manuale: "Beetle, Giant Tiger", mostro: scarabeo_gigante_tigre, numero: "2d4"}
+      - {tiro: 13, manuale: "Caecilia, Giant", mostro: cecilia_gigante, numero: "1d3"}
+      - {tiro: 14, manuale: "Shadow*", mostro: ombra, numero: "1d10"}
+      - {tiro: 15, manuale: "NPC Party: Merchant", gruppo: "Gruppo di PNG: mercanti", pagina: 184}
+      - {tiro: 16, manuale: "Lycanthrope, Weretiger*", mostro: licantropo_tigre, numero: "1d4"}
+  - id: selvaggio_montagna
+    nome: "Montagne o colline"
+    pagina: 181
+    dadi: "2d8"
+    voci:
+      - {tiro: 2, manuale: "Dragon, Ice", mostro: drago_ghiaccio, numero: "1"}
+      # «Huge» non è una colonna del bestiario: la taglia «normal» del roc è «huge» (manuale p. 185 del PDF 141,
+      # testo sotto la scheda), quindi usa roc_normale.
+      - tiro: 3
+        manuale: "Roc (1d6: 1-3 Large, 4-5 Huge, 6 Giant)"
+        scelta:
+          dadi: "1d6"
+          voci:
+            - {tiro: [1, 2, 3], mostro: roc_grande, numero: "1d8"}
+            - {tiro: [4, 5], mostro: roc_normale, numero: "1d12"}
+            - {tiro: [6], mostro: roc_gigante, numero: "1"}
+      - {tiro: 4, manuale: "Deceiver", mostro: ingannatore_comune, numero: "1d4"}
+      - {tiro: 5, manuale: "Lycanthrope, Werewolf*", mostro: licantropo_lupo, numero: "2d6"}
+      - {tiro: 6, manuale: "Mountain Lion", mostro: leone_di_montagna, numero: "1d4"}
+      - {tiro: 7, manuale: "Wolf", mostro: lupo, numero: "3d6"}
+      - {tiro: 8, manuale: "Spider, Giant Crab", mostro: ragno_granchio_gigante, numero: "1d4"}
+      - {tiro: 9, manuale: "Hawk", mostro: sparviero, numero: "1d6"}
+      - {tiro: 10, manuale: "Orc", mostro: orco, numero: "3d6"}
+      - {tiro: 11, manuale: "Bat, Giant", mostro: pipistrello_gigante, numero: "1d10"}
+      - {tiro: 12, manuale: "Hawk, Giant", mostro: falco_gigante, numero: "1d3"}
+      - {tiro: 13, manuale: "Giant, Hill", mostro: gigante_collina, numero: "2d4"}
+      - {tiro: 14, manuale: "Chimera", mostro: chimera, numero: "1d4"}
+      - {tiro: 15, manuale: "Wolf, Dire", mostro: lupo_crudele, numero: "2d4"}
+      - {tiro: 16, manuale: "Dragon, Mountain", mostro: drago_montagna, numero: "1"}
+  - id: selvaggio_oceano
+    nome: "Oceano"
+    pagina: 181
+    dadi: "2d8"
+    voci:
+      - {tiro: 2, manuale: "Dragon, Sea", mostro: drago_mare, numero: "1"}
+      - {tiro: 3, manuale: "Hydra", mostro: idra_5, numero: "1"}
+      - {tiro: 4, manuale: "Whale, Sperm", mostro: capodoglio, numero: "1d3"}
+      - {tiro: 5, manuale: "Crocodile, Giant", mostro: coccodrillo_gigante, numero: "1d3"}
+      - {tiro: 6, manuale: "Crab, Giant", mostro: granchio_gigante, numero: "1d6"}
+      - {tiro: 7, manuale: "Whale, Killer", mostro: orca, numero: "1d6"}
+      - {tiro: 8, manuale: "Octopus, Giant", mostro: polpo_gigante, numero: "1d2"}
+      - {tiro: 9, manuale: "Shark, Mako", mostro: squalo_mako, numero: "2d6"}
+      - {tiro: 10, manuale: "NPC Party: Merchant", gruppo: "Gruppo di PNG: mercanti", pagina: 184}
+      - {tiro: 11, manuale: "NPC Party: Buccaneer (Pirate)", gruppo: "Gruppo di PNG: bucanieri", pagina: 184}
+      - {tiro: 12, manuale: "Shark, Bull", mostro: squalo_toro, numero: "3d6"}
+      - tiro: 13
+        manuale: "Roc (1d8: 1-5 Huge, 6-8 Giant)"
+        scelta:
+          dadi: "1d8"
+          voci:
+            - {tiro: [1, 2, 3, 4, 5], mostro: roc_normale, numero: "1d12"}
+            - {tiro: [6, 7, 8], mostro: roc_gigante, numero: "1"}
+      - {tiro: 14, manuale: "Shark, Great White", mostro: squalo_bianco, numero: "1d4"}
+      - {tiro: 15, manuale: "Mermaid", mostro: sirena, numero: "1d2"}
+      - {tiro: 16, manuale: "Sea Serpent", mostro: serpente_di_mare_gigante, numero: "2d6"}
+  - id: selvaggio_fiume
+    nome: "Fiume o riva"
+    pagina: 182
+    dadi: "2d8"
+    voci:
+      - {tiro: 2, manuale: "Dragon, Swamp", mostro: drago_palude, numero: "1"}
+      - {tiro: 3, manuale: "Fish, Giant Piranha", mostro: piranha_gigante, numero: "2d4"}
+      - {tiro: 4, manuale: "Stirge", mostro: stirge, numero: "3d12"}
+      - {tiro: 5, manuale: "Fish, Giant Bass", mostro: persico_gigante, numero: "1d6"}
+      - {tiro: 6, manuale: "NPC Party: Merchant", gruppo: "Gruppo di PNG: mercanti", pagina: 184}
+      - {tiro: 7, manuale: "Lizard Man", mostro: uomo_lucertola_comune, numero: "2d4"}
+      - {tiro: 8, manuale: "Crocodile", mostro: coccodrillo, numero: "1d8"}
+      - {tiro: 9, manuale: "Frog, Giant", mostro: rana_gigante, numero: "1d4"}
+      - {tiro: 10, manuale: "Fish, Giant Catfish", mostro: pesce_gatto_gigante, numero: "1d2"}
+      - {tiro: 11, manuale: "NPC Party: Buccaneer", gruppo: "Gruppo di PNG: bucanieri", pagina: 184}
+      - {tiro: 12, manuale: "Troll", mostro: troll, numero: "1d8"}
+      - {tiro: 13, manuale: "Jaguar", mostro: giaguaro, numero: "1d6"}
+      - {tiro: 14, manuale: "Nixie", mostro: nixie, numero: "2d20"}
+      - {tiro: 15, manuale: "Water Termite, Giant", mostro: termite_acquatica_gigante, numero: "1d4"}
+      - {tiro: 16, manuale: "Dragon, Forest", mostro: drago_foresta, numero: "1"}
+  - id: selvaggio_palude
+    nome: "Palude"
+    pagina: 182
+    dadi: "2d8"
+    voci:
+      - {tiro: 2, manuale: "Dragon, Swamp", mostro: drago_palude, numero: "1"}
+      - {tiro: 3, manuale: "Shadow*", mostro: ombra, numero: "1d10"}
+      - {tiro: 4, manuale: "Troll", mostro: troll, numero: "1d8"}
+      - {tiro: 5, manuale: "Lizard, Giant Draco", mostro: lucertola_gigante_draco, numero: "1d8"}
+      - {tiro: 6, manuale: "Centipede, Giant", mostro: centopiede_gigante, numero: "2d4"}
+      - {tiro: 7, manuale: "Leech, Giant", mostro: sanguisuga_gigante, numero: "1d4"}
+      - {tiro: 8, manuale: "Lizard Man", mostro: uomo_lucertola_comune, numero: "2d4"}
+      - {tiro: 9, manuale: "Crocodile", mostro: coccodrillo, numero: "1d8"}
+      - {tiro: 10, manuale: "Stirge", mostro: stirge, numero: "3d12"}
+      - {tiro: 11, manuale: "Orc", mostro: orco, numero: "3d6"}
+      - {tiro: 12, manuale: "Toad, Giant (see Frog, Giant)", mostro: rana_gigante, numero: "1d4"}
+      - {tiro: 13, manuale: "Lizard Man, Subterranean", mostro: uomo_lucertola_sotterraneo, numero: "1d8"}
+      - {tiro: 14, manuale: "Blood Rose", mostro: rosa_di_sangue, numero: "1d8"}
+      - {tiro: 15, manuale: "Hangman Tree", mostro: albero_impiccato, numero: "1"}
+      - {tiro: 16, manuale: "Basilisk", mostro: basilisco_comune, numero: "1d6"}
+  - id: selvaggio_bosco
+    nome: "Bosco o foresta"
+    pagina: 182
+    dadi: "2d8"
+    voci:
+      - {tiro: 2, manuale: "Dragon, Forest", mostro: drago_foresta, numero: "1"}
+      - {tiro: 3, manuale: "Alicorn (see Unicorn)", mostro: alicorno, numero: "1d8"}
+      - {tiro: 4, manuale: "Treant", mostro: treant, numero: "1d8"}
+      - {tiro: 5, manuale: "Orc", mostro: orco, numero: "3d6"}
+      - {tiro: 6, manuale: "Boar, Wild", mostro: cinghiale, numero: "1d6"}
+      - {tiro: 7, manuale: "Bear, Black", mostro: orso_nero, numero: "1d4"}
+      - {tiro: 8, manuale: "Hawk, Giant", mostro: falco_gigante, numero: "1d3"}
+      - {tiro: 9, manuale: "Antelope", mostro: antilope, numero: "3d10"}
+      - {tiro: 10, manuale: "Wolf", mostro: lupo, numero: "3d6"}
+      - {tiro: 11, manuale: "Ogre", mostro: ogre, numero: "2d6"}
+      - {tiro: 12, manuale: "Bear, Grizzly", mostro: orso_bruno, numero: "1d4"}
+      - {tiro: 13, manuale: "Wolf, Dire", mostro: lupo_crudele, numero: "2d4"}
+      - {tiro: 14, manuale: "Giant, Hill", mostro: gigante_collina, numero: "2d4"}
+      - {tiro: 15, manuale: "Owlbear", mostro: orso_gufo, numero: "1d4"}
+      - {tiro: 16, manuale: "Unicorn", mostro: unicorno, numero: "1d6"}
+  - id: citta_giorno
+    nome: "Città, paese o villaggio: di giorno"
+    pagina: 182
+    dadi: "2d6"
+    voci:
+      - {tiro: 2, manuale: "Doppleganger", mostro: doppelganger, numero: "1d6"}
+      - {tiro: 3, manuale: "Noble", gruppo: "Nobile", pagina: 183}
+      - {tiro: 4, manuale: "Thief", gruppo: "Ladri", pagina: 183, numero: "1d6"}
+      - {tiro: 5, manuale: "Bully", gruppo: "Prepotenti", pagina: 183, numero: "2d4"}
+      - {tiro: 6, manuale: "City Watch", gruppo: "Guardie cittadine", pagina: 183, numero: "2d6"}
+      - {tiro: 7, manuale: "Merchant", gruppo: "Mercanti", pagina: 183}
+      - {tiro: 8, manuale: "Beggar", gruppo: "Mendicanti", pagina: 183, numero: "2d4"}
+      - {tiro: 9, manuale: "Priest", gruppo: "Sacerdote", pagina: 183}
+      - {tiro: 10, manuale: "Mercenary", gruppo: "Mercenari", pagina: 183, numero: "2d6"}
+      - {tiro: 11, manuale: "Wizard", gruppo: "Mago", pagina: 183}
+      - {tiro: 12, manuale: "Lycanthrope, Wererat*", mostro: licantropo_ratto, numero: "1d8"}
+  - id: citta_notte
+    nome: "Città, paese o villaggio: di notte"
+    pagina: 182
+    dadi: "2d6"
+    voci:
+      - {tiro: 2, manuale: "Doppleganger", mostro: doppelganger, numero: "1d6"}
+      - {tiro: 3, manuale: "Shadow*", mostro: ombra, numero: "1d10"}
+      - {tiro: 4, manuale: "Press Gang", gruppo: "Banda di arruolatori", pagina: 183, numero: "2d6"}
+      - {tiro: 5, manuale: "Beggar", gruppo: "Mendicanti", pagina: 183, numero: "2d4"}
+      - {tiro: 6, manuale: "Thief", gruppo: "Ladri", pagina: 183, numero: "1d6"}
+      - {tiro: 7, manuale: "Bully", gruppo: "Prepotenti", pagina: 183, numero: "2d4"}
+      - {tiro: 8, manuale: "Merchant", gruppo: "Mercanti", pagina: 183}
+      - {tiro: 9, manuale: "Giant Rat", mostro: ratto_gigante, numero: "3d6"}
+      - {tiro: 10, manuale: "City Watch", gruppo: "Guardie cittadine", pagina: 183, numero: "2d6"}
+      - {tiro: 11, manuale: "Wizard", gruppo: "Mago", pagina: 183}
+      - {tiro: 12, manuale: "Lycanthrope, Wererat*", mostro: licantropo_ratto, numero: "1d8"}
