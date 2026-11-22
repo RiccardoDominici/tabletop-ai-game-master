@@ -23,6 +23,7 @@ import type { RegolaEsperienza } from './esperienza';
 import type { Mostro, RegolaBestiario } from './bestiario';
 import type { Durata } from './effetti';
 import type { RegolaCreazione } from './creazione';
+import type { TabellaReazione } from './reazioni';
 
 export interface Voce {
   id: string;
@@ -242,6 +243,8 @@ export interface SistemaRegole {
    * pregenerated PCs (the Preparer writes them; the validator checks them against the classes and races all the same).
    */
   creazione?: RegolaCreazione | null;
+  /** The manual's reaction tables (regole.yaml → reazioni; regole/reazioni.ts): the Game Master's 2d6 + Charisma rolls. */
+  reazioni?: TabellaReazione[];
 }
 
 /** Un passo del manuale (regole/estratti/*.md), per l'arbitro e per «Chiedi una regola». */

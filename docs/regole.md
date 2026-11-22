@@ -260,6 +260,14 @@ creazione:                                  # optional [V] (M7): the manual's ch
   incantesimi:                              # optional [V]: what a caster knows at the start: its spellbook (`scheda.libro`)
     - {classe: mago, fissi: [leggere_il_magico], a_scelta: 1, livello: 1, come: scelta}   # come: scelta | master | tiro
   lingue: {caratteristica: intelligenza}    # optional [V]: as many extra languages as its positive bonus (BF p. 4)
+reazioni:                                   # optional [V] (R5): reaction tables, the Game Master's rolls from the panel
+  - id: reazione                            #   (regole/reazioni.ts; Basic Fantasy p. 50, a retainer's offer p. 46)
+    nome: "Reazione dei mostri"
+    dadi: "2d6"                             # [V] the dice
+    caratteristica: carisma                 # [V] the lead PC's bonus is added (null = none)
+    fasce:                                  # [V] from the lowest, each up to its fino_a; the last fino_a: null
+      - {fino_a: 2, nome: "Attacco immediato", atteggiamento: ostile}   # atteggiamento (optional): an NPC's attitude
+      - {fino_a: null, nome: "Molto favorevole", atteggiamento: amichevole}   #   towards the lead PC follows the band
 magia: {preparazione: vanciana}             # optional [V]: vanciana (each prepared copy is one cast, back at a rest)
                                             #   | slot (the sheet's spells are known; a cast spends a slot of its level)
 risorse:                                    # optional [V]: per-character counters (prove/risorse.ts), in the snapshot

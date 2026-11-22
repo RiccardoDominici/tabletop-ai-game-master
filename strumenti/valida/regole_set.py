@@ -141,6 +141,42 @@ def _fasce(r: dict, e: Esito, dove: str) -> None:
         e.avviso("REGOLE.fasce", dove, "risoluzione.fasce: manca la fascia più bassa (min vuoto)")
 
 
+def _reazioni(r: dict, car: set[str], e: Esito, dove: str) -> None:
+    """The reaction tables (regole/reazioni.ts; Basic Fantasy pp. 46, 50): dice, characteristic, bands from the lowest."""
+    v = r.get("reazioni")
+    if v is None:
+        return
+    if not isinstance(v, list):
+        _err(e, "reazioni", dove, "reazioni: un elenco di {id, nome, dadi, caratteristica, fasce}")
+        return
+    visti: set[str] = set()
+    for i, x in enumerate(v, start=1):
+        o = _ogg(x) or {}
+        rid = o.get("id")
+        if not (isinstance(rid, str) and re.match(r"^[a-z0-9_]+$", rid)):
+            _err(e, "reazioni", dove, f"reazioni[{i}]: un id in snake_case")
+            continue
+        if rid in visti:
+            _err(e, "reazioni", dove, f"reazioni: id ripetuto «{rid}»")
+        visti.add(rid)
+        if not (isinstance(o.get("dadi"), str) and re.match(r"^\d*d\d+([+-]\d+)?$", o["dadi"].replace(" ", ""))):
+            _err(e, "reazioni", dove, f"reazioni.{rid}.dadi: una formula come \"2d6\"")
+        if o.get("caratteristica") is not None and o["caratteristica"] not in car:
+            _err(e, "reazioni", dove, f"reazioni.{rid}.caratteristica: «{o['caratteristica']}» non è una caratteristica del set")
+        fasce = [f for f in o.get("fasce") or [] if isinstance(f, dict)]
+        if not fasce or len(fasce) != len(o.get("fasce") or []):
+            _err(e, "reazioni", dove, f"reazioni.{rid}.fasce: almeno una, {{fino_a, nome, atteggiamento}}")
+            continue
+        limiti = [f.get("fino_a") for f in fasce]
+        if limiti[-1] is not None or any(not _intero(n) for n in limiti[:-1]) or any(limiti[k] <= limiti[k - 1] for k in range(1, len(limiti) - 1)):
+            _err(e, "reazioni", dove, f"reazioni.{rid}.fasce: «fino_a» cresce fascia dopo fascia, e solo l'ultima è null")
+        for f in fasce:
+            if not (isinstance(f.get("nome"), str) and f["nome"].strip()):
+                _err(e, "reazioni", dove, f"reazioni.{rid}.fasce: ogni fascia ha un nome")
+            if f.get("atteggiamento") is not None and f["atteggiamento"] not in ("ostile", "indifferente", "amichevole"):
+                _err(e, "reazioni", dove, f"reazioni.{rid}.fasce.atteggiamento: ostile, indifferente o amichevole")
+
+
 def _difficolta(r: dict, tipo: str | None, e: Esito, dove: str) -> list[str]:
     """Difficoltà: la CD per d20_cd, il divisore per sotto_soglia. Ritorna gli id."""
     voci = _voci(r.get("difficolta"), "difficolta", dove, e, obbligatorio=True)
@@ -544,6 +580,7 @@ def controlla(c: Campagna, e: Esito) -> None:
     # Creation (M7): languages, the classes' and races' requirements and allow-lists, the procedure.
     regole_creazione.creazione_del_set(r, car, set(classi), set(razze), e, dove)
     regole_creazione.opzioni_campagna(c, r, e)
+    _reazioni(r, car, e, dove)
     regole_progressione.progressione_del_set(r, abi, car, poteri, e, dove)
     regole_progressione.esperienza_del_set(r, e, dove)
     catalogo = regole_catalogo.catalogo_del_set(r, car, abi, set(classi), set(razze), None, e, dove)

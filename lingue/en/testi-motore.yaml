@@ -47,6 +47,7 @@ regia:
     luoghi: "Places: {luoghi}."
   # Command errors (Game Master panel, phones).
   errori:
+    reazione_non_valida: "Invalid reaction roll: a table of the set and a PC with a sheet."
     nessuna_sessione: "No session in progress to close."
     telefono_sconosciuto: "Unknown phone."
     nessun_pg: "No character yet: build the characters on the phones and have the Game Master approve them."
@@ -267,6 +268,7 @@ master:
   # Error shown in the panel when a command is refused (master/comandi.ts).
   rifiuti:
     creazione_spenta: "In this campaign the characters are ready-made: no creation at the table."
+    reazione_non_valida: "Invalid reaction roll: table, PC, NPC or adjustment (−10 to 10)."
     comando_sconosciuto: "Unknown command."
     errore_interno: "Internal server error."
     luogo_sconosciuto: "Unknown place."

@@ -43,6 +43,7 @@ import { combattimentoSrd, type Combattimento, type Fase } from '../regole/comba
 import { strumentiRegole } from './risolutore-regole';
 import { attaccoPngSrd } from './risolutore';
 import { trattiDi, valoreCaratteristica } from '../regole/schede';
+import { fasciaReazione, type AtteggiamentoReazione } from '../regole/reazioni';
 import { bonusTratti, type Tratto } from '../regole/tratti';
 import { bersaglioSalvezza, colonnaDi } from '../regole/salvezze';
 import { comeCaratteristica } from '../campagna/regole-srd';
@@ -1454,6 +1455,39 @@ export class MotoreProve {
     this.fattiInSospeso.push(...x.fatti);
     this.o.log.info({ id, cosa, valore, fonte, fatti: x.fatti }, 'effects: applied by the Game Master');
     return { fatti: x.fatti };
+  }
+
+  /**
+   * A reaction roll the Game Master asks (Basic Fantasy pp. 46, 50; regole/reazioni.ts): the table's dice with the
+   * Engine's dice, + the lead PC's characteristic bonus + the Game Master's adjustment, read on the bands. The card is the
+   * Game Master's (shown at the table only as `regole.tiri_master` says), the band goes to the narrator in the next turn.
+   * Returns the band's attitude for the NPC, if the table gives one.
+   */
+  reazioneDelMaster(c: { tabella: string; pg: string; png: string | null; aggiustamento: number }, turno: number): { ok: true; fatto: string; atteggiamento: AtteggiamentoReazione | null } | { ok: false } {
+    const g = this.generico;
+    const tab = g?.regole.sistema.reazioni?.find((x) => x.id === c.tabella);
+    const sch = g?.schede.get(c.pg);
+    if (!g || !tab || !sch || !Number.isInteger(c.aggiustamento) || Math.abs(c.aggiustamento) > 10) return { ok: false };
+    const s = g.regole.sistema;
+    const dadi = Array.from({ length: tab.dadi.numero }, () => this.dadi.tira(tab.dadi.facce));
+    const bonus = tab.caratteristica ? valoreCaratteristica(s, sch, tab.caratteristica) : 0;
+    const totale = dadi.reduce((a, b) => a + b, 0) + tab.dadi.bonus + bonus + c.aggiustamento;
+    const fascia = fasciaReazione(tab, totale);
+    const nome = (id: string): string => this.o.contesto().nome(id);
+    const modificatore = tab.dadi.bonus + bonus + c.aggiustamento;
+    const regola = testo('prove.reazione.regola', { dadi: `${tab.dadi.numero}d${tab.dadi.facce}`, bonus: modificatore ? ` ${modificatore > 0 ? '+' : '−'}${Math.abs(modificatore)}` : '', totale, fascia: fascia.nome });
+    const carta: TiroMostrato = { id: this.stato.nuovoIdTiro(), turno, chi: c.png ?? 'master', nome: c.png ? nome(c.png) : testo('prove.reazione.chi'), di_png: true, tipo: 'prova', etichetta: tab.nome, dadi, dado: dadi.reduce((a, b) => a + b, 0), vantaggio: null, motivo_vantaggio: null, modificatore, totale, contro: { tipo: 'soglia', valore: 0, descrizione: null }, bersaglio: { id: c.pg, nome: nome(c.pg) }, riuscita: fascia.atteggiamento !== 'ostile', critico: false, fallimento_critico: false, danno: null, a_terra: false, privata: false, avversario: null, facce: tab.dadi.facce, regola, del_master: true };
+    if (!mostraTiroDelMaster(this.o.tiriMaster?.() ?? 'nascosti', { visibile: false, p: 0 }).mostra) carta.nascosta = true;
+    this.aggiungiCartaDelMaster(carta);
+    const fatto = testo(c.png ? 'prove.reazione.fatto_png' : 'prove.reazione.fatto', { png: c.png ? nome(c.png) : '', pg: nome(c.pg), tabella: tab.nome, fascia: fascia.nome, regola });
+    this.fattiInSospeso.push(fatto);
+    this.o.log.info({ tabella: tab.id, pg: c.pg, png: c.png, dadi, bonus, aggiustamento: c.aggiustamento, totale, fascia: fascia.nome, atteggiamento: fascia.atteggiamento }, 'reaction: rolled by the Game Master');
+    return { ok: true, fatto, atteggiamento: fascia.atteggiamento };
+  }
+
+  /** The set's reaction tables, for the panel (empty without a set or tables). */
+  tabelleReazione(): Array<{ id: string; nome: string }> {
+    return (this.generico?.regole.sistema.reazioni ?? []).map((t) => ({ id: t.id, nome: t.nome }));
   }
 
   /**

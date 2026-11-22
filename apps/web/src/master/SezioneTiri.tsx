@@ -65,6 +65,7 @@ export function SezioneTiri({ stato }: { stato: StatoMaster }) {
         </ul>
       )}
       <ChiediProva tiri={tiri} />
+      <TiroReazione tiri={tiri} />
       {tiri.del_master.length > 0 && (
         <details className="text-sm" data-testid="master-tiri-del-master">
           <summary className="cursor-pointer text-pergamena-2">{t('master.tiri.del_master', { n: tiri.del_master.length })}</summary>
@@ -152,6 +153,61 @@ function ChiediProva({ tiri }: { tiri: NonNullable<StatoMaster['tiri']> }) {
           {t('master.tiri.chiedi')}
         </button>
         <p className="text-xs text-cenere">{t('master.tiri.chiedi_nota')}</p>
+      </div>
+    </details>
+  );
+}
+
+/**
+ * A reaction roll of the set's tables (Basic Fantasy pp. 46, 50): the lead PC (its Charisma bonus), the NPC who reacts
+ * (optional: its attitude follows the band), the Game Master's adjustment (pay, a gift, poor terms). The Engine rolls; the
+ * card lands among the last ones, the band goes to the narrator.
+ */
+function TiroReazione({ tiri }: { tiri: NonNullable<StatoMaster['tiri']> }) {
+  const r = tiri.reazioni;
+  const [tabella, setTabella] = useState(r?.tabelle[0]?.id ?? '');
+  const [pg, setPg] = useState('');
+  const [png, setPng] = useState('');
+  const [agg, setAgg] = useState('0');
+  const inCorso = useInCorso('reazione');
+  if (!r?.tabelle.length || !tiri.pg.length) return null;
+  const n = Number(agg);
+  const valido = !!tabella && !!pg && Number.isInteger(n) && Math.abs(n) <= 10;
+  return (
+    <details className="rounded-lg border border-bordo bg-notte-3 p-2 text-sm" data-testid="master-reazione">
+      <summary className="cursor-pointer font-semibold text-pergamena">{t('master.tiri.reazione_titolo')}</summary>
+      <div className="mt-2 flex flex-col gap-2">
+        <select data-testid="master-reazione-tabella" value={tabella} onChange={(e) => setTabella(e.target.value)} className="h-9 rounded border border-bordo-chiaro bg-notte-2 px-2">
+          {r.tabelle.map((x) => (
+            <option key={x.id} value={x.id}>
+              {x.nome}
+            </option>
+          ))}
+        </select>
+        <select data-testid="master-reazione-pg" value={pg} onChange={(e) => setPg(e.target.value)} className="h-9 rounded border border-bordo-chiaro bg-notte-2 px-2">
+          <option value="">{t('master.tiri.reazione_pg')}</option>
+          {tiri.pg.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.nome}
+            </option>
+          ))}
+        </select>
+        <select data-testid="master-reazione-png" value={png} onChange={(e) => setPng(e.target.value)} className="h-9 rounded border border-bordo-chiaro bg-notte-2 px-2">
+          <option value="">{t('master.tiri.reazione_nessun_png')}</option>
+          {r.png.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.nome}
+            </option>
+          ))}
+        </select>
+        <label className="flex items-center gap-2 text-pergamena-2">
+          {t('master.tiri.reazione_aggiustamento')}
+          <input data-testid="master-reazione-aggiustamento" type="number" min={-10} max={10} value={agg} onChange={(e) => setAgg(e.target.value)} className="h-9 w-20 rounded border border-bordo-chiaro bg-notte-2 px-2 text-right" />
+        </label>
+        <button type="button" data-testid="master-reazione-tira" disabled={inCorso || !valido} onClick={() => void inviaComando({ tipo: 'reazione', tabella, id_pg: pg, id_png: png || null, aggiustamento: n })} className={classePulsante('primario', 'piccolo')}>
+          {t('master.tiri.reazione_tira')}
+        </button>
+        <p className="text-xs text-cenere">{t('master.tiri.reazione_nota')}</p>
       </div>
     </details>
   );

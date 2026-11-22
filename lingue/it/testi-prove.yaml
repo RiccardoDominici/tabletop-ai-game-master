@@ -195,6 +195,12 @@ prove:
     etichetta_danno: "{potere}: danno ai non morti"
   # The Game Master's secret rolls (M9: abilita[].segreta): the card stays on the panel; the narrator tells it as the
   # character perceives it.
+  # Reaction rolls of the set's tables (Basic Fantasy pp. 46, 50; prove/motore.ts reazioneDelMaster): the Game Master's.
+  reazione:
+    chi: "Il master"
+    regola: "{dadi}{bonus} = {totale}: {fascia}"
+    fatto: "Tiro di reazione del master ({tabella}) per {pg}: {fascia} ({regola}). Racconta la reazione di chi incontrano così."
+    fatto_png: "Tiro di reazione del master ({tabella}): {png} verso {pg}, {fascia} ({regola}). Racconta così la sua reazione."
   segreta:
     tiro: "Tiro segreto del master (il giocatore non vede il dado né l'esito): "
     fallita_niente: " {nome} non nota niente: raccontalo come se non ci fosse niente da notare, senza dire che il tiro è fallito."

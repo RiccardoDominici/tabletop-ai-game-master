@@ -3830,7 +3830,22 @@ export class Regia {
       pg: this.campagna.pg.filter((p) => prove.stato.puntiFerita(p.id)).map((p) => ({ id: p.id, nome: p.nome })),
       chieste: this.tiriGiocatori.chieste().map((c) => ({ ...c, nome_pg: this.nomePg(c.id_pg) })),
       del_master: this.tiriDelMaster.registro(),
+      ...(prove.tabelleReazione().length ? { reazioni: { tabelle: prove.tabelleReazione(), png: this.campagna.png.map((p) => ({ id: p.id, nome: p.nome })) } } : {}),
     };
+  }
+
+  /**
+   * A reaction roll from the panel (Basic Fantasy pp. 46, 50; prove/motore.ts reazioneDelMaster): the Engine rolls it,
+   * the narrator hears the band in the next turn, and an NPC's attitude towards the lead PC follows the band when the
+   * table gives one (docs/mondo.md §4). Nothing for the table unless `regole.tiri_master` shows it.
+   */
+  reazione(c: { tabella: string; id_pg: string; id_png: string | null; aggiustamento: number }): Esito & { fatto?: string } {
+    if (!this.campagna.pg.some((p) => p.id === c.id_pg) || (c.id_png && !this.campagna.png.some((p) => p.id === c.id_png))) return { ok: false, errore: testoFisso('regia.errori.personaggio_sconosciuto') };
+    const r = this.prove?.reazioneDelMaster({ tabella: c.tabella, pg: c.id_pg, png: c.id_png, aggiustamento: c.aggiustamento }, this.turno);
+    if (!r?.ok) return { ok: false, errore: testoFisso('regia.errori.reazione_non_valida') };
+    if (c.id_png && r.atteggiamento) this.impostaAtteggiamento(c.id_png, c.id_pg, r.atteggiamento);
+    else this.notifica();
+    return { ok: true, fatto: r.fatto };
   }
 
   /** Per il pannello del master: schede coi PF e condizioni del set (null senza dadi). */

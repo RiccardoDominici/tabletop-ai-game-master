@@ -34,6 +34,7 @@ import { leggiCarico, leggiMovimento } from './carico';
 import { leggiTempo, leggiViaggio, secondiDi } from './tempo';
 import { leggiFileMostri, leggiMostri, leggiRegolaBestiario } from './bestiario';
 import { leggiCreazione, leggiLingue } from './creazione';
+import { leggiReazioni } from './reazioni';
 
 export const CARTELLA_REGOLE = 'regole';
 const TIPI: readonly TipoRisoluzione[] = ['d20_cd', '2d6_fasce', 'sotto_soglia'];
@@ -278,6 +279,8 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[], fileMostr
   if (creazione && (creazione.passi.includes('razza') && !(classiEPoteri.razze ?? []).length)) errori.push('creazione.passi: razza needs the set\'s razze');
   if (creazione && (creazione.passi.includes('classe') && !idClassi.size)) errori.push('creazione.passi: classe needs the set\'s classi');
   if (creazione?.passi.includes('lingue') && !lingue.length) errori.push('creazione.passi: lingue needs the set\'s lingue');
+  // The reaction tables (Basic Fantasy pp. 46, 50): the Game Master's rolls of how someone reacts.
+  const reazioni = leggiReazioni(d['reazioni'], idCar, errori);
   const fonte = ogg(d['fonte']) ?? {};
   const lic = ogg(d['licenza']) ?? {};
   if (typeof lic['libera'] !== 'boolean') errori.push('licenza.libera: true o false (un set da un manuale non libero resta fuori dal repository)');
@@ -339,6 +342,7 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[], fileMostr
     ...(livelliNegativi ? { livelliNegativi } : {}),
     ...(lingue.length ? { lingue } : {}),
     ...(creazione ? { creazione } : {}),
+    ...(reazioni.length ? { reazioni } : {}),
   };
 }
 

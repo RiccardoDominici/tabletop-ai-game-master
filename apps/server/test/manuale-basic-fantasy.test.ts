@@ -10,7 +10,7 @@ import { describe, expect, it } from 'vitest';
 import { caricaCampagna } from '../src/campagna/caricatore';
 import { caricaRegole } from '../src/regole/caricatore';
 import { bersaglioSalvezza, rigaAlLivello } from '../src/regole/salvezze';
-import { caricaSchedeGeneriche, trattiDi } from '../src/regole/schede';
+import { caricaSchedeGeneriche, trattiDi, valoreCaratteristica } from '../src/regole/schede';
 import { bonusTratti } from '../src/regole/tratti';
 import type { SistemaRegole } from '../src/regole/tipi';
 import { limitiDi } from '../src/regole/carico';
@@ -566,5 +566,47 @@ describe('the roll numbers the set derives (pp. 43–44, 189)', () => {
     expect(v('pg_fulco')).toEqual({ forzare: 2, cercare: 1, pietra: 2 });
     expect(v('pg_nespola')).toEqual({ forzare: 1, cercare: 1, pietra: undefined });
     expect(v('pg_eliandro')).toEqual({ forzare: 1, cercare: 3, pietra: undefined });
+  });
+});
+
+describe('every roll kind with the manual\'s numbers: a worked example each (R5)', () => {
+  it('ability roll, save, attack, thief ability, initiative, surprise, morale, reaction, hiring', () => {
+    const s = set();
+    const schede = caricaSchedeGeneriche(s, caricaCampagna(BF, loggerMuto()));
+    const livia = schede.get('pg_livia')!;
+    const fulco = schede.get('pg_fulco')!;
+    const nespola = schede.get('pg_nespola')!;
+    const eliandro = schede.get('pg_eliandro')!;
+    // Ability roll (p. 189): Livia's Strength check is d20 + 2 (STR 16, p. 4) against 17 at the 1st level.
+    expect(valoreCaratteristica(s, livia, 'forza')).toBe(2);
+    expect(sistemaAlLivello(s, livia).difficolta.find((d) => d.id === 'normale')!.valore).toBe(17);
+    // Save (p. 61, dwarves p. 5): Fulco vs Death Ray or Poison: d20 + 4 (the race, added by the Engine) against the
+    // cleric's 11; poison adds Constitution too (p. 60): CON 14, +1.
+    const nano = bonusTratti(trattiDi(s, fulco), { tipo: 'salvezza', colonna: 'morte' });
+    expect(nano).toBe(4);
+    expect(bersaglioSalvezza(s, fulco, 'ts_morte', nano)).toMatchObject({ contro: 11, modificatore: 4, fonte: 'tabella' });
+    expect(bersaglioSalvezza(s, fulco, 'ts_veleno', nano)).toMatchObject({ contro: 11, modificatore: 5 });
+    // Attack (p. 53, 55): Livia's longsword is d20 + 1 (a 1st-level fighter) + 2 (Strength) against AC; 1d8 + 2.
+    expect(livia.abilita['mischia']).toBe(1);
+    expect(livia.attacchi.find((a) => a.arma === 'spada_lunga')).toMatchObject({ abilita: 'mischia', danno: { numero: 1, facce: 8, bonus: 2 } });
+    // Missiles take Dexterity and the halfling's +1 (p. 6): Nespola's sling d20 + 1 + 2 (DEX 17) + 1.
+    expect(nespola.abilita['distanza']).toBe(1);
+    expect(bonusTratti(trattiDi(s, nespola), { tipo: 'abilita', abilita: 'distanza' })).toBe(1);
+    // Thief ability (p. 9): a 1st-level thief opens locks on d100 ≤ 25, climbs on ≤ 80, hides on ≤ 70 as a halfling (p. 6).
+    expect(nespola.abilita).toMatchObject({ scassinare: 25, scalare: 80, nascondersi: 70 });
+    // Initiative (p. 51, halflings p. 6): 1d6 + DEX (17: +2) + 1.
+    expect(s.combattimento.iniziativa).toMatchObject({ tipo: 'individuale', dado: 6, caratteristica: 'destrezza', ogniRound: true });
+    expect(valoreCaratteristica(s, nespola, 'destrezza') + bonusTratti(trattiDi(s, nespola), { tipo: 'iniziativa' })).toBe(3);
+    // Surprise (p. 50): 1d6, surprised on 1–2; an elf one less (p. 5).
+    expect(s.combattimento.sorpresa).toMatchObject({ dado: 6, finoA: 2 });
+    expect(trattiDi(s, eliandro)).toContainEqual({ tipo: 'sorpresa', modificatore: -1 });
+    // Morale (p. 57): 2d6 ≤ the score; a goblin stands on 7 or less (p. 104).
+    expect(s.mostri!.find((m) => m.id === 'goblin')!.dati['morale']).toBe(7);
+    // Reaction (p. 50) and hiring (p. 46): 2d6 + Charisma; the bands as printed.
+    const reazione = s.reazioni!.find((t) => t.id === 'reazione')!;
+    expect(reazione.fasce.map((f) => [f.finoA, f.nome])).toEqual([[2, 'Attacco immediato'], [7, 'Sfavorevole'], [11, 'Favorevole'], [null, 'Molto favorevole']]);
+    const assunzione = s.reazioni!.find((t) => t.id === 'assunzione')!;
+    expect(assunzione.fasce.map((f) => f.finoA)).toEqual([2, 5, 8, 11, null]);
+    expect([reazione.caratteristica, assunzione.caratteristica]).toEqual(['carisma', 'carisma']);
   });
 });

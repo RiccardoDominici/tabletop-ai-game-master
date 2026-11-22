@@ -166,7 +166,14 @@ describe('a PC built on a phone joins the campaign', () => {
     expect(await emetti<{ id_pg: string | null }>((cb) => t2.emit('telefono:dispositivo', { dispositivo: 'telefono-di-gaspare-01' }, cb))).toEqual({ id_pg: 'pg_gaspare' });
     expect(await emetti<Esito>((cb) => t2.emit('telefono:scegli_pg', { id_pg: 'pg_gaspare', dispositivo: 'telefono-di-gaspare-01' }, cb))).toEqual({ ok: true });
     // The draft's job is done: the panel no longer lists it.
-    expect((await (await master(url(s2))).stato()).creazione).toEqual([]);
+    const m2 = await master(url(s2));
+    expect((await m2.stato()).creazione).toEqual([]);
+    // The new PC leads a reaction roll from the panel (the set's table, R5): the card is the Game Master's.
+    expect(await m2.comanda({ tipo: 'reazione', tabella: 'reazione', id_pg: 'pg_gaspare', id_png: 'png_orsola', aggiustamento: 0 })).toEqual({ ok: true });
+    expect(await m2.comanda({ tipo: 'reazione', tabella: 'nessuna', id_pg: 'pg_gaspare' })).toMatchObject({ ok: false });
+    const tiri = (await m2.stato()).tiri!;
+    expect(tiri.reazioni?.tabelle).toEqual([{ id: 'reazione', nome: "Reazione all'incontro" }]);
+    expect(tiri.carte.at(-1)).toMatchObject({ etichetta: "Reazione all'incontro", del_master: true, nascosta: true });
 
     // The next evening (a new start of the server): the PC is loaded again.
     await ciclo.chiudi();

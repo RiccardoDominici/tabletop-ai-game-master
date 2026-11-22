@@ -1259,9 +1259,36 @@ danni:
   nome: "Punti ferita"
   a_zero: "A zero punti ferita un personaggio muore; con la regola facoltativa del manuale un PG tira un salvezza contro la morte e, se riesce, resta svenuto finché qualcuno non gli fascia le ferite"
 
-# Reazione dei mostri (p. 50): il manuale tira 2d6 + Carisma (8–11 favorevole, 12+ molto favorevole). Lo schema ha
-# una sola risoluzione, quindi si convince con una prova di Carisma: facile (13) vale circa il «favorevole» del 2d6
-# (40% contro 42%), normale (17) il «molto favorevole».
+# Tiri di reazione (p. 46, 50): li tira il master, dal pannello (docs/prove.md §9): 2d6 più il bonus di Carisma di chi
+# guida il gruppo (o di chi assume), più gli aggiustamenti del master. La fascia va al narratore; con un PNG, il suo
+# atteggiamento verso quel PG segue la fascia (attacco immediato e sfavorevole: ostile; favorevole: indifferente, «prende
+# in considerazione di lasciarli andare»; molto favorevole: amichevole).
+reazioni:
+  - id: reazione
+    nome: "Reazione dei mostri (p. 50)"
+    dadi: "2d6"
+    caratteristica: carisma
+    fasce:
+      - {fino_a: 2, nome: "Attacco immediato", atteggiamento: ostile}
+      - {fino_a: 7, nome: "Sfavorevole", atteggiamento: ostile}
+      - {fino_a: 11, nome: "Favorevole", atteggiamento: indifferente}
+      - {fino_a: null, nome: "Molto favorevole", atteggiamento: amichevole}
+  # Assumere un gregario (p. 46): dopo il colloquio, 2d6 più il Carisma del PG; +1 per una paga alta o un oggetto magico
+  # offerto, una penalità per condizioni povere (l'aggiustamento del master).
+  - id: assunzione
+    nome: "Assumere un gregario (p. 46)"
+    dadi: "2d6"
+    caratteristica: carisma
+    fasce:
+      - {fino_a: 2, nome: "Rifiuta, e −1 ai tiri seguenti in quel paese"}
+      - {fino_a: 5, nome: "Rifiuta"}
+      - {fino_a: 8, nome: "Ci ripensa: un'offerta migliore, o rifiuta"}
+      - {fino_a: 11, nome: "Accetta"}
+      - {fino_a: null, nome: "Accetta, con +1 alla lealtà"}
+
+# Convincere un PNG durante il gioco (l'azione di un PG) resta una prova di Carisma del giocatore contro il Target del suo
+# livello (le prove di caratteristica, p. 189: facile se il PNG è disposto, normale se diffidente, difficile se ostile);
+# la reazione dei mostri all'incontro è il tiro del master qui sopra.
 sociale:
   caratteristica: carisma
   nota: "Per convincere, trattare o spaventare un PNG si tira Carisma: facile se il PNG è disposto a trattare o gli si offre qualcosa che vuole, normale se è diffidente, difficile o ardua se è ostile. È la reazione del manuale (2d6 più Carisma) portata sul d20."

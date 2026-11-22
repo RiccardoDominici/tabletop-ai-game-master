@@ -681,6 +681,13 @@ nobody at the table rolls for it, the Engine rolls; the model never picks the re
 - **Morale** (R4): the 2d6 of the NPCs' morale in a fight is the Game Master's roll: its card is the panel's (`nascosta`),
   shown at the table by `tiri_master` like the others (`a_volte` when holding is between one in three and two in three);
   docs/combattimento.md §3.
+- **Reaction rolls** (R5; regole/reazioni.ts, prove/motore.ts `reazioneDelMaster`): a set's `reazioni` tables (Basic
+  Fantasy's monster reactions, p. 50, and a retainer's answer to an offer, p. 46): from the panel («Tiro di reazione» in
+  the Tiri box: the table, the PC who leads, the NPC if one reacts, the Game Master's adjustment from −10 to 10) the
+  Engine rolls the table's dice + the lead PC's characteristic bonus + the adjustment and reads the band; the card is the
+  Game Master's (`tiri_master`), the narrator hears the band in the next turn, and with an NPC its attitude towards that
+  PC follows the band when the table gives one (docs/mondo.md §4). A player persuading an NPC in play still rolls their
+  own check (with Basic Fantasy, a Charisma ability roll against the level's target, §13).
 - **What rolls today.** The world's uncertain outcomes: an `avanza_quando` gate of a clock with `tiro: {dado, almeno,
   visibile?}` (docs/mondo.md §2, mondo-vivo's work): does the front advance when the PCs leave, does the news spread.
   The world asks its one roll hook (mondo/tiri.ts, `TiroDelMondo`); the director plugs in the Game Master's roll path,
@@ -908,3 +915,33 @@ the XP the party earns (prove/esperienza.ts), by the set's `esperienza`, never t
 
 Tests: test/esperienza.test.ts (fixture cripta), test/progressione.test.ts and strumenti/test_valida_progressione.py (the
 tables and the level maths, the same cases for both), test/manuale-basic-fantasy.test.ts (the Basic Fantasy numbers).
+
+## 13. Every roll's number by the manual (22 November, rules-engine package R5)
+
+Riccardo (20 November): «il punteggio dei vari tiri?». Each kind of roll of Basic Fantasy, the formula the Engine uses
+with torre-mozza's set, and where the number comes from. Each line has a worked example in
+apps/server/test/manuale-basic-fantasy.test.ts («every roll kind…»), and strumenti/regole/test_tiri_bf.py reads the
+tables and sentences from the PDF (when it is present) and compares them with the set.
+
+| roll | formula (who rolls) | data | manual |
+|---|---|---|---|
+| ability roll | d20 + the ability's bonus + the Game Master's adjustment (the rung) ≥ the target of the level: 17 at NM/1st, 16 at 2nd–3rd … 7 at 20th (the player) | `modificatore.tabella`; `difficolta` (the adjustments: facile −4, difficile +2, ardua +4); `difficolta_per_livello` | pp. 4, 189 |
+| saving throw | d20 + race bonus (+ CON vs poison, WIS vs charm, INT vs illusions) ≥ the class table's number at the level; natural 20 succeeds, 1 fails (the player; an NPC's by the Engine, hidden) | `tiri_salvezza`, `classi[].tiri_salvezza`, race traits, `abilita ts_*` | pp. 5–6, 60–61 |
+| attack | d20 + the class's attack bonus + STR (melee, thrown) or DEX (missile) + race (halfling +1 missiles) + situation (behind +2, charge +2, range +1/0/−2, blind −4, cover…) ≥ AC; natural 20 hits, 1 misses (the player; NPCs by the Engine) | `classi[].attacco`, `progressione.attacco`, `catalogo`, `modificatori`, `combattimento.condizioni` | pp. 6, 53–55, 59 |
+| damage | the weapon's dice + STR (melee, thrown, sling), at least 1; sneak attack ×2 once per target | `catalogo.armi`, `attacchi.danno_minimo`, `alle_spalle` | pp. 9, 55 |
+| thief ability | d100 ≤ the class table's percentage at the level (± the Game Master's points); listen, move silently, hide, traps: the Game Master's secret roll | `classi.ladro.abilita`, `segreta`, `difficolta[].percentuale` | pp. 8–9 |
+| listening at a door (not a thief) | 1 on 1d6, the Game Master's secret roll | `ascoltare.soglia.senza` | p. 43 |
+| stuck door | 1d6 ≤ 1 + STR bonus | `forzare.soglia.piu` | p. 43 |
+| secret door, trap search | 1d6 ≤ 1, +1 with INT 15+, +1 for an elf | `cercare.soglia.piu`, the elf's trait | pp. 5, 43–44 |
+| dwarf's stonework | 1d6 ≤ 2 after a search | the dwarf's `almeno: {pietra: 2}` | p. 5 |
+| initiative | 1d6 + DEX bonus (+1 halfling), every round, ties simultaneous (the player; NPCs by the Engine) | `combattimento.iniziativa`, race trait | pp. 6, 51 |
+| surprise | 1d6 per side, surprised on 1–2 (an elf on 1; ambushers up to 4; blinded 1–4) (the Engine) | `combattimento.sorpresa`, traits, stat blocks | pp. 5, 50, 59 |
+| morale | 2d6 ≤ the creature's morale at the first opposition and at half strength; 12 never breaks (the Game Master, hidden) | `combattimento.fine.morale`, bestiary `morale` | p. 57 |
+| reaction | 2d6 + the lead PC's CHA bonus + the Game Master's adjustment: ≤2 immediate attack, 3–7 unfavourable, 8–11 favourable, 12+ very favourable (the Game Master, from the panel) | `reazioni.reazione` | p. 50 |
+| hiring a retainer | 2d6 + the PC's CHA bonus ± pay: ≤2 refusal −1 later, 3–5 refusal, 6–8 try again, 9–11 acceptance, 12+ acceptance +1 loyalty (the Game Master, from the panel) | `reazioni.assunzione` | p. 46 |
+| Turn Undead | 1d20 ≥ the cleric's table; 2d6 hit dice turned, D destroys (1d8 × level) (the player) | `classi.chierico.tabelle`, `poteri.scacciare_non_morti` | pp. 57–58 |
+| death (optional) | d20 + bonus ≥ the save vs Death Ray, then 2d10 rounds to bind the wounds (the player) | `combattimento.danni.tiri_morte` | p. 188 |
+| hit points at creation and per level | the class die (d6 at most for elves and halflings) + CON, at least 1; fixed points after the 9th (the player) | `classi[].dadi_vita`, `progressione.punti_ferita`, `creazione.punti_ferita` | pp. 3–8 |
+| ability scores at creation | 3d6 in order, each score (the player) | `creazione.caratteristiche` | p. 3 |
+| starting money | 3d6 × 10 gp (the player) | `creazione.monete` | p. 3 |
+

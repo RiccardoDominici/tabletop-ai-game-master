@@ -71,6 +71,7 @@ const TIPI: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>([
   'tiro',
   'chiedi_prova',
   'creazione',
+  'reazione',
 ]);
 
 /** Comandi che non lasciano stato da salvare dopo (un effetto) o lo salvano da sé (sessioni). */
@@ -432,6 +433,17 @@ export class ControlliMaster {
         const esito = regia.esperienza(comando);
         if (!esito.ok) return rifiuto(esito.errore);
         return { esito, dettagli: dettaglio('esperienza', { cosa, px: px ?? '', pg: pg ?? '' }), dati: { ...comando } };
+      }
+      case 'reazione': {
+        // A reaction roll of the set's tables (Basic Fantasy pp. 46, 50): the Engine rolls it, the narrator hears the band.
+        const tabella = typeof c.tabella === 'string' && ID_VALIDO.test(c.tabella) ? c.tabella : null;
+        const pg = typeof c.id_pg === 'string' && ID_VALIDO.test(c.id_pg) ? c.id_pg : null;
+        const png = c.id_png === undefined || c.id_png === null || c.id_png === '' ? null : typeof c.id_png === 'string' && ID_VALIDO.test(c.id_png) ? c.id_png : undefined;
+        const agg = c.aggiustamento === undefined ? 0 : typeof c.aggiustamento === 'number' && Number.isInteger(c.aggiustamento) && Math.abs(c.aggiustamento) <= 10 ? c.aggiustamento : null;
+        if (!tabella || !pg || png === undefined || agg === null) return rifiutoDi('reazione_non_valida');
+        const esito = regia.reazione({ tabella, id_pg: pg, id_png: png, aggiustamento: agg });
+        if (!esito.ok) return rifiuto(esito.errore);
+        return { esito: { ok: true }, dettagli: esito.fatto ?? tabella, dati: { tabella, pg, png, aggiustamento: agg } };
       }
       case 'creazione': {
         // Creation at the table (docs/creazione.md): the service checks the draft, the step and the moment.

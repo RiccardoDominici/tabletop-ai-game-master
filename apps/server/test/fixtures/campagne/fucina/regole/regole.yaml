@@ -165,3 +165,13 @@ creazione:
   incantesimi:
     - {classe: arcano, fissi: [leggere_rune], a_scelta: 1, livello: 1, come: scelta}
   lingue: {caratteristica: mente}
+# A reaction table (R5): 2d6 + the lead PC's Mente, the Game Master's roll; the attitude follows the band.
+reazioni:
+  - id: reazione
+    nome: Reazione all'incontro
+    dadi: "2d6"
+    caratteristica: mente
+    fasce:
+      - {fino_a: 4, nome: Ostile, atteggiamento: ostile}
+      - {fino_a: 9, nome: Diffidente, atteggiamento: indifferente}
+      - {fino_a: null, nome: Cordiale, atteggiamento: amichevole}

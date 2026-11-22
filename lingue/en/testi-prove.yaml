@@ -189,6 +189,12 @@ prove:
     etichetta_danno: "{potere}: damage to the undead"
   # The Game Master's secret rolls (M9: abilita[].segreta): the card stays on the panel; the narrator tells it as the
   # character perceives it.
+  # Reaction rolls of the set's tables (Basic Fantasy pp. 46, 50; prove/motore.ts reazioneDelMaster): the Game Master's.
+  reazione:
+    chi: "The Game Master"
+    regola: "{dadi}{bonus} = {totale}: {fascia}"
+    fatto: "The Game Master's reaction roll ({tabella}) for {pg}: {fascia} ({regola}). Tell how those they meet react this way."
+    fatto_png: "The Game Master's reaction roll ({tabella}): {png} towards {pg}, {fascia} ({regola}). Tell their reaction this way."
   segreta:
     tiro: "The Game Master's secret roll (the player sees neither the die nor the outcome): "
     fallita_niente: " {nome} notices nothing: tell it as if there were nothing to notice, without saying the roll failed."

@@ -236,6 +236,8 @@ export interface TiriMaster {
   del_master: Array<{ id: string; turno: number; origine: string; motivo: string; dado: number; almeno: number; valore: number; riuscito: boolean; mostrato: boolean }>;
   /** Checks the Game Master asked, waiting for the next closed window. */
   chieste: Array<{ id: string; id_pg: string; nome_pg: string; nome: string; difficolta: string | null; privata: boolean }>;
+  /** The set's reaction tables the Game Master can roll (absent or empty = none), and the NPCs whose attitude may follow. */
+  reazioni?: { tabelle: Array<{ id: string; nome: string }>; png: Array<{ id: string; nome: string }> };
 }
 
 /**
@@ -459,7 +461,13 @@ export type ComandoMaster =
    * Creation at the table (docs/creazione.md): approve or undo one step of a phone's draft, approve the finished PC (it
    * joins the campaign), discard a draft, or give the starting spells when the set says the Game Master picks them.
    */
-  | { tipo: 'creazione'; azione: 'approva' | 'scarta' | 'approva_passo' | 'annulla_passo' | 'incantesimi'; id: string; passo?: PassoCreazione; libro?: string[] };
+  | { tipo: 'creazione'; azione: 'approva' | 'scarta' | 'approva_passo' | 'annulla_passo' | 'incantesimi'; id: string; passo?: PassoCreazione; libro?: string[] }
+  /**
+   * A reaction roll of the set's tables (docs/prove.md §9; Basic Fantasy pp. 46, 50): the Engine rolls the table's dice +
+   * the lead PC's characteristic bonus + the Game Master's adjustment; the band goes to the narrator, the card to the
+   * panel; with an NPC, its attitude towards that PC follows the band (when the table says one).
+   */
+  | { tipo: 'reazione'; tabella: string; id_pg: string; id_png?: string | null; aggiustamento?: number };
 
 export type TipoComandoMaster = ComandoMaster['tipo'];
 

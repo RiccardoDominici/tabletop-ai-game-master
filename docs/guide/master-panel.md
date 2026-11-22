@@ -195,6 +195,12 @@ The **Tiri** (Rolls) box appears in campaigns with dice. Only here you see the D
 
 ## Centre column
 
+**Tiro di reazione** (only with a rule set that has reaction tables, like Basic Fantasy's in `torre-mozza`): pick the
+table (the monsters' reaction, hiring a retainer), the character who leads (their Charisma counts), the NPC who reacts if
+there is one, and your adjustment (a good offer +1, poor terms −1). The Engine rolls 2d6 and reads the manual's band: the
+narrator hears it in the next turn, the card stays on the panel (the table sees it only as `regole.tiri_master` says),
+and the NPC's attitude towards that character follows the band.
+
 ### Characters being built
 
 Only when the campaign lets the players build their characters on the phones (`regole.creazione.modo: al_tavolo` or
