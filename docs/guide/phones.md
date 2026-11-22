@@ -31,6 +31,11 @@ with real dice (type each die as it falls), the race and class your scores allow
 it is finished the Game Master approves it from the panel; the page reconnects by itself and you play with it. Leaving
 the screen with **Indietro** keeps what you did: **Crea un personaggio** brings you back to it.
 
+**Scheda** (the sheet button at the top) shows your character: who they are and what they can do (as the campaign wrote
+them), then their race, class and level, ability scores, languages and spellbook, as the sheet holds them — so a
+character built at the table, which has no written text, shows its numbers too — and what they carry, their Armor
+Class, attacks, coins, spells left today and the lights they hold.
+
 ## If the phones do not connect
 
 Check in this order.

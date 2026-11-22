@@ -74,6 +74,12 @@ export interface IngressoClassificatore {
   /** The scene has no creature with stats standing (no NPC with a sheet, no minion): an attack there hits nobody. */
   nessunNemico?: boolean;
   /**
+   * The NPC is here (in the scene or in the fight). A word that names an NPC elsewhere and the scene's minions alike
+   * («goblin»: an absent goblin chief's alias, the wandering goblins on stage) goes to the ones here (R6's live check).
+   * Absent = every named NPC counts, as before.
+   */
+  presente?: (id: string) => boolean;
+  /**
    * In a fight: the enemy a PC's own attack with no target named goes to (its last target still standing, else the
    * first enemy standing in the turn order), or null. Absent = no fight.
    */
@@ -180,13 +186,22 @@ export function attaccoNegato(t: string, ...espressioni: RegExp[]): boolean {
   return n > 0;
 }
 
+/**
+ * The creature an action names: an NPC with a sheet that is here, else a minion of the scene named by its type's words,
+ * else a named NPC elsewhere (as before the presence check: the Game Master may have put it on stage by hand).
+ */
+function bersaglioNominato(testo: string, autore: string, nomi: ReturnType<typeof nomiDeiPng>, i: IngressoClassificatore): string | null {
+  const nominati = [...pngNominati(testo, nomi)].filter((id) => id !== autore && i.haScheda(id));
+  return nominati.find((id) => !i.presente || i.presente(id)) ?? i.gregario?.(testo) ?? nominati[0] ?? null;
+}
+
 export function attaccoDiRegole(az: { id: string; testo: string; autore: string }, i: IngressoClassificatore): DecisioneProva | null {
   const fatti = senzaParlato(az.testo);
   const t = normalizza(fatti);
   const armi = i.armi(az.autore);
   const nomi = nomiDeiPng(i.campagna);
   // A named NPC with a sheet, or else a minion of the scene named by its type's words (C5: «colpisco la sentinella»).
-  const bersaglioDi = (testo: string): string | null => [...pngNominati(testo, nomi)].find((id) => id !== az.autore && i.haScheda(id)) ?? i.gregario?.(testo) ?? null;
+  const bersaglioDi = (testo: string): string | null => bersaglioNominato(testo, az.autore, nomi, i);
   const nominato = bersaglioDi(fatti);
   // The weapon used whose name the action says most fully: «la spada corta alle spalle» is the sneak attack's line,
   // not the plain «spada corta» that comes first on the sheet.
@@ -229,7 +244,7 @@ export function potereDiRegole(az: { id: string; testo: string; autore: string }
   const nominati = poteri.filter((p) => p.parole.some((v) => haVoce(parole, v)));
   if (nominati.length !== 1) return null;
   const nomi = nomiDeiPng(i.campagna);
-  const png = [...pngNominati(fatti, nomi)].find((id) => id !== az.autore && i.haScheda(id)) ?? i.gregario?.(fatti) ?? null;
+  const png = bersaglioNominato(fatti, az.autore, nomi, i);
   const t = normalizza(fatti);
   const pgNominato = i.campagna.pg.find((p) => p.id !== az.autore && [p.nome, p.nome.split(/\s+/)[0] ?? ''].map(normalizza).some((n) => n.length > 2 && new RegExp(`\\b${n}\\b`).test(t)))?.id ?? null;
   return { ...vuota(az.id), tipo: 'potere', potere: nominati[0]!.id, bersaglio: png ?? pgNominato } as DecisioneRegole;

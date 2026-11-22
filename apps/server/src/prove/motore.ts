@@ -1399,6 +1399,13 @@ export class MotoreProve {
     return { ok: true, fatto };
   }
 
+  /** The names a manual's set gives to a PC sheet's ids (campagna/scheda.ts, the phone's «Scheda»); null with the SRD. */
+  nomiDelSet(): { caratteristiche: Array<{ id: string; nome: string }>; lingue: Array<{ id: string; nome: string }>; poteri: Array<{ id: string; nome: string }> } | null {
+    const s = this.generico?.regole.sistema;
+    if (!s) return null;
+    return { caratteristiche: s.caratteristiche.map((c) => ({ id: c.id, nome: c.nome })), lingue: (s.lingue ?? []).map((l) => ({ id: l.id, nome: l.nome })), poteri: (s.poteri ?? []).map((p) => ({ id: p.id, nome: p.nome })) };
+  }
+
   /** The encounter tables of the set, for the panel's «Tira un incontro» (empty without them). */
   tabelleIncontri(): Array<{ id: string; nome: string }> {
     return (this.sistema.incontri ?? []).map((t) => ({ id: t.id, nome: t.nome }));
@@ -2221,6 +2228,8 @@ export class MotoreProve {
         : this.proveScena(c.campagna).map((p) => ({ id: p.id, quando: p.quando, parole: p.parole, sociale: provaSocialeSrd(p) })),
       altre: altre.map((a) => ({ id: a.id, autore: a.autore })),
       ...(this.gregari.size ? { gregario: (fatti: string) => this.gregarioNominato(c, fatti) } : {}),
+      // An NPC named by a word the scene's minions share (an absent goblin chief's alias «goblin»): the ones here first.
+      presente: (id: string) => (c.presenti ?? new Set(c.campagna.scena.png_presenti)).has(id) || this.combattimento.partecipanti('png').includes(id),
       // In a fight, a PC's own attack with no target named goes to its last target (round 5: five attacks unrolled).
       ...(this.inCombattimento ? { bersaglioImplicito: (pg: string) => this.combattimento.bersaglioImplicito(pg, this.ultimoBersaglio.get(pg) ?? null) } : {}),
       // Nobody with stats standing in the scene (C5): an attack there is at nobody, and the narrator must not invent one.

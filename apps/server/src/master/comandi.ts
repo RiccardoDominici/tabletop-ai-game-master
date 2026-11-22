@@ -72,6 +72,9 @@ const TIPI: ReadonlySet<TipoComandoMaster> = new Set<TipoComandoMaster>([
   'chiedi_prova',
   'creazione',
   'reazione',
+  'incontro',
+  'luce',
+  'morale',
 ]);
 
 /** Comandi che non lasciano stato da salvare dopo (un effetto) o lo salvano da sé (sessioni). */

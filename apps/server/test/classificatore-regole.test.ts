@@ -156,6 +156,15 @@ describe('arbitro a regole: niente carte assurde (e2e finale)', () => {
   };
   const cl = (testo: string, autore = 'pg_corrado') => classificaARegole({ id: 'a1', autore, testo }, ing);
 
+  it('a word an absent NPC\'s alias shares with the scene\'s minions goes to the minions here (R6: the wandering goblins)', () => {
+    // «sgherro» is Ruggero's alias; a wandering «sgherro» stands in the scene and Ruggero is elsewhere.
+    const qui: IngressoClassificatore = { ...ing, presente: (id) => id !== 'png_ruggero', gregario: (t) => (/sgherro/.test(t) ? 'png_sgherro_inc1_1' : null) };
+    expect(classificaARegole({ id: 'a1', autore: 'pg_corrado', testo: 'Colpisco lo sgherro con la spada' }, qui)).toMatchObject({ tipo: 'attacco', bersaglio: 'png_sgherro_inc1_1' });
+    // Present, Ruggero is still the one his alias names; without minions, the absent one too (as before).
+    expect(classificaARegole({ id: 'a1', autore: 'pg_corrado', testo: 'Colpisco lo sgherro con la spada' }, { ...qui, presente: () => true })).toMatchObject({ bersaglio: 'png_ruggero' });
+    expect(classificaARegole({ id: 'a1', autore: 'pg_corrado', testo: 'Colpisco lo sgherro con la spada' }, { ...qui, gregario: () => null })).toMatchObject({ bersaglio: 'png_ruggero' });
+  });
+
   it('parole intere e generiche: «spalla» non è «spallata», «scala» non è «scalare», «passaggio» da solo non dice niente', () => {
     expect(cl('Anch’io gli stringo la spalla e resto lì')).toMatchObject({ tipo: 'nessuna' });
     expect(cl('Do una spallata alla porta')).toMatchObject({ tipo: 'prova', abilita: 'forzare' });

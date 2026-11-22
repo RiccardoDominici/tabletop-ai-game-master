@@ -271,6 +271,14 @@ tavolo:
   finestra_in_chiusura: "La finestra si sta già chiudendo."
   in_pausa: "Il tavolo è in pausa: riprendi prima di chiudere la finestra."
 
+# The phone's «Scheda» from the PC's data (campagna/scheda.ts): what the rule set gives besides the Preparer's text.
+scheda_pg:
+  chi: "Razza, classe e livello"
+  livello: "{livello}° livello"
+  caratteristiche: "Caratteristiche"
+  lingue: "Lingue"
+  libro: "Libro degli incantesimi"
+
 # Pannello del master: rifiuti dei comandi ed eventi (master/comandi.ts, master/note.ts, master/vista.ts).
 master:
   # Errore mostrato al pannello quando un comando è rifiutato (master/comandi.ts).

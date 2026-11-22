@@ -2675,7 +2675,8 @@ export class Regia {
 
   /** Scheda privata del PG (solo per il telefono che l'ha scelto). */
   schedaPg(id_pg: string): SchedaPg | null {
-    return schedaPg(this.campagna, id_pg);
+    // The rule set's names for the sheet's ids (its characteristics, languages, spells): a manual's set, else none.
+    return schedaPg(this.campagna, id_pg, this.prove?.nomiDelSet() ?? null);
   }
 
   private notifica(): void {

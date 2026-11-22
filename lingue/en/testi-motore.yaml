@@ -270,6 +270,14 @@ tavolo:
   finestra_in_chiusura: "The window is already closing."
   in_pausa: "The table is paused: resume before closing the window."
 
+# The phone's «Scheda» from the PC's data (campagna/scheda.ts): what the rule set gives besides the Preparer's text.
+scheda_pg:
+  chi: "Race, class and level"
+  livello: "level {livello}"
+  caratteristiche: "Abilities"
+  lingue: "Languages"
+  libro: "Spellbook"
+
 # Game Master panel: command refusals and events (master/comandi.ts, master/note.ts, master/vista.ts).
 master:
   # Error shown in the panel when a command is refused (master/comandi.ts).
