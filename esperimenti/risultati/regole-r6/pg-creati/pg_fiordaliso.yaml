@@ -1,4 +1,4 @@
-# Personaggio creato al tavolo (2026-11-22 18:03): passi e tiri in «creazione», scheda come in pg.yaml.
+# Personaggio creato al tavolo (2026-11-22 18:12): passi e tiri in «creazione», scheda come in pg.yaml.
 # Non finisce nel repository (campagne/*/pg-creati/ è in .gitignore): può avere il nome vero di un giocatore.
 id: pg_fiordaliso
 nome: Fiordaliso
@@ -6,7 +6,7 @@ specie: Elfo
 classe: Guerriero/Mago
 livello: 1
 creazione:
-  quando: 2026-11-22T18:03:47.319Z
+  quando: 2026-11-22T18:12:18.107Z
   metodo: in_ordine
   tiri:
     - passo: caratteristiche
