@@ -13,6 +13,10 @@ if (( $# == 0 )); then CHIAVI=(CM CA FB ST PR); else CHIAVI=($@); fi
 LIMITE=${GIRO_LIMITE_S:-3600}
 L=$S/finale/$G
 mkdir -p $L; cd $M || exit 1
+# Keep the Mac awake while the round plays: attempt 8's first CM game died when the Mac idled into sleep for 27 s
+# (pmset: «Entering Sleep state due to 'Maintenance Sleep'»), every socket of the harness dropped and its phones
+# came back without their PCs. caffeinate holds the assertion until this script exits (-w).
+caffeinate -i -s -w $$ &
 # Profile A's configuration: the tracked defaults plus profilo-a.yaml as locale.yaml, in the attempt's folder, so the run
 # never reads this computer's own config/locale.yaml (which may name API providers) and needs no keys.
 C=$L/config
@@ -42,6 +46,7 @@ run() { # port script rolls label
   local porta=$1 copione=$2 tiri=$3 E=$G-$4
   local libera=$(memory_pressure | tail -1 | grep -oE '[0-9]+%' | tr -d %)
   local disco=$(df -m / | tail -1 | awk '{print $4}')
+  local inizio="$(date '+%Y-%m-%d %H:%M:%S')"
   echo "== $(date +%T) start $E port $porta ($(git rev-parse --short HEAD)) memory free ${libera}% disk ${disco} MB" >> $L/driver.log
   if [[ ${libera:-0} -lt 25 ]]; then echo "== memory free ${libera}% < 25%: stop" >> $L/driver.log; exit 3; fi
   if [[ ${disco:-0} -lt 1000 ]]; then echo "== disk ${disco} MB < 1000: stop" >> $L/driver.log; exit 4; fi
@@ -55,6 +60,9 @@ run() { # port script rolls label
   con_limite $LIMITE env MODELLO_LOCALE=mlx-community/Qwen3-0.6B-4bit TAGM_CONFIG=$C TAGM_PORTA=$porta \
     npx tsx apps/server/src/esperimenti/esegui.ts torre-mozza/$copione B --campagna torre-mozza --uscita finale/$E --pausa-s 20 --tiri $tiri --sceneggiatore > $L/$E.out 2>&1
   echo "== $(date +%T) end $E exit $?" >> $L/driver.log
+  # A game the Mac slept through is not evidence: say so, so it is played again rather than judged.
+  local sonni=$(pmset -g log 2>/dev/null | awk -v t="$inizio" '($1 " " $2) >= t && $4 == "Sleep"' | wc -l | tr -d ' ')
+  if [[ ${sonni:-0} -gt 0 ]]; then echo "== SLEPT: the Mac slept ${sonni} time(s) during $E: play it again" >> $L/driver.log; fi
   local ris=esperimenti/risultati/finale/$E
   mkdir -p $ris
   python3 -I esperimenti/e2e-finale/misure.py $ris logs/porta-$porta --json $ris/misure.json > $ris/misure.txt 2>&1
