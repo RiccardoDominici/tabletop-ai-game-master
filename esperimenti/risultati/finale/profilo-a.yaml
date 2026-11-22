@@ -1,0 +1,20 @@
+# Profile A of the final round (docs/coerenza.md, «Final round»), as a config/locale.yaml: only what changes from
+# config/predefinita.yaml. giro.sh copies config/predefinita.yaml and this file (as locale.yaml) into the attempt's
+# folder and points TAGM_CONFIG at it, so the run never reads this computer's own config/locale.yaml.
+# No keys here: every component runs without a model except the reader.
+backend:
+  locale:
+    # The minimal reader the round is about (Qwen3 0.6B 4-bit on 4613). It must be named here too: avvio.sh reads the
+    # model from the configuration, and a different name would make the mlx server load that other model.
+    modello: mlx-community/Qwen3-0.6B-4bit
+componenti:
+  # The reader only relays: a prewritten line id or «nessuna», and the announcement (CLAUDE.md).
+  lettore:        {provider: locale, modo: minimo}
+  arbitro_azioni: {provider: regole}
+  arbitro_prove:  {provider: regole}
+  riassunto:      {provider: regole}
+  regole:         {provider: regole}
+  # The voice is the mock tone (the harness sets TAGM_TTS); no microphone (the script types), no images.
+  voce:           {provider: finto}
+  ascolto:        {provider: nessuno}
+  immagini:       {provider: nessuno}

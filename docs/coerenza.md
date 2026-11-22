@@ -974,6 +974,16 @@ Riccardo's goal (17 November): close the actionable items of `docs/da-fare.md`, 
 - before each game the driver checks memory (≥ 25% free), disk (≥ 1000 MB) and swap (≤ 8 GB)
   (`esperimenti/risultati/finale/giro.sh`).
 
+The driver's command is `zsh esperimenti/risultati/finale/giro.sh <attempt> [CM CA FB ST PR]` (no keys = all five).
+From attempt 8 it builds profile A's configuration in the attempt's folder: `config/predefinita.yaml` plus
+`esperimenti/risultati/finale/profilo-a.yaml` as `locale.yaml`, so a run never reads the computer's own
+`config/locale.yaml` and needs no keys. It stops a game that runs past `GIRO_LIMITE_S` seconds (default 3600) and
+writes TIMEOUT in `driver.log`; such a game is played again, not judged. After each game it writes the judge's evidence
+view, `vista.md` in the run's folder (`esperimenti/e2e-finale/vista.py`, tests in `test_vista.py`): each turn of
+`tavolo.md` followed by «Engine log for this turn», the engine records of that turn (facts and cards with numbers, who
+is out of play, the fight, WARN guard events, world, stall and clock lines, and the rule modules of R1–R6). A turn the
+engine logged but the table heard nothing of still gets its section.
+
 The scripts were the four blind torre-mozza scripts: combat with manual rolls (CM) and with automatic rolls (CA),
 off the rails (FB) and stall (ST). The fifth was `pressione` (PR), run B-style in profile A. It also checks A31:
 the server's ERROR «parola segreta nel messaggio del selettore» when a player's own words hold a secret. At T5 of
