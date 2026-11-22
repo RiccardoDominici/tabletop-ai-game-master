@@ -74,6 +74,7 @@ import { tiraPuntiFeritaMostri } from './bestiario';
 import { mostraTiroDelMaster } from './tiri-master';
 import { Esplorazione, type IncontroUscito } from './esplorazione';
 import { carteEsplorazione, fattoIncontro } from './esplorazione-testi';
+import { creaVagante, leggiVaganti, MASSIMO_VAGANTI, vagantiDellIncontro, type Vagante } from './vaganti';
 import { doveDellaScena, type DoveEsplorazione } from '../regole/esplorazione';
 
 /** The source of a knock-out's timed condition (prove/attivi.ts): its end wakes the character with 1 hit point. */
@@ -219,8 +220,10 @@ export class MotoreProve {
    * death saves. Null outside a pass (a fight opened from the panel rolls with the Engine's dice).
    */
   private tavolo: DadiDeiPg | null = null;
-  /** The scenes' minions by id (C5). */
-  private readonly gregari: ReadonlyMap<string, Gregario>;
+  /** The scenes' minions by id (C5), and the creatures of wandering encounters (prove/vaganti.ts) while they last. */
+  private readonly gregari: Map<string, Gregario>;
+  /** The creatures wandering encounters brought into their scenes (prove/vaganti.ts): rebuilt from the snapshot. */
+  private vaganti: Vagante[] = [];
   /**
    * Facts of what the Game Master applied from the panel between two turns (a rest, a trap, a fall: docs/prove.md §10):
    * the narrator hears them in the next resolved turn, first. Kept in the snapshot.
@@ -244,7 +247,7 @@ export class MotoreProve {
    * (prove/inventario.ts), so every reader of a sheet sees the same numbers; the campaign's sheets stay as loaded, and
    * a dry run (`ombra`) gets copies of its own.
    */
-  private readonly schedeVive: ReadonlyMap<string, SchedaGenerica> | null;
+  private readonly schedeVive: Map<string, SchedaGenerica> | null;
   /** What each character carries and wears, and its coins (prove/inventario.ts). Null without a catalog or coins. */
   readonly inventario: Inventario | null;
   /** The game clock (prove/tempo.ts): the set's `tempo`, or one round per window without it. */
@@ -1155,9 +1158,68 @@ export class MotoreProve {
     const lunga = causa !== 'finestra' && causa !== 'round' && this.tempo.trascorsi - i.quando >= this.tempo.secondiRound;
     const quando = lunga ? this.tempo.testoOraDi(this.tempo.inizio + i.quando) : null;
     const fatto = fattoIncontro(i, { nomeMostro, quando });
-    this.incontriDovuti.push({ id: `incontro_${i.n}`, nome: i.mostro ? nomeMostro(i.mostro) : (i.gruppo ?? testo('prove.esplorazione.qualcuno')) });
+    // The creatures join the scene as combatants (prove/vaganti.ts): the fight can open on them.
+    const arrivati = i.mostro ? this.aggiungiVaganti(vagantiDellIncontro(this.sistema, i.mostro, i.quanti, i.n, this.o.contesto().campagna.scena.id)) : [];
+    if (i.quanti > MASSIMO_VAGANTI && arrivati.length) this.o.log.warn({ quanti: i.quanti, in_scena: arrivati.length }, 'wandering: more creatures than a fight takes; the rest stay in the fact');
+    this.incontriDovuti.push({ id: arrivati[0]?.id ?? `incontro_${i.n}`, nome: i.mostro ? nomeMostro(i.mostro) : (i.gruppo ?? testo('prove.esplorazione.qualcuno')) });
     this.o.log.info({ n: i.n, ambiente: i.ambiente, tabella: i.tabella, tiro: i.tiro, mostro: i.mostro, gruppo: i.gruppo, quanti: i.quanti, sorpresi: i.sorpresi, quando: i.quando }, 'exploration: a wandering encounter');
     return fatto;
+  }
+
+  /**
+   * Put the creatures of an encounter among the Engine's sheets and the scene's minions (prove/vaganti.ts), their
+   * resources counted (a breath's uses). Returns those created.
+   */
+  private aggiungiVaganti(lista: readonly Vagante[], seme = this.dadi.seme): Vagante[] {
+    const g = this.generico;
+    if (!g || !this.schedeVive) return [];
+    const fatti: Vagante[] = [];
+    for (const v of lista) {
+      const m = creaVagante(g.regole.sistema, this.schedeVive, seme, v, this.o.log.child({ modulo: 'vaganti' }));
+      if (!m) continue;
+      this.gregari.set(v.id, m);
+      this.risorse?.aggiungiScheda(this.schedeVive.get(v.id)!);
+      this.vaganti.push(v);
+      fatti.push(v);
+    }
+    if (fatti.length) this.o.log.info({ creature: fatti.map((v) => `${v.id}:${this.stato.puntiFerita(v.id)?.massimi ?? '?'}pf`), scena: fatti[0]!.scena }, 'wandering: the creatures join the scene');
+    return fatti;
+  }
+
+  /** Every wandering creature gone from the sheets and the minions («Ricomincia», before a snapshot is read back). */
+  private togliVaganti(): void {
+    for (const v of this.vaganti) {
+      this.schedeVive?.delete(v.id);
+      this.gregari.delete(v.id);
+    }
+    this.vaganti = [];
+  }
+
+  /**
+   * The Game Master rolls an encounter from the panel (docs/prove.md §14): on the table named, else the scene's. The
+   * creatures join the scene, the fact reaches the narrator in the next turn, the cards are the panel's. Refused without
+   * a table, or during a fight.
+   */
+  incontroDelMaster(c: { tabella?: string | null }): { ok: true; fatto: string } | { ok: false; motivo: 'senza_tabella' | 'combattimento' } {
+    if (this.combattimento.attivo) return { ok: false, motivo: 'combattimento' };
+    const scena = this.doveEsplorazione();
+    const tabella = c.tabella ? ((this.sistema.incontri ?? []).find((t) => t.id === c.tabella) ?? null) : (scena?.tabella ?? null);
+    if (!tabella) return { ok: false, motivo: 'senza_tabella' };
+    // The environment: the scene's, else the first whose tables name this one, else that of a scene of the campaign that
+    // rolls on it (the woods' table belongs to the wilderness), else a bare one (no surprise in advance).
+    const daScene = (): DoveEsplorazione['ambiente'] | undefined => this.o.contesto().campagna.scene.map((x) => doveDellaScena(this.sistema, x.dati['esplorazione'])).find((d) => d?.tabella?.id === tabella.id)?.ambiente;
+    const ambiente = scena?.ambiente ?? this.sistema.esplorazione?.ambienti.find((a) => a.tabelle.some((t) => t.tabella === tabella.id)) ?? daScene() ?? { id: 'master', nome: '', controllo: null, tabelle: [], sorpresaPrima: null };
+    const { tiri, incontro } = this.esplorazione.incontroDelMaster({ ambiente, tabella, livello: scena?.livello ?? null }, this.tempo.trascorsi);
+    this.carteDelTempo.push(...carteEsplorazione(tiri, { turno: this.turnoCorrente, nuovoId: () => this.stato.nuovoIdTiro(), modo: this.o.tiriMaster?.() ?? 'nascosti', ambiente: ambiente.nome }));
+    const fatto = this.raccontaIncontro(incontro, 'master_incontro');
+    this.fattiInSospeso.push(fatto);
+    this.carteDelTempoAlPannello();
+    return { ok: true, fatto };
+  }
+
+  /** The encounter tables of the set, for the panel's «Tira un incontro» (empty without them). */
+  tabelleIncontri(): Array<{ id: string; nome: string }> {
+    return (this.sistema.incontri ?? []).map((t) => ({ id: t.id, nome: t.nome }));
   }
 
   /** The exploration cards rolled outside a turn (the panel's time, a rest): listed now for the panel. */
@@ -2037,13 +2099,17 @@ export class MotoreProve {
   // ------------------------------------------------------------------ sessione
 
   esporta(): StatoProveSalvato {
-    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta(), ...(this.tempo.mostrato ? { tempo: this.tempo.esporta() } : {}), ...(this.esperienza?.attiva ? { esperienza: this.esperienza.esporta() } : {}), ...(this.livelli?.attivo ? { livelli: this.livelli.esporta() } : {}), ...(this.drenaggi?.attivo ? { drenaggi: this.drenaggi.esporta() } : {}), ...(this.zeroDaTirare.length ? { zero_da_tirare: [...this.zeroDaTirare] } : {}), ...(this.sistema.esplorazione ? { esplorazione: this.esplorazione.esporta() } : {}), ...(this.carteDelTempo.length ? { carte_del_tempo: [...this.carteDelTempo] } : {}), ...(this.incontriDovuti.length ? { incontri_dovuti: [...this.incontriDovuti] } : {}) };
+    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta(), ...(this.tempo.mostrato ? { tempo: this.tempo.esporta() } : {}), ...(this.esperienza?.attiva ? { esperienza: this.esperienza.esporta() } : {}), ...(this.livelli?.attivo ? { livelli: this.livelli.esporta() } : {}), ...(this.drenaggi?.attivo ? { drenaggi: this.drenaggi.esporta() } : {}), ...(this.zeroDaTirare.length ? { zero_da_tirare: [...this.zeroDaTirare] } : {}), ...(this.sistema.esplorazione ? { esplorazione: this.esplorazione.esporta() } : {}), ...(this.vaganti.length ? { vaganti: this.vaganti.map((v) => ({ ...v })) } : {}), ...(this.carteDelTempo.length ? { carte_del_tempo: [...this.carteDelTempo] } : {}), ...(this.incontriDovuti.length ? { incontri_dovuti: [...this.incontriDovuti] } : {}) };
   }
 
   importa(s: StatoProveSalvato): void {
     // The levels and maximum hit points first: the hit points are read back against them. A monster's maximum comes
     // from the session seed the snapshot brings back (prove/bestiario.ts).
-    this.tiraMostri(!this.o.dadi && s.seme && /^[0-9a-f]{8,128}$/i.test(s.seme) ? s.seme : this.dadi.seme);
+    const seme = !this.o.dadi && s.seme && /^[0-9a-f]{8,128}$/i.test(s.seme) ? s.seme : this.dadi.seme;
+    this.tiraMostri(seme);
+    // The wandering creatures of the snapshot, rebuilt with the same ids and maxima before their hit points are read.
+    this.togliVaganti();
+    this.aggiungiVaganti(leggiVaganti(s.vaganti), seme);
     this.livelli?.importa(s.livelli);
     this.stato.importa(s);
     this.combattimento.importa(s.combattimento ?? null);
@@ -2070,6 +2136,7 @@ export class MotoreProve {
   azzera(): void {
     // A new seed first: the monsters roll their hit points again (prove/bestiario.ts), before the hit points are reset.
     if (!this.o.dadi) this.dadi = this.nuoviDadi(this.o.seme);
+    this.togliVaganti();
     this.tiraMostri(this.dadi.seme);
     // The sheets' own level and maximum first: hit points and slots are reset against them.
     this.livelli?.azzera();

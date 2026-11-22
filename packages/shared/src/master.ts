@@ -238,6 +238,8 @@ export interface TiriMaster {
   chieste: Array<{ id: string; id_pg: string; nome_pg: string; nome: string; difficolta: string | null; privata: boolean }>;
   /** The set's reaction tables the Game Master can roll (absent or empty = none), and the NPCs whose attitude may follow. */
   reazioni?: { tabelle: Array<{ id: string; nome: string }>; png: Array<{ id: string; nome: string }> };
+  /** The set's encounter tables (docs/prove.md §14), for «Tira un incontro»; absent or empty = none. */
+  incontri?: { tabelle: Array<{ id: string; nome: string }> };
 }
 
 /**
@@ -479,7 +481,12 @@ export type ComandoMaster =
    * the lead PC's characteristic bonus + the Game Master's adjustment; the band goes to the narrator, the card to the
    * panel; with an NPC, its attitude towards that PC follows the band (when the table says one).
    */
-  | { tipo: 'reazione'; tabella: string; id_pg: string; id_png?: string | null; aggiustamento?: number };
+  | { tipo: 'reazione'; tabella: string; id_pg: string; id_png?: string | null; aggiustamento?: number }
+  /**
+   * The Game Master rolls an encounter now (docs/prove.md §14): on the table named, else the scene's. The creatures join
+   * the scene as combatants, the narrator hears who arrives in the next turn, the cards are the panel's.
+   */
+  | { tipo: 'incontro'; tabella?: string | null };
 
 export type TipoComandoMaster = ComandoMaster['tipo'];
 

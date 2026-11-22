@@ -490,10 +490,15 @@ export const master = {
   'master.creazione.dai_libro': 'Dai al libro',
   // Reaction rolls (master/SezioneTiri.tsx; Basic Fantasy pp. 46, 50)
   'master.cmd.reazione': 'Tiro di reazione',
+  'master.cmd.incontro': 'Incontro',
   'master.tiri.reazione_titolo': 'Tiro di reazione',
   'master.tiri.reazione_pg': 'chi guida (il suo Carisma)',
   'master.tiri.reazione_nessun_png': 'nessun PNG in particolare',
   'master.tiri.reazione_aggiustamento': 'aggiustamento',
   'master.tiri.reazione_tira': 'Tira',
   'master.tiri.reazione_nota': 'Lo tira il Motore: la fascia va al narratore; con un PNG, il suo atteggiamento verso quel PG segue la fascia.',
+  'master.tiri.incontro_titolo': 'Tira un incontro',
+  'master.tiri.incontro_della_scena': 'la tabella della scena',
+  'master.tiri.incontro_tira': 'Tira',
+  'master.tiri.incontro_nota': 'Lo tira il Motore: la tabella e quanti; le creature entrano nella scena, il narratore sente chi arriva.',
 } as const;

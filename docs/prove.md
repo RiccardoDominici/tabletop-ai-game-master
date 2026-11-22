@@ -964,12 +964,20 @@ need. Now the set says which environments the party explores and how often the G
   the creatures' surprise in advance (p. 181: surprised, the party may avoid them; not surprised, they ambush and surprise
   on 1–4). Every die is a Game Master card. A group without a stat block (NPC adventurers, the city's watch) is named for
   the Game Master to build.
+- **The creatures join the scene.** A bestiary creature becomes one sheet per creature (prove/vaganti.ts): ids
+  `png_<entry>_inc<encounter>_<k>`, names «Goblin 1», «Goblin 2», the entry's numbers, hit points rolled from the session
+  seed and the id (the same on every resume). They are the scene's minions (campagna/gregari.ts): targets the arbiter
+  lists and an action names by their name («attacco il goblin»), combatants when a fight opens, worth their XP; they do
+  not speak and have no card. At most 20 of one encounter join (a «Wild 3d10» herd: the rest stay in the fact). The list
+  rides the snapshot and is rebuilt before the hit points are read; «Ricomincia» sends them away.
 - **What the table hears.** A fact for the narrator in the turn («Mostri erranti (tiro del master): arrivano 3 creature,
   goblin.»), owed like a light going out (prove/fatti-dovuti.ts, type `incontro`): if the narration does not tell it, the
   Engine says «Arriva qualcuno: Goblin.».
 - **The panel** («Tempo di gioco» box): the environment and table of the scene, when the next check falls («prossimo
   controllo tra 2 turni, ogni 3 turni, 1 su 1d6»), or that one is due and waits for the fight's end, and the session's
-  last encounter with its time.
+  last encounter with its time. «Tira un incontro» in the Tiri box (command `incontro`, `tabella` optional) rolls an
+  encounter now on the scene's table or any of the set's — a town's, which the manual gives no frequency for, or a
+  meeting the Game Master wants — with the same dice, cards, creatures and fact; refused during a fight.
 - **Data.** torre-mozza carries pp. 180–182: the dungeon (every 3 turns), the wilderness (every 4 hours, surprise in
   advance, an ambush on 1–4) and the 17 tables (six dungeon levels, nine terrains, the city's day and night), each
   creature an entry of its bestiary with the block's «No. Appearing» (underground the first formula, outdoors the «Wild»

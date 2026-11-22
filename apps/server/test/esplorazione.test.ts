@@ -112,8 +112,8 @@ describe('wandering monster checks on the clock', () => {
       ['Tabella degli incontri', 3],
       ['Quanti', 5],
     ]);
-    expect(r4.incontri).toEqual([{ id: 'incontro_1', nome: 'Goblin' }]);
-    expect(fattiDovuti(r4.tiri, [], [], [], r4.incontri)).toEqual([{ tipo: 'incontro', id: 'incontro_1', nome: 'Goblin' }]);
+    expect(r4.incontri).toEqual([{ id: 'png_goblin_inc1_1', nome: 'Goblin' }]);
+    expect(fattiDovuti(r4.tiri, [], [], [], r4.incontri)).toEqual([{ tipo: 'incontro', id: 'png_goblin_inc1_1', nome: 'Goblin' }]);
     expect(m.vistaTempo()!.incontri!.ultimo!.testo).toMatch(/arrivano 5 creature, goblin/);
   });
 
@@ -177,5 +177,53 @@ describe('wandering monster checks on the clock', () => {
     expect(r.vistaTempo()!.incontri).toMatchObject({ prossimo: '2 turni', ultimo: { testo: expect.stringMatching(/goblin/) } });
     r.azzera();
     expect(r.vistaTempo()!.incontri!.ultimo).toBeUndefined();
+  });
+});
+
+describe('the creatures of an encounter join the scene', () => {
+  it('one sheet each from the bestiary, numbered, their hit points rolled; an attack names one and opens the fight', async () => {
+    // d6: check 2 (encounter), table 3 (goblins); 2d4 = 1 + 1: two goblins.
+    const { m } = motore({ 6: [2, 3], 4: [1, 1], 20: [15], 8: [6] });
+    await m.risolvi(1, [azione('pg_aldo', 'Avanzo')]);
+    const r = await m.risolvi(2, [azione('pg_aldo', 'Avanzo')]);
+    expect(r.incontri).toEqual([{ id: 'png_goblin_inc1_1', nome: 'Goblin' }]);
+    expect(m.gregariDellaScena().map((g) => [g.id, g.nome])).toEqual([
+      ['png_goblin_inc1_1', 'Goblin 1'],
+      ['png_goblin_inc1_2', 'Goblin 2'],
+    ]);
+    // «1-1» hit dice: a d8 − 1, rolled from the session seed and the creature's id (the same on every resume).
+    const pf = m.stato.puntiFerita('png_goblin_inc1_1')!;
+    expect(pf.massimi).toBeGreaterThanOrEqual(1);
+    const a = await m.risolvi(3, [azione('pg_aldo', 'Attacco il goblin con la spada')]);
+    expect(a.tiri.find((t) => t.tipo === 'attacco')).toMatchObject({ chi: 'pg_aldo', bersaglio: { id: 'png_goblin_inc1_1' } });
+    expect(m.combattimento.attivo).toBe(true);
+    expect(m.combattimento.partecipanti('png').sort()).toEqual(['png_goblin_inc1_1', 'png_goblin_inc1_2']);
+  });
+
+  it('a resume rebuilds them with the same ids and maxima, wounds kept; «Ricomincia» sends them away', async () => {
+    const { m } = motore({ 6: [2, 6], 8: [5] }); // check 2, table 6: one wolf
+    await m.risolvi(1, [azione('pg_aldo', 'Avanzo')]);
+    await m.risolvi(2, [azione('pg_aldo', 'Avanzo')]);
+    const max = m.stato.puntiFerita('png_lupo_inc1_1')!.massimi;
+    m.stato.danneggia('png_lupo_inc1_1', 1);
+    const s = JSON.parse(JSON.stringify(m.esporta()));
+    const { m: r } = motore({ 6: [6] });
+    r.importa(s);
+    expect(r.gregariDellaScena().map((g) => g.id)).toEqual(['png_lupo_inc1_1']);
+    expect(r.stato.puntiFerita('png_lupo_inc1_1')).toEqual({ attuali: max - 1, massimi: max });
+    r.azzera();
+    expect(r.gregariDellaScena()).toEqual([]);
+    expect(r.stato.puntiFerita('png_lupo_inc1_1')).toBeNull();
+  });
+
+  it('the Game Master rolls an encounter from the panel: a table named, or the scene’s; not during a fight', () => {
+    const { m } = motore({ 4: [2, 3], 6: [5] }, 'scena_locanda');
+    expect(m.incontroDelMaster({})).toEqual({ ok: false, motivo: 'senza_tabella' });
+    const e = m.incontroDelMaster({ tabella: 'bosco' });
+    expect(e).toMatchObject({ ok: true, fatto: expect.stringMatching(/arrivano 5 creature, goblin/) });
+    expect(m.gregariDellaScena()).toHaveLength(5);
+    expect(m.tiriDelMaster().filter((t) => t.del_master).map((t) => t.etichetta)).toEqual(['Tabella degli incontri', 'Quanti', 'Sorpresa, in anticipo']);
+    m.iniziaCombattimento();
+    expect(m.incontroDelMaster({ tabella: 'bosco' })).toEqual({ ok: false, motivo: 'combattimento' });
   });
 });

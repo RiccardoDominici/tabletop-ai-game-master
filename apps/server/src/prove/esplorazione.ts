@@ -107,6 +107,17 @@ export class Esplorazione {
     return { tiri, incontro: null };
   }
 
+  /**
+   * The Game Master rolls an encounter now, without a check (the panel's «Tira un incontro»: a town's table, which the
+   * manual gives no frequency for, or a planned meeting): the table, the nested roll, how many, the surprise in advance.
+   */
+  incontroDelMaster(dove: DoveEsplorazione, adesso: number): { tiri: TiroEsplorazione[]; incontro: IncontroUscito } {
+    const tiri: TiroEsplorazione[] = [];
+    const incontro = this.incontro(dove, adesso, tiri);
+    this.o.log.info({ ambiente: dove.ambiente.id, tabella: dove.tabella?.id ?? null }, 'exploration: the Game Master rolls an encounter from the panel');
+    return { tiri, incontro };
+  }
+
   /** The table's roll, the nested roll, how many, the surprise in advance. */
   private incontro(dove: DoveEsplorazione, quando: number, tiri: TiroEsplorazione[]): IncontroUscito {
     const dadi = this.o.dadi();

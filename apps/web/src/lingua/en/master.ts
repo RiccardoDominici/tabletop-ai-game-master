@@ -490,10 +490,15 @@ export const master = {
   'master.creazione.dai_libro': 'Give to the book',
   // Reaction rolls (master/SezioneTiri.tsx; Basic Fantasy pp. 46, 50)
   'master.cmd.reazione': 'Reaction roll',
+  'master.cmd.incontro': 'Encounter',
   'master.tiri.reazione_titolo': 'Reaction roll',
   'master.tiri.reazione_pg': 'who leads (their Charisma)',
   'master.tiri.reazione_nessun_png': 'no NPC in particular',
   'master.tiri.reazione_aggiustamento': 'adjustment',
   'master.tiri.reazione_tira': 'Roll',
   'master.tiri.reazione_nota': 'The Engine rolls it: the band goes to the narrator; with an NPC, its attitude towards that PC follows the band.',
+  'master.tiri.incontro_titolo': 'Roll an encounter',
+  'master.tiri.incontro_della_scena': 'the scene\'s table',
+  'master.tiri.incontro_tira': 'Roll',
+  'master.tiri.incontro_nota': 'The program rolls it: the table and how many; the creatures join the scene, the narrator hears who arrives.',
 } satisfies Record<keyof typeof import('../it/master').master, string>;

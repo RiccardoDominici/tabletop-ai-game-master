@@ -445,6 +445,14 @@ export class ControlliMaster {
         if (!esito.ok) return rifiuto(esito.errore);
         return { esito: { ok: true }, dettagli: esito.fatto ?? tabella, dati: { tabella, pg, png, aggiustamento: agg } };
       }
+      case 'incontro': {
+        // An encounter rolled now (docs/prove.md §14): the table named, else the scene's; checked by the Engine.
+        const tabella = c.tabella === undefined || c.tabella === null || c.tabella === '' ? null : typeof c.tabella === 'string' && /^[a-z0-9_]{1,64}$/.test(c.tabella) ? c.tabella : undefined;
+        if (tabella === undefined) return rifiutoDi('incontro_non_valido');
+        const esito = regia.incontro({ tabella });
+        if (!esito.ok) return rifiuto(esito.errore);
+        return { esito: { ok: true }, dettagli: esito.fatto ?? tabella ?? '', dati: { tabella } };
+      }
       case 'creazione': {
         // Creation at the table (docs/creazione.md): the service checks the draft, the step and the moment.
         if (!this.o.creazione) return rifiutoDi('creazione_spenta');

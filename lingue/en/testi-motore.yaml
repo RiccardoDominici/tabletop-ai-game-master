@@ -48,6 +48,8 @@ regia:
   # Command errors (Game Master panel, phones).
   errori:
     reazione_non_valida: "Invalid reaction roll: a table of the set and a PC with a sheet."
+    incontro_non_valido: "Invalid encounter: an encounter table of the set, or a scene that has one."
+    incontro_combattimento: "No new encounter during a fight: end it first."
     nessuna_sessione: "No session in progress to close."
     telefono_sconosciuto: "Unknown phone."
     nessun_pg: "No character yet: build the characters on the phones and have the Game Master approve them."
@@ -269,6 +271,7 @@ master:
   rifiuti:
     creazione_spenta: "In this campaign the characters are ready-made: no creation at the table."
     reazione_non_valida: "Invalid reaction roll: table, PC, NPC or adjustment (−10 to 10)."
+    incontro_non_valido: "Invalid encounter: the id of one of the set's encounter tables."
     comando_sconosciuto: "Unknown command."
     errore_interno: "Internal server error."
     luogo_sconosciuto: "Unknown place."

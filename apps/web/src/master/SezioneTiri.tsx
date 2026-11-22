@@ -66,6 +66,7 @@ export function SezioneTiri({ stato }: { stato: StatoMaster }) {
       )}
       <ChiediProva tiri={tiri} />
       <TiroReazione tiri={tiri} />
+      <TiroIncontro tiri={tiri} />
       {tiri.del_master.length > 0 && (
         <details className="text-sm" data-testid="master-tiri-del-master">
           <summary className="cursor-pointer text-pergamena-2">{t('master.tiri.del_master', { n: tiri.del_master.length })}</summary>
@@ -208,6 +209,36 @@ function TiroReazione({ tiri }: { tiri: NonNullable<StatoMaster['tiri']> }) {
           {t('master.tiri.reazione_tira')}
         </button>
         <p className="text-xs text-cenere">{t('master.tiri.reazione_nota')}</p>
+      </div>
+    </details>
+  );
+}
+
+/**
+ * An encounter rolled now (docs/prove.md §14): the scene's table (empty choice) or one of the set's (a town's, which the
+ * manual gives no frequency for). The Engine rolls the table and how many; the creatures join the scene.
+ */
+function TiroIncontro({ tiri }: { tiri: NonNullable<StatoMaster['tiri']> }) {
+  const tabelle = tiri.incontri?.tabelle ?? [];
+  const [tabella, setTabella] = useState('');
+  const inCorso = useInCorso('incontro');
+  if (!tabelle.length) return null;
+  return (
+    <details className="rounded-lg border border-bordo bg-notte-3 p-2 text-sm" data-testid="master-incontro">
+      <summary className="cursor-pointer font-semibold text-pergamena">{t('master.tiri.incontro_titolo')}</summary>
+      <div className="mt-2 flex flex-col gap-2">
+        <select data-testid="master-incontro-tabella" value={tabella} onChange={(e) => setTabella(e.target.value)} className="h-9 rounded border border-bordo-chiaro bg-notte-2 px-2">
+          <option value="">{t('master.tiri.incontro_della_scena')}</option>
+          {tabelle.map((x) => (
+            <option key={x.id} value={x.id}>
+              {x.nome}
+            </option>
+          ))}
+        </select>
+        <button type="button" data-testid="master-incontro-tira" disabled={inCorso} onClick={() => void inviaComando({ tipo: 'incontro', tabella: tabella || null })} className={classePulsante('primario', 'piccolo')}>
+          {t('master.tiri.incontro_tira')}
+        </button>
+        <p className="text-xs text-cenere">{t('master.tiri.incontro_nota')}</p>
       </div>
     </details>
   );

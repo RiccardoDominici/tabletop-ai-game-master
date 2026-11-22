@@ -40,6 +40,7 @@ const UNO_PER_TIPO: Record<TipoComandoMaster, ComandoMaster> = {
   chiedi_prova: { tipo: 'chiedi_prova', id_pg: 'pg_anna', cosa: 'abilita:percezione', difficolta: null },
   creazione: { tipo: 'creazione', azione: 'approva_passo', id: 'cr_0a1b2c3d', passo: 'razza' },
   reazione: { tipo: 'reazione', tabella: 'reazione', id_pg: 'pg_anna', id_png: 'png_oste', aggiustamento: 1 },
+  incontro: { tipo: 'incontro', tabella: 'sotterraneo_1' },
 };
 
 describe('zone ed etichette dei comandi', () => {

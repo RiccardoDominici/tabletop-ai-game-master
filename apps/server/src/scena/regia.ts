@@ -3831,6 +3831,7 @@ export class Regia {
       chieste: this.tiriGiocatori.chieste().map((c) => ({ ...c, nome_pg: this.nomePg(c.id_pg) })),
       del_master: this.tiriDelMaster.registro(),
       ...(prove.tabelleReazione().length ? { reazioni: { tabelle: prove.tabelleReazione(), png: this.campagna.png.map((p) => ({ id: p.id, nome: p.nome })) } } : {}),
+      ...(prove.tabelleIncontri().length ? { incontri: { tabelle: prove.tabelleIncontri() } } : {}),
     };
   }
 
@@ -3845,6 +3846,18 @@ export class Regia {
     if (!r?.ok) return { ok: false, errore: testoFisso('regia.errori.reazione_non_valida') };
     if (c.id_png && r.atteggiamento) this.impostaAtteggiamento(c.id_png, c.id_pg, r.atteggiamento);
     else this.notifica();
+    return { ok: true, fatto: r.fatto };
+  }
+
+  /**
+   * An encounter rolled from the panel (docs/prove.md §14; prove/motore.ts incontroDelMaster): the table named or the
+   * scene's; the creatures join the scene, the narrator hears who arrives in the next turn.
+   */
+  incontro(c: { tabella: string | null }): Esito & { fatto?: string } {
+    const r = this.prove?.incontroDelMaster({ tabella: c.tabella });
+    if (!r?.ok) return { ok: false, errore: testoFisso(r && !r.ok && r.motivo === 'combattimento' ? 'regia.errori.incontro_combattimento' : 'regia.errori.incontro_non_valido') };
+    this.rigaDiSistema(this.turno, r.fatto);
+    this.notifica();
     return { ok: true, fatto: r.fatto };
   }
 

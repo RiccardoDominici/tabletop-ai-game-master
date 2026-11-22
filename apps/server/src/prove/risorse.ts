@@ -89,6 +89,11 @@ export class Risorse {
     for (const sch of this.schede.values()) this.ricaricaScheda(sch, 'tutto');
   }
 
+  /** A sheet that joined in play (a wandering creature, prove/vaganti.ts): its counters from its values, like at the start. */
+  aggiungiScheda(sch: SchedaGenerica): void {
+    this.ricaricaScheda(sch, 'tutto');
+  }
+
   private ricaricaScheda(sch: SchedaGenerica, quando: 'tutto' | 'riposo' | 'scontro'): void {
     const m = this.contatori.get(sch.id) ?? new Map<string, number>();
     for (const r of this.s.risorse ?? []) {

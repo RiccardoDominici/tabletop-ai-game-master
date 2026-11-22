@@ -49,6 +49,8 @@ regia:
   # Errori dei comandi (pannello del master, telefoni).
   errori:
     reazione_non_valida: "Tiro di reazione non valido: una tabella del set e un PG con la scheda."
+    incontro_non_valido: "Incontro non valido: una tabella degli incontri del set, o una scena che ne ha una."
+    incontro_combattimento: "Durante uno scontro non si tira un nuovo incontro: prima terminalo."
     nessuna_sessione: "Nessuna sessione in corso da chiudere."
     telefono_sconosciuto: "Telefono sconosciuto."
     nessun_pg: "Nessun personaggio ancora: create i personaggi sui telefoni e fateli approvare dal master."
@@ -270,6 +272,7 @@ master:
   rifiuti:
     creazione_spenta: "In questa campagna i personaggi sono già pronti: niente creazione al tavolo."
     reazione_non_valida: "Tiro di reazione non valido: tabella, PG, PNG o aggiustamento (da −10 a 10)."
+    incontro_non_valido: "Incontro non valido: l'id di una tabella degli incontri del set."
     comando_sconosciuto: "Comando sconosciuto."
     errore_interno: "Errore interno del server."
     luogo_sconosciuto: "Luogo sconosciuto."

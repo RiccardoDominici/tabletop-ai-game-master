@@ -59,6 +59,8 @@ export interface StatoProveSalvato {
   carte_del_tempo?: TiroMostrato[];
   /** Encounters not yet told by the narrator: owed facts of the next turn. */
   incontri_dovuti?: Array<{ id: string; nome: string }>;
+  /** The creatures wandering encounters brought into their scenes (prove/vaganti.ts), rebuilt on resume. */
+  vaganti?: Array<{ id: string; mostro: string; nome: string; scena: string; incontro: number }>;
 }
 
 /** Fuori gioco oltre ai PF: morto (finché il master non lo cura), fuggito (finché la scena non cambia). */
