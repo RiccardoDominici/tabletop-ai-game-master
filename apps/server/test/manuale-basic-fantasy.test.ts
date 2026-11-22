@@ -19,6 +19,7 @@ import { Inventario } from '../src/prove/inventario';
 import { loggerMuto } from '../src/logger';
 import { rigaDi } from '../src/regole/progressione';
 import { pxDiScheda } from '../src/regole/esperienza';
+import { controllaPersonaggio } from '../src/regole/controllo-pg';
 
 const BF = path.join(import.meta.dirname, '..', '..', '..', 'campagne', 'torre-mozza');
 
@@ -490,5 +491,55 @@ describe('the bestiary\'s specials as typed data (pp. 62–162)', () => {
     const sch = caricaSchedeGeneriche(s, { pg: [], png: [{ id: 'png_d', nome: 'Drago', dati: { scheda: { mostro: 'drago_montagna' } } } as never] }).get('png_d')!;
     expect(sch.attacchi.find((a) => a.id === 'soffio')).toMatchObject({ potere: 'soffio_fuoco', usi: 10 });
     expect(s.poteri!.find((p) => p.id === 'soffio_fuoco')).toMatchObject({ tipo: 'mostro', bersaglio: 'nemici', salvezza: { abilita: 'ts_soffio', esito: 'dimezza' } });
+  });
+});
+
+describe('character creation (pp. 3–8, 186–187)', () => {
+  it('the Prime Requisites, the races\' limits and classes, the languages (pp. 4–8)', () => {
+    const s = set();
+    const req = (id: string) => s.classi!.find((c) => c.id === id)!.requisiti;
+    // p. 7–8: a Prime Requisite of 9 or more.
+    expect(req('chierico')).toEqual({ saggezza: { min: 9, max: null } });
+    expect(req('guerriero')).toEqual({ forza: { min: 9, max: null } });
+    expect(req('mago')).toEqual({ intelligenza: { min: 9, max: null } });
+    expect(req('ladro')).toEqual({ destrezza: { min: 9, max: null } });
+    const razza = (id: string) => s.razze!.find((r) => r.id === id)!;
+    // p. 5: dwarves CON ≥ 9, CHA ≤ 17, cleric, fighter, thief; elves INT ≥ 9, CON ≤ 17, any of the four.
+    expect(razza('nano').requisiti).toEqual({ costituzione: { min: 9, max: null }, carisma: { min: null, max: 17 } });
+    expect(razza('nano').classi).toEqual(['chierico', 'guerriero', 'ladro']);
+    expect(razza('elfo').requisiti).toEqual({ intelligenza: { min: 9, max: null }, costituzione: { min: null, max: 17 } });
+    expect(razza('elfo').classi).toEqual(['chierico', 'guerriero', 'mago', 'ladro']);
+    // p. 6: halflings DEX ≥ 9, STR ≤ 17; humans any class, no limits.
+    expect(razza('halfling').requisiti).toEqual({ destrezza: { min: 9, max: null }, forza: { min: null, max: 17 } });
+    expect(razza('umano').requisiti).toEqual({});
+    expect(razza('umano').classi).toBeNull();
+    // p. 4: their own language and Common.
+    expect(razza('nano').lingue).toEqual(['comune', 'nanico']);
+    expect(razza('umano').lingue).toEqual(['comune']);
+  });
+
+  it('the procedure: 3d6 in order, the class die + CON, 3d6 × 10 gp, read magic and one more (pp. 3–4, 8)', () => {
+    const cr = set().creazione!;
+    expect(cr.livello).toBe(1);
+    expect(cr.metodi).toEqual([{ id: 'in_ordine', nome: '3d6 in ordine', tipo: 'dadi', dadi: { numero: 3, facce: 6, bonus: 0 }, tieni: null, ordine: 'fisso' }]);
+    expect(cr.puntiFerita).toBe('tira');
+    expect(cr.monete).toEqual({ dadi: { numero: 3, facce: 6, bonus: 0 }, per: 10, moneta: 'mo' });
+    expect(cr.incantesimi).toEqual([{ classe: 'mago', fissi: ['leggere_il_magico'], aScelta: 1, livello: 1, come: 'scelta' }]);
+    expect(cr.lingue).toEqual({ caratteristica: 'intelligenza' });
+    // p. 186–187: the Game Master's options and the hopeless character's flip (21 − score).
+    expect(cr.opzioni.map((o) => o.tipo)).toEqual(['punti', 'scambio', 'riordino']);
+    expect(cr.opzioni[0]).toMatchObject({ togli: 2, aggiungi: 1, minimo: 9 });
+    expect(cr.massimo).toBe(18);
+    expect(cr.senzaSperanza).toEqual({ rimedi: ['ritira', 'ribalta'], ribalta: 21 });
+  });
+
+  it('the four pregenerated PCs are legal by the same check the table uses', () => {
+    const s = set();
+    const c = caricaCampagna(BF, loggerMuto());
+    const schede = caricaSchedeGeneriche(s, c);
+    for (const id of ['pg_livia', 'pg_fulco', 'pg_nespola', 'pg_eliandro']) {
+      expect(controllaPersonaggio(s, schede.get(id)!, { creato: false }), id).toEqual([]);
+    }
+    expect(schede.get('pg_eliandro')!.libro).toEqual(['leggere_il_magico', 'dardo_incantato']);
   });
 });

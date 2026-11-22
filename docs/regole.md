@@ -182,6 +182,8 @@ tiri_salvezza:                              # optional [V]: the manual's save ca
 classi:                                     # optional [V]: the classes and their level tables (regole/classi.ts)
   - id: mago
     nome: "Mago"
+    requisiti: {intelligenza: 9}            # optional [V] (M7): the scores needed to join it (a number = the minimum,
+                                            #   or {min, max}); Basic Fantasy's Prime Requisite of 9, pp. 7–8
     tiri_salvezza: [{da: 1, valori: [13, 15]}, {da: 4, valori: [12, 13]}]   # [V] one value per column; `da` grows
     incantesimi_al_giorno: [{da: 1, slot: [1]}, {da: 3, slot: [2, 1]}]      # [V] spells per day by spell level
     # Progression (M1, regole/progressione.ts), all optional [V]; rows hold from their `da` up, `da` growing:
@@ -208,6 +210,10 @@ esperienza:                                 # optional [V]: XP in play (regole/e
 razze:                                      # optional [V]: races and their traits (regole/tratti.ts)
   - id: halfling
     nome: "Halfling"
+    requisiti: {destrezza: {min: 9}, forza: {max: 17}}   # optional [V] (M7): the scores a character of the race needs
+    classi: [chierico, guerriero, ladro]    # optional [V]: the classes open to it (absent = any); a class of the set
+    lingue: [comune, halfling]              # optional [V]: what it starts knowing; languages of the set's `lingue`
+    aggiustamenti: {destrezza: 1}           # optional [V]: added to the generated scores (none in Basic Fantasy)
     tratti:                                 # [V] the closed list; also `classi[].tratti` and the sheet's own `tratti`
       - {tiro: iniziativa, bonus: 1}        #   added to initiative
       - {tiro: abilita, abilita: [distanza], bonus: 1}             # to those abilities' rolls (attacks included)
@@ -217,6 +223,31 @@ razze:                                      # optional [V]: races and their trai
       - {almeno: {nascondersi: 70}}         #   an ability at least this value (the class table's or this, the better)
       - {dado_vita_massimo: 6}              #   never a hit die bigger than a d6 (Basic Fantasy's elves and halflings)
       - {tiro: esperienza, bonus: 10}       #   +10% to the XP it earns (humans)
+lingue:                                     # optional [V] (M7): the languages a character may know (Basic Fantasy p. 4)
+  - {id: comune, nome: "Comune"}
+creazione:                                  # optional [V] (M7): the manual's character creation (regole/creazione.ts)
+  livello: 1                                # [V] the level a new PC starts at (a player who joins later too)
+  passi: [caratteristiche, razza, classe, incantesimi, punti_ferita, monete, acquisti, lingue, descrizione]
+                                            # [V] the closed list, in the manual's order (scores before race and class,
+                                            #   the class before its hit points and spells, the money before purchases)
+  caratteristiche:
+    metodi:                                 # [V] at least one; the first is the set's default
+      - {id: in_ordine, nome: "3d6 in ordine", dadi: "3d6", ordine: fisso}      # rolled, written down in order (BF p. 3)
+      - {id: quattro_dadi, nome: "4d6, i tre migliori", dadi: "4d6", tieni: 3, ordine: libero}   # the player assigns them
+      - {id: schiera, nome: "Schiera", valori: [15, 14, 13, 12, 10, 8]}       # a fixed array, one value per characteristic
+      - {id: punti, nome: "A punti", punti: 27, costi: [{valore: 8, costo: 0}, {valore: 15, costo: 9}]}   # a point buy
+    opzioni:                                # optional [V]: what the Game Master may allow (BF p. 186, never demanded)
+      - {id: scambio_punti, nome: "Spostare punti", tipo: punti, togli: 2, aggiungi: 1, minimo: 9}
+      - {id: scambio, nome: "Scambiare due punteggi", tipo: scambio, volte: 1}
+      - {id: riordino, nome: "Disporli a piacere", tipo: riordino}
+    massimo: 18                             # optional: the highest score an option reaches (or the race's maximum)
+    senza_speranza: {rimedi: [ritira, ribalta], ribalta: 21}   # optional [V]: no class open: reroll, or every score
+                                            #   becomes ribalta − score (BF pp. 186–187)
+  punti_ferita: tira                        # [V] tira (the first level's die is rolled, BF) | massimo (the SRD 5.2)
+  monete: {dadi: "3d6", per: 10, moneta: mo}   # optional [V]: the starting money (a coin of `monete`)
+  incantesimi:                              # optional [V]: what a caster knows at the start: its spellbook (`scheda.libro`)
+    - {classe: mago, fissi: [leggere_il_magico], a_scelta: 1, livello: 1, come: scelta}   # come: scelta | master | tiro
+  lingue: {caratteristica: intelligenza}    # optional [V]: as many extra languages as its positive bonus (BF p. 4)
 magia: {preparazione: vanciana}             # optional [V]: vanciana (each prepared copy is one cast, back at a rest)
                                             #   | slot (the sheet's spells are known; a cast spends a slot of its level)
 risorse:                                    # optional [V]: per-character counters (prove/risorse.ts), in the snapshot
@@ -432,6 +463,9 @@ scheda:
   razza: elfo                                   # optional: a race of the set (its traits)
   salva_come: {classe: guerriero, livello: 3}   # optional [V]: a monster saves as a class and level («Save As»)
   incantesimi: [dardo_incantato]                # optional [V]: prepared (vanciana: one copy per cast) or known (slot)
+  libro: [leggere_il_magico, dardo_incantato]   # optional [V] (M7): the spells it knows (a magic-user's book); the
+                                                #   prepared ones come from it
+  lingue: [comune, elfico]                      # optional [V] (M7): languages of the set's `lingue`
   slot: [2, 1]                                  # optional [V]: spells per day by spell level, instead of the class table
   oggetti: {pozione_guarigione: 2}              # optional [V]: items with a power (tipo oggetto) and how many
   risorse: {frecce: 20, monete: 35}             # optional [V]: the starting counters of the set's resources
@@ -475,6 +509,20 @@ intended exception, logged by the Engine too); equal to it, a strict warning, si
 with the level. The sheet's `pf` is its maximum at its level: strict warning outside what the class's hit dice can give
 (each die with the characteristic's bonus, at least `minimo`; fixed rows exactly). A PC's `px` must give its `livello`
 by the class's `px` row (strict warning). Saves and spells per day already come from the class tables (above).
+
+**Creation** (M7; regole/creazione.ts, regole/requisiti.ts, regole/controllo-pg.ts; the validator's mirror
+strumenti/valida/regole_creazione.py). A finished PC — pregenerated by the Preparer or built at the table — is checked by
+one function, `controllaPersonaggio`, against the set: a race and class of the set, the class open to the race
+(`razze[].classi`), both sets of requirements met, scores inside what the methods can give (plus the race's
+adjustments and an option's `massimo`), hit points inside what the class's dice can give at the level (the race's
+`dado_vita_massimo` too; exactly the die's maximum at level 1 when the procedure says `massimo`), no gear a
+restriction forbids outright, no coin below zero, no more spent on gear and coins than the best starting roll
+(3d6 × 10 gp = 180 gp; a warning on a pregenerated sheet, a Game Master may have given more), the starting spells in
+the book (`fissi`, then exactly `a_scelta` more of spell level `livello` or lower, of the class's list) with every
+prepared spell from it, the race's languages and no more extra ones than the bonus gives. A PC built at the table also
+starts at the procedure's level with that level's XP. One case file, apps/server/test/fixtures/creazione/casi.yaml, is
+read by the Engine's test and by the validator's, so the two give the same codes. In the validator a pregenerated PC
+breaking a rule is an error, a missing detail (no book, no languages) a strict warning.
 
 **The bestiary in play** (regole/bestiario.ts, regole/schede.ts, prove/bestiario.ts; audit P5-20, P5-21, P6-00 to P6-07). An
 NPC's or a minion type's sheet writes `mostro: <id>` and the entry's keys come under its own: Zirrà can be a goblin with her

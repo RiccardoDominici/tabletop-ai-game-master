@@ -168,6 +168,8 @@ progressione:
 classi:
   - id: guerriero
     nome: "Guerriero"
+    # Requisito primario (Prime Requisite): almeno 9 di Forza per entrare nella classe (p. 7).
+    requisiti: {forza: 9}
     # PX per arrivare a ogni livello, dal 1° al 20° (p. 7).
     px: [0, 2000, 4000, 8000, 16000, 32000, 64000, 120000, 240000, 360000, 480000, 600000, 720000, 840000, 960000, 1080000, 1200000, 1320000, 1440000, 1560000]
     # Dadi vita (p. 7): un dado a livello fino al 9°, poi punti fissi senza Costituzione.
@@ -202,6 +204,8 @@ classi:
       - {da: 20, valori: [5, 6, 8, 9, 10]}
   - id: chierico
     nome: "Chierico"
+    # Requisito primario (Prime Requisite): almeno 9 di Saggezza per entrare nella classe (p. 7).
+    requisiti: {saggezza: 9}
     # PX per arrivare a ogni livello, dal 1° al 20° (p. 7).
     px: [0, 1500, 3000, 6000, 12000, 24000, 48000, 90000, 180000, 270000, 360000, 450000, 540000, 630000, 720000, 810000, 900000, 990000, 1080000, 1170000]
     # Dadi vita (p. 7): un dado a livello fino al 9°, poi punti fissi senza Costituzione.
@@ -278,6 +282,8 @@ classi:
       - {da: 20, slot: [6, 5, 5, 4, 3, 3]}
   - id: mago
     nome: "Mago"
+    # Requisito primario (Prime Requisite): almeno 9 di Intelligenza per entrare nella classe (p. 8).
+    requisiti: {intelligenza: 9}
     # PX per arrivare a ogni livello, dal 1° al 20° (p. 8).
     px: [0, 2500, 5000, 10000, 20000, 40000, 80000, 150000, 300000, 450000, 600000, 750000, 900000, 1050000, 1200000, 1350000, 1500000, 1650000, 1800000, 1950000]
     # Dadi vita (p. 8): un dado a livello fino al 9°, poi punti fissi senza Costituzione.
@@ -329,6 +335,8 @@ classi:
       - {da: 20, slot: [6, 5, 5, 4, 4, 3]}
   - id: ladro
     nome: "Ladro"
+    # Requisito primario (Prime Requisite): almeno 9 di Destrezza per entrare nella classe (p. 8).
+    requisiti: {destrezza: 9}
     # PX per arrivare a ogni livello, dal 1° al 20° (p. 8).
     px: [0, 1250, 2500, 5000, 10000, 20000, 40000, 75000, 150000, 225000, 300000, 375000, 450000, 525000, 600000, 675000, 750000, 825000, 900000, 975000]
     # Dadi vita (p. 8): un dado a livello fino al 9°, poi punti fissi senza Costituzione.
@@ -389,15 +397,27 @@ classi:
 razze:
   - id: umano
     nome: "Umano"
+    # Qualunque classe singola, nessun punteggio minimo o massimo (p. 6); la lingua comune (p. 4).
+    lingue: [comune]
     tratti:
       - {tiro: esperienza, bonus: 10}          # +10% ai PX guadagnati (p. 6)
   - id: nano
     nome: "Nano"
+    # Chierico, guerriero o ladro; Costituzione almeno 9, Carisma al più 17 (p. 5); il nanico e la lingua comune (p. 4).
+    requisiti: {costituzione: {min: 9}, carisma: {max: 17}}
+    classi: [chierico, guerriero, ladro]
+    lingue: [comune, nanico]
     tratti:
       - {tiro: salvezza, colonne: [morte, bacchette, paralisi, incantesimi], bonus: 4}
       - {tiro: salvezza, colonne: [soffio], bonus: 3}
   - id: elfo
     nome: "Elfo"
+    # Chierico, guerriero, mago o ladro; Intelligenza almeno 9, Costituzione al più 17 (p. 5); l'elfico e la lingua comune.
+    # Le classi combinate degli elfi (guerriero/mago, mago/ladro, p. 6) non ci sono ancora: il Motore non sa unire due
+    # tabelle di classe (il miglior bonus d'attacco e i migliori salvezza, i PX sommati).
+    requisiti: {intelligenza: {min: 9}, costituzione: {max: 17}}
+    classi: [chierico, guerriero, mago, ladro]
+    lingue: [comune, elfico]
     tratti:
       - {tiro: salvezza, colonne: [paralisi], bonus: 1}
       - {tiro: salvezza, colonne: [bacchette, incantesimi], bonus: 2}
@@ -406,6 +426,10 @@ razze:
       - {dado_vita_massimo: 6}                  # mai un dado vita più grande di un d6 (p. 5)
   - id: halfling
     nome: "Halfling"
+    # Chierico, guerriero o ladro; Destrezza almeno 9, Forza al più 17 (p. 6); la lingua halfling e la comune.
+    requisiti: {destrezza: {min: 9}, forza: {max: 17}}
+    classi: [chierico, guerriero, ladro]
+    lingue: [comune, halfling]
     tratti:
       - {tiro: salvezza, colonne: [morte, bacchette, paralisi, incantesimi], bonus: 4}
       - {tiro: salvezza, colonne: [soffio], bonus: 3}
@@ -415,6 +439,47 @@ razze:
       # 90% nel bosco è un aggiustamento del master); un halfling ladro tira una volta sola, col migliore dei due.
       - {almeno: {nascondersi: 70}}
       - {dado_vita_massimo: 6}                  # mai un dado vita più grande di un d6 (p. 6)
+
+# Lingue (p. 4): tutti sanno la loro lingua; le razze non umane la propria e la comune. Con Intelligenza 13 o più se ne
+# imparano tante quante il bonus (+1, +2, +3), tra quelle che il master permette: le altre razze e i mostri (orchi, goblin…);
+# le lingue esotiche come quella dei draghi sono a scelta del master. Un posto può restare libero, da riempire in gioco.
+lingue:
+  - {id: comune, nome: "Comune"}
+  - {id: nanico, nome: "Nanico"}
+  - {id: elfico, nome: "Elfico"}
+  - {id: halfling, nome: "Halfling"}
+  - {id: orchesco, nome: "Orchesco"}
+  - {id: goblin, nome: "Goblin"}
+  - {id: coboldo, nome: "Coboldo"}
+  - {id: gnoll, nome: "Gnoll"}
+  - {id: draconico, nome: "Draconico (a scelta del master)"}
+
+# Creazione del personaggio (p. 3–4, le opzioni del master a p. 186–187), nell'ordine del manuale: 3d6 per ogni
+# caratteristica, in ordine; la razza e la classe (requisiti sopra, nelle classi e nelle razze); gli incantesimi del mago
+# (leggere il magico e un altro di primo livello, p. 8 e 187: il master li tira, li assegna o li fa scegliere); il dado vita
+# della classe più la Costituzione, almeno 1 (p. 3, 4); 3d6 × 10 monete d'oro (p. 3, «chiedi al master prima di tirare»);
+# gli acquisti dal catalogo con le restrizioni di classe e razza (p. 3, 10); le lingue (p. 4); il nome. La Classe
+# d'Armatura, il bonus d'attacco e i tiri salvezza li ricava il Motore dalle tabelle (p. 3). Le opzioni (p. 186) sono del
+# master, mai dei giocatori: spostare punti (−2 a uno, +1 a un altro, mai sotto 9 né sopra 18 o il massimo della razza),
+# scambiare due punteggi una volta, disporli a piacere; il personaggio «senza speranza» (nessuna classe possibile) può
+# ritirare o ribaltare tutti i punteggi (21 meno il punteggio, p. 187). La campagna sceglie quali (campagna.yaml → regole.creazione).
+creazione:
+  livello: 1
+  passi: [caratteristiche, razza, classe, incantesimi, punti_ferita, monete, acquisti, lingue, descrizione]
+  caratteristiche:
+    metodi:
+      - {id: in_ordine, nome: "3d6 in ordine", dadi: "3d6", ordine: fisso}
+    opzioni:
+      - {id: scambio_punti, nome: "Spostare punti (−2 a uno, +1 a un altro)", tipo: punti, togli: 2, aggiungi: 1, minimo: 9}
+      - {id: scambio, nome: "Scambiare due punteggi", tipo: scambio, volte: 1}
+      - {id: riordino, nome: "Disporre i punteggi a piacere", tipo: riordino}
+    massimo: 18
+    senza_speranza: {rimedi: [ritira, ribalta], ribalta: 21}
+  punti_ferita: tira
+  monete: {dadi: "3d6", per: 10, moneta: mo}
+  incantesimi:
+    - {classe: mago, fissi: [leggere_il_magico], a_scelta: 1, livello: 1, come: scelta}
+  lingue: {caratteristica: intelligenza}
 
 # Incantesimi (p. 15): il mago e il chierico preparano ogni mattina un incantesimo per posto; lanciato, se ne va fino al
 # riposo successivo (Basic Fantasy, alla vecchia maniera).

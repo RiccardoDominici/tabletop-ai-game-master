@@ -33,6 +33,7 @@ import { leggiCatalogo, leggiMonete } from './catalogo';
 import { leggiCarico, leggiMovimento } from './carico';
 import { leggiTempo, leggiViaggio, secondiDi } from './tempo';
 import { leggiFileMostri, leggiMostri, leggiRegolaBestiario } from './bestiario';
+import { leggiCreazione, leggiLingue } from './creazione';
 
 export const CARTELLA_REGOLE = 'regole';
 const TIPI: readonly TipoRisoluzione[] = ['d20_cd', '2d6_fasce', 'sotto_soglia'];
@@ -247,6 +248,25 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[], fileMostr
     else r.durata = secondiDi(tempo.unita, durata, `riposo[${i + 1}].durata`, errori);
   }
   if (tempo && catalogo) for (const v of catalogo.voci) if (v.tipo === 'attrezzo' && v.luce && !tempo.unita.some((u) => u.id === v.luce!.unita)) errori.push(`catalogo.${v.id}.luce.unita: «${v.luce.unita}» is not a unit of tempo.unita`);
+  // Creation (M7): the languages, the classes' and races' requirements and allow-lists, the procedure.
+  const lingue = leggiLingue(d['lingue'], errori);
+  const idClassi = new Set((classiEPoteri.classi ?? []).map((c) => c.id));
+  const idLingue = new Set(lingue.map((l) => l.id));
+  for (const c of classiEPoteri.classi ?? []) for (const k of Object.keys(c.requisiti)) if (!idCar.has(k)) errori.push(`classi.${c.id}.requisiti.${k}: not a characteristic of the set`);
+  for (const x of classiEPoteri.razze ?? []) {
+    for (const k of [...Object.keys(x.requisiti), ...Object.keys(x.aggiustamenti)]) if (!idCar.has(k)) errori.push(`razze.${x.id}: «${k}» is not a characteristic of the set`);
+    for (const k of x.classi ?? []) if (!idClassi.has(k)) errori.push(`razze.${x.id}.classi: «${k}» is not a class of the set`);
+    for (const k of x.lingue) if (!idLingue.has(k)) errori.push(`razze.${x.id}.lingue: «${k}» is not a language of the set (lingue)`);
+  }
+  const creazione = leggiCreazione(
+    d['creazione'],
+    { caratteristiche: idCar, classi: idClassi, monete: monete ? new Set(monete.tagli.map((m) => m.id)) : null, incantesimi: new Map(poteri.filter((p) => p.tipo === 'incantesimo').map((p) => [p.id, p.livello])) },
+    errori,
+  );
+  if (creazione?.passi.includes('acquisti') && !catalogo) errori.push('creazione.passi: acquisti needs the set\'s catalogo');
+  if (creazione && (creazione.passi.includes('razza') && !(classiEPoteri.razze ?? []).length)) errori.push('creazione.passi: razza needs the set\'s razze');
+  if (creazione && (creazione.passi.includes('classe') && !idClassi.size)) errori.push('creazione.passi: classe needs the set\'s classi');
+  if (creazione?.passi.includes('lingue') && !lingue.length) errori.push('creazione.passi: lingue needs the set\'s lingue');
   const fonte = ogg(d['fonte']) ?? {};
   const lic = ogg(d['licenza']) ?? {};
   if (typeof lic['libera'] !== 'boolean') errori.push('licenza.libera: true o false (un set da un manuale non libero resta fuori dal repository)');
@@ -305,6 +325,8 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[], fileMostr
     ...(bestiario ? { bestiario } : {}),
     ...(mostri.length ? { mostri } : {}),
     ...(livelliNegativi ? { livelliNegativi } : {}),
+    ...(lingue.length ? { lingue } : {}),
+    ...(creazione ? { creazione } : {}),
   };
 }
 

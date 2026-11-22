@@ -23,6 +23,7 @@ from . import regole_progressione
 from . import regole_poteri
 from . import regole_catalogo
 from . import regole_bestiario
+from . import regole_creazione
 from .regole_effetti import controlla_cadute, controlla_effetti, controlla_riposo
 from .regole_repertorio import blocchi_richiede
 from .lingua import generiche_in
@@ -519,6 +520,8 @@ def controlla(c: Campagna, e: Esito) -> None:
     regole_poteri.abilita_d_attacco(r, e, dove)
 
     razze = regole_classi.razze_del_set(r, abi, set(colonne), e, dove)
+    # Creation (M7): languages, the classes' and races' requirements and allow-lists, the procedure.
+    regole_creazione.creazione_del_set(r, car, set(classi), set(razze), e, dove)
     regole_progressione.progressione_del_set(r, abi, car, poteri, e, dove)
     regole_progressione.esperienza_del_set(r, e, dove)
     catalogo = regole_catalogo.catalogo_del_set(r, car, abi, set(classi), set(razze), None, e, dove)
@@ -538,6 +541,9 @@ def controlla(c: Campagna, e: Esito) -> None:
         regole_poteri.controlla_scheda(s, d, r, poteri, risorse, e)
         regole_catalogo.controlla_scheda(s, d, r, catalogo, e)
         regole_progressione.controlla_scheda(s, d, r, e, di_png=not d.startswith("pg.yaml"))
+        if d.startswith("pg.yaml"):
+            # A pregenerated PC against the set's creation rules: built by the same steps a player follows at the table.
+            regole_creazione.controlla_scheda(s, d, r, e, creato=False)
     _schede(c, e, car, abi, dadi_attivi(c), tabella_modificatori(r), soglie_abilita(r), per_scheda=per_scheda, mostri=mostri)
     _prove_di_scena(c, e, car, abi, mosse, diff, condizioni_del_set(r))
     controlla_cadute(r, e, dove)

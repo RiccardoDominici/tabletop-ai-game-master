@@ -90,6 +90,11 @@ export function leggiSchedaGenerica(s: SistemaRegole, id: string, nome: string, 
   const sch: SchedaGenerica = { id, nome, di_png, caratteristiche, abilita, pf_massimi: pf && pf > 0 ? pf : 1, difesa, armatura: intero(o['armatura']) ?? 0, attacchi, ...classeDellaScheda(s, o, dove, avvisi), ...risorseDellaScheda(s, o, dove, avvisi), ...equipaggiamentoDellaScheda(s, o, dove, avvisi), ...esperienzaDellaScheda(o, dove, avvisi), ...mostroDellaScheda(s, o, attacchi, dove, avvisi), avvisi };
   if (idMostro && mostro) sch.mostro = idMostro;
   if (pfDaTirare && (pfFormula || intero(o['pf']) === null)) sch.pfDaTirare = pfDaTirare;
+  // Creation (M7): the spellbook a prepared spell comes from, and the languages the character knows.
+  const libro = idDi(o['libro'], (x) => (s.poteri ?? []).some((p) => p.id === x && p.tipo === 'incantesimo'), `${dove}.libro`, 'un incantesimo del set', avvisi);
+  if (libro) sch.libro = libro;
+  const lingue = idDi(o['lingue'], (x) => (s.lingue ?? []).some((l) => l.id === x), `${dove}.lingue`, 'una lingua del set (lingue)', avvisi);
+  if (lingue) sch.lingue = lingue;
   // Hit dice as the manual prints them («3+2*»): the number a table reads, and the asterisks unless the sheet counts them.
   if (dv) {
     sch.dadiVita = dadiVitaEffettivi(dv, s.bestiario ?? null);
@@ -106,6 +111,21 @@ export function leggiSchedaGenerica(s: SistemaRegole, id: string, nome: string, 
     if (difesa !== null && sch.difesa !== difesa) avvisi.push(`${dove}: difesa ${difesa} diversa da quella dell'equipaggiamento (${sch.difesa}, ${da}): vale quella dell'equipaggiamento`);
   }
   return sch;
+}
+
+/** A sheet's list of set ids (`libro`, `lingue`): the known ones kept, the others a warning; null when absent. */
+function idDi(v: unknown, esiste: (id: string) => boolean, dove: string, cosa: string, avvisi: string[]): string[] | null {
+  if (v === undefined || v === null) return null;
+  if (!Array.isArray(v)) {
+    avvisi.push(`${dove}: una lista di id`);
+    return null;
+  }
+  const out: string[] = [];
+  for (const x of v) {
+    if (typeof x === 'string' && esiste(x)) out.push(x);
+    else avvisi.push(`${dove}: «${String(x)}» non è ${cosa}`);
+  }
+  return out;
 }
 
 /**

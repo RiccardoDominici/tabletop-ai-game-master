@@ -22,6 +22,7 @@ import type { TiriSalvezza } from './salvezze';
 import type { Voce } from './tipi';
 import { leggiTratti, type Tratto } from './tratti';
 import { leggiProgressioneClasse, type ProgressioneClasse } from './progressione';
+import { leggiRequisiti, type Requisiti } from './requisiti';
 
 export interface Classe extends Voce {
   /** Save rows (one value per column of `tiri_salvezza.colonne`); empty = the class has none. */
@@ -32,6 +33,8 @@ export interface Classe extends Voce {
   tratti: Tratto[];
   /** XP, hit dice, attack bonus, ability values and power tables by level (regole/progressione.ts, M1). */
   progressione: ProgressioneClasse;
+  /** Creation (M7): the scores needed to join the class (Basic Fantasy p. 7: the Prime Requisite of at least 9). */
+  requisiti: Requisiti;
 }
 
 type D = Record<string, unknown>;
@@ -99,7 +102,7 @@ export function leggiClassi(v: unknown, colonne: number | null, errori: string[]
     if (out.some((c) => c.id === id)) errori.push(`classi: id repeated «${id}»`);
     const ts = righe(o['tiri_salvezza'], 'valori', `classi.${id}.tiri_salvezza`, errori, colonne);
     if (ts.length && colonne === null) errori.push(`classi.${id}.tiri_salvezza: the set has no tiri_salvezza.colonne`);
-    out.push({ id, nome: typeof o['nome'] === 'string' ? o['nome'] : id, tiriSalvezza: ts, incantesimiAlGiorno: righe(o['incantesimi_al_giorno'], 'slot', `classi.${id}.incantesimi_al_giorno`, errori, null), tratti: leggiTratti(o['tratti'], `classi.${id}.tratti`, ctx, errori), progressione: leggiProgressioneClasse(o, id, ctx, errori) });
+    out.push({ id, nome: typeof o['nome'] === 'string' ? o['nome'] : id, tiriSalvezza: ts, incantesimiAlGiorno: righe(o['incantesimi_al_giorno'], 'slot', `classi.${id}.incantesimi_al_giorno`, errori, null), tratti: leggiTratti(o['tratti'], `classi.${id}.tratti`, ctx, errori), progressione: leggiProgressioneClasse(o, id, ctx, errori), requisiti: leggiRequisiti(o['requisiti'], `classi.${id}.requisiti`, null, errori) });
   }
   return out;
 }

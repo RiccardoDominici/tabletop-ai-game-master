@@ -22,6 +22,7 @@ import type { Progressione } from './progressione';
 import type { RegolaEsperienza } from './esperienza';
 import type { Mostro, RegolaBestiario } from './bestiario';
 import type { Durata } from './effetti';
+import type { RegolaCreazione } from './creazione';
 
 export interface Voce {
   id: string;
@@ -216,6 +217,14 @@ export interface SistemaRegole {
    * highest-level spell slots. Absent = a drain effect does nothing (logged).
    */
   livelliNegativi?: { d20: number; percentuali: number } | null;
+  /** The languages a character may know (regole.yaml → lingue; Basic Fantasy p. 4). Absent = languages are not tracked. */
+  lingue?: Voce[];
+  /**
+   * The manual's character creation procedure (regole.yaml → creazione; regole/creazione.ts, mechanism M7): the steps,
+   * the ways to generate scores, the first hit points, the starting money, spells and languages. Absent = only
+   * pregenerated PCs (the Preparer writes them; the validator checks them against the classes and races all the same).
+   */
+  creazione?: RegolaCreazione | null;
 }
 
 /** Un passo del manuale (regole/estratti/*.md), per l'arbitro e per «Chiedi una regola». */
@@ -294,6 +303,13 @@ export interface SchedaGenerica {
   risorse?: Record<string, number>;
   /** Spells prepared (`vanciana`: each copy one cast) or known (`slot`), ids of the set's powers. */
   incantesimi?: string[];
+  /**
+   * The spells the character knows (`scheda.libro`: a magic-user's spellbook, Basic Fantasy p. 8 and 187), from which the
+   * prepared `incantesimi` are chosen; absent = the sheet does not say (any of its class's spells may be prepared).
+   */
+  libro?: string[];
+  /** The languages the character knows (`scheda.lingue`, ids of the set's `lingue`; Basic Fantasy p. 4). */
+  lingue?: string[];
   /** Spell slots by spell level (index 0 = 1st level), when the sheet writes them (an NPC caster); else the class table. */
   slot?: number[] | null;
   /** Items with a power and how many (`scheda.oggetti: {pozione_guarigione: 2}`). */

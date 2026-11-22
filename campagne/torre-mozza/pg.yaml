@@ -35,6 +35,7 @@ personaggi:
       livello: 1
       px: 0                      # 2.000 per il 2° livello (p. 7); da umana, +10% ai PX guadagnati
       razza: umano
+      lingue: [comune]             # la lingua comune (p. 4): con Intelligenza 10 nessuna in più
       abilita: {forzare: 3}      # il bonus d'attacco +1 viene dalla tabella (p. 53)
       pf: 9                      # 1d8 al massimo, più 1 di Costituzione
       # Equipaggiamento dal catalogo del set (p. 10–11): la CA 17 viene da cotta di maglia 15, scudo +1, Destrezza +1;
@@ -80,6 +81,7 @@ personaggi:
       livello: 1
       px: 0                      # 1.500 per il 2° livello (p. 7)
       razza: nano
+      lingue: [comune, nanico]     # il nanico e la comune (p. 4)
       abilita: {forzare: 2, pietra: 2}
       pf: 7                      # 1d6 al massimo, più 1 di Costituzione
       # Equipaggiamento dal catalogo del set: la CA 15 viene da cotta di maglia 15, scudo +1, Destrezza −1; mazza 1d8 e
@@ -126,6 +128,7 @@ personaggi:
       livello: 1
       px: 0                      # 1.250 per il 2° livello (p. 8)
       razza: halfling
+      lingue: [comune, halfling]   # la lingua halfling e la comune (p. 4)
       pf: 5                      # 1d4 al massimo, più 1 di Costituzione
       # Equipaggiamento dal catalogo del set: la CA 15 viene da armatura di cuoio 13 e Destrezza +2; spada corta 1d6 e
       # fionda 1d4 (Forza +0). Monete: 3d6 × 10 = 100 mo (p. 10) meno 61 mo spesi.
@@ -172,6 +175,9 @@ personaggi:
       livello: 1
       px: 0                      # 2.500 per il 2° livello (p. 8)
       razza: elfo
+      lingue: [comune, elfico]     # l'elfico e la comune; con Intelligenza 16 due posti in più, lasciati liberi (p. 4)
+      # Il libro degli incantesimi (p. 8): leggere il magico e un incantesimo di primo livello; prepara il dardo per oggi.
+      libro: [leggere_il_magico, dardo_incantato]
       incantesimi: [dardo_incantato]
       abilita: {cercare: 3}
       pf: 4                      # 1d4 al massimo

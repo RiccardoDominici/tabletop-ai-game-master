@@ -1,0 +1,188 @@
+# Cases of the creation check (mechanism M7, docs/regole.md §2 «Creazione»): one invented minimal rule set and the
+# sheets it judges, with the problem codes each must give. Read by BOTH the Engine's test
+# (apps/server/test/creazione-controllo.test.ts, regole/controllo-pg.ts) and the validator's
+# (strumenti/test_valida_creazione.py, strumenti/valida/regole_creazione.py), so the two checks cannot drift apart.
+# `creato: true` = a PC just built at the table (the strict check); false = a pregenerated sheet.
+set:
+  id: creazione-prova
+  nome: "Prova di creazione"
+  licenza: {nome: CC0, libera: true}
+  risoluzione: {tipo: d20_cd, dado: 20}
+  caratteristiche:
+    - {id: forza, nome: "Forza"}
+    - {id: mente, nome: "Mente"}
+    - {id: agilita, nome: "Agilità"}
+    - {id: tempra, nome: "Tempra"}
+  modificatore:
+    tipo: tabella
+    tabella: [{da: 3, mod: -1}, {da: 9, mod: 0}, {da: 13, mod: 1}, {da: 16, mod: 2}]
+  abilita:
+    - {id: mischia, nome: "Mischia", caratteristica: forza}
+    - {id: distanza, nome: "Distanza", caratteristica: agilita}
+  difficolta: [{id: normale, nome: "Normale", valore: 15}]
+  progressione:
+    attacco: [mischia, distanza]
+    punti_ferita: {caratteristica: tempra, minimo: 1}
+  classi:
+    - id: lama
+      nome: "Lama"
+      requisiti: {forza: 9}
+      px: [0, 1000, 2000]
+      dadi_vita: [{da: 1, dado: "1d8"}]
+      attacco: [{da: 1, bonus: 1}]
+    - id: arcano
+      nome: "Arcano"
+      requisiti: {mente: {min: 9}}
+      px: [0, 1500, 3000]
+      dadi_vita: [{da: 1, dado: "1d4"}]
+      attacco: [{da: 1, bonus: 0}]
+      incantesimi_al_giorno: [{da: 1, slot: [1]}, {da: 3, slot: [2, 1]}]
+  razze:
+    - id: umano
+      nome: "Umano"
+      lingue: [comune]
+    - id: piccolo
+      nome: "Piccolo"
+      requisiti: {agilita: {min: 9}, forza: {max: 15}}
+      classi: [lama]
+      lingue: [comune, piccolese]
+      tratti: [{dado_vita_massimo: 6}]
+  lingue:
+    - {id: comune, nome: "Comune"}
+    - {id: piccolese, nome: "Piccolese"}
+    - {id: antico, nome: "Antico"}
+    - {id: runico, nome: "Runico"}
+  poteri:
+    - {id: leggere_rune, nome: "Leggere le rune", tipo: incantesimo, livello: {arcano: 1}, bersaglio: se_stesso, descrittivo: true}
+    - {id: scintilla, nome: "Scintilla", tipo: incantesimo, livello: {arcano: 1}, bersaglio: uno, descrittivo: true}
+    - {id: fiamma, nome: "Fiamma", tipo: incantesimo, livello: {arcano: 2}, bersaglio: uno, descrittivo: true}
+  monete:
+    base: mo
+    tagli:
+      - {id: mo, nome: "Monete d'oro", vale: 10}
+      - {id: ma, nome: "Monete d'argento", vale: 1}
+  catalogo:
+    difesa: {senza_armatura: 10, caratteristica: agilita}
+    abilita: {mischia: mischia, distanza: distanza}
+    armi:
+      - {id: spadone, nome: "Spadone", danno: "1d10", taglia: L, peso: 10, costo: 20}
+      - {id: pugnale, nome: "Pugnale", danno: "1d4", taglia: S, peso: 1, costo: 2}
+    armature:
+      - {id: giaco, nome: "Giaco", ca: 12, categoria: cuoio, peso: 15, costo: 15}
+    attrezzatura:
+      - {id: corda, nome: "Corda", peso: 5, costo: 1}
+    restrizioni:
+      - {razza: piccolo, cosa: arma, vietati_taglie: [L], penalita: {vietato: true}}
+  creazione:
+    livello: 1
+    passi: [caratteristiche, razza, classe, punti_ferita, monete, acquisti, incantesimi, lingue, descrizione]
+    caratteristiche:
+      metodi:
+        - {id: in_ordine, nome: "3d6 in ordine", dadi: "3d6", ordine: fisso}
+      opzioni:
+        - {id: scambio_punti, nome: "Spostare punti", tipo: punti, togli: 2, aggiungi: 1, minimo: 9}
+      massimo: 18
+      senza_speranza: {rimedi: [ritira, ribalta], ribalta: 21}
+    punti_ferita: tira
+    monete: {dadi: "3d6", per: 10, moneta: mo}
+    incantesimi:
+      - {classe: arcano, fissi: [leggere_rune], a_scelta: 1, livello: 1, come: scelta}
+    lingue: {caratteristica: mente}
+
+# A legal fighter of each race; every other case changes one thing.
+base_lama: &lama
+  caratteristiche: {forza: 14, mente: 10, agilita: 11, tempra: 13}
+  razza: umano
+  classe: lama
+  livello: 1
+  px: 0
+  pf: 6
+  equipaggiamento: [giaco, pugnale, corda]
+  monete: {mo: 40}
+  lingue: [comune]
+
+casi:
+  - nome: "a legal human fighter, built at the table"
+    creato: true
+    scheda: *lama
+    problemi: []
+  - nome: "a legal small fighter, pregenerated"
+    creato: false
+    scheda: {<<: *lama, razza: piccolo, caratteristiche: {forza: 12, mente: 10, agilita: 11, tempra: 13}, pf: 4, lingue: [comune, piccolese]}
+    problemi: []
+  - nome: "too strong for the race's maximum"
+    creato: false
+    scheda: {<<: *lama, razza: piccolo, caratteristiche: {forza: 16, mente: 10, agilita: 11, tempra: 13}, pf: 4, lingue: [comune, piccolese]}
+    problemi: [requisito_razza]
+  - nome: "a class the race does not allow"
+    creato: false
+    scheda: {<<: *lama, razza: piccolo, classe: arcano, caratteristiche: {forza: 12, mente: 12, agilita: 11, tempra: 13}, pf: 3, lingue: [comune, piccolese], libro: [leggere_rune, scintilla]}
+    problemi: [classe_non_ammessa]
+  - nome: "below the class's prime requisite"
+    creato: false
+    scheda: {<<: *lama, classe: arcano, caratteristiche: {forza: 12, mente: 8, agilita: 11, tempra: 13}, pf: 3, libro: [leggere_rune, scintilla]}
+    problemi: [requisito_classe]
+  - nome: "a score 3d6 cannot give"
+    creato: false
+    scheda: {<<: *lama, caratteristiche: {forza: 19, mente: 10, agilita: 11, tempra: 13}}
+    problemi: [caratteristica_fuori]
+  - nome: "more hit points than the die and Tempra give"
+    creato: false
+    scheda: {<<: *lama, pf: 10}
+    problemi: [pf_fuori]
+  - nome: "the small race's d6 cap on the die"
+    creato: false
+    scheda: {<<: *lama, razza: piccolo, caratteristiche: {forza: 12, mente: 10, agilita: 11, tempra: 13}, pf: 9, lingue: [comune, piccolese]}
+    problemi: [pf_fuori]
+  - nome: "XP above the first level's, built at the table"
+    creato: true
+    scheda: {<<: *lama, px: 100}
+    problemi: [px_livello]
+  - nome: "a level other than the procedure's, built at the table"
+    creato: true
+    scheda: {<<: *lama, livello: 2, px: 1000, pf: 12}
+    problemi: [livello_iniziale]
+  - nome: "a large weapon in small hands"
+    creato: false
+    scheda: {<<: *lama, razza: piccolo, caratteristiche: {forza: 12, mente: 10, agilita: 11, tempra: 13}, pf: 4, lingue: [comune, piccolese], equipaggiamento: [spadone]}
+    problemi: [equipaggiamento_vietato]
+  - nome: "more spent than the best starting roll (180)"
+    creato: false
+    scheda: {<<: *lama, monete: {mo: 170}}
+    problemi: [spesa_oltre]
+  - nome: "a caster with read runes and one more"
+    creato: true
+    scheda: {<<: *lama, classe: arcano, caratteristiche: {forza: 10, mente: 13, agilita: 11, tempra: 10}, pf: 3, libro: [leggere_rune, scintilla], incantesimi: [scintilla], lingue: [comune, antico]}
+    problemi: []
+  - nome: "a caster without its book"
+    creato: true
+    scheda: {<<: *lama, classe: arcano, caratteristiche: {forza: 10, mente: 13, agilita: 11, tempra: 10}, pf: 3}
+    problemi: [libro_mancante]
+  - nome: "a caster missing read runes"
+    creato: true
+    scheda: {<<: *lama, classe: arcano, caratteristiche: {forza: 10, mente: 13, agilita: 11, tempra: 10}, pf: 3, libro: [scintilla]}
+    problemi: [libro_senza_fissi]
+  - nome: "a second-level spell in a first-level book"
+    creato: true
+    scheda: {<<: *lama, classe: arcano, caratteristiche: {forza: 10, mente: 13, agilita: 11, tempra: 10}, pf: 3, libro: [leggere_rune, fiamma]}
+    problemi: [libro_livello]
+  - nome: "a spell of another class in the book"
+    creato: false
+    scheda: {<<: *lama, libro: [scintilla]}
+    problemi: [incantesimo_non_della_classe]
+  - nome: "a prepared spell not in the book"
+    creato: false
+    scheda: {<<: *lama, classe: arcano, caratteristiche: {forza: 10, mente: 13, agilita: 11, tempra: 10}, pf: 3, libro: [leggere_rune, scintilla], incantesimi: [fiamma]}
+    problemi: [preparato_fuori_libro]
+  - nome: "the race's own language missing"
+    creato: false
+    scheda: {<<: *lama, razza: piccolo, caratteristiche: {forza: 12, mente: 10, agilita: 11, tempra: 13}, pf: 4, lingue: [comune]}
+    problemi: [lingue_della_razza]
+  - nome: "more extra languages than Mente's bonus"
+    creato: false
+    scheda: {<<: *lama, caratteristiche: {forza: 14, mente: 13, agilita: 11, tempra: 13}, lingue: [comune, antico, runico]}
+    problemi: [lingue_troppe]
+  - nome: "no languages written, built at the table"
+    creato: true
+    scheda: {<<: *lama, lingue: null}
+    problemi: [lingue_mancanti]

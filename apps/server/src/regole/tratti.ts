@@ -18,6 +18,7 @@
  *         - {tiro: esperienza, bonus: 10}                                 # +10% to every XP earned (humans, p. 6)
  */
 import type { Voce } from './tipi';
+import { leggiRequisiti, type Requisiti } from './requisiti';
 
 export type Tratto =
   | { tipo: 'iniziativa'; bonus: number }
@@ -31,6 +32,14 @@ export type Tratto =
 
 export interface Razza extends Voce {
   tratti: Tratto[];
+  /** Creation (M7, regole/creazione.ts): the scores a character of the race needs (Basic Fantasy p. 5: a dwarf's CON ≥ 9). */
+  requisiti: Requisiti;
+  /** The classes open to the race (Basic Fantasy p. 5: a dwarf is a cleric, fighter or thief); null = any. */
+  classi: string[] | null;
+  /** The languages a character of the race starts knowing (Basic Fantasy p. 4: its own and Common). */
+  lingue: string[];
+  /** Added to the generated scores (none in Basic Fantasy; other manuals give +1 Dexterity, −1 Constitution). */
+  aggiustamenti: Record<string, number>;
 }
 
 type D = Record<string, unknown>;
@@ -113,7 +122,21 @@ export function leggiRazze(v: unknown, ctx: { abilita: ReadonlySet<string>; colo
       continue;
     }
     if (out.some((r) => r.id === id)) errori.push(`razze: id repeated «${id}»`);
-    out.push({ id, nome: typeof o['nome'] === 'string' ? o['nome'] : id, tratti: leggiTratti(o['tratti'], `razze.${id}.tratti`, ctx, errori) });
+    const classi = o['classi'] === undefined || o['classi'] === null ? null : ids(o['classi']);
+    if (o['classi'] !== undefined && o['classi'] !== null && !classi) errori.push(`razze.${id}.classi: a list of class ids`);
+    const lingue = o['lingue'] === undefined ? [] : ids(o['lingue']);
+    if (o['lingue'] !== undefined && !lingue) errori.push(`razze.${id}.lingue: a list of language ids`);
+    const agg = ogg(o['aggiustamenti']) ?? {};
+    if (o['aggiustamenti'] !== undefined && (!ogg(o['aggiustamenti']) || !Object.values(agg).every(intero))) errori.push(`razze.${id}.aggiustamenti: characteristic → a whole number`);
+    out.push({
+      id,
+      nome: typeof o['nome'] === 'string' ? o['nome'] : id,
+      tratti: leggiTratti(o['tratti'], `razze.${id}.tratti`, ctx, errori),
+      requisiti: leggiRequisiti(o['requisiti'], `razze.${id}.requisiti`, null, errori),
+      classi,
+      lingue: lingue ?? [],
+      aggiustamenti: Object.fromEntries(Object.entries(agg).filter((e): e is [string, number] => intero(e[1]))),
+    });
   }
   return out;
 }
