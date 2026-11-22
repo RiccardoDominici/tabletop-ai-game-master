@@ -213,8 +213,10 @@ compare with the real ones on the table) and, when finished, what the Engine's c
   spells and hit points); its dice are thrown away, so this is how a reroll is allowed.
 - **Dai al libro**: when the rule set says the Game Master picks a caster's starting spells.
 - **Approva il personaggio**: the character joins the campaign. The server restarts for a moment (panel, projector and
-  phones reconnect by themselves) and the phone that built it takes it. It is refused while a turn is being narrated or
-  rolled, or while the open window has actions written: wait for the turn to end.
+  phones reconnect by themselves) and the phone that built it takes it. Approve before «Inizia sessione» or while the
+  window is open and nobody has sent an action yet; it is refused while a turn is being narrated or rolled, once someone
+  has sent in the window (wait for the next turn), and while the story is paused or stopped. In the middle of a session
+  the story goes on where it was: the new character can write at once and is called from the next window.
 - **Scarta**: throws a draft away.
 
 ### Window

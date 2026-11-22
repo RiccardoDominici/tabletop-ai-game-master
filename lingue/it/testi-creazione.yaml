@@ -89,7 +89,8 @@ creazione:
     illegale: "Il personaggio non va bene: {problemi}"
     spenta: "In questa campagna i personaggi sono già pronti."
     turno_in_corso: "Aspetta la fine del turno: il server deve ripartire perché il personaggio entri."
-    finestra_con_azioni: "Aspetta che la finestra si chiuda: ci sono azioni scritte, e ripartendo il server le perderebbe."
+    finestra_con_azioni: "Aspetta il prossimo turno: in questa finestra ci sono azioni inviate, e il server deve ripartire perché il personaggio entri."
+    storia_ferma: "La storia è ferma: riprendila, e approva quando la finestra è aperta e nessuno ha ancora inviato."
   problemi:
     razza_mancante: "manca la razza"
     razza_sconosciuta: "la razza «{razza}» non è del manuale"

@@ -108,8 +108,10 @@ does not exist):
 - **PCs**: `pg.yaml` of the campaign, then the PCs built at the table (`pg-creati/*.yaml` of the play folder:
   `campagne/<id>/pg-creati/` for the real game, a test instance's logs, or `TAGM_PG_CREATI`; docs/creazione.md), in
   every session; the phones find again the PC of the previous session (the master changes or forgets it from the
-  panel, «Telefoni ricordati» (Remembered phones)). A PC approved during a session joins at once (the server rebuilds
-  on the same package and resumes); `pg_all_inizio` and the log treat it like any PC. `campagne/*/pg-creati/` is in
+  panel, «Telefoni ricordati» (Remembered phones)). A PC approved during a session (in an open window nobody has sent
+  in yet) joins at once: the server rebuilds on the same package and resumes from the snapshot; the new PC can write at
+  once and is called from the next window, or the open one when it invited everyone; `pg_all_inizio` and the log treat it
+  like any PC. `campagne/*/pg-creati/` is in
   .gitignore: those files are play data and may carry a player's real name.
 
 ### Which session is played

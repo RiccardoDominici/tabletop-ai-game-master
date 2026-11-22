@@ -91,8 +91,16 @@ The approval writes the PC as one pg.yaml entry in the store and the server **re
 package** (ciclo-server.ts `ricarica`, the path a restart already takes: the session in progress resumes from its
 snapshot). So the PC is everywhere at once — the phones' list, the Engine's sheets, the narrator's context, the log's
 `pg_alla_fine` — and the sessions after load it like a pregenerated one (campagna/caricatore.ts merges pg.yaml and the
-store). The phone that built it picks it by itself. The rebuild waits for a quiet moment: the approval is refused while a
-turn is narrated or rolled, or while the open window has written actions (a restart would drop them).
+store). The phone that built it picks it by itself. The rebuild waits for a quiet moment (creazione/collega.ts
+`perchéAspettare`): the approval is accepted before the start and in an open window where nobody has sent an action yet;
+it is refused while a turn is opened, narrated or rolled, once an action was sent in the window, and while the Game
+Master holds the story (pause, stop).
+
+**Mid-session** the session resumes from its snapshot, as after any restart: the table's state is kept (the test changes
+a PC's hit points from the panel and finds them after the rebuild), and the projector's page sends «inizia» again by
+itself when it reconnects. The window open at the approval comes back as it was: when the narrator had invited
+everyone, the new PC enters it as soon as its phone takes it; when the narrator had named PCs, the new PC's phone can
+write at once, like any PC outside the invitation, and the next window calls it (azioni/tavolo.ts `aggiungiInvitato`).
 
 **The validator** reads the PCs built at the table with the campaign's and holds their sheets to the set (strictly, as
 built at the table), but not to the checks of prepared content — an arc, every NPC's attitude towards it, its name's
@@ -141,8 +149,9 @@ at a higher level each level's hit die is rolled in turn and the XP are that lev
 - apps/server/test/creazione-bozza.test.ts: the draft's rules on the invented fucina fixture.
 - apps/server/test/creazione-server.test.ts: the whole server — a phone builds a PC with manual dice over the socket, an
   illegal choice refused, the panel approves, the store in the test instance's logs (not the campaign), the rebuild puts
-  the PC at the table and the phone's device is bound to it, a new start loads it; a campaign `al_tavolo` loads with no PC
-  and does not start.
+  the PC at the table and the phone's device is bound to it, a new start loads it; a PC approved mid-session (the session
+  resumes, a changed hit point total stays, the new PC writes at once and is called from the next window); when an
+  approval may happen; a campaign `al_tavolo` loads with no PC and does not start.
 - apps/web/e2e/creazione.spec.ts, the live check on real pages (esperimenti/risultati/regole-r5/, `rifai.sh`): two phones
   build a fighter and a caster with manual dice on a two-session copy of the fucina fixture, one illegal race refused,
   the purchases change the Armor Class and the load, the Game Master approves a step and both PCs, session 1 is played

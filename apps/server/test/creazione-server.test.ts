@@ -3,8 +3,10 @@
  * ciclo-server.ts `ricarica`): a phone builds a PC with manual dice over the socket, an illegal choice is refused by
  * the server, the Game Master's panel sees the draft and approves; the PC is written to the instance's store (a test
  * instance's log folder, never the campaign), the server rebuilds on the same package and the PC is at the table; a
- * new start (the next evening) loads it again. Then a campaign that builds all its PCs: it loads with none, and the
- * story does not start until one is approved. Invented fucina fixture, copied to a temporary folder.
+ * new start (the next evening) loads it again. A player who joins mid-session: approved in an open window nobody has sent
+ * in, the session resumes from its snapshot (the hit points the Game Master changed stay), the new PC is at the table
+ * and is called from the next window. Then a campaign that builds all its PCs: it loads with none, and the story does
+ * not start until one is approved. Invented fucina fixture, copied to a temporary folder.
  */
 import fs from 'node:fs';
 import os from 'node:os';
@@ -18,6 +20,7 @@ import { caricaConfig } from '../src/config';
 import { loggerMuto } from '../src/logger';
 import { NarratoreFinto } from '../src/llm/finto';
 import type { ServerTagm } from '../src/avvio';
+import { perchéAspettare } from '../src/creazione/collega';
 
 type Client = Socket<EventiServerVersoClient, EventiClientVersoServer>;
 const FIXTURE = path.join(import.meta.dirname, 'fixtures', 'campagne', 'fucina');
@@ -122,6 +125,16 @@ async function costruisciLama(fai: ReturnType<typeof creatore>, nome: string): P
   return ok(fai({ tipo: 'descrizione', nome, aspetto: 'Le spalle larghe.' }));
 }
 
+describe('when the Game Master may approve a PC (the server rebuilds)', () => {
+  it('before the start and in an open window nobody has sent in; never mid-turn or with the story held', () => {
+    expect(perchéAspettare({ fase: 'attesa', azioniInFinestra: 0 })).toBeNull();
+    expect(perchéAspettare({ fase: 'finestra', azioniInFinestra: 0 })).toBeNull();
+    expect(perchéAspettare({ fase: 'finestra', azioniInFinestra: 1 })).toMatch(/inviate|sent/);
+    for (const fase of ['apertura', 'narrazione'] as const) expect(perchéAspettare({ fase, azioniInFinestra: 0 })).toMatch(/fine del turno|end of the turn/);
+    for (const fase of ['pausa', 'fermata'] as const) expect(perchéAspettare({ fase, azioniInFinestra: 0 })).toMatch(/ferma|stopped/);
+  });
+});
+
 describe('a PC built on a phone joins the campaign', () => {
   it('manual dice, a refused choice, the panel approves, the server rebuilds, the next start loads it', async () => {
     const campagna = copia('fucina');
@@ -180,6 +193,60 @@ describe('a PC built on a phone joins the campaign', () => {
     const domani = await avvia(campagna, log);
     expect(domani.corrente.campagna.pg.map((p) => p.id)).toEqual(['pg_brina', 'pg_gaspare']);
   });
+
+  it('a player who joins mid-session: approved in an empty window, the session resumes with the new PC at the table', async () => {
+    const campagna = copia('fucina-in-gioco');
+    const ciclo = await avvia(campagna, path.join(radice, 'log-3'));
+    const s1 = ciclo.corrente;
+    const u1 = url(s1);
+    const schermo = nuovo(u1);
+    await emetti((cb) => schermo.emit('schermo:osserva', cb));
+    schermo.on('audio:fine_turno', (f) => schermo.emit('schermo:audio_finito', { turno: f.turno, ritardo_ms: 0, buchi: 0, buchi_in_frase: 0, buchi_tra_frasi: 0, silenzio_ms: 0 }));
+    const brina = nuovo(u1);
+    await emetti<StatoTavolo>((cb) => brina.emit('telefono:entra', cb));
+    expect(await emetti<Esito>((cb) => brina.emit('telefono:scegli_pg', { id_pg: 'pg_brina', dispositivo: 'telefono-di-brina-01' }, cb))).toEqual({ ok: true });
+    // The session starts and its first window opens; the Game Master hurts Brina (the snapshot differs from her sheet).
+    const aperta = new Promise<StatoTavolo>((ok) => brina.on('stato', (st) => st.fase === 'finestra' && ok(st)));
+    expect(await emetti<Esito>((cb) => schermo.emit('schermo:inizia', cb))).toEqual({ ok: true });
+    await aperta;
+    const m = await master(u1);
+    expect(await m.comanda({ tipo: 'pf', id: 'pg_brina', valore: 3 })).toEqual({ ok: true });
+    // A late player builds a PC on the phone and the Game Master approves it while the window is open and empty.
+    const tardi = nuovo(u1);
+    await emetti<StatoTavolo>((cb) => tardi.emit('telefono:entra', cb));
+    const pronta = await costruisciLama(creatore(tardi, 'telefono-di-gaspare-02'), 'Gaspare');
+    expect((await m.stato()).tavolo.fase).toBe('finestra');
+    expect(await m.comanda({ tipo: 'creazione', azione: 'approva', id: pronta.id })).toEqual({ ok: true });
+    await finché(() => ciclo.corrente !== s1);
+    await ciclo.attendiCambio();
+    const s2 = ciclo.corrente;
+    // The same session resumes from its snapshot: Brina keeps her 3 hit points, Gaspare comes with his sheet's 8.
+    expect(s2.sessioni.archivio!.elenco(s2.campagna.id).filter((x) => x.stato === 'in_corso')).toHaveLength(1);
+    const t2 = nuovo(url(s2));
+    const st = await emetti<StatoTavolo>((cb) => t2.emit('telefono:entra', cb));
+    expect(st.pg.find((p) => p.id === 'pg_brina')!.pf).toMatchObject({ attuali: 3 });
+    expect(st.pg.find((p) => p.id === 'pg_gaspare')!.pf).toMatchObject({ attuali: 8, massimi: 8 });
+    expect(await emetti<{ id_pg: string | null }>((cb) => t2.emit('telefono:dispositivo', { dispositivo: 'telefono-di-gaspare-02' }, cb))).toEqual({ id_pg: 'pg_gaspare' });
+    expect(await emetti<Esito>((cb) => t2.emit('telefono:scegli_pg', { id_pg: 'pg_gaspare', dispositivo: 'telefono-di-gaspare-02' }, cb))).toEqual({ ok: true });
+    // The projector's page sends «inizia» again when it reconnects (schermo/sessione.ts): the session resumes there.
+    const b2 = nuovo(url(s2));
+    await emetti<StatoTavolo>((cb) => b2.emit('telefono:entra', cb));
+    expect(await emetti<Esito>((cb) => b2.emit('telefono:scegli_pg', { id_pg: 'pg_brina', dispositivo: 'telefono-di-brina-01' }, cb))).toEqual({ ok: true });
+    const proiettore = nuovo(url(s2));
+    await emetti((cb) => proiettore.emit('schermo:osserva', cb));
+    proiettore.on('audio:fine_turno', (f) => proiettore.emit('schermo:audio_finito', { turno: f.turno, ritardo_ms: 0, buchi: 0, buchi_in_frase: 0, buchi_tra_frasi: 0, silenzio_ms: 0 }));
+    const riaperta = new Promise<StatoTavolo>((ok) => t2.on('stato', (x) => x.fase === 'finestra' && ok(x)));
+    expect(await emetti<Esito>((cb) => proiettore.emit('schermo:inizia', cb))).toEqual({ ok: true });
+    const finestra = await riaperta;
+    // The window open at the approval comes back as it was: the narrator had called Brina by name, so Gaspare is not
+    // in it (azioni/tavolo.ts aggiungiInvitato: only an invitation to everyone takes a PC who arrives later)...
+    expect(finestra.finestra).toMatchObject({ turno: 1, invitati: ['pg_brina'] });
+    // ...but his phone can write at once, like any PC's outside the invitation, and the next window calls him too.
+    expect(await emetti<Esito>((cb) => t2.emit('azione:invia', { id_pg: 'pg_gaspare', testo: 'Prendo la spada dalla rastrelliera.', versione_vista: finestra.versione_scena }, cb))).toEqual({ ok: true });
+    const dopo = new Promise<StatoTavolo>((ok) => t2.on('stato', (x) => x.fase === 'finestra' && x.finestra.turno > 1 && ok(x)));
+    expect(await emetti<Esito>((cb) => b2.emit('azione:invia', { id_pg: 'pg_brina', testo: 'Guardo la porta.', versione_vista: finestra.versione_scena }, cb))).toEqual({ ok: true });
+    expect((await dopo).finestra.invitati).toEqual(['pg_brina', 'pg_gaspare']);
+  }, 20_000);
 
   it('a campaign that builds all its PCs loads with none, and the story waits for the first one', async () => {
     const campagna = copia('fucina-vuota', (c) => {

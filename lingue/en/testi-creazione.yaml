@@ -89,7 +89,8 @@ creazione:
     illegale: "The character is not legal: {problemi}"
     spenta: "In this campaign the characters are ready-made."
     turno_in_corso: "Wait for the end of the turn: the server must restart for the character to join."
-    finestra_con_azioni: "Wait for the window to close: actions are written, and a restart of the server would lose them."
+    finestra_con_azioni: "Wait for the next turn: actions were sent in this window, and the server must restart for the character to join."
+    storia_ferma: "The story is stopped: resume it, and approve when the window is open and nobody has sent yet."
   problemi:
     razza_mancante: "the race is missing"
     razza_sconosciuta: "the race «{razza}» is not the manual's"

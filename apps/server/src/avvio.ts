@@ -515,7 +515,8 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     semeFisso: config.semeDadi,
     momento: () => {
       const s = regia.stato();
-      return { fase: s.fase, azioniInFinestra: s.finestra.aperta ? s.finestra.azioni.length : 0 };
+      // The window lists every invited PC; only the actions already sent (`scritta`) would be lost by a rebuild.
+      return { fase: s.fase, azioniInFinestra: s.finestra.aperta ? s.finestra.azioni.filter((a) => a.scritta).length : 0 };
     },
     ricarica: sost.ricarica ? () => setTimeout(() => sost.ricarica!(), ATTESA_CAMBIO_MS) : null,
     notifica: notificaCreazione(app.io),

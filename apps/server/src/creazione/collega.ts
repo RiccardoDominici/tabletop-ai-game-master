@@ -24,6 +24,19 @@ export function creazioneDelTavolo(campagna: Campagna, s: SistemaRegole, log?: L
   return { modo: opz.modo };
 }
 
+/**
+ * Why an approval must wait (null = now is fine). The approval rebuilds the server, and the rebuild resumes the session
+ * from its snapshot (ciclo-server.ts `ricarica`): safe before the start, and in an open window where nobody has sent an
+ * action yet (`azioniInFinestra` counts the sent ones only; the window lists every invited PC). Not while a turn is
+ * opened, narrated or rolled, and not while the Game Master holds the story (pause, stop): that resume is not proved.
+ */
+export function perchéAspettare(m: { fase: FaseScena; azioniInFinestra: number }): string | null {
+  if (m.fase === 'attesa') return null;
+  if (m.fase === 'finestra') return m.azioniInFinestra ? testo('creazione.rifiuti.finestra_con_azioni') : null;
+  if (m.fase === 'pausa' || m.fase === 'fermata') return testo('creazione.rifiuti.storia_ferma');
+  return testo('creazione.rifiuti.turno_in_corso');
+}
+
 export interface FontiCreazione {
   campagna: Campagna;
   sistema: SistemaRegole;
@@ -49,12 +62,7 @@ export function creaServizioCreazione(f: FontiCreazione): ServizioCreazione | nu
     idPresi: () => new Set(f.campagna.pg.map((p) => p.id)),
     log: f.log,
     semeFisso: f.semeFisso,
-    momentoTranquillo: () => {
-      const m = f.momento();
-      if (m.fase === 'attesa') return null;
-      if (m.fase === 'finestra') return m.azioniInFinestra ? testo('creazione.rifiuti.finestra_con_azioni') : null;
-      return testo('creazione.rifiuti.turno_in_corso');
-    },
+    momentoTranquillo: () => perchéAspettare(f.momento()),
     ricarica: f.ricarica,
     notifica: f.notifica,
     aggiornaPannello: f.aggiornaPannello,

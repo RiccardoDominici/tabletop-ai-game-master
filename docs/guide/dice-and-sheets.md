@@ -220,7 +220,9 @@ reason, and refused if tapped), the starting spells, rolls the hit points and th
 weight, load, Armor Class and attacks change as they buy), picks the languages and writes the name. The Game Master
 follows every phone in the panel's **Personaggi in creazione** box, can approve or undo a step (an undo throws its dice
 away: a reroll) and approves the finished character with **Approva il personaggio**: the server restarts for a moment
-and the character is at the table, on that phone, and in every session after. With `modo: al_tavolo` the projector's
+and the character is at the table, on that phone, and in every session after. A player who arrives during a session
+does the same: the Game Master approves while the window is open and nobody has sent yet, the session goes on where it
+was, and the new character is called from the next window. With `modo: al_tavolo` the projector's
 «Inizia sessione» waits until the first character is approved.
 
 The characters built this way are saved in `campagne/<id>/pg-creati/<id>.yaml` (one file each, the same shape as an entry
