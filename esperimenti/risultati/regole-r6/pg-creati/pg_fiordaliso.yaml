@@ -1,0 +1,86 @@
+# Personaggio creato al tavolo (2026-11-22 17:47): passi e tiri in «creazione», scheda come in pg.yaml.
+# Non finisce nel repository (campagne/*/pg-creati/ è in .gitignore): può avere il nome vero di un giocatore.
+id: pg_fiordaliso
+nome: Fiordaliso
+specie: Elfo
+classe: Guerriero/Mago
+livello: 1
+creazione:
+  quando: 2026-11-22T17:47:59.277Z
+  metodo: in_ordine
+  tiri:
+    - passo: caratteristiche
+      per: Forza
+      dadi:
+        - 5
+        - 4
+        - 4
+    - passo: caratteristiche
+      per: Intelligenza
+      dadi:
+        - 5
+        - 5
+        - 4
+    - passo: caratteristiche
+      per: Saggezza
+      dadi:
+        - 4
+        - 3
+        - 3
+    - passo: caratteristiche
+      per: Destrezza
+      dadi:
+        - 4
+        - 4
+        - 4
+    - passo: caratteristiche
+      per: Costituzione
+      dadi:
+        - 4
+        - 4
+        - 3
+    - passo: caratteristiche
+      per: Carisma
+      dadi:
+        - 3
+        - 3
+        - 3
+    - passo: punti_ferita
+      per: Punti ferita del 1° livello
+      dadi:
+        - 5
+    - passo: monete
+      per: Monete iniziali
+      dadi:
+        - 5
+        - 5
+        - 5
+scheda:
+  caratteristiche:
+    forza: 13
+    intelligenza: 14
+    saggezza: 10
+    destrezza: 12
+    costituzione: 11
+    carisma: 9
+  classe: guerriero_mago
+  livello: 1
+  px: 0
+  razza: elfo
+  pf: 5
+  equipaggiamento:
+    - cotta_di_maglia
+    - spada_lunga
+    - razioni
+    - otre
+  monete:
+    mo: 69
+  libro:
+    - leggere_il_magico
+    - dardo_incantato
+  incantesimi:
+    - dardo_incantato
+  lingue:
+    - comune
+    - elfico
+    - goblin

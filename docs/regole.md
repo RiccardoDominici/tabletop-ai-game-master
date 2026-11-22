@@ -776,5 +776,12 @@ The `significato` of bands and grades replaces it. With the SRD 5.2 the rule sta
   methods), the thief's point allocation, spells learned after the start, retainers as sheets, locked doors on 1d10.
   Creation at the table (docs/creazione.md) needs a quiet moment to let an approved PC join (the server rebuilds); a
   player reconnecting after another approval finds its draft again. Evidence: esperimenti/risultati/regole-r5/.
+- **Rules-engine work R6 (22 November) leaves open**: Basic Fantasy has no exploration rest rule, no encounter distance
+  and no foraging or hunting (searched in the whole PDF): the rest rule is schema with an invented fixture, the other two
+  are not built; the forced march (its daily save is the player's, outside a window); the pursuit after an evasion
+  (needs positions and sight); magical darkness and an NPC's own torch; light and darkvision on the SRD 5.2 path (its
+  species are not data yet); learning spells after the start (the spellbook is not part of play: preparation reads the
+  sheet's list); the thief's point allocation (an option); the NPC parties' make-up (the Game Master builds them);
+  waterborne and air travel. Evidence: esperimenti/risultati/regole-r6/.
 - **Subsystems** (`sottosistemi`) are text only. Conditions apply in the fight (docs/combattimento.md); damage, healing, falls and rest outside an attack are typed effects (above).
 - **Opposed checks** in a non-SRD set become normal checks. Saving throws are pinned to their own number (above), and a target rolls its own save against a PC's power (`salvezzaDelBersaglio`, the Game Master's side for an NPC).
