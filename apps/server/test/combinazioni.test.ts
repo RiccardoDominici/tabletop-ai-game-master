@@ -7,6 +7,7 @@
 import { describe, expect, it } from 'vitest';
 import { espandiCombinazioni } from '../src/regole/combinazioni';
 import { leggiSistema } from '../src/regole/caricatore';
+import { livelloDaPx, puntiFeritaDelLivello, rigaDi, sogliaPx, valoriDaClasse } from '../src/regole/progressione';
 
 const base = {
   id: 'combinate-prova',
@@ -93,5 +94,24 @@ describe('a broken combination', () => {
   it('a set without combinations comes back unchanged (the same object)', () => {
     const d = { ...structuredClone(base), classi: base.classi.slice(0, 3) };
     expect(espandiCombinazioni(d, [])).toBe(d);
+  });
+});
+
+describe('a combination class levels up (the progression R3\'s level-up reads: prove/livelli.ts, prove/esperienza.ts)', () => {
+  const s = leggiSistema(structuredClone(base), [], [])!;
+  const c = s.classi!.find((x) => x.id === 'lama_arcano')!.progressione;
+  it('4,500 XP (2,000 + 2,500) reach the 2nd level, 4,499 do not; the next threshold is 9,000', () => {
+    expect(livelloDaPx(c, 4499)).toBe(1);
+    expect(livelloDaPx(c, 4500)).toBe(2);
+    expect(sogliaPx(c, 3)).toBe(9000);
+  });
+  it('the 2nd level\'s hit points roll its own d6, not either base\'s die', () => {
+    expect(puntiFeritaDelLivello(s.progressione, c, 2, 0, [])!.dado).toEqual({ numero: 1, facce: 6, bonus: 0 });
+  });
+  it('at the 2nd level the better save of the two (arcano\'s 12/11 beats lama\'s 12/15) and the better attack', () => {
+    const cls = s.classi!.find((x) => x.id === 'lama_arcano')!;
+    expect(rigaDi(cls.tiriSalvezza!, 2)!.valori).toEqual([12, 11]);
+    // The attack bonus the sheet gets at the 2nd level: lama's +2 (arcano has +1).
+    expect(valoriDaClasse(s.progressione, c, 2, [], 'lama_arcano')).toEqual({ mischia: 2 });
   });
 });
