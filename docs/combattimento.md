@@ -156,8 +156,10 @@ combattimento:
      subduing and killing damage (StatoProve, in the snapshot; healing takes the subduing first): at 0 with some subduing
      damage and less killing damage than its maximum, the character is knocked out — the condition at zero, neither dead
      nor dying, out of the fight and defeated for XP — and wakes with 1 hit point when the set's `sveglia` (1d4 turns) has
-     passed on the clock. Subduing damage on someone already at 0 is killing damage. A kick (1d4 at −2) and a fist on
-     metal armor hurting the puncher are not data yet;
+     passed on the clock. Subduing damage on someone already at 0 is killing damage. Someone can wake them sooner (R6,
+     `non_letale.svegliare`, p. 55: with 1 hit point, after 2d10 rounds): an action with the set's words that names the
+     one knocked out («scuoto Varo»), once that hidden time has passed on the clock; too soon, the narrator hears they do
+     not stir yet. A kick (1d4 at −2) and a fist on metal armor hurting the puncher are not data yet;
    - otherwise out of play or dead.
    - The Game Master may restore HP: whoever goes back above 0 gets up.
    - A PC already out of play when the window closes (0 HP, dead) does not act, even if the player writes: the
@@ -196,7 +198,9 @@ combattimento:
    `si_arrende` on its sheet and the set's `resa` condition it surrenders: that condition for the scene, out of the fight
    and counted as defeated for XP. The roll is the Game Master's: its card («Morale», 2d6) is on the panel only, unless the
    campaign's `tiri_master` shows it (docs/prove.md §9); the narrator hears who holds and who breaks, with their scores.
-   The Game Master's ±2 adjustment (p. 57) is not on the panel yet: the sheet's score is the one read.
+   The Game Master's adjustment (R6, `fine.morale.aggiustamento`, p. 57: at most ±2, never to a 12) is the panel's
+   «Morale» in the combat box: − and + on each NPC of the scene with a score, within the set's limit; the adjusted score
+   is the one read (kept between 2 and 12), in the snapshot, cleared by 0 or «Ricomincia».
 6. **End**: enemies on the ground or fled, all PCs on the ground, failed morale (B/X), or «Termina combattimento» (End
    combat). When every PC is down nobody can help the dying ones: before the fight closes, their death saves are
    rolled to the end, stable or dead (a natural 20 that puts one back up keeps the fight going). Before, the fight

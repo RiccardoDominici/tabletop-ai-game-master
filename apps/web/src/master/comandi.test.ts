@@ -42,6 +42,7 @@ const UNO_PER_TIPO: Record<TipoComandoMaster, ComandoMaster> = {
   reazione: { tipo: 'reazione', tabella: 'reazione', id_pg: 'pg_anna', id_png: 'png_oste', aggiustamento: 1 },
   incontro: { tipo: 'incontro', tabella: 'sotterraneo_1' },
   luce: { tipo: 'luce', livello: 'buio' },
+  morale: { tipo: 'morale', id: 'png_oste', valore: 1 },
 };
 
 describe('zone ed etichette dei comandi', () => {

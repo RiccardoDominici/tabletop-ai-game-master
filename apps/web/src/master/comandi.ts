@@ -51,6 +51,7 @@ export const ZONA_COMANDO: Record<TipoComandoMaster, ZonaComando> = {
   reazione: 'tiri',
   incontro: 'tiri',
   luce: 'combattimento',
+  morale: 'combattimento',
 };
 
 /** Nome del comando come lo legge il master (pulsanti, esiti, registro degli eventi). */
@@ -93,6 +94,7 @@ export const ETICHETTA_COMANDO: Record<TipoComandoMaster, string> = tabella({
   reazione: 'master.cmd.reazione',
   incontro: 'master.cmd.incontro',
   luce: 'master.cmd.luce',
+  morale: 'master.cmd.morale',
 });
 
 /**

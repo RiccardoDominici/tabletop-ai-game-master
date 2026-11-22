@@ -59,7 +59,7 @@ import { Drenaggi } from './drenaggio';
 import { Inventario } from './inventario';
 import { TempoDiGioco } from './tempo';
 import { accendi as accendiLuce, luceDellAzione, spegni as spegniLuce, type ContestoLuci } from './luci';
-import { secondiDi, type TerrenoViaggio } from '../regole/tempo';
+import { durataInSecondi, secondiDi, type TerrenoViaggio } from '../regole/tempo';
 import { voce } from '../regole/catalogo';
 import { Attivi } from './attivi';
 import { Esperienza, type VistaPxPg, type VoceEsperienza } from './esperienza';
@@ -285,6 +285,10 @@ export class MotoreProve {
   private luceForzata: { scena: string; livello: LivelloLuce } | null = null;
   /** What the narrator last heard of the party's sight in the dark (prove/luce.ts chiaveLuce). */
   private luceNota: string | null = null;
+  /** Knocked out, and from what game second someone can wake them (Basic Fantasy p. 55: after 2d10 rounds). */
+  private svegliabili = new Map<string, number>();
+  /** The Game Master's adjustments to morale scores, by NPC (Basic Fantasy p. 57: at most ±2, never to a 12). */
+  private aggiustamentiMorale = new Map<string, number>();
   /** The XP the party earns (prove/esperienza.ts). Null with the SRD path (its XP are not data yet). */
   readonly esperienza: Esperienza | null;
   /** Each PC's level and maximum hit points, the level-up's rolls still owed (prove/livelli.ts). Null with the SRD. */
@@ -358,18 +362,19 @@ export class MotoreProve {
       morale: (png) => {
         // The live sheet's (a bestiary entry's merged in, regole/schede.ts), then the minion type's, then the raw card's.
         const m = this.generico?.schede.get(png)?.morale;
-        if (m !== undefined) return typeof m === 'number' ? m : m.prima;
+        if (m !== undefined) return this.moraleAggiustato(png, typeof m === 'number' ? m : m.prima);
         const g = this.gregari.get(png);
-        if (g) return g.morale;
+        if (g) return g.morale === null ? null : this.moraleAggiustato(png, g.morale);
         const sch = this.o.contesto().campagna.png.find((p) => p.id === png)?.dati['scheda'] as DatiYaml | undefined;
-        return typeof sch?.['morale'] === 'number' ? sch['morale'] : null;
+        return typeof sch?.['morale'] === 'number' ? this.moraleAggiustato(png, sch['morale']) : null;
       },
       // Morale before and after the monster is engaged, and whether it surrenders (its live sheet: a bestiary entry's).
       moraleDi: (png) => {
         const sch = this.generico?.schede.get(png);
         if (!sch || sch.morale === undefined) return null;
         const m = sch.morale;
-        return typeof m === 'number' ? { prima: m, dopo: m, resa: !!sch.siArrende } : { ...m, resa: !!sch.siArrende };
+        const a = (n: number): number => this.moraleAggiustato(png, n);
+        return typeof m === 'number' ? { prima: a(m), dopo: a(m), resa: !!sch.siArrende } : { prima: a(m.prima), dopo: a(m.dopo), resa: !!sch.siArrende };
       },
       // A broken NPC that surrenders: the set's condition for the scene, so it stays out after the fight too.
       arrende: (png, condizione, fatti) => {
@@ -957,6 +962,9 @@ export class MotoreProve {
       if (this.carteDelTempo.length) r.tiri.unshift(...this.carteDelTempo.splice(0).map((t) => ({ ...t, turno })));
       if (luci.length) r.fatti.unshift(...luci);
       if (finiti.length) r.fatti.unshift(...finiti);
+      // Someone wakes a knocked-out friend or prisoner (p. 55), once the time has passed.
+      const svegliati = this.svegliaDalleAzioni(azioni, c);
+      if (svegliati.length) r.fatti.push(...svegliati);
       // What the party sees in the dark, when it changed (a dark scene entered, a light lit or out): after the lights.
       const vista = this.notaLuce();
       if (vista) r.fatti.push(vista);
@@ -1145,6 +1153,7 @@ export class MotoreProve {
     if (f) fatti.push(f);
     // A knock-out ran its time: the character wakes with 1 hit point (Basic Fantasy p. 55).
     for (const x of scaduti) {
+      if (x.fonte === FONTE_KO) this.svegliabili.delete(x.id);
       if (x.fonte !== FONTE_KO || !this.stato.tramortito(x.id)) continue;
       this.stato.cura(x.id, 1);
       this.combattimento.dopoCura(x.id);
@@ -1202,6 +1211,49 @@ export class MotoreProve {
     const b = this.sistema.esplorazione?.buio;
     if (b && !vede(this.statoLuce(), id, this.scurovisione(id))) out.push(b.condizione);
     return out;
+  }
+
+  /** A morale score with the Game Master's adjustment (p. 57): never applied to a 12, kept between 2 and 12. */
+  private moraleAggiustato(png: string, m: number): number {
+    const a = this.aggiustamentiMorale.get(png) ?? 0;
+    return a && m !== 12 ? Math.max(2, Math.min(12, m + a)) : m;
+  }
+
+  /**
+   * The Game Master adjusts an NPC's morale (docs/combattimento.md; Basic Fantasy p. 57): within the set's
+   * `fine.morale.aggiustamento` either way, never to a 12; 0 clears it. For the panel only: the narrator hears what the
+   * morale roll does, not the number.
+   */
+  moraleDelMaster(id: string, valore: number): { ok: true; fatto: string } | { ok: false; motivo: 'senza_regola' | 'senza_morale' | 'fuori_limite' | 'dodici' } {
+    const max = this.regoleCombattimento().fine.aggiustamento;
+    if (!max) return { ok: false, motivo: 'senza_regola' };
+    const sch = this.generico?.schede.get(id);
+    const m = sch?.morale;
+    const base = m === undefined ? (this.gregari.get(id)?.morale ?? null) : typeof m === 'number' ? m : m.prima;
+    if (base === null || base === undefined) return { ok: false, motivo: 'senza_morale' };
+    if (!Number.isInteger(valore) || Math.abs(valore) > max) return { ok: false, motivo: 'fuori_limite' };
+    if (base === 12 && valore !== 0) return { ok: false, motivo: 'dodici' };
+    if (valore) this.aggiustamentiMorale.set(id, valore);
+    else this.aggiustamentiMorale.delete(id);
+    const nome = this.nomeDi(this.o.contesto(), id);
+    this.o.log.info({ id, base, aggiustamento: valore }, 'combat: the Game Master adjusts a morale score');
+    return { ok: true, fatto: testo('prove.combattimento.morale_master', { nome, base, ora: this.moraleAggiustato(id, base), segno: valore > 0 ? `+${valore}` : String(valore) }) };
+  }
+
+  /** The NPCs with a morale score, for the panel's adjustment (their base, the adjustment, the score now). */
+  private vistaMorale(): Array<{ id: string; nome: string; base: number; aggiustamento: number; ora: number }> {
+    const g = this.generico;
+    if (!g || !this.regoleCombattimento().fine.aggiustamento) return [];
+    const c = this.o.contesto();
+    return [...g.schede.values()].flatMap((sch) => {
+      if (!sch.id.startsWith('png_') || this.stato.fuoriGioco(sch.id) === 'morto') return [];
+      const m = sch.morale;
+      const base = m === undefined ? (this.gregari.get(sch.id)?.morale ?? null) : typeof m === 'number' ? m : m.prima;
+      if (base === null || base === undefined) return [];
+      // The scene's NPCs and minions: those on stage or in the fight.
+      const inScena = (c.presenti ?? new Set(c.campagna.scena.png_presenti)).has(sch.id) || this.gregari.get(sch.id)?.scena === c.campagna.scena.id || this.combattimento.partecipanti('png').includes(sch.id);
+      return inScena ? [{ id: sch.id, nome: this.nomeDi(c, sch.id), base, aggiustamento: this.aggiustamentiMorale.get(sch.id) ?? 0, ora: this.moraleAggiustato(sch.id, base) }] : [];
+    });
   }
 
   /** How dark the scene is now: the Game Master's light for this scene, else the scene sheet's `luce` (prove/luce.ts). */
@@ -1657,7 +1709,43 @@ export class MotoreProve {
     if (!cz || !nl || this.attivi.daFonte(id, FONTE_KO)) return;
     this.attivi.aggiungi(id, { tipo: 'condizione', condizione: cz, durata: nl.sveglia, finisceSeFerito: false }, FONTE_KO, 1, this.dadi);
     fatti.push(testo('prove.combattimento.tramortito_dorme', { nome: this.nomeDi(this.o.contesto(), id) }));
-    this.o.log.info({ id }, 'combat: knocked out by subduing damage, wakes later with 1 HP');
+    // When someone can wake them sooner (p. 55: after 2d10 rounds): the Engine's hidden roll, counted on the clock.
+    const sv = nl.svegliare;
+    if (sv && sv.dopo.tipo === 'tempo') {
+      const sec = durataInSecondi(this.tempo.regola, sv.dopo.unita, sv.dopo.dadi, (f) => tiraDanno(this.dadi, f, 0, false).totale);
+      if (sec !== null) this.svegliabili.set(id, this.tempo.trascorsi + sec);
+    }
+    this.o.log.info({ id, svegliabile_da: this.svegliabili.get(id) ?? null }, 'combat: knocked out by subduing damage, wakes later with 1 HP');
+  }
+
+  /**
+   * Someone wakes a knocked-out character (Basic Fantasy p. 55: «can be awakened (with 1 hit point) by someone else after
+   * 2d10 rounds»): an action with the set's `non_letale.svegliare.parole` that names them. Too soon, they do not stir yet.
+   */
+  private svegliaDalleAzioni(azioni: readonly AzionePerProve[], c: ContestoProve): string[] {
+    const sv = this.regoleCombattimento().nonLetale?.svegliare;
+    if (!sv || !this.svegliabili.size) return [];
+    const fatti: string[] = [];
+    for (const a of azioni) {
+      const t = normalizza(senzaParlato(a.testo));
+      if (!sv.parole.some((p) => t.includes(normalizza(p)))) continue;
+      for (const [id, da] of [...this.svegliabili]) {
+        if (id === a.autore || !this.stato.tramortito(id)) continue;
+        const nomi = [this.nomeDi(c, id), ...(this.gregari.get(id)?.parole ?? [])].map((n) => normalizza(n).split(/\s+/)[0]!).filter((n) => n.length >= 3);
+        if (!nomi.some((n) => new RegExp(`(?<![\\p{L}])${n}`, 'u').test(t))) continue;
+        if (this.tempo.trascorsi < da) {
+          fatti.push(testo('prove.combattimento.tramortito_presto', { nome: this.nomeDi(c, id) }));
+          continue;
+        }
+        this.attivi.togli(id, this.regoleCombattimento().condizioneAZero ?? '');
+        this.stato.cura(id, 1);
+        this.combattimento.dopoCura(id);
+        this.svegliabili.delete(id);
+        fatti.push(testo('prove.combattimento.tramortito_svegliato', { nome: this.nomeDi(c, id), chi: this.nomeDi(c, a.autore) }));
+        this.o.log.info({ id, chi: a.autore }, 'combat: woken from a knock-out by someone, 1 HP');
+      }
+    }
+    return fatti;
   }
 
   /**
@@ -2084,8 +2172,12 @@ export class MotoreProve {
       schede: ids.flatMap((id) => {
         const pf = this.stato.puntiFerita(id);
         const scorta = this.scortaConLuci(id, true);
-        return pf ? [{ id, nome: c.nome(id), di_png: id.startsWith('png_'), pf, ...(scorta ? { scorta } : {}) }] : [];
+        return pf ? [{ id, nome: this.nomeDi(c, id), di_png: id.startsWith('png_'), pf, ...(scorta ? { scorta } : {}) }] : [];
       }),
+      ...(() => {
+        const m = this.vistaMorale();
+        return m.length ? { morale: { massimo: this.regoleCombattimento().fine.aggiustamento!, png: m } } : {};
+      })(),
       condizioni: this.regoleCombattimento().condizioni.map((x) => ({ id: x.id, nome: x.nome, icona: x.icona, testo: x.testo })),
       ...(this.tipiDiRiposo().length ? { riposi: this.tipiDiRiposo() } : {}),
       // The gear controls: the catalog's items, and the coins (a set with coins but no catalog still gets the coins).
@@ -2298,7 +2390,7 @@ export class MotoreProve {
   // ------------------------------------------------------------------ sessione
 
   esporta(): StatoProveSalvato {
-    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta(), ...(this.tempo.mostrato ? { tempo: this.tempo.esporta() } : {}), ...(this.esperienza?.attiva ? { esperienza: this.esperienza.esporta() } : {}), ...(this.livelli?.attivo ? { livelli: this.livelli.esporta() } : {}), ...(this.drenaggi?.attivo ? { drenaggi: this.drenaggi.esporta() } : {}), ...(this.zeroDaTirare.length ? { zero_da_tirare: [...this.zeroDaTirare] } : {}), ...(this.sistema.esplorazione ? { esplorazione: this.esplorazione.esporta() } : {}), ...(this.vaganti.length ? { vaganti: this.vaganti.map((v) => ({ ...v })) } : {}), ...(this.provviste ? { provviste: this.provviste.esporta() } : {}), ...(this.fatica.regola ? { fatica: this.fatica.esporta() } : {}), ...(this.orientamento ? { orientamento: { ...this.orientamento } } : {}), ...(this.luceForzata ? { luce_forzata: { ...this.luceForzata } } : {}), ...(this.luceNota ? { luce_nota: this.luceNota } : {}), ...(this.carteDelTempo.length ? { carte_del_tempo: [...this.carteDelTempo] } : {}), ...(this.incontriDovuti.length ? { incontri_dovuti: [...this.incontriDovuti] } : {}) };
+    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta(), ...(this.tempo.mostrato ? { tempo: this.tempo.esporta() } : {}), ...(this.esperienza?.attiva ? { esperienza: this.esperienza.esporta() } : {}), ...(this.livelli?.attivo ? { livelli: this.livelli.esporta() } : {}), ...(this.drenaggi?.attivo ? { drenaggi: this.drenaggi.esporta() } : {}), ...(this.zeroDaTirare.length ? { zero_da_tirare: [...this.zeroDaTirare] } : {}), ...(this.sistema.esplorazione ? { esplorazione: this.esplorazione.esporta() } : {}), ...(this.vaganti.length ? { vaganti: this.vaganti.map((v) => ({ ...v })) } : {}), ...(this.provviste ? { provviste: this.provviste.esporta() } : {}), ...(this.fatica.regola ? { fatica: this.fatica.esporta() } : {}), ...(this.orientamento ? { orientamento: { ...this.orientamento } } : {}), ...(this.luceForzata ? { luce_forzata: { ...this.luceForzata } } : {}), ...(this.luceNota ? { luce_nota: this.luceNota } : {}), ...(this.aggiustamentiMorale.size ? { morale_master: [...this.aggiustamentiMorale] } : {}), ...(this.svegliabili.size ? { svegliabili: [...this.svegliabili] } : {}), ...(this.carteDelTempo.length ? { carte_del_tempo: [...this.carteDelTempo] } : {}), ...(this.incontriDovuti.length ? { incontri_dovuti: [...this.incontriDovuti] } : {}) };
   }
 
   importa(s: StatoProveSalvato): void {
@@ -2325,6 +2417,8 @@ export class MotoreProve {
     this.orientamento = s.orientamento && typeof s.orientamento.guida === 'string' ? { guida: s.orientamento.guida, smarriti: s.orientamento.smarriti === true } : null;
     this.luceForzata = s.luce_forzata && typeof s.luce_forzata.scena === 'string' && ['piena', 'fioca', 'buio'].includes(s.luce_forzata.livello) ? { scena: s.luce_forzata.scena, livello: s.luce_forzata.livello } : null;
     this.luceNota = typeof s.luce_nota === 'string' ? s.luce_nota : null;
+    this.aggiustamentiMorale = new Map((s.morale_master ?? []).filter(([k, n]) => typeof k === 'string' && Number.isInteger(n)));
+    this.svegliabili = new Map((s.svegliabili ?? []).filter(([k, n]) => typeof k === 'string' && Number.isFinite(n)));
     this.carteDelTempo = Array.isArray(s.carte_del_tempo) ? [...s.carte_del_tempo] : [];
     this.incontriDovuti = Array.isArray(s.incontri_dovuti) ? [...s.incontri_dovuti] : [];
     this.esperienza?.importa(s.esperienza);
@@ -2360,6 +2454,8 @@ export class MotoreProve {
     this.orientamento = null;
     this.luceForzata = null;
     this.luceNota = null;
+    this.aggiustamentiMorale.clear();
+    this.svegliabili.clear();
     this.carteDelTempo = [];
     this.incontriDovuti = [];
     this.esperienza?.azzera();

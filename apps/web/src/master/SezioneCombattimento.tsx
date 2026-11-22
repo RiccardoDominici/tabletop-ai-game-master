@@ -82,6 +82,8 @@ export function SezioneCombattimento({ stato }: { stato: StatoMaster }) {
 
       {cmb.esperienza && <EsperienzaMaster esperienza={cmb.esperienza} />}
 
+      {cmb.morale && cmb.morale.png.length > 0 && <MoraleMaster morale={cmb.morale} />}
+
       {!attivo && !chiesto && riposi.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {riposi.map((r) => (
@@ -120,6 +122,35 @@ export function SezioneCombattimento({ stato }: { stato: StatoMaster }) {
         </ul>
       )}
     </Riquadro>
+  );
+}
+
+/**
+ * The Game Master's adjustment to a morale score (Basic Fantasy p. 57: at most ±2 by the set, never to a 12): the scene's
+ * NPCs with their score, − and + within the set's limit. The Engine checks it again.
+ */
+function MoraleMaster({ morale }: { morale: NonNullable<CombattimentoMaster['morale']> }) {
+  const inCorso = useInCorso('morale');
+  return (
+    <details className="rounded-lg border border-bordo bg-notte-3 p-2 text-sm" data-testid="master-morale">
+      <summary className="cursor-pointer font-semibold text-pergamena">{t('master.combattimento.morale_titolo', { massimo: morale.massimo })}</summary>
+      <ul className="mt-2 flex flex-col gap-1">
+        {morale.png.map((p) => (
+          <li key={p.id} className="flex items-center gap-2" data-testid={`master-morale-${p.id}`}>
+            <span className="min-w-0 flex-1 truncate text-pergamena-2">{p.nome}</span>
+            <span className="text-xs text-cenere">{t('master.combattimento.morale_valore', { base: p.base, ora: p.ora })}</span>
+            {(['-', '+'] as const).map((s) => {
+              const v = p.aggiustamento + (s === '+' ? 1 : -1);
+              return (
+                <button key={s} type="button" data-testid={`master-morale-${p.id}-${s === '+' ? 'piu' : 'meno'}`} disabled={inCorso || p.base === 12 || Math.abs(v) > morale.massimo} onClick={() => void inviaComando({ tipo: 'morale', id: p.id, valore: v })} className={classePulsante('normale', 'piccolo')}>
+                  {s}
+                </button>
+              );
+            })}
+          </li>
+        ))}
+      </ul>
+    </details>
   );
 }
 

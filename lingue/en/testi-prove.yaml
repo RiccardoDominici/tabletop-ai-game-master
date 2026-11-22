@@ -326,9 +326,12 @@ prove:
     morale_tengono: "Enemy morale: {tiro} against {morale} → they hold."
     tramortito_dorme: "{nome} is knocked out: unconscious but alive, and will come round alone."
     tramortito_sveglio: "{nome} comes round with 1 hit point."
+    tramortito_presto: "{nome} does not come round yet: it is too soon."
+    tramortito_svegliato: "{chi} wakes {nome}: they come round with 1 hit point."
     # Morale per creature (R4, Basic Fantasy p. 57): one 2d6 for the side, read against each one's own score.
     morale_chi: "The enemies"
     morale_etichetta: "Morale"
+    morale_master: "{nome}'s morale: {base}, with the Game Master's adjustment {segno} now {ora}."
     morale_regola: "Morale: 2d6 = {tiro}; those with a morale of {tiro} or more hold"
     morale_misto: "Enemy morale: {tiro} on 2d6.{tengono}{cedono}{arresi}"
     morale_tengono_chi: " They hold: {nomi}."

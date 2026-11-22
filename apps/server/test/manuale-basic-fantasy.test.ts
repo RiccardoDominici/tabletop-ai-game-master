@@ -651,6 +651,9 @@ describe('the roll numbers the set derives (pp. 43–44, 189)', () => {
     // Eliandro an elf with INT 16: secret doors 1–3 (1, +1 elf, +1 INT 15+); the others 1 (INT below 15).
     const v = (id: string) => ({ forzare: schede.get(id)!.abilita['forzare'], cercare: schede.get(id)!.abilita['cercare'], pietra: schede.get(id)!.abilita['pietra'] });
     expect(v('pg_livia')).toEqual({ forzare: 3, cercare: 1, pietra: undefined });
+    // A locked door on the stuck door's range on 1d10, metal bars on 1d20 (p. 43): Livia's 3.
+    expect(schede.get('pg_livia')!.abilita).toMatchObject({ sfondare: 3, piegare_sbarre: 3 });
+    expect(schede.get('pg_fulco')!.abilita).toMatchObject({ sfondare: 2, piegare_sbarre: 2 });
     expect(v('pg_fulco')).toEqual({ forzare: 2, cercare: 1, pietra: 2 });
     expect(v('pg_nespola')).toEqual({ forzare: 1, cercare: 1, pietra: undefined });
     expect(v('pg_eliandro')).toEqual({ forzare: 1, cercare: 3, pietra: undefined });

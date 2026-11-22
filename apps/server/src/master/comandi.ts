@@ -455,6 +455,15 @@ export class ControlliMaster {
         if (!esito.ok) return rifiuto(esito.errore);
         return { esito: { ok: true }, dettagli: esito.fatto ?? tabella ?? '', dati: { tabella } };
       }
+      case 'morale': {
+        // The Game Master's adjustment to a morale score (p. 57): the Engine checks the limit and the 12.
+        const id = typeof c.id === 'string' && ID_VALIDO.test(c.id) ? c.id : null;
+        const valore = typeof c.valore === 'number' && Number.isInteger(c.valore) && Math.abs(c.valore) <= 10 ? c.valore : null;
+        if (!id || valore === null) return rifiutoDi('morale_non_valido');
+        const esito = regia.morale(id, valore);
+        if (!esito.ok) return rifiuto(esito.errore);
+        return { esito: { ok: true }, dettagli: esito.fatto ?? id, dati: { id, valore } };
+      }
       case 'luce': {
         // How dark the scene is (docs/prove.md §15): until the scene changes; null = the scene sheet's again.
         const livello = c.livello === null ? null : c.livello === 'piena' || c.livello === 'fioca' || c.livello === 'buio' ? c.livello : undefined;

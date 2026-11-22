@@ -932,6 +932,9 @@ tables and sentences from the PDF (when it is present) and compares them with th
 | thief ability | d100 ≤ the class table's percentage at the level (± the Game Master's points); listen, move silently, hide, traps: the Game Master's secret roll | `classi.ladro.abilita`, `segreta`, `difficolta[].percentuale` | pp. 8–9 |
 | listening at a door (not a thief) | 1 on 1d6, the Game Master's secret roll | `ascoltare.soglia.senza` | p. 43 |
 | stuck door | 1d6 ≤ 1 + STR bonus | `forzare.soglia.piu` | p. 43 |
+| locked door, metal bars (R6) | 1d10 or 1d20 ≤ the stuck door's range | `sfondare`, `piegare_sbarre`: `soglia.come: forzare` | p. 43 |
+| morale with the Game Master's adjustment (R6) | 2d6 against the score ± at most 2 (never a 12) | `fine.morale.aggiustamento`, the panel's «Morale» | p. 57 |
+| waking someone knocked out (R6) | an action with the words, after 2d10 rounds (hidden) | `non_letale.svegliare` | p. 55 |
 | secret door, trap search | 1d6 ≤ 1, +1 with INT 15+, +1 for an elf | `cercare.soglia.piu`, the elf's trait | pp. 5, 43–44 |
 | dwarf's stonework | 1d6 ≤ 2 after a search | the dwarf's `almeno: {pietra: 2}` | p. 5 |
 | initiative | 1d6 + DEX bonus (+1 halfling), every round, ties simultaneous (the player; NPCs by the Engine) | `combattimento.iniziativa`, race trait | pp. 6, 51 |

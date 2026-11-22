@@ -293,8 +293,15 @@ def _abilita(r: dict, car: set[str], e: Esito, dove: str) -> set[str]:
         if "soglia" in o:
             so = _ogg(o["soglia"])
             pred = so.get("predefinita") if so else None
-            if not so or so.get("dado") not in (6, 20, 100) or (pred is not None and not (_intero(pred) and 0 <= pred <= so["dado"])):
-                _err(e, "abilita", dove, f"abilita.{o['id']}.soglia: {{dado: 6 | 20 | 100, predefinita: da 0 al dado o vuota}}")
+            if not so or so.get("dado") not in (6, 10, 20, 100) or (pred is not None and not (_intero(pred) and 0 <= pred <= so["dado"])):
+                _err(e, "abilita", dove, f"abilita.{o['id']}.soglia: {{dado: 6 | 10 | 20 | 100, predefinita: da 0 al dado o vuota}}")
+            # The same range as another ability, on this die (Basic Fantasy p. 43: a locked door on the stuck door's, 1d10).
+            come = (so or {}).get("come")
+            if come is not None:
+                altre = {x.get("id"): x for x in r.get("abilita") or [] if isinstance(x, dict)}
+                a = altre.get(come)
+                if not (isinstance(a, dict) and isinstance(a.get("soglia"), dict) and "come" not in a["soglia"]):
+                    _err(e, "abilita", dove, f"abilita.{o['id']}.soglia.come: «{come}» non è un'abilità a soglia del set (con la sua possibilità)")
             # A failure band (M9): a failed roll above oltre_volte × the threshold (or the top face) is a bad failure.
             # What raises the threshold from `predefinita` (regole/schede.ts valoriDaSoglie): a characteristic's bonus, or
             # `valore` from the score `da` up.
@@ -359,7 +366,7 @@ def soglie_abilita(r: dict) -> dict[str, int]:
     out = {}
     for x in r.get("abilita") or []:
         o, so = _ogg(x), _ogg((_ogg(x) or {}).get("soglia"))
-        if o and so and so.get("dado") in (6, 20, 100) and isinstance(o.get("id"), str):
+        if o and so and so.get("dado") in (6, 10, 20, 100) and isinstance(o.get("id"), str):
             out[o["id"]] = so["dado"]
     return out
 

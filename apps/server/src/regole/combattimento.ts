@@ -135,6 +135,11 @@ export interface Combattimento {
     quando?: Array<'prima_opposizione' | 'primo_caduto' | 'meta'>;
     /** A set condition (with `fuori_combattimento`) an NPC that surrenders gets for the scene; null = they only flee. */
     resa?: string | null;
+    /**
+     * The Game Master's adjustment to a morale score, at most this much either way (Basic Fantasy p. 57: ±2; never to a
+     * 12). Absent = the panel offers none.
+     */
+    aggiustamento?: number;
   };
   /**
    * Surprise (B/X, docs/combattimento.md §1): when a fight starts each side that can be surprised rolls `dado`; on
@@ -155,7 +160,7 @@ export interface Combattimento {
    * some subduing damage and less killing damage than its hit points is unconscious, not dead, and wakes with 1 hit
    * point after `sveglia` (1d4 turns). Bare hands (`a_mani_nude`: their dice and words) are always subduing. Absent = none.
    */
-  nonLetale?: { parole: string[]; attacco: number; danno: 'meta' | 'normale'; aManiNude: { danno: FormulaDadi; parole: string[] } | null; sveglia: Durata } | null;
+  nonLetale?: { parole: string[]; attacco: number; danno: 'meta' | 'normale'; aManiNude: { danno: FormulaDadi; parole: string[] } | null; sveglia: Durata; svegliare?: { dopo: Durata; parole: string[] } | null } | null;
 }
 
 /**
@@ -357,6 +362,11 @@ export function leggiCombattimento(v: unknown, base: Combattimento, caratteristi
       if (!ok.length || ok.length !== q.length) errori.push(`combattimento.fine.morale.quando: a list of ${QUANDO.join(', ')}`);
       else out.fine.quando = ok;
     }
+    if (mo['aggiustamento'] !== undefined) {
+      const a = mo['aggiustamento'];
+      if (typeof a !== 'number' || !Number.isInteger(a) || a < 1 || a > 10) errori.push('combattimento.fine.morale.aggiustamento: the Game Master\'s largest adjustment either way, a whole number from 1 (Basic Fantasy: 2)');
+      else out.fine.aggiustamento = a;
+    }
     const resa = ogg(mo['resa']);
     if (mo['resa'] !== undefined) {
       const c = resa?.['condizione'];
@@ -377,7 +387,13 @@ export function leggiCombattimento(v: unknown, base: Combattimento, caratteristi
     else if (nl['a_mani_nude'] !== undefined && (!mn || !dm)) errori.push('combattimento.non_letale.a_mani_nude: {danno: "1d3", parole: [pugno, …]}');
     else {
       const parMani = mn && Array.isArray(mn['parole']) ? (mn['parole'] as unknown[]).filter((x): x is string => typeof x === 'string' && !!x.trim()) : [];
-      out.nonLetale = { parole, attacco, danno, aManiNude: dm ? { danno: dm, parole: parMani } : null, sveglia: leggiDurata(nl['sveglia'], 'combattimento.non_letale.sveglia', errori, { tipo: 'tempo', unita: 'turno', dadi: { numero: 1, facce: 4, bonus: 0 } }) };
+      // Woken by someone (Basic Fantasy p. 55: «after 2d10 rounds»): an action with these words that names the one knocked
+      // out, once that time has passed.
+      const sv = nl['svegliare'] === undefined ? null : ogg(nl['svegliare']);
+      const svParole = Array.isArray(sv?.['parole']) ? (sv!['parole'] as unknown[]).filter((x): x is string => typeof x === 'string' && !!x.trim()) : [];
+      if (nl['svegliare'] !== undefined && (!sv || !svParole.length)) errori.push('combattimento.non_letale.svegliare: {dopo: {round: "2d10"}, parole: [sveglio, scuoto]}');
+      const svegliare = sv && svParole.length ? { dopo: leggiDurata(sv['dopo'], 'combattimento.non_letale.svegliare.dopo', errori, { tipo: 'tempo', unita: 'round', dadi: { numero: 2, facce: 10, bonus: 0 } }), parole: svParole } : null;
+      out.nonLetale = { parole, attacco, danno, aManiNude: dm ? { danno: dm, parole: parMani } : null, sveglia: leggiDurata(nl['sveglia'], 'combattimento.non_letale.sveglia', errori, { tipo: 'tempo', unita: 'turno', dadi: { numero: 1, facce: 4, bonus: 0 } }), ...(svegliare ? { svegliare } : {}) };
     }
   }
   if (d['nella_mischia'] !== undefined && d['nella_mischia'] !== null) {

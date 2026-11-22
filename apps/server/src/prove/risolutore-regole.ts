@@ -360,7 +360,7 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
  * Il set visto da un'abilità tirata a parte sotto soglia (`abilita[].soglia`): un d100 per le percentuali del
  * ladro, un d6 per le possibilità «x su 6», contro il valore della scheda, senza difficoltà né vantaggi del set.
  */
-export function sistemaSoglia(s: SistemaRegole, dado: 6 | 20 | 100): SistemaRegole {
+export function sistemaSoglia(s: SistemaRegole, dado: 6 | 10 | 20 | 100): SistemaRegole {
   return {
     ...s,
     risoluzione: { tipo: 'sotto_soglia', facce: dado, numero: 1, fasce: [], gradi: [], critico: null, disastro: null, critici: 'attacchi' },
@@ -385,7 +385,7 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
   const nomeAbil = (id: string): string => s.abilita.find((x) => x.id === id)?.nome ?? id;
 
   /** Il numero da tirare (modificatore o soglia) e come si chiama, da mossa, abilità o caratteristica. */
-  function cheCosa(sch: SchedaGenerica, d: { caratteristica: string | null; abilita: string | null; mossa: string | null }, sociale: boolean): { valore: number; etichetta: string; mossa: SistemaRegole['mosse'][number] | null; soglia?: 6 | 20 | 100; salvezza?: boolean } | null {
+  function cheCosa(sch: SchedaGenerica, d: { caratteristica: string | null; abilita: string | null; mossa: string | null }, sociale: boolean): { valore: number; etichetta: string; mossa: SistemaRegole['mosse'][number] | null; soglia?: 6 | 10 | 20 | 100; salvezza?: boolean } | null {
     const mossa = d.mossa ? (s.mosse.find((m) => m.id === d.mossa) ?? null) : null;
     if (mossa) return { valore: valoreCaratteristica(s, sch, mossa.caratteristica), etichetta: `${nomeCar(mossa.caratteristica)}, ${mossa.nome}`, mossa };
     let abil = d.abilita && s.abilita.some((x) => x.id === d.abilita) ? d.abilita : null;
@@ -421,7 +421,7 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
    * The situational points of a check (M9): the scene check's `aggiustamento`, and for a d100 threshold the difficulty
    * rung's `percentuale` (the arbiter's «difficile» on a slimy wall: −20). 0 = none.
    */
-  function aggiustamentoDi(cosa: { soglia?: 6 | 20 | 100 }, ps: ProvaScenaRegole | null, difficolta: string | null): number {
+  function aggiustamentoDi(cosa: { soglia?: 6 | 10 | 20 | 100 }, ps: ProvaScenaRegole | null, difficolta: string | null): number {
     const rung = cosa.soglia === 100 && difficolta ? (s.difficolta.find((x) => x.id === difficolta)?.percentuale ?? 0) : 0;
     return (ps?.aggiustamento ?? 0) + rung;
   }

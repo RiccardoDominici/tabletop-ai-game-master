@@ -70,6 +70,10 @@ export interface StatoProveSalvato {
   /** The Game Master's light for a scene, and what the narrator last heard of the party's sight (prove/luce.ts). */
   luce_forzata?: { scena: string; livello: 'piena' | 'fioca' | 'buio' };
   luce_nota?: string;
+  /** The Game Master's adjustments to morale scores, by NPC. */
+  morale_master?: Array<[string, number]>;
+  /** The knocked out, and from what game second someone can wake them. */
+  svegliabili?: Array<[string, number]>;
   /** The creatures wandering encounters brought into their scenes (prove/vaganti.ts), rebuilt on resume. */
   vaganti?: Array<{ id: string; mostro: string; nome: string; scena: string; incontro: number }>;
 }

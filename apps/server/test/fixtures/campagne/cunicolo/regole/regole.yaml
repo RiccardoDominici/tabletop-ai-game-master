@@ -36,6 +36,9 @@ abilita:
   - {id: scassinare, nome: Scassinare, caratteristica: null, soglia: {dado: 100}}
   - {id: ts_morte, nome: Salvezza contro la morte, caratteristica: null, salvezza: morte}
   - {id: orientarsi, nome: Salvezza per orientarsi, caratteristica: intelligenza, salvezza: morte}
+  # A stuck door: 1 + the Strength bonus on 1d6; a locked one on the same range, on 1d10.
+  - {id: forzare, nome: Forzare una porta bloccata, caratteristica: null, soglia: {dado: 6, predefinita: 1, piu: [{caratteristica: forza}]}}
+  - {id: sfondare, nome: Sfondare una porta chiusa a chiave, caratteristica: null, soglia: {dado: 10, come: forzare}}
 difficolta:
   - {id: facile, nome: Facile, valore: 11}
   - {id: normale, nome: Normale, valore: 15}
@@ -104,6 +107,8 @@ viaggio:
     - {id: bosco, nome: Bosco, per: 0.5, incontri: bosco, smarrirsi: true}
 parole_chiave:
   scassinare: [scassino, grimaldello]
+  forzare: [spallata, porta bloccata]
+  sfondare: [sfondo, chiusa a chiave]
 
 # The coins: worth in copper (the smallest); prices in gold, silver and copper; fifty coins weigh one unit of load.
 monete:
@@ -214,7 +219,8 @@ combattimento:
     - {id: affaticato, nome: Affaticato, icona: AF, effetti: [], valori: {attacchi: -1}, testo: Ha bisogno di una pausa.}
     - {id: accecato, nome: Accecato, icona: AC, effetti: [], valori: {attacchi: -4, contro: 4}, gruppo: vista, testo: Non vede.}
   condizione_a_zero: svenuto
-  fine: {morale: true}
+  # Morale at the first down and at half, and the Game Master's adjustment of at most ±2 (never to a 12).
+  fine: {morale: {quando: [primo_caduto, meta], aggiustamento: 2}}
 
 # The bestiary's rules (regole/bestiario.ts): a d8 hit die, ½ hit dice = 1d4, the attack bonus by hit dice.
 bestiario:

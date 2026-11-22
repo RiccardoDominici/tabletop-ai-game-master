@@ -73,6 +73,9 @@ abilita:                      # optional; caratteristica = an existing id [V]
     #   characteristic's bonus ({caratteristica}), or `valore` from the score `da` up ({caratteristica: intelligenza, da: 15,
     #   valore: 1}); a race's or class's trait {tiro: abilita, abilita: [cercare], bonus: 1} adds too (regole/schede.ts
     #   valoriDaSoglie; Basic Fantasy pp. 43–44: stuck doors 1 + Strength, secret doors +1 with INT 15, +1 for elves)
+  - {id: sfondare, nome: "Porte chiuse a chiave", caratteristica: null, soglia: {dado: 10, come: forzare}}
+    # optional [V] come (R6): another threshold ability's range for this sheet, rolled on this one's die (Basic Fantasy
+    #   p. 43: a locked door on the stuck door's range on 1d10, metal bars on 1d20); dado: 6 | 10 | 20 | 100
   - {id: ascoltare, nome: "Ascoltare", caratteristica: null, soglia: {dado: 100, senza: {dado: 6, valore: 1}}, segreta: niente}
     # optional [V] senza (R5): whoever lacks the value rolls this on its own die instead (a non-thief listening at a door:
     #   1 in 1d6, Basic Fantasy p. 43); not together with `predefinita`
@@ -182,11 +185,14 @@ combattimento:                              # optional: without it, the full SRD
     #   once on an attack (a blind attacker against an invisible target, Basic Fantasy p. 59)
   condizione_a_zero: privo_di_sensi         # [V] among the conditions, or null
   fine: {morale: true}                      # B/X morale: 2d6 against the NPCs' scheda.morale (first down, half down)
-  # or [V] {morale: {quando: [prima_opposizione, primo_caduto, meta], resa: {condizione: arreso}}}: when it is checked, and
-  #   the condition a broken NPC with `si_arrende: true` gets for the scene (Basic Fantasy p. 57; docs/combattimento.md §3)
+  # or [V] {morale: {quando: [prima_opposizione, primo_caduto, meta], resa: {condizione: arreso}, aggiustamento: 2}}: when it
+  #   is checked, the condition a broken NPC with `si_arrende: true` gets for the scene, and the Game Master's largest
+  #   adjustment from the panel (R6; never to a 12) (Basic Fantasy p. 57; docs/combattimento.md §3)
   sorpresa: {dado: 6, fino_a: 2, condizione: sorpreso}   # [V] B/X surprise: 1d6 per side, 1–2 loses round 1 (a set's condition)
-  non_letale: {parole: [col piatto], attacco: -4, danno: meta, a_mani_nude: {danno: "1d3", parole: [pugno]}, sveglia: {turno: "1d4"}}
-                                            # optional [V]: subduing damage (Basic Fantasy pp. 55–56, docs/combattimento.md §3)
+  non_letale: {parole: [col piatto], attacco: -4, danno: meta, a_mani_nude: {danno: "1d3", parole: [pugno]}, sveglia: {turno: "1d4"},
+               svegliare: {dopo: {round: "2d10"}, parole: [sveglio, scuoto]}}
+                                            # optional [V]: subduing damage (Basic Fantasy pp. 55–56, docs/combattimento.md §3);
+                                            #   svegliare (R6): woken sooner by an action with its words, after `dopo`
   nella_mischia: {alleati: 3}               # optional [V]: a PC's missile that misses an NPC engaged in melee with other PCs is
                                             #   rolled again by the Game Master at up to n of them, until one is hit (p. 55)
 tiri_salvezza:                              # optional [V]: the manual's save categories, in the table's order

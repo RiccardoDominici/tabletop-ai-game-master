@@ -55,4 +55,19 @@ describe('subduing damage', () => {
     await m.risolvi(1, [azione('pg_bruna', 'Colpisco Varo con la spada')]);
     expect(m.stato.fuoriGioco('png_capo')).toBe('morto');
   });
+
+  it('someone can wake the knocked out sooner, once the set\'s time has passed (the fixture: 2 turns)', async () => {
+    // d4 = 4: alone in 4 turns; woken by someone from 2 turns on.
+    const m = contro('png_capo', ['pg_bruna'], { 20: [20], 8: [8], 6: [1, 1, 6, 1, 1], 4: [4] });
+    m.impostaPf('png_capo', 2);
+    await m.risolvi(1, [azione('pg_bruna', 'Colpisco Varo col piatto della spada per tramortirlo')]);
+    expect(m.stato.tramortito('png_capo')).toBe(true);
+    const presto = await m.risolvi(2, [azione('pg_bruna', 'Scuoto Varo per svegliarlo')]);
+    expect(presto.fatti.join(' ')).toMatch(/Varo non si riprende ancora: è troppo presto\./);
+    expect(m.stato.puntiFerita('png_capo')!.attuali).toBe(0);
+    const ora = await m.risolvi(3, [azione('pg_bruna', 'Scuoto Varo per svegliarlo')]);
+    expect(ora.fatti.join(' ')).toMatch(/Bruna sveglia Varo: si riprende con 1 punto ferita\./);
+    expect(m.stato.puntiFerita('png_capo')!.attuali).toBe(1);
+    expect(m.stato.tramortito('png_capo')).toBe(false);
+  });
 });

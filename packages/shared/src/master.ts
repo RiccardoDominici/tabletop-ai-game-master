@@ -293,6 +293,11 @@ export interface CombattimentoMaster {
     luce?: { livello: 'piena' | 'fioca' | 'buio'; forzata: boolean; testo: string | null };
   };
   /**
+   * The Game Master's morale adjustment (Basic Fantasy p. 57; docs/combattimento.md): the largest either way, and the
+   * scene's NPCs with a morale score (base, adjustment, score now). Absent where the set gives no adjustment.
+   */
+  morale?: { massimo: number; png: Array<{ id: string; nome: string; base: number; aggiustamento: number; ora: number }> };
+  /**
    * Experience points (docs/prove.md §12): each PC's XP, level and next threshold (`sale`: it reaches the next level,
    * taken between sessions), the treasure found and not yet back to safety, this session's awards. Absent without XP rules.
    */
@@ -495,7 +500,9 @@ export type ComandoMaster =
    */
   | { tipo: 'incontro'; tabella?: string | null }
   /** How dark the scene is (docs/prove.md §15): piena, fioca, buio, or null (back to the scene sheet's), until it changes. */
-  | { tipo: 'luce'; livello: 'piena' | 'fioca' | 'buio' | null };
+  | { tipo: 'luce'; livello: 'piena' | 'fioca' | 'buio' | null }
+  /** The Game Master's adjustment to an NPC's morale (Basic Fantasy p. 57: at most ±2, never to a 12); 0 clears it. */
+  | { tipo: 'morale'; id: string; valore: number };
 
 export type TipoComandoMaster = ComandoMaster['tipo'];
 

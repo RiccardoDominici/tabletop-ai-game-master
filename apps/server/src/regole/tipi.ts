@@ -129,8 +129,13 @@ export interface SistemaRegole {
     Voce & {
       caratteristica: string | null;
       soglia?: {
-        dado: 6 | 20 | 100;
+        dado: 6 | 10 | 20 | 100;
         predefinita: number | null;
+        /**
+         * The same range as another ability of the set, rolled on this one's die (Basic Fantasy p. 43: a locked door is
+         * forced on the stuck door's range on 1d10, metal bars bent on 1d20). Null = its own value.
+         */
+        come?: string | null;
         /** A failure band (Basic Fantasy's pick pockets: noticed above twice the target, or on 00): its name for the narrator. */
         grave?: { oltreVolte: number; colMassimo: boolean; nome: string } | null;
         /**

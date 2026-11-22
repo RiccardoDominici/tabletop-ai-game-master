@@ -116,6 +116,10 @@ abilita:
   - {id: cercare, nome: "Cercare porte segrete e trappole", caratteristica: null, soglia: {dado: 6, predefinita: 1, piu: [{caratteristica: intelligenza, da: 15, valore: 1}]}}
   - {id: forzare, nome: "Forzare una porta bloccata", caratteristica: null, soglia: {dado: 6, predefinita: 1, piu: [{caratteristica: forza}]}}
   - {id: pietra, nome: "Occhio per la pietra (nani)", caratteristica: null, soglia: {dado: 6}}
+  # Porte chiuse a chiave (p. 43): si sfondano con la stessa possibilità della porta bloccata, ma su 1d10; le sbarre di
+  # metallo, a volte, si piegano con la stessa possibilità su 1d20 (`come`: la possibilità di `forzare`, su questo dado).
+  - {id: sfondare, nome: "Sfondare una porta chiusa a chiave", caratteristica: null, soglia: {dado: 10, come: forzare}}
+  - {id: piegare_sbarre, nome: "Piegare sbarre di metallo", caratteristica: null, soglia: {dado: 20, come: forzare}}
 
 # Difficoltà: il «Target» delle prove di caratteristica al primo livello è 17 (p. 189); il master può dare un
 # bonus o una penalità. Facile = +4, difficile = −2, ardua = −4 (gli aggiustamenti che il manuale usa più spesso:
@@ -1411,7 +1415,9 @@ parole_chiave:
   nascondersi: [nascondo, nascondermi, acquatto, nell'ombra]
   ascoltare: [ascolto, ascoltare, origlio, tendo l'orecchio]
   cercare: [cerco, frugo, esamino, perquisisco, passaggio segreto]
-  forzare: [forzo, sfondo, spallata, scardino]
+  forzare: [forzo, spallata, scardino, porta bloccata]
+  sfondare: [sfondo, sfondare, chiusa a chiave, butto giù la porta]
+  piegare_sbarre: [piego le sbarre, sbarre, inferriata]
   pietra: [muratura, malta, mattoni, pietre squadrate]
   ts_morte: [veleno, avvelenato]
   ts_morte_destrezza: [schivo, evito, balzo, aggrappo]
@@ -1478,10 +1484,12 @@ combattimento:
   nella_mischia: {alleati: 9}
   # Danno per tramortire (p. 55–56): col piatto della lama, −4 a colpire e metà danno; a zero punti ferita con un po' di
   # questo danno (e meno danno vero dei punti ferita massimi) si resta svenuti, non morti, e ci si riprende con un punto
-  # ferita dopo 1d4 turni. A pugni 1d3, sempre per tramortire. Il calcio (1d4, −2) resta fuori.
-  non_letale: {parole: [col piatto, di piatto, tramortirlo, tramortirla, tramortisco, senza ucciderlo, senza ucciderla], attacco: -4, danno: meta, a_mani_nude: {danno: "1d3", parole: [pugno, pugni, a mani nude, cazzotto, cazzotti]}, sveglia: {turno: "1d4"}}
+  # ferita dopo 1d4 turni; qualcuno può svegliarlo prima (con un punto ferita), ma non prima di 2d10 round (`svegliare`).
+  # A pugni 1d3, sempre per tramortire. Il calcio (1d4, −2) resta fuori.
+  non_letale: {parole: [col piatto, di piatto, tramortirlo, tramortirla, tramortisco, senza ucciderlo, senza ucciderla], attacco: -4, danno: meta, a_mani_nude: {danno: "1d3", parole: [pugno, pugni, a mani nude, cazzotto, cazzotti]}, sveglia: {turno: "1d4"}, svegliare: {dopo: {round: "2d10"}, parole: [sveglio, svegliarlo, svegliarla, scuoto, rianimo, schiaffeggio]}}
   # Morale (p. 57): 2d6, con più del morale il mostro fugge, o si arrende se è intelligente (`si_arrende` sulla scheda).
   # Si tira quando i mostri incontrano la prima opposizione (il primo attacco di un PG a uno di loro) e a metà forze (per
   # numero; un mostro solo a metà dei punti ferita); un tiro per la parte, letto contro il morale di ciascuno. Lo tira il
   # master: la carta resta sul pannello. Chi dorme, è incantato o paralizzato conta come caduto.
-  fine: {morale: {quando: [prima_opposizione, meta], resa: {condizione: arreso}}}
+  # Il master può aggiustare il morale di un mostro di ±2 al più, mai un 12 (p. 57): dal pannello.
+  fine: {morale: {quando: [prima_opposizione, meta], resa: {condizione: arreso}, aggiustamento: 2}}

@@ -173,6 +173,9 @@ def controlla(r: dict, car: set[str], e: Esito, dove: str = "regole/regole.yaml"
         ids = {x.get("id") for x in c.get("condizioni") or [] if isinstance(x, dict)}
         if resa is not None and not (isinstance(resa, dict) and resa.get("condizione") in ids):
             _err(e, dove, "fine.morale.resa.condizione: una condizione del set")
+        agg = mo.get("aggiustamento")
+        if agg is not None and not (isinstance(agg, int) and not isinstance(agg, bool) and 1 <= agg <= 10):
+            _err(e, dove, "fine.morale.aggiustamento: l'aggiustamento più grande del master, un intero da 1 (Basic Fantasy: 2)")
     # Subduing damage (Basic Fantasy pp. 55–56): {parole, attacco, danno: meta | normale, a_mani_nude: {danno, parole}, sveglia}.
     nl = c.get("non_letale")
     if nl is not None:
@@ -184,6 +187,10 @@ def controlla(r: dict, car: set[str], e: Esito, dove: str = "regole/regole.yaml"
             _err(e, dove, "non_letale.danno: meta o normale")
         elif "a_mani_nude" in nl and not (isinstance(nl["a_mani_nude"], dict) and formula_valida(nl["a_mani_nude"].get("danno"))):
             _err(e, dove, "non_letale.a_mani_nude: {danno: \"1d3\", parole: [pugno, …]}")
+        # Woken by someone after a while (p. 55: 2d10 rounds): {dopo: a duration, parole: [sveglio, scuoto]}.
+        sv = nl.get("svegliare") if isinstance(nl, dict) else None
+        if sv is not None and not (isinstance(sv, dict) and isinstance(sv.get("parole"), list) and sv["parole"] and all(isinstance(p, str) for p in sv["parole"]) and isinstance(sv.get("dopo", {}), dict)):
+            _err(e, dove, "non_letale.svegliare: {dopo: {round: \"2d10\"}, parole: [sveglio, scuoto]}")
     # Missiles that miss into a melee (Basic Fantasy p. 55): {alleati: n ≥ 1}.
     nm = c.get("nella_mischia")
     if nm is not None and not (isinstance(nm, dict) and isinstance(nm.get("alleati"), int) and not isinstance(nm.get("alleati"), bool) and nm["alleati"] >= 1):

@@ -100,8 +100,8 @@ export function leggiSistema(grezzo: D, errori: string[], avvisi: string[], file
     if (ogg(x)?.['soglia'] === undefined) return [{ ...v, caratteristica: car, ...salvezza }];
     const dado = num(so?.['dado']);
     const predefinita = so && Object.hasOwn(so, 'predefinita') ? num(so['predefinita']) : null;
-    if (!so || (dado !== 6 && dado !== 20 && dado !== 100)) {
-      errori.push(`abilita.${v.id}.soglia: {dado: 6 | 20 | 100, predefinita: …}`);
+    if (!so || (dado !== 6 && dado !== 10 && dado !== 20 && dado !== 100)) {
+      errori.push(`abilita.${v.id}.soglia: {dado: 6 | 10 | 20 | 100, predefinita: …}`);
       return [{ ...v, caratteristica: car, ...salvezza }];
     }
     // A failure band: a failed roll above `oltre_volte` × the threshold (or the die's top face) is a bad failure.
@@ -118,7 +118,10 @@ export function leggiSistema(grezzo: D, errori: string[], avvisi: string[], file
     const senza = se && (seDado === 6 || seDado === 20 || seDado === 100) && seValore !== null && Number.isInteger(seValore) && seValore >= 0 && seValore <= seDado ? { senza: { dado: seDado as 6 | 20 | 100, valore: seValore } } : {};
     if (so['senza'] !== undefined && !('senza' in senza)) errori.push(`abilita.${v.id}.soglia.senza: {dado: 6 | 20 | 100, valore: from 0 to the die}`);
     if ('senza' in senza && predefinita !== null) errori.push(`abilita.${v.id}.soglia: predefinita or senza, not both`);
-    return [{ ...v, caratteristica: car, soglia: { dado: dado as 6 | 20 | 100, predefinita, ...grave, ...(piu.length ? { piu } : {}), ...senza }, ...salvezza }];
+    // The same range as another ability, on this die (a locked door on the stuck door's range on 1d10, p. 43).
+    const come = typeof so['come'] === 'string' ? so['come'] : null;
+    if (so['come'] !== undefined && !come) errori.push(`abilita.${v.id}.soglia.come: the id of the ability whose range it takes`);
+    return [{ ...v, caratteristica: car, soglia: { dado: dado as 6 | 10 | 20 | 100, predefinita, ...grave, ...(piu.length ? { piu } : {}), ...senza, ...(come ? { come } : {}) }, ...salvezza }];
   });
   const modTipo = (ogg(d['modificatore'])?.['tipo'] ?? (tipo === 'sotto_soglia' ? 'soglia' : tipo === '2d6_fasce' ? 'diretto' : 'srd')) as SistemaRegole['modificatore'];
   if (!['srd', 'diretto', 'soglia', 'tabella'].includes(modTipo)) errori.push('modificatore.tipo: srd, diretto, soglia o tabella');
@@ -226,6 +229,10 @@ export function leggiSistema(grezzo: D, errori: string[], avvisi: string[], file
   const classiEPoteri = tabelleDiClasse(d, abilita, errori);
   const poteri = leggiPoteri(d['poteri'], { salvezze: new Set(abilita.filter((a) => a.salvezza).map((a) => a.id)), classi: classiEPoteri.classi?.length ? new Set(classiEPoteri.classi.map((c) => c.id)) : null, condizioni: new Set(combattimento.condizioni.map((c) => c.id)) }, errori);
   for (const a of abilita) if (a.ripiego && !abilita.some((x) => x.id === a.ripiego)) errori.push(`abilita.${a.id}.ripiego: «${a.ripiego}» non è un'abilità del set`);
+  for (const a of abilita) {
+    const k = a.soglia?.come;
+    if (k && !abilita.some((x) => x.id === k && x.soglia && !x.soglia.come)) errori.push(`abilita.${a.id}.soglia.come: «${k}» is not a threshold ability of the set (with its own range)`);
+  }
   // The item catalog (M2): coins first, since prices are written in them.
   const monete = leggiMonete(d['monete'], errori);
   const catalogo = leggiCatalogo(d['catalogo'], monete, { caratteristiche: idCar, abilita: new Set(abilita.map((a) => a.id)), classi: classiEPoteri.classi?.length ? new Set(classiEPoteri.classi.map((c) => c.id)) : null, razze: classiEPoteri.razze?.length ? new Set(classiEPoteri.razze.map((x) => x.id)) : null }, errori);

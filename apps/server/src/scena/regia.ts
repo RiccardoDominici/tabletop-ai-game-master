@@ -3861,6 +3861,14 @@ export class Regia {
     return { ok: true, fatto: r.fatto };
   }
 
+  /** The Game Master's morale adjustment from the panel (Basic Fantasy p. 57; prove/motore.ts moraleDelMaster). */
+  morale(id: string, valore: number): Esito & { fatto?: string } {
+    const r = this.prove?.moraleDelMaster(id, valore);
+    if (!r?.ok) return { ok: false, errore: testoFisso(`regia.errori.morale_${r && !r.ok ? r.motivo : 'senza_regola'}`) };
+    this.notifica();
+    return { ok: true, fatto: r.fatto };
+  }
+
   /** The scene's light from the panel (docs/prove.md §15; prove/motore.ts luceDelMaster): the narrator hears what the party sees. */
   luce(livello: 'piena' | 'fioca' | 'buio' | null): Esito & { fatto?: string } {
     const r = this.prove?.luceDelMaster(livello);

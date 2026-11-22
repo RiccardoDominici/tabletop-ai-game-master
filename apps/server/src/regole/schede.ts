@@ -161,6 +161,15 @@ export function valoriDaSoglie(s: SistemaRegole, sch: SchedaGenerica): Record<st
     }
     out[a.id] = Math.max(0, Math.min(so.dado, v));
   }
+  // An ability with another's range on its own die (a locked door on the stuck door's range, Basic Fantasy p. 43): that
+  // ability's value for this sheet — derived above, or written, or its default — capped by this die.
+  for (const a of s.abilita) {
+    const k = a.soglia?.come;
+    if (!k) continue;
+    const altra = s.abilita.find((x) => x.id === k)?.soglia;
+    const v = out[k] ?? sch.abilita[k] ?? altra?.predefinita ?? null;
+    if (v !== null) out[a.id] = Math.max(0, Math.min(a.soglia!.dado, v));
+  }
   return out;
 }
 

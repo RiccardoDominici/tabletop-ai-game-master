@@ -187,7 +187,7 @@ combattimento:
   nella_mischia: {alleati: 3}
   # Subduing damage (non-lethal): an attack whose words say so is at −4 for half damage that knocks out; bare hands
   # 1d3, always subduing; a knocked-out creature wakes with 1 HP after 1d4 turns.
-  non_letale: {parole: [col piatto, tramortirlo, tramortirla, senza ucciderlo], attacco: -4, danno: meta, a_mani_nude: {danno: "1d3", parole: [pugno, pugni, a mani nude]}, sveglia: {turno: "1d4"}}
+  non_letale: {parole: [col piatto, tramortirlo, tramortirla, senza ucciderlo], attacco: -4, danno: meta, a_mani_nude: {danno: "1d3", parole: [pugno, pugni, a mani nude]}, sveglia: {turno: "1d4"}, svegliare: {dopo: {turno: 2}, parole: [sveglio, scuoto, svegliarlo]}}
   # Morale as Basic Fantasy times it (p. 57): at the first opposition and at half strength; a broken NPC with
   # `si_arrende` surrenders (out of the fight for the scene).
   fine: {morale: {quando: [prima_opposizione, meta], resa: {condizione: arreso}}}

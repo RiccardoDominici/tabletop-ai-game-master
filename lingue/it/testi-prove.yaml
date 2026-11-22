@@ -339,9 +339,12 @@ prove:
     morale_tengono: "Morale dei nemici: {tiro} contro {morale} → tengono."
     tramortito_dorme: "{nome} è tramortito: resta senza sensi, ma vivo, e si riprenderà da solo."
     tramortito_sveglio: "{nome} si riprende con 1 punto ferita."
+    tramortito_presto: "{nome} non si riprende ancora: è troppo presto."
+    tramortito_svegliato: "{chi} sveglia {nome}: si riprende con 1 punto ferita."
     # Morale per creature (R4, Basic Fantasy p. 57): one 2d6 for the side, read against each one's own score.
     morale_chi: "I nemici"
     morale_etichetta: "Morale"
+    morale_master: "Morale di {nome}: {base}, con l'aggiustamento del master {segno} ora {ora}."
     morale_regola: "Morale: 2d6 = {tiro}; regge chi ha il morale da {tiro} in su"
     morale_misto: "Morale dei nemici: {tiro} su 2d6.{tengono}{cedono}{arresi}"
     morale_tengono_chi: " Tengono: {nomi}."

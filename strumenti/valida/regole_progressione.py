@@ -183,6 +183,17 @@ def valori_da_soglie(r: dict, s: dict) -> dict[str, int]:
             else:
                 v += bonus_caratteristica(r, s, car)
         out[a["id"]] = max(0, min(so["dado"], v))
+    # An ability with another's range on its own die (`soglia.come`: a locked door on the stuck door's, Basic Fantasy p. 43).
+    abilita = _ogg(s.get("abilita")) or {}
+    for a in r.get("abilita") or []:
+        so = _ogg((a or {}).get("soglia")) if isinstance(a, dict) else None
+        k = (so or {}).get("come")
+        if not k or not _intero(so.get("dado")):
+            continue
+        altra = next((_ogg(x.get("soglia")) for x in r.get("abilita") or [] if isinstance(x, dict) and x.get("id") == k), None) or {}
+        v = out.get(k, abilita.get(k, altra.get("predefinita")))
+        if _intero(v):
+            out[a["id"]] = max(0, min(so["dado"], v))
     return out
 
 
