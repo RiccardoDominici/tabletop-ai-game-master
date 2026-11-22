@@ -976,9 +976,11 @@ need. Now the set says which environments the party explores and how often the G
   rides the snapshot and is rebuilt before the hit points are read; «Ricomincia» sends them away. They stay where they
   were met: when the scene changes they are left behind, alive or not (no longer targets, combatants or on the panel),
   and one fled does not come back elsewhere. An encounter the party avoids or talks its way out of ends with the panel's
-  «Se ne vanno» (command `incontro` with `via: true`): the last encounter's creatures still standing leave the scene,
-  and the narrator hears «Se ne vanno per la loro strada: Goblin 1, Goblin 2.»; refused during a fight. A journey's
-  encounter joins the scene the party set out from (the Engine has no scene for the road).
+  «Se ne vanno» (command `incontro` with `via: true`): the wandering creatures still standing in the scene, of every
+  encounter met there, leave it, and the narrator hears «Se ne vanno per la loro strada: Goblin 1, Goblin 2.»; refused
+  during a fight. Creatures in a fight that is still going when the scene changes follow the party into the new scene
+  (a chase) and stay there after it. A journey's encounter joins the scene the party set out from (the Engine has no
+  scene for the road).
 - **What the table hears.** A fact for the narrator in the turn («Mostri erranti (tiro del master): arrivano 3 creature,
   goblin.»), owed like a light going out (prove/fatti-dovuti.ts, type `incontro`): if the narration does not tell it, the
   Engine says «Arriva qualcuno: Ratto.» for one, «Arrivano in 3: Goblin.» for a band.

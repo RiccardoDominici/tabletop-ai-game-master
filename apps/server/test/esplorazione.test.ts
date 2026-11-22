@@ -203,11 +203,14 @@ describe('where the wandering creatures go, and who sees the checks', () => {
     expect(m.esporta().vaganti).toBeUndefined();
   });
 
-  it('«Se ne vanno»: the last encounter\'s creatures still standing leave; refused with none', () => {
+  it('«Se ne vanno»: the scene\'s wandering creatures still standing leave; refused with none', () => {
     const { m } = motore({ 4: [2, 1], 6: [2, 5] }, 'scena_bosco'); // the woods' table: 2 goblins, 1d6 = 2
     m.incontroDelMaster({ tabella: 'bosco' });
     expect(m.vistaTempo()!.incontri!.ultimo!.in_scena).toBe(2);
-    expect(m.vagantiVia()).toEqual({ ok: true, fatto: 'Se ne vanno per la loro strada: Goblin 1, Goblin 2.' });
+    // A second encounter in the same scene (1d4 = 1: wolves, 1d4 = 2 of them): «Se ne vanno» sends off both.
+    m.incontroDelMaster({ tabella: 'bosco' });
+    expect(m.vistaTempo()!.incontri!.ultimo!.in_scena).toBe(4);
+    expect(m.vagantiVia()).toEqual({ ok: true, fatto: 'Se ne vanno per la loro strada: Goblin 1, Goblin 2, Lupo 1, Lupo 2.' });
     expect(m.gregariDellaScena()).toEqual([]);
     expect(m.vistaTempo()!.incontri!.ultimo!.in_scena).toBe(0);
     expect(m.vagantiVia()).toEqual({ ok: false });
@@ -222,5 +225,30 @@ describe('where the wandering creatures go, and who sees the checks', () => {
     const fuori = motore({ 6: [6] }, 'scena_bosco', { tiriMaster: 'a_volte' }).m;
     fuori.tempoDelMaster({ cosa: 'avanza', durata: { ora: 3 } });
     expect(fuori.tiriDelMaster().find((t) => t.del_master)!.nascosta).toBe(true);
+  });
+});
+
+describe('a scene change in the middle of a fight with wandering creatures', () => {
+  it('those fighting follow the party into the new scene and the fight goes on; after it they stay there until the next change', async () => {
+    const { m, vai } = motore({ 6: [2, 3], 4: [1, 1], 20: [15, 15, 15, 15, 15, 15], 8: [6, 6, 6, 6] });
+    await m.risolvi(1, [azione('pg_aldo', 'Avanzo')]);
+    await m.risolvi(2, [azione('pg_aldo', 'Avanzo')]);
+    await m.risolvi(3, [azione('pg_aldo', 'Attacco il goblin con la spada')]);
+    expect(m.combattimento.attivo).toBe(true);
+    vai('scena_bosco');
+    m.fineScena();
+    // In the new scene, with their sheets: the next round resolves with them.
+    expect(m.gregariDellaScena().map((g) => g.id).sort()).toEqual(['png_goblin_inc1_1', 'png_goblin_inc1_2']);
+    const r = await m.risolvi(4, [azione('pg_aldo', 'Attacco il goblin con la spada')]);
+    expect(r.tiri.find((t) => t.tipo === 'attacco' && t.chi === 'pg_aldo')).toMatchObject({ bersaglio: { id: expect.stringMatching(/^png_goblin_inc1_/) } });
+    expect(m.stato.puntiFerita('png_goblin_inc1_2')).not.toBeNull();
+    // A resume keeps them in the scene they followed the party to.
+    expect(m.esporta().vaganti!.every((v: { scena: string }) => v.scena === 'scena_bosco')).toBe(true);
+    // The fight ends; the next scene change leaves them behind.
+    m.terminaCombattimento();
+    vai('scena_galleria');
+    m.fineScena();
+    expect(m.gregariDellaScena()).toEqual([]);
+    expect(m.esporta().vaganti).toBeUndefined();
   });
 });

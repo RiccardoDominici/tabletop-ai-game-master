@@ -200,7 +200,7 @@ export interface VistaIncontri {
   probabilita?: string;
   /** A check fell due during the fight: rolled when it ends. */
   in_attesa?: boolean;
-  /** The session's last encounter; `in_scena`: its creatures still standing here (the panel's «Se ne vanno»). */
+  /** The session's last encounter; `in_scena`: the wandering creatures still standing in this scene (the panel's «Se ne vanno»). */
   ultimo?: { testo: string; ora: string; in_scena: number };
   /** The exploration rest rule: how long since the last rest, or that the PCs are overdue (prove/fatica.ts). */
   fatica?: string;
@@ -1548,7 +1548,7 @@ export class MotoreProve {
       ...(p && dove
         ? { ambiente: dove.ambiente.nome, tabella: dove.tabella?.nome ?? null, prossimo: p.tra > 0 ? this.tempo.durata(p.tra) : testo('prove.esplorazione.adesso'), ogni: this.tempo.durata(p.ogni), probabilita: testo('prove.esplorazione.probabilita', { fino_a: p.finoA, dado: p.dado }), in_attesa: this.combattimento.attivo && p.tra === 0 }
         : {}),
-      ...(u ? { ultimo: { testo: fattoIncontro(u, { nomeMostro, quando: null }), ora: this.tempo.testoOraDi(this.tempo.inizio + u.quando), in_scena: this.vaganti.filter((v) => v.incontro === u.n && !this.stato.fuoriGioco(v.id)).length } } : {}),
+      ...(u ? { ultimo: { testo: fattoIncontro(u, { nomeMostro, quando: null }), ora: this.tempo.testoOraDi(this.tempo.inizio + u.quando), in_scena: this.vaganti.filter((v) => v.scena === this.o.contesto().campagna.scena.id && !this.stato.fuoriGioco(v.id)).length } } : {}),
       ...(fatica ? { fatica } : {}),
       ...(orientamento ? { orientamento } : {}),
       ...(provviste.length ? { provviste } : {}),
@@ -2032,21 +2032,37 @@ export class MotoreProve {
     const f = Attivi.fatto(this.attivi.cambioScena(), (id) => this.nomeDi(this.o.contesto(), id));
     if (f) this.fattiInSospeso.push(f);
     // The wandering creatures stay where they were met (prove/vaganti.ts): the party leaves them behind, alive or not.
+    // Those in a fight still going follow the party into the new scene (a chase), the fallen with them, so the fight
+    // keeps their sheets and names; they stay there until the next scene change or «Se ne vanno».
     if (this.vaganti.length) {
-      this.o.log.info({ creature: this.vaganti.map((v) => v.id) }, 'wandering: the party leaves the scene, its wandering creatures stay behind');
-      this.togliVaganti();
+      const nuova = this.o.contesto().campagna.scena.id;
+      const inLotta = new Set(this.combattimento.attivo ? this.combattimento.partecipanti('png') : []);
+      const seguono = this.vaganti.filter((v) => inLotta.has(v.id));
+      const restano = this.vaganti.filter((v) => !inLotta.has(v.id));
+      for (const v of restano) {
+        this.schedeVive?.delete(v.id);
+        this.gregari.delete(v.id);
+      }
+      for (const v of seguono) {
+        v.scena = nuova;
+        const g = this.gregari.get(v.id);
+        if (g) g.scena = nuova;
+      }
+      this.vaganti = seguono;
+      this.o.log.info({ restano: restano.map((v) => v.id), seguono: seguono.map((v) => v.id), scena: nuova }, 'wandering: the party leaves the scene; creatures not in a fight stay behind, those fighting follow');
     }
     return f;
   }
 
   /**
-   * The creatures of the last encounter go their way (the panel's «Se ne vanno»: the party avoided them, a talk ended
-   * well): those still standing leave the scene and its fights; the dead and the fallen stay counted. Null when none.
+   * The wandering creatures of this scene go their way (the panel's «Se ne vanno»: the party avoided them, a talk ended
+   * well): those still standing, of every encounter met here, leave the scene and its fights; the dead and the fallen
+   * stay counted. Refused during a fight or with nobody standing.
    */
   vagantiVia(): { ok: true; fatto: string } | { ok: false } {
-    const n = Math.max(0, ...this.vaganti.map((v) => v.incontro));
-    const via = this.vaganti.filter((v) => v.incontro === n && !this.stato.fuoriGioco(v.id));
-    if (!n || !via.length || this.combattimento.attivo) return { ok: false };
+    const qui = this.o.contesto().campagna.scena.id;
+    const via = this.vaganti.filter((v) => v.scena === qui && !this.stato.fuoriGioco(v.id));
+    if (!via.length || this.combattimento.attivo) return { ok: false };
     const c = this.o.contesto();
     const nomi = via.map((v) => this.nomeDi(c, v.id));
     for (const v of via) {

@@ -184,6 +184,24 @@ test.describe.serial('exploration on the clock', () => {
     await foto(master, 'viaggio-nel-bosco');
     await dora.getByTestId('apri-scheda').click();
     await foto(dora, 'dora-scheda');
+
+    // An encounter the party lets go (the panel's «Se ne vanno»): rolled on the woods' table, then sent off. The last
+    // step of the seeded run, so no die after it moves.
+    // The creatures the panel lists (the morale list: who is in the scene, the fallen rat included if not dead).
+    const elencati = async (): Promise<string[]> =>
+      (await master.locator('li[data-testid^="master-morale-png_"]').evaluateAll((l) => l.map((e) => e.getAttribute('data-testid') ?? ''))).sort();
+    const prima = await elencati();
+    await master.getByTestId('master-incontro').locator('summary').click();
+    await master.getByTestId('master-incontro-tabella').selectOption('bosco');
+    await master.getByTestId('master-incontro-tira').click();
+    await expect(master.getByTestId('master-tempo-incontro-via')).toBeVisible({ timeout: 15_000 });
+    await expect.poll(async () => (await elencati()).length, { timeout: 15_000 }).toBeGreaterThan(prima.length);
+    await foto(master, 'incontro-da-lasciare');
+    await master.getByTestId('master-tempo-incontro-via').click();
+    await expect(master.getByTestId('master-tempo-incontro-via')).toBeHidden({ timeout: 15_000 });
+    await expect.poll(elencati, { timeout: 15_000 }).toEqual(prima);
+    await expect(master.getByText(/Se ne vanno per la loro strada: /).first()).toBeVisible({ timeout: 15_000 });
+    await foto(master, 'se-ne-vanno');
     expect(errori).toEqual([]);
   });
 

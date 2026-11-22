@@ -454,7 +454,7 @@ export class ControlliMaster {
         // An encounter rolled now (docs/prove.md §14): the table named, else the scene's; checked by the Engine.
         const tabella = c.tabella === undefined || c.tabella === null || c.tabella === '' ? null : typeof c.tabella === 'string' && /^[a-z0-9_]{1,64}$/.test(c.tabella) ? c.tabella : undefined;
         if (tabella === undefined) return rifiutoDi('incontro_non_valido');
-        // «Se ne vanno»: the last encounter's creatures still standing leave the scene (avoided, or a talk ended well).
+        // «Se ne vanno»: the scene's wandering creatures still standing leave it (avoided, or a talk ended well).
         if (c.via === true) {
           const via = regia.incontroVia();
           if (!via.ok) return rifiuto(via.errore);
