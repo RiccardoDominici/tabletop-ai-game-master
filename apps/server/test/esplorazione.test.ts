@@ -5,7 +5,7 @@
  * a check deferred by a fight, the panel's next check, the snapshot. On the invented cunicolo fixture.
  */
 import { describe, expect, it } from 'vitest';
-import { fattiDovuti } from '../src/prove/fatti-dovuti';
+import { fattiDovuti, rigaDovuta } from '../src/prove/fatti-dovuti';
 import { caricaRegole } from '../src/regole/caricatore';
 import { doveDellaScena, leggiEsplorazione, leggiIncontri } from '../src/regole/esplorazione';
 import { leggiTempo } from '../src/regole/tempo';
@@ -66,8 +66,11 @@ describe('wandering monster checks on the clock', () => {
       ['Tabella degli incontri', 3],
       ['Quanti', 5],
     ]);
-    expect(r4.incontri).toEqual([{ id: 'png_goblin_inc1_1', nome: 'Goblin' }]);
-    expect(fattiDovuti(r4.tiri, [], [], [], r4.incontri)).toEqual([{ tipo: 'incontro', id: 'png_goblin_inc1_1', nome: 'Goblin' }]);
+    expect(r4.incontri).toEqual([{ id: 'png_goblin_inc1_1', nome: 'Goblin', quanti: 5 }]);
+    const dovuti = fattiDovuti(r4.tiri, [], [], [], r4.incontri);
+    expect(dovuti).toEqual([{ tipo: 'incontro', id: 'png_goblin_inc1_1', nome: 'Goblin', quanti: 5 }]);
+    // Untold by the narration, the Engine's line says how many arrive.
+    expect(rigaDovuta(dovuti[0]!)).toBe('Arrivano in 5: Goblin.');
     expect(m.vistaTempo()!.incontri!.ultimo!.testo).toMatch(/arrivano 5 creature, goblin/);
   });
 
@@ -144,7 +147,7 @@ describe('the creatures of an encounter join the scene', () => {
     const { m } = motore({ 6: [2, 3], 4: [1, 1], 20: [15], 8: [6] });
     await m.risolvi(1, [azione('pg_aldo', 'Avanzo')]);
     const r = await m.risolvi(2, [azione('pg_aldo', 'Avanzo')]);
-    expect(r.incontri).toEqual([{ id: 'png_goblin_inc1_1', nome: 'Goblin' }]);
+    expect(r.incontri).toEqual([{ id: 'png_goblin_inc1_1', nome: 'Goblin', quanti: 2 }]);
     expect(m.gregariDellaScena().map((g) => [g.id, g.nome])).toEqual([
       ['png_goblin_inc1_1', 'Goblin 1'],
       ['png_goblin_inc1_2', 'Goblin 2'],
@@ -183,5 +186,41 @@ describe('the creatures of an encounter join the scene', () => {
     expect(m.tiriDelMaster().filter((t) => t.del_master).map((t) => t.etichetta)).toEqual(['Tabella degli incontri', 'Quanti', 'Sorpresa, in anticipo']);
     m.iniziaCombattimento();
     expect(m.incontroDelMaster({ tabella: 'bosco' })).toEqual({ ok: false, motivo: 'combattimento' });
+  });
+});
+
+describe('where the wandering creatures go, and who sees the checks', () => {
+  it('the party leaves the scene: its wandering creatures stay behind (no longer in its fights or the ledger)', async () => {
+    const { m, vai } = motore({ 6: [2, 3], 4: [1, 1] });
+    await m.risolvi(1, [azione('pg_aldo', 'Avanzo')]);
+    await m.risolvi(2, [azione('pg_aldo', 'Avanzo')]);
+    expect(m.gregariDellaScena()).toHaveLength(2);
+    vai('scena_bosco');
+    m.fineScena();
+    vai('scena_galleria');
+    expect(m.gregariDellaScena()).toEqual([]);
+    expect(m.stato.puntiFerita('png_goblin_inc1_1')).toBeNull();
+    expect(m.esporta().vaganti).toBeUndefined();
+  });
+
+  it('«Se ne vanno»: the last encounter\'s creatures still standing leave; refused with none', () => {
+    const { m } = motore({ 4: [2, 1], 6: [2, 5] }, 'scena_bosco'); // the woods' table: 2 goblins, 1d6 = 2
+    m.incontroDelMaster({ tabella: 'bosco' });
+    expect(m.vistaTempo()!.incontri!.ultimo!.in_scena).toBe(2);
+    expect(m.vagantiVia()).toEqual({ ok: true, fatto: 'Se ne vanno per la loro strada: Goblin 1, Goblin 2.' });
+    expect(m.gregariDellaScena()).toEqual([]);
+    expect(m.vistaTempo()!.incontri!.ultimo!.in_scena).toBe(0);
+    expect(m.vagantiVia()).toEqual({ ok: false });
+  });
+
+  it('`a_volte` shows a check by its odds before the dice (2 in 6 underground: shown; 1 in 6 outdoors: hidden), never by the roll', async () => {
+    const sotto = motore({ 6: [6] }, 'scena_galleria', { tiriMaster: 'a_volte' }).m;
+    await sotto.risolvi(1, [azione('pg_aldo', 'Avanzo')]);
+    const r = await sotto.risolvi(2, [azione('pg_aldo', 'Avanzo')]);
+    expect(r.tiri.find((t) => t.del_master)).toMatchObject({ dadi: [6], riuscita: false });
+    expect(r.tiri.find((t) => t.del_master)!.nascosta).toBeUndefined();
+    const fuori = motore({ 6: [6] }, 'scena_bosco', { tiriMaster: 'a_volte' }).m;
+    fuori.tempoDelMaster({ cosa: 'avanza', durata: { ora: 3 } });
+    expect(fuori.tiriDelMaster().find((t) => t.del_master)!.nascosta).toBe(true);
   });
 });

@@ -75,7 +75,7 @@ import { mostraTiroDelMaster } from './tiri-master';
 import { Esplorazione, type IncontroUscito } from './esplorazione';
 import { carteEsplorazione, fattoIncontro } from './esplorazione-testi';
 import { creaVagante, leggiVaganti, MASSIMO_VAGANTI, vagantiDellIncontro, type Vagante } from './vaganti';
-import { Provviste } from './provviste';
+import { Provviste, testoGiorni } from './provviste';
 import { Fatica } from './fatica';
 import { chiaveLuce, descriviLuce, livelloDellaScena, portataScurovisione, statoLuce, vede, type LivelloLuce, type StatoLuce } from './luce';
 import { doveDellaScena, type DoveEsplorazione } from '../regole/esplorazione';
@@ -200,7 +200,8 @@ export interface VistaIncontri {
   probabilita?: string;
   /** A check fell due during the fight: rolled when it ends. */
   in_attesa?: boolean;
-  ultimo?: { testo: string; ora: string };
+  /** The session's last encounter; `in_scena`: its creatures still standing here (the panel's «Se ne vanno»). */
+  ultimo?: { testo: string; ora: string; in_scena: number };
   /** The exploration rest rule: how long since the last rest, or that the PCs are overdue (prove/fatica.ts). */
   fatica?: string;
   /** The last journey's course check (the Game Master's secret): on course, or lost. */
@@ -268,7 +269,7 @@ export class MotoreProve {
   /** The Game Master's exploration cards rolled while time passed, waiting for the turn (or the panel command) that shows them. */
   private carteDelTempo: TiroMostrato[] = [];
   /** Encounters since the last resolved turn: owed facts the table must hear (prove/fatti-dovuti.ts). */
-  private incontriDovuti: Array<{ id: string; nome: string }> = [];
+  private incontriDovuti: Array<{ id: string; nome: string; quanti?: number }> = [];
   /** Where a journey runs while the panel's travel moves the clock (its environment and table), else null: the scene's. */
   private doveInViaggio: DoveEsplorazione | null = null;
   /** A journey rolled its wandering checks ahead (to stop at the encounter): the clock's advance does not roll them again. */
@@ -1342,7 +1343,7 @@ export class MotoreProve {
     // The creatures join the scene as combatants (prove/vaganti.ts): the fight can open on them.
     const arrivati = i.mostro ? this.aggiungiVaganti(vagantiDellIncontro(this.sistema, i.mostro, i.quanti, i.n, this.o.contesto().campagna.scena.id)) : [];
     if (i.quanti > MASSIMO_VAGANTI && arrivati.length) this.o.log.warn({ quanti: i.quanti, in_scena: arrivati.length }, 'wandering: more creatures than a fight takes; the rest stay in the fact');
-    this.incontriDovuti.push({ id: arrivati[0]?.id ?? `incontro_${i.n}`, nome: i.mostro ? nomeMostro(i.mostro) : (i.gruppo ?? testo('prove.esplorazione.qualcuno')) });
+    this.incontriDovuti.push({ id: arrivati[0]?.id ?? `incontro_${i.n}`, nome: i.mostro ? nomeMostro(i.mostro) : (i.gruppo ?? testo('prove.esplorazione.qualcuno')), ...(i.quanti > 1 ? { quanti: i.quanti } : {}) });
     this.o.log.info({ n: i.n, ambiente: i.ambiente, tabella: i.tabella, tiro: i.tiro, mostro: i.mostro, gruppo: i.gruppo, quanti: i.quanti, sorpresi: i.sorpresi, quando: i.quando }, 'exploration: a wandering encounter');
     return fatto;
   }
@@ -1540,14 +1541,14 @@ export class MotoreProve {
     const r = this.fatica.regola;
     const fatica = r && dove ? testo(this.fatica.condizione ? 'prove.fatica.vista_stanchi' : 'prove.fatica.vista', { da: this.fatica.daUltimo ? this.tempo.durata(this.fatica.daUltimo) : testo('prove.esplorazione.adesso'), ogni: this.tempo.durata(r.ogni), durata: this.tempo.durata(r.durata), condizione: this.nomeCondizione(r.condizione) }) : null;
     const orientamento = this.orientamento ? testo(this.orientamento.smarriti ? 'prove.viaggio.smarriti' : 'prove.viaggio.in_rotta', { nome: this.nomeDi(this.o.contesto(), this.orientamento.guida) }) : null;
-    const provviste = this.provviste ? this.pgVivi(this.o.contesto()).flatMap((id) => Object.entries(this.provviste!.vista(id).senza).filter(([, n]) => n > 0).map(([k, n]) => testo('prove.provviste.vista', { nome: this.nomeDi(this.o.contesto(), id), provvista: (this.sistema.esplorazione?.provviste.find((x) => x.id === k)?.nome ?? k).toLowerCase(), giorni: n }))) : [];
+    const provviste = this.provviste ? this.pgVivi(this.o.contesto()).flatMap((id) => Object.entries(this.provviste!.vista(id).senza).filter(([, n]) => n > 0).map(([k, n]) => testo('prove.provviste.vista', { nome: this.nomeDi(this.o.contesto(), id), provvista: (this.sistema.esplorazione?.provviste.find((x) => x.id === k)?.nome ?? k).toLowerCase(), giorni: testoGiorni(n) }))) : [];
     if (!p && !u && !fatica && !orientamento && !provviste.length) return null;
     const nomeMostro = (id: string): string => (this.sistema.mostri ?? []).find((m) => m.id === id)?.nome ?? id;
     return {
       ...(p && dove
         ? { ambiente: dove.ambiente.nome, tabella: dove.tabella?.nome ?? null, prossimo: p.tra > 0 ? this.tempo.durata(p.tra) : testo('prove.esplorazione.adesso'), ogni: this.tempo.durata(p.ogni), probabilita: testo('prove.esplorazione.probabilita', { fino_a: p.finoA, dado: p.dado }), in_attesa: this.combattimento.attivo && p.tra === 0 }
         : {}),
-      ...(u ? { ultimo: { testo: fattoIncontro(u, { nomeMostro, quando: null }), ora: this.tempo.testoOraDi(this.tempo.inizio + u.quando) } } : {}),
+      ...(u ? { ultimo: { testo: fattoIncontro(u, { nomeMostro, quando: null }), ora: this.tempo.testoOraDi(this.tempo.inizio + u.quando), in_scena: this.vaganti.filter((v) => v.incontro === u.n && !this.stato.fuoriGioco(v.id)).length } } : {}),
       ...(fatica ? { fatica } : {}),
       ...(orientamento ? { orientamento } : {}),
       ...(provviste.length ? { provviste } : {}),
@@ -1608,7 +1609,7 @@ export class MotoreProve {
       const t = chi ? this.provaDelPng(chi, `abilita:${s.viaggio.smarrirsi.abilita}`, null, this.turnoCorrente) : null;
       if (chi && t) {
         this.orientamento = { guida: chi, smarriti: !t.riuscita };
-        this.carteDelTempo.push(...carteEsplorazione([{ cosa: 'orientamento', facce: t.facce, dadi: [t.dado], totale: t.dado, riuscito: t.riuscita }], { turno: this.turnoCorrente, nuovoId: () => this.stato.nuovoIdTiro(), modo: this.o.tiriMaster?.() ?? 'nascosti', ambiente: this.nomeDi(c, chi) }));
+        this.carteDelTempo.push(...carteEsplorazione([{ cosa: 'orientamento', facce: t.facce, dadi: [t.dado], totale: t.dado, riuscito: t.riuscita, probabilita: t.p }], { turno: this.turnoCorrente, nuovoId: () => this.stato.nuovoIdTiro(), modo: this.o.tiriMaster?.() ?? 'nascosti', ambiente: this.nomeDi(c, chi) }));
         this.o.log.info({ guida: chi, abilita: s.viaggio.smarrirsi.abilita, dado: t.dado, riuscita: t.riuscita }, 'travel: the leader\'s check against getting lost (Game Master roll)');
       }
     }
@@ -2030,7 +2031,33 @@ export class MotoreProve {
   fineScena(): string | null {
     const f = Attivi.fatto(this.attivi.cambioScena(), (id) => this.nomeDi(this.o.contesto(), id));
     if (f) this.fattiInSospeso.push(f);
+    // The wandering creatures stay where they were met (prove/vaganti.ts): the party leaves them behind, alive or not.
+    if (this.vaganti.length) {
+      this.o.log.info({ creature: this.vaganti.map((v) => v.id) }, 'wandering: the party leaves the scene, its wandering creatures stay behind');
+      this.togliVaganti();
+    }
     return f;
+  }
+
+  /**
+   * The creatures of the last encounter go their way (the panel's «Se ne vanno»: the party avoided them, a talk ended
+   * well): those still standing leave the scene and its fights; the dead and the fallen stay counted. Null when none.
+   */
+  vagantiVia(): { ok: true; fatto: string } | { ok: false } {
+    const n = Math.max(0, ...this.vaganti.map((v) => v.incontro));
+    const via = this.vaganti.filter((v) => v.incontro === n && !this.stato.fuoriGioco(v.id));
+    if (!n || !via.length || this.combattimento.attivo) return { ok: false };
+    const c = this.o.contesto();
+    const nomi = via.map((v) => this.nomeDi(c, v.id));
+    for (const v of via) {
+      this.schedeVive?.delete(v.id);
+      this.gregari.delete(v.id);
+    }
+    this.vaganti = this.vaganti.filter((v) => !via.includes(v));
+    const fatto = testo('prove.esplorazione.se_ne_vanno', { nomi: nomi.join(', ') });
+    this.fattiInSospeso.push(fatto);
+    this.o.log.info({ creature: via.map((v) => v.id) }, 'wandering: the creatures go their way (the Game Master)');
+    return { ok: true, fatto };
   }
 
   /** Le regole di combattimento del set (SRD 5.2 se la campagna non ne ha un altro). */

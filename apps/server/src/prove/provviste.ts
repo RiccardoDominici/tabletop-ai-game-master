@@ -35,6 +35,10 @@ export interface OpzioniProvviste {
   log: Logger;
 }
 
+/** «un giorno», «3 giorni» (the language pack's words). */
+export const testoGiorni = (n: number): string => (n === 1 ? testo('prove.provviste.un_giorno') : testo('prove.provviste.giorni', { n }));
+const testoPunti = (n: number): string => (n === 1 ? testo('prove.provviste.un_punto') : testo('prove.provviste.punti', { n }));
+
 export class Provviste {
   private readonly porzioni = new Map<string, Record<string, number>>();
   private readonly senza = new Map<string, Record<string, number>>();
@@ -84,10 +88,10 @@ export class Provviste {
       if (n > p.senza.dopo && p.senza.danno) {
         const d = tiraDanno(this.o.dadi(), p.senza.danno, 0, false);
         if (d.totale > 0) this.o.danneggia(id, d.totale);
-        fatti.push(testo(p.senza.guarigione ? 'prove.provviste.danno' : 'prove.provviste.danno_ferite', { nome: this.o.nome(id), provvista: p.nome.toLowerCase(), giorni: n, danno: d.totale }));
+        fatti.push(testo(p.senza.guarigione ? 'prove.provviste.danno' : 'prove.provviste.danno_ferite', { nome: this.o.nome(id), provvista: p.nome.toLowerCase(), giorni: testoGiorni(n), danno: testoPunti(d.totale) }));
         this.o.log.info({ chi: id, provvista: p.id, giorni: n, danno: d.totale, dadi: d.dadi }, 'supplies: a day without, damage');
       } else {
-        fatti.push(testo('prove.provviste.senza', { nome: this.o.nome(id), provvista: p.nome.toLowerCase(), giorni: n }));
+        fatti.push(testo('prove.provviste.senza', { nome: this.o.nome(id), provvista: p.nome.toLowerCase(), giorni: testoGiorni(n) }));
         this.o.log.info({ chi: id, provvista: p.id, giorni: n }, 'supplies: a day without, within the grace');
       }
     }

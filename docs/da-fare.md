@@ -219,7 +219,20 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
     restrictions the combination lifts (casting in armor; in leather armor for Magic-User/Thief: the catalog's
     `restrizioni` per class). Then the elf's `classi` list names them, creation offers them, the validator checks them.
   - The thief's point allocation option (X-OPT-07), spells learned after the start (X-OPT-03: a teacher, a spellbook,
-    500 gp a level), retainers as sheets with loyalty (P4-32 to P4-35), locked doors forced on 1d10 (P4-11).
+    500 gp a level), retainers as sheets with loyalty (P4-32 to P4-35). ~~Locked doors forced on 1d10 (P4-11)~~
+    **Done** (R6: `sfondare` and `piegare_sbarre` abilities with the set's words).
+- **Rules engine after R6 (22 November 2026; docs/prove.md §14–15, docs/regole.md §6).** Exploration on the clock
+  (wandering checks, encounter tables as data with the creatures as combatants, food and water, getting lost, the
+  scene's light and darkvision), elf combination classes, the Game Master's ±2 morale, waking a subdued character
+  early: done (0a8d4a1 … R6's last commit). Open:
+  - not in Basic Fantasy, so no data: a rest rule underground, the encounter distance, foraging and hunting;
+  - in the manual, not done: forced march, pursuit and evasion (P4-17), magical darkness and light spells as light
+    sources, NPCs carrying their own torches, the journey's encounter placed somewhere other than the current scene
+    (today the creatures join the scene the party set out from; changing scene leaves them behind);
+  - the SRD 5.2's light (dim light, darkvision as disadvantage) needs its own data;
+  - the encounter facts were heard live only under the scripted narrator, not under the small reader;
+  - spells learned later (X-OPT-03) and the thief's points (X-OPT-07) stay skipped (optional rules; preparation reads
+    the sheet's spell list, a spellbook in play would change it).
   - The SRD 5.2's own creation (its species, classes, backgrounds and equipment as data): the schema already expresses
     its methods (4d6 keep three, the standard array, the 27-point buy, the maximum first hit die).
 - **Gaps in the Basic Fantasy set from the final e2e** (docs/e2e-finale.md §2 and §7, «dadi» (dice)):

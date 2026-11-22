@@ -283,7 +283,7 @@ export interface CombattimentoMaster {
      * Wandering monsters (docs/prove.md §14): the scene's environment and table, when the next check falls and its odds
      * (`in_attesa`: due, rolled when the fight ends), the session's last encounter. Absent where nothing is explored.
      */
-    incontri?: { ambiente?: string; tabella?: string | null; prossimo?: string; ogni?: string; probabilita?: string; in_attesa?: boolean; ultimo?: { testo: string; ora: string }; fatica?: string; orientamento?: string; provviste?: string[] };
+    incontri?: { ambiente?: string; tabella?: string | null; prossimo?: string; ogni?: string; probabilita?: string; in_attesa?: boolean; ultimo?: { testo: string; ora: string; in_scena?: number }; fatica?: string; orientamento?: string; provviste?: string[] };
     /** The PCs who can lead a journey (its course check is the leader's): absent where the set has no such check. */
     guide?: Array<{ id: string; nome: string }>;
     /**
@@ -498,7 +498,7 @@ export type ComandoMaster =
    * The Game Master rolls an encounter now (docs/prove.md §14): on the table named, else the scene's. The creatures join
    * the scene as combatants, the narrator hears who arrives in the next turn, the cards are the panel's.
    */
-  | { tipo: 'incontro'; tabella?: string | null }
+  | { tipo: 'incontro'; tabella?: string | null; via?: boolean }
   /** How dark the scene is (docs/prove.md §15): piena, fioca, buio, or null (back to the scene sheet's), until it changes. */
   | { tipo: 'luce'; livello: 'piena' | 'fioca' | 'buio' | null }
   /** The Game Master's adjustment to an NPC's morale (Basic Fantasy p. 57: at most ±2, never to a 12); 0 clears it. */

@@ -402,6 +402,7 @@ prove:
     fuggito: "{nome} fugge."
     buio: "La luce di {nome} si spegne."
     incontro: "Arriva qualcuno: {nome}."
+    incontro_molti: "Arrivano in {quanti}: {nome}."
   # Engine lines that replace a narrator sentence contradicting the cards (narrazione/guardia-esiti.ts).
   guardia:
     manca: "{chi} manca {bersaglio}."
@@ -466,19 +467,23 @@ prove:
   # Daily food and water (prove/provviste.ts; docs/prove.md §14).
   provviste:
     ultima: "{nome} ha consumato l'ultimo giorno di {provvista} ({oggetto})."
-    senza: "{nome} passa un giorno senza {provvista} ({giorni})."
-    danno: "{nome} è senza {provvista} da {giorni} giorni: perde {danno} punti ferita."
-    danno_ferite: "{nome} è senza {provvista} da {giorni} giorni: perde {danno} punti ferita e le ferite non guariscono da sole."
+    senza: "{nome} è senza {provvista} da {giorni}."
+    danno: "{nome} è senza {provvista} da {giorni}: perde {danno}."
+    danno_ferite: "{nome} è senza {provvista} da {giorni}: perde {danno} e le ferite non guariscono da sole."
+    un_giorno: "un giorno"
+    giorni: "{n} giorni"
+    un_punto: "1 punto ferita"
+    punti: "{n} punti ferita"
     di_nuovo: "{nome} ha di nuovo {provvista}: le ferite tornano a guarire."
     nutrito: "{nome} mangia e beve a sazietà: le ferite tornano a guarire."
     non_guarisce: "{nome} non guarisce riposando: è senza {provvista}."
-    vista: "{nome}: {giorni} giorni senza {provvista}"
+    vista: "{nome}: senza {provvista} da {giorni}"
   # The exploration rest rule (prove/fatica.ts; docs/prove.md §14).
   fatica:
     stanchi: "Il gruppo esplora da troppo senza fermarsi: i personaggi sono stanchi ({condizione}) finché non riposano."
     riposati: "Il gruppo si ferma a riprendere fiato: la stanchezza passa."
     vista: "Riposo: l'ultimo {da} fa; ne serve uno di {durata} ogni {ogni}"
-    vista_stanchi: "Riposo: i PG sono {condizione} (nessun riposo da {da}); serve una pausa di {durata}"
+    vista_stanchi: "Riposo: i PG sono stanchi ({condizione}), nessun riposo da {da}; serve una pausa di {durata}"
   # Wandering monsters on the clock (prove/esplorazione.ts; docs/prove.md §14).
   esplorazione:
     chi: "Il master"
@@ -500,6 +505,7 @@ prove:
     imboscata: "Si sono accorti del gruppo per primi e hanno teso un agguato."
     adesso: "adesso"
     probabilita: "{fino_a} su 1d{dado}"
+    se_ne_vanno: "Se ne vanno per la loro strada: {nomi}."
   # The game clock and the lights (prove/tempo.ts, prove/luci.ts; docs/prove.md §11).
   tempo:
     ora: "giorno {giorno}, {ora}"

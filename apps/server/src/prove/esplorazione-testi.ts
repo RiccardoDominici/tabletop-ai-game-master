@@ -12,7 +12,8 @@ import type { TiriMaster } from './modalita';
 /** The Game Master's cards of the exploration rolls: hidden unless the campaign shows the Game Master's rolls. */
 export function carteEsplorazione(tiri: readonly TiroEsplorazione[], o: { turno: number; nuovoId: () => string; modo: TiriMaster; ambiente: string }): TiroMostrato[] {
   return tiri.map((t) => {
-    const p = t.cosa === 'controllo' || t.cosa === 'sorpresa' ? t.totale / t.facce : 0;
+    // The roll's odds before the dice (a check's 1 in 6), never what was rolled; a table's roll has no yes or no.
+    const p = t.probabilita ?? 0;
     const carta: TiroMostrato = {
       id: o.nuovoId(),
       turno: o.turno,

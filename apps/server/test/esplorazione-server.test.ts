@@ -92,5 +92,12 @@ describe('the panel’s exploration commands over the socket', () => {
     expect(await m.comanda({ tipo: 'morale', id: png.id, valore: 3 })).toMatchObject({ ok: false });
     // An unknown table is refused.
     expect(await m.comanda({ tipo: 'incontro', tabella: 'palude' })).toMatchObject({ ok: false });
+    // «Se ne vanno»: the creatures standing leave the scene and the panel; a second time there is nobody to send off.
+    expect((await m.stato()).combattimento!.tempo!.incontri!.ultimo!.in_scena).toBeGreaterThan(0);
+    expect(await m.comanda({ tipo: 'incontro', via: true })).toEqual({ ok: true });
+    const dopo = await m.stato();
+    expect(dopo.combattimento!.tempo!.incontri!.ultimo!.in_scena).toBe(0);
+    expect(dopo.combattimento!.morale?.png ?? []).toEqual([]);
+    expect(await m.comanda({ tipo: 'incontro', via: true })).toMatchObject({ ok: false });
   });
 });

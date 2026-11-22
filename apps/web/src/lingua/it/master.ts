@@ -322,6 +322,7 @@ export const master = {
   'master.tempo.incontri': 'Mostri erranti ({ambiente}{tabella}): prossimo controllo tra {prossimo}, ogni {ogni}, {probabilita}',
   'master.tempo.incontri_attesa': 'Mostri erranti ({ambiente}): un controllo è dovuto, si tira a fine scontro',
   'master.tempo.incontro_ultimo': 'Ultimo incontro ({ora}): {testo}',
+  'master.tempo.incontro_via': 'Se ne vanno',
   'master.esperienza.titolo': 'Punti esperienza',
   'master.esperienza.pg': '{nome}: {px} PX, livello {livello}',
   'master.esperienza.prossimo': '(il {livello}° a {px})',

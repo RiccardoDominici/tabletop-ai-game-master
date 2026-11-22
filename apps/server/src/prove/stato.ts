@@ -60,7 +60,7 @@ export interface StatoProveSalvato {
   /** The Game Master's exploration cards rolled between two turns, not yet shown with a turn. */
   carte_del_tempo?: TiroMostrato[];
   /** Encounters not yet told by the narrator: owed facts of the next turn. */
-  incontri_dovuti?: Array<{ id: string; nome: string }>;
+  incontri_dovuti?: Array<{ id: string; nome: string; quanti?: number }>;
   /** Daily food and water: the open packs and the days without (prove/provviste.ts). */
   provviste?: StatoProvvisteSalvato;
   /** The exploration rest rule: time since the last rest, overdue (prove/fatica.ts). */

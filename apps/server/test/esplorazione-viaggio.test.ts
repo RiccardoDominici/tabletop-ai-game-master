@@ -21,7 +21,7 @@ describe('a day’s food and water', () => {
     // Day 2: the pack's second day and the last waterskin; day 3: the pack's last day, no water (1d4 from the first day).
     expect(e.fatto).toMatch(/Aldo ha consumato l'ultimo giorno di acqua \(otre pieno\)\./);
     expect(e.fatto).toMatch(/Aldo ha consumato l'ultimo giorno di cibo \(razioni per tre giorni\)\./);
-    expect(e.fatto).toMatch(/Aldo è senza acqua da 1 giorni: perde 1 punti ferita e le ferite non guariscono da sole\./);
+    expect(e.fatto).toMatch(/Aldo è senza acqua da un giorno: perde 1 punto ferita e le ferite non guariscono da sole\./);
     expect(m.stato.puntiFerita('pg_aldo')!.attuali).toBe(8);
   });
 
@@ -29,9 +29,9 @@ describe('a day’s food and water', () => {
     const { m } = motore({ 4: [2] }, 'scena_galleria', { pg: ['pg_bice'] });
     m.inventarioDelMaster({ tipo: 'inventario', id: 'pg_bice', cosa: 'oggetto', oggetto: 'otre', quante: 5 });
     const e = m.tempoDelMaster({ cosa: 'avanza', durata: { giorno: 3 } })!;
-    expect(e.fatto).toMatch(/Bice passa un giorno senza cibo \(1\)\./);
-    expect(e.fatto).toMatch(/Bice passa un giorno senza cibo \(2\)\./);
-    expect(e.fatto).toMatch(/Bice è senza cibo da 3 giorni: perde 1 punti ferita e le ferite non guariscono da sole\./);
+    expect(e.fatto).toMatch(/Bice è senza cibo da un giorno\./);
+    expect(e.fatto).toMatch(/Bice è senza cibo da 2 giorni\./);
+    expect(e.fatto).toMatch(/Bice è senza cibo da 3 giorni: perde 1 punto ferita e le ferite non guariscono da sole\./);
     expect(m.stato.puntiFerita('pg_bice')!.attuali).toBe(3);
     // The night heals nobody without food; and it crosses midnight: a fourth day without, 1 more.
     const r = m.riposo('notte');

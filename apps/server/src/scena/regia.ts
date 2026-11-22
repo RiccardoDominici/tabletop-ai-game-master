@@ -3870,6 +3870,14 @@ export class Regia {
     return { ok: true, fatto: r.fatto };
   }
 
+  /** The last encounter's creatures go their way (the panel's «Se ne vanno»; prove/motore.ts vagantiVia). */
+  incontroVia(): Esito & { fatto?: string } {
+    const r = this.prove?.vagantiVia();
+    if (!r?.ok) return { ok: false, errore: testoFisso('regia.errori.incontro_non_valido') };
+    this.notifica();
+    return { ok: true, fatto: r.fatto };
+  }
+
   /** The scene's light from the panel (docs/prove.md §15; prove/motore.ts luceDelMaster): the narrator hears what the party sees. */
   luce(livello: 'piena' | 'fioca' | 'buio' | null): Esito & { fatto?: string } {
     const r = this.prove?.luceDelMaster(livello);

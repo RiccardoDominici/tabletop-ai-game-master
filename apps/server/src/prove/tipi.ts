@@ -147,5 +147,5 @@ export interface EsitoTurnoProve {
   morte?: Array<{ id: string; nome: string; esito: EsitoMorte }>;
   /** Lights that went out (prove/tempo.ts), by their bearer: owed facts (prove/fatti-dovuti.ts). */
   luci?: Array<{ id: string; nome: string }>;  /** Wandering encounters (prove/esplorazione.ts): owed facts, the table must hear who arrives. */
-  incontri?: Array<{ id: string; nome: string }>;
+  incontri?: Array<{ id: string; nome: string; quanti?: number }>;
 }

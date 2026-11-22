@@ -322,6 +322,7 @@ export const master = {
   'master.tempo.incontri': 'Wandering monsters ({ambiente}{tabella}): next check in {prossimo}, every {ogni}, {probabilita}',
   'master.tempo.incontri_attesa': 'Wandering monsters ({ambiente}): a check is due, rolled when the fight ends',
   'master.tempo.incontro_ultimo': 'Last encounter ({ora}): {testo}',
+  'master.tempo.incontro_via': 'They go their way',
   'master.esperienza.titolo': 'Experience points',
   'master.esperienza.pg': '{nome}: {px} XP, level {livello}',
   'master.esperienza.prossimo': '(level {livello} at {px})',

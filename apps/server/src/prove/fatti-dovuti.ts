@@ -39,6 +39,8 @@ export interface FattoDovuto {
    * nominare anche uno di loro («Ida colpisce il goblin» non dice che Ida è stata colpita).
    */
   da?: Array<{ id: string; nome: string }>;
+  /** A wandering encounter of several creatures: how many (the Engine's line says it). */
+  quanti?: number;
 }
 
 /**
@@ -53,8 +55,8 @@ export function fattiDovuti(
   fuggiti: ReadonlyArray<{ id: string; nome: string }> = [],
   /** Lights that went out this turn, by their bearer (prove/tempo.ts). */
   luci: ReadonlyArray<{ id: string; nome: string }> = [],
-  /** Wandering encounters of this turn, by the creature that arrives (prove/esplorazione.ts). */
-  incontri: ReadonlyArray<{ id: string; nome: string }> = [],
+  /** Wandering encounters of this turn, by the creature that arrives and how many (prove/esplorazione.ts). */
+  incontri: ReadonlyArray<{ id: string; nome: string; quanti?: number }> = [],
 ): FattoDovuto[] {
   const per = new Map<string, FattoDovuto>();
   const grado = (t: TipoFattoDovuto): number => TIPI_FATTO_DOVUTO.indexOf(t);
@@ -77,9 +79,9 @@ export function fattiDovuti(
   for (const m of morte) metti({ tipo: m.esito, id: m.id, nome: m.nome });
   for (const f of fuggiti) metti({ tipo: 'fuggito', id: f.id, nome: f.nome });
   for (const l of luci) metti({ tipo: 'buio', id: l.id, nome: l.nome });
-  for (const x of incontri) metti({ tipo: 'incontro', id: x.id, nome: x.nome });
+  for (const x of incontri) metti({ tipo: 'incontro', id: x.id, nome: x.nome, ...(x.quanti && x.quanti > 1 ? { quanti: x.quanti } : {}) });
   // `da` serve solo quando la creatura colpita ha anche colpito qualcuno in questo turno.
-  return [...per.values()].map((f) => (f.tipo === 'colpito' && attaccanti.has(f.id) ? f : { tipo: f.tipo, id: f.id, nome: f.nome }));
+  return [...per.values()].map((f) => (f.tipo === 'colpito' && attaccanti.has(f.id) ? f : { tipo: f.tipo, id: f.id, nome: f.nome, ...(f.quanti ? { quanti: f.quanti } : {}) }));
 }
 
 /** Radici delle parole di ogni tipo di fatto, nella lingua dei contenuti (già minuscole e senza accenti). */
@@ -133,6 +135,8 @@ function raccontaMancato(t: string): boolean {
 
 /** La riga breve del Motore per un fatto: «Corrado cade a terra.» (il nome breve). */
 export function rigaDovuta(f: FattoDovuto): string {
+  // A wandering band: the line says how many arrive («Arrivano in 7: Goblin.»), so the table hears it with no narration.
+  if (f.tipo === 'incontro' && f.quanti && f.quanti > 1) return testo('prove.dovuti.incontro_molti', { nome: nomeBreve(f.nome), quanti: f.quanti });
   return testo(`prove.dovuti.${f.tipo}`, { nome: nomeBreve(f.nome) });
 }
 

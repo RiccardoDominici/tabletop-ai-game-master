@@ -17,6 +17,7 @@ export function TempoMaster({ tempo, attivo, nomi }: { tempo: NonNullable<Combat
   const [terreno, setTerreno] = useState(tempo.terreni[0]?.id ?? '');
   const [guida, setGuida] = useState('');
   const inCorso = useInCorso('tempo');
+  const inCorsoIncontro = useInCorso('incontro');
   const d = Number(distanza);
   const dValida = distanza.trim() !== '' && d > 0 && d <= 100000;
   // The round is the fight's own unit: the buttons start from the next one.
@@ -63,8 +64,13 @@ export function TempoMaster({ tempo, attivo, nomi }: { tempo: NonNullable<Combat
         </p>
       ))}
       {tempo.incontri?.ultimo && (
-        <p className="text-xs text-pergamena-2" data-testid="master-tempo-incontro">
-          {t('master.tempo.incontro_ultimo', { ora: tempo.incontri.ultimo.ora, testo: tempo.incontri.ultimo.testo })}
+        <p className="flex flex-wrap items-center gap-2 text-xs text-pergamena-2">
+          <span data-testid="master-tempo-incontro">{t('master.tempo.incontro_ultimo', { ora: tempo.incontri.ultimo.ora, testo: tempo.incontri.ultimo.testo })}</span>
+          {!attivo && (tempo.incontri.ultimo.in_scena ?? 0) > 0 && (
+            <button type="button" data-testid="master-tempo-incontro-via" disabled={inCorsoIncontro} onClick={() => void inviaComando({ tipo: 'incontro', via: true })} className={classePulsante('normale', 'piccolo')}>
+              {t('master.tempo.incontro_via')}
+            </button>
+          )}
         </p>
       )}
       {!attivo && (

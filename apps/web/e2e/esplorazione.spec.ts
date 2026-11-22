@@ -168,7 +168,7 @@ test.describe.serial('exploration on the clock', () => {
     }
 
     // The rest rule (the fixture's: a turn every hour): weary, then «ci riposiamo».
-    await expect(master.getByTestId('master-combattimento')).toContainText('Riposo: i PG sono affaticato', { timeout: 15_000 });
+    await expect(master.getByTestId('master-combattimento')).toContainText('Riposo: i PG sono stanchi (affaticato)', { timeout: 15_000 });
     await foto(master, 'stanchi');
     await invia(bice, 'Ci riposiamo un momento contro la parete');
     await giocaFinestra(master, tel);
@@ -180,7 +180,7 @@ test.describe.serial('exploration on the clock', () => {
     await master.getByTestId('master-tempo-guida').selectOption('pg_dora');
     await master.getByTestId('master-tempo-viaggio').click();
     await expect(master.getByTestId('master-combattimento')).toContainText(/Dora (tiene la rotta|ha perso la strada)/, { timeout: 15_000 });
-    await expect(master.getByTestId('master-combattimento')).toContainText('Bice: 1 giorni senza cibo');
+    await expect(master.getByTestId('master-combattimento')).toContainText('Bice: senza cibo da un giorno');
     await foto(master, 'viaggio-nel-bosco');
     await dora.getByTestId('apri-scheda').click();
     await foto(dora, 'dora-scheda');

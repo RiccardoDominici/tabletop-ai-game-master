@@ -959,7 +959,8 @@ need. Now the set says which environments the party explores and how often the G
   environment.
 - **The check.** Every `controllo.ogni` of game time (Basic Fantasy: 3 turns underground, about 4 hours in the
   wilderness), a Game Master roll on the set's die (1 on 1d6). Its card is the Game Master's: hidden by default, shown as
-  `regole.tiri_master` says (`a_volte` by the check's odds), listed on the panel with the turn. A check that falls due
+  `regole.tiri_master` says (`a_volte` by the check's odds before the dice — 2 in 6 is shown, 1 in 6 is not — never by
+  what was rolled), listed on the panel with the turn. A check that falls due
   during a fight waits for its end and is rolled at the first advance after it; an advance that spans several checks (a
   night's rest, the panel's hours) rolls them in order and stops at the first encounter, saying when it happened.
 - **The encounter.** On a hit, the scene's table (`incontri`, by the scene's dungeon level or named by the scene): its
@@ -972,10 +973,15 @@ need. Now the set says which environments the party explores and how often the G
   seed and the id (the same on every resume). They are the scene's minions (campagna/gregari.ts): targets the arbiter
   lists and an action names by their name («attacco il goblin»), combatants when a fight opens, worth their XP; they do
   not speak and have no card. At most 20 of one encounter join (a «Wild 3d10» herd: the rest stay in the fact). The list
-  rides the snapshot and is rebuilt before the hit points are read; «Ricomincia» sends them away.
+  rides the snapshot and is rebuilt before the hit points are read; «Ricomincia» sends them away. They stay where they
+  were met: when the scene changes they are left behind, alive or not (no longer targets, combatants or on the panel),
+  and one fled does not come back elsewhere. An encounter the party avoids or talks its way out of ends with the panel's
+  «Se ne vanno» (command `incontro` with `via: true`): the last encounter's creatures still standing leave the scene,
+  and the narrator hears «Se ne vanno per la loro strada: Goblin 1, Goblin 2.»; refused during a fight. A journey's
+  encounter joins the scene the party set out from (the Engine has no scene for the road).
 - **What the table hears.** A fact for the narrator in the turn («Mostri erranti (tiro del master): arrivano 3 creature,
   goblin.»), owed like a light going out (prove/fatti-dovuti.ts, type `incontro`): if the narration does not tell it, the
-  Engine says «Arriva qualcuno: Goblin.».
+  Engine says «Arriva qualcuno: Ratto.» for one, «Arrivano in 3: Goblin.» for a band.
 - **The panel** («Tempo di gioco» box): the environment and table of the scene, when the next check falls («prossimo
   controllo tra 2 turni, ogni 3 turni, 1 su 1d6»), or that one is due and waits for the fight's end, and the session's
   last encounter with its time. «Tira un incontro» in the Tiri box (command `incontro`, `tabella` optional) rolls an

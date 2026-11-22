@@ -30,6 +30,8 @@ export interface TiroEsplorazione {
   totale: number;
   /** For the check and the surprise: whether it «happened» (an encounter; the creatures surprised). */
   riuscito: boolean | null;
+  /** The odds it «happens» before the dice (`fino_a` / `dado`), for the `a_volte` rule of the Game Master's rolls; null = no yes/no. */
+  probabilita: number | null;
 }
 
 /** An encounter the check produced: what the table gave, how many, when. */
@@ -99,7 +101,7 @@ export class Esplorazione {
       const quando = this.programma.prossimo;
       const v = dadi.tira(c.dado);
       const si = v <= c.finoA;
-      tiri.push({ cosa: 'controllo', facce: c.dado, dadi: [v], totale: v, riuscito: si });
+      tiri.push({ cosa: 'controllo', facce: c.dado, dadi: [v], totale: v, riuscito: si, probabilita: c.finoA / c.dado });
       this.programma.prossimo = quando + c.ogni;
       this.o.log.info({ ambiente: dove.ambiente.id, quando, dado: `d${c.dado}`, valore: v, fino_a: c.finoA, incontro: si }, 'exploration: wandering monster check (Game Master roll)');
       if (si) return { tiri, incontro: this.incontro(dove, quando, tiri) };
@@ -125,19 +127,19 @@ export class Esplorazione {
     const out: IncontroUscito = { n: ++this.contatore, quando, ambiente: dove.ambiente.id, tabella: t?.id ?? null, tiro: null, mostro: null, quanti: 0, gruppo: null, sorpresi: null, imboscata: null };
     if (t) {
       const r = tira(dadi, t.dadi);
-      tiri.push({ cosa: 'tabella', facce: t.dadi.facce, dadi: r.dadi, totale: r.totale, riuscito: null });
+      tiri.push({ cosa: 'tabella', facce: t.dadi.facce, dadi: r.dadi, totale: r.totale, riuscito: null, probabilita: null });
       out.tiro = r.totale;
       const voce = voceDelTiro(t, r.totale);
       let c: CreaturaIncontro | null = voce?.creatura ?? null;
       if (voce?.scelta) {
         const s = tira(dadi, voce.scelta.dadi);
-        tiri.push({ cosa: 'scelta', facce: voce.scelta.dadi.facce, dadi: s.dadi, totale: s.totale, riuscito: null });
+        tiri.push({ cosa: 'scelta', facce: voce.scelta.dadi.facce, dadi: s.dadi, totale: s.totale, riuscito: null, probabilita: null });
         c = voce.scelta.voci.find((x) => x.tiri.includes(s.totale)) ?? null;
       }
       const numero = c?.numero ?? voce?.gruppo?.numero ?? null;
       if (numero && numero.numero > 0) {
         const q = tira(dadi, numero);
-        tiri.push({ cosa: 'numero', facce: numero.facce, dadi: q.dadi, totale: q.totale, riuscito: null });
+        tiri.push({ cosa: 'numero', facce: numero.facce, dadi: q.dadi, totale: q.totale, riuscito: null, probabilita: null });
         out.quanti = Math.max(1, q.totale);
       } else out.quanti = Math.max(1, numero?.bonus ?? 1);
       if (c) out.mostro = c.mostro;
@@ -149,7 +151,7 @@ export class Esplorazione {
       const v = dadi.tira(s.dado);
       out.sorpresi = v <= s.finoA;
       out.imboscata = out.sorpresi ? null : s.imboscata;
-      tiri.push({ cosa: 'sorpresa', facce: s.dado, dadi: [v], totale: v, riuscito: out.sorpresi });
+      tiri.push({ cosa: 'sorpresa', facce: s.dado, dadi: [v], totale: v, riuscito: out.sorpresi, probabilita: s.finoA / s.dado });
       this.o.log.info({ valore: v, fino_a: s.finoA, sorpresi: out.sorpresi, imboscata: out.imboscata }, 'exploration: the creatures\' surprise checked in advance');
     }
     this.ultimo = out;
