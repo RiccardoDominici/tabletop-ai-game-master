@@ -173,7 +173,7 @@ def controlla_fronti(c: Campagna, e: Esito) -> None:
         if len(frasi(str(s))) > 2:
             e.errore("FRONTI.segreti_astratti", "preparazione", f"segreto oltre due frasi: «{str(s)[:60]}»")
     archi = (prep.get("archi") or {}).get("pg") or {}
-    for pid in c.pg_ids:
+    for pid in c.pg_ids_preparati:
         a = archi.get(pid) or {}
         manca = [k for k in K.PASSI_HARMON if not a.get(k)]
         if manca:

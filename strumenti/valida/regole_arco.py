@@ -50,7 +50,7 @@ def _png_della_sessione_1(c: Campagna) -> set[str]:
 
 
 def _nomi_pg(c: Campagna) -> list[str]:
-    return [str(p.get("nome", "")).split()[0] for p in c.personaggi if p.get("nome")] + list(c.pg_ids)
+    return [str(p.get("nome", "")).split()[0] for p in c.pg_preparati if p.get("nome")] + list(c.pg_ids_preparati)
 
 
 def controlla(c: Campagna, e: Esito) -> None:

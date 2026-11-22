@@ -65,6 +65,17 @@ class Campagna:
         return [p.get("id") for p in self.personaggi if p.get("id")]
 
     @property
+    def pg_preparati(self) -> list[dict]:
+        """The Preparer's PCs only (pg.yaml): the checks of prepared content — arcs, NPCs' attitudes towards each PC,
+        pronunciation, secret words in public fields — never judge a PC a player built at the table (its words are the
+        player's, and the campaign was written before it existed)."""
+        return [p for p in self.personaggi if not p.get("_creato")]
+
+    @property
+    def pg_ids_preparati(self) -> list[str]:
+        return [p.get("id") for p in self.pg_preparati if p.get("id")]
+
+    @property
     def preparazione(self) -> dict:
         return self.campagna.get("preparazione") or {}
 

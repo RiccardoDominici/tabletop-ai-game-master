@@ -68,7 +68,7 @@ def controlla(c: Campagna, e: Esito) -> None:
         _conoscenza(c, e, dove, d, pieno)
 
         att = d.get("atteggiamento_pg") or {}
-        for p in c.pg_ids:
+        for p in c.pg_ids_preparati:
             a = att.get(p)
             if not a:
                 e.errore("PNG.atteggiamento", dove, f"manca l'atteggiamento verso {p}")

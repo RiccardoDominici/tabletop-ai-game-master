@@ -7,6 +7,7 @@
  * Cosa scrive in <uscita>/:
  *   stile.yaml, pg.yaml, brief.yaml,           copiati dal livello di campagna (il lessico di pronuncia
  *   pronunce.yaml, pronunce-gioco.yaml         vale per tutte le sessioni, docs/pronuncia.md);
+ *   regole/                                    il set di regole del manuale (link alla cartella della campagna);
  *   pg-creati/*.yaml                           i PG creati al tavolo (docs/creazione.md), copiati come sono;
  *   campagna.yaml                              campagna.yaml + la parte di sessione di sessione.yaml,
  *                                              con sessione.riassunto_iniziale e le due `preparazione`;
@@ -115,6 +116,9 @@ function main(): number {
 
   // Livello di campagna copiato com'è.
   for (const f of ['stile.yaml', 'pg.yaml', 'brief.yaml', 'pronunce.yaml', 'pronunce-gioco.yaml']) if (fs.existsSync(path.join(o.cartella, f))) scrivi(f, fs.readFileSync(path.join(o.cartella, f), 'utf8'), [f]);
+  // Il set di regole del manuale (regole/: regole.yaml, mostri.yaml, riassunto, estratti) vale per tutte le sessioni: senza,
+  // la vista unita si validerebbe con l'SRD (le schede di un manuale sembrerebbero sbagliate).
+  if (fs.existsSync(path.join(o.cartella, 'regole'))) collega('regole', path.join(o.cartella, 'regole'));
   // I PG creati al tavolo (docs/creazione.md): l'archivio della campagna, letto come pg.yaml in ogni sessione.
   const creati = cartellaPgCreati(o.cartella);
   if (fs.existsSync(creati)) for (const f of fs.readdirSync(creati).filter((x) => x.endsWith('.yaml'))) scrivi(`pg-creati/${f}`, fs.readFileSync(path.join(creati, f), 'utf8'), [path.relative(o.cartella, path.join(creati, f))]);

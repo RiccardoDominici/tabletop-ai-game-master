@@ -93,7 +93,7 @@ def _campi_pubblici(c: Campagna) -> list[tuple[str, str]]:
     if isinstance(c.pg, dict):
         out.append(("pg.situazione_comune", c.pg.get("situazione_comune") or ""))
     # La scheda di un PG senza le conoscenze private va sul telefono del suo giocatore (T9).
-    for p in c.personaggi:
+    for p in c.pg_preparati:
         for campo in ("nome", "aspetto", "concetto", "aggancio"):
             if isinstance(p.get(campo), str):
                 out.append((f"pg.yaml {p.get('id', '?')}.{campo}", p[campo]))

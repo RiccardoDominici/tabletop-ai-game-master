@@ -512,7 +512,7 @@ def _menzogne_e_confessioni(c: Campagna, e: Esito) -> None:
             if c.prosa.cede_privato.search(cede.lower()) and not any(menziona(b.get("richiede") or {}, "privata") for b in conf):
                 e.avviso("COPERTURA.privata", dove, "cede_se chiede la privatezza, ma nessuna confessione ha richiede.privata",
                          rigoroso=True)
-            nominati = [p for p in c.personaggi if p.get("nome") and
+            nominati = [p for p in c.pg_preparati if p.get("nome") and
                         re.search(rf"\b{re.escape(p['nome'].replace('Sorella ', '').split()[0])}\b", cede)]
             for p in nominati:
                 if not any(p["id"] in menziona(b.get("richiede") or {}, "da_pg") for b in conf):
@@ -522,7 +522,7 @@ def _menzogne_e_confessioni(c: Campagna, e: Esito) -> None:
 
 def _prosa(c: Campagna, e: Esito) -> None:
     nomi_pg = [str(p.get("nome", "")).replace("Sorella ", "").replace("Fratello ", "").split()[0]
-               for p in c.personaggi if p.get("nome")]
+               for p in c.pg_preparati if p.get("nome")]
     nomi_png = sorted({n for _, d in c.png.values() for n in nomi_propri(d)})
     lung_narr = []
     improvvisi = 0

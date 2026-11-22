@@ -94,6 +94,12 @@ snapshot). So the PC is everywhere at once — the phones' list, the Engine's sh
 store). The phone that built it picks it by itself. The rebuild waits for a quiet moment: the approval is refused while a
 turn is narrated or rolled, or while the open window has written actions (a restart would drop them).
 
+**The validator** reads the PCs built at the table with the campaign's and holds their sheets to the set (strictly, as
+built at the table), but not to the checks of prepared content — an arc, every NPC's attitude towards it, its name's
+pronunciation, secret words in its public fields (strumenti/valida/carica.py `pg_preparati`): the campaign was written
+before the PC existed, and its words are the player's. The merged view of a session package (strumenti/unisci_pacchetto.ts)
+links the campaign's `regole/` too, so a package is checked against the manual's set, not the SRD.
+
 **Where the PCs live** (creazione/archivio.ts `cartellaPgCreati`): `pg-creati/` of the play folder — the campaign's
 folder for the real game (`campagne/<id>/pg-creati/`), the instance's log folder for a test instance
 (`logs/porta-<porta>/pg-creati/`, the rule of `Campagna.cartellaGioco`), or `TAGM_PG_CREATI`. **`campagne/*/pg-creati/`

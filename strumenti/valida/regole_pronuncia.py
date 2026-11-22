@@ -94,7 +94,7 @@ def candidati(testi_: list[str]) -> dict[str, str]:
 def _nomi_delle_schede(c: Campagna) -> dict[str, str]:
     """The words of the names of PNG, PG and scenes (capitalised): they are proper names by definition."""
     out: dict[str, str] = {}
-    nomi = [d.get("nome") for _, d in c.png.values()] + [p.get("nome") for p in c.personaggi]
+    nomi = [d.get("nome") for _, d in c.png.values()] + [p.get("nome") for p in c.pg_preparati]
     for n in nomi:
         if isinstance(n, str):
             for p in PAROLA.findall(n):
@@ -106,7 +106,7 @@ def _nomi_delle_schede(c: Campagna) -> dict[str, str]:
 def _coperte_dalle_schede(c: Campagna) -> set[str]:
     """The words covered by the `pronuncia` field of the sheets (aligned word by word with the name)."""
     out: set[str] = set()
-    for d in [d for _, d in c.png.values()] + c.personaggi:
+    for d in [d for _, d in c.png.values()] + c.pg_preparati:
         nome, pron = d.get("nome"), d.get("pronuncia")
         if isinstance(nome, str) and isinstance(pron, str) and len(nome.split()) == len(pron.split()):
             out |= {p.lower() for p in nome.split()}

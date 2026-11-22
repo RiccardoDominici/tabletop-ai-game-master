@@ -2308,3 +2308,24 @@ def test_attore_mai_presente(camp):
     modifica(camp, "scena.yaml", lambda d: d.update(png_presenti=["png_bruno"]))
     assert "REPERTORIO.attore_assente" in avvisi(camp)
     assert "REPERTORIO.attore_assente" in errori(camp, rigoroso=True)
+
+
+# --- a PC built at the table (pg-creati/, docs/creazione.md) -------------------------------------------------------------
+
+def test_pg_creato_al_tavolo_non_chiede_contenuti_preparati(camp, monkeypatch):
+    """A PC a player built at the table joins a campaign written before it: the checks of prepared content — its arc,
+    the NPCs' attitude towards it, the pronunciation of its name, secret words in its public fields — never judge it
+    (carica.py `pg_preparati`); its sheet is still read and checked."""
+    monkeypatch.delenv("TAGM_PG_CREATI", raising=False)
+    monkeypatch.delenv("CANTASTORIE_PG_CREATI", raising=False)
+    primo = leggi(camp, "pg.yaml")["personaggi"][0]
+    nuovo = {"id": "pg_zefiro", "nome": "Zefiro Quarzomanto", "specie": primo["specie"], "classe": primo["classe"], "livello": 1, "scheda": primo["scheda"]}
+    (camp / "pg-creati").mkdir()
+    scrivi(camp, "pg-creati/pg_zefiro.yaml", nuovo)
+    esito, c = valida(camp, rigoroso=True, voci=VOCI if VOCI.exists() else None)
+    assert "pg_zefiro" in c.pg_ids and "pg_zefiro" not in c.pg_ids_preparati
+    assert not [str(v) for v in esito.voci if v.gravita == "errore"], [str(v) for v in esito.voci if v.gravita == "errore"]
+    # The same entry written by the Preparer in pg.yaml is held to everything.
+    modifica(camp, "pg.yaml", lambda d: d["personaggi"].append({**primo, "id": "pg_zefiro", "nome": "Zefiro Quarzomanto"}))
+    (camp / "pg-creati" / "pg_zefiro.yaml").unlink()
+    assert {"PNG.atteggiamento", "FRONTI.archi"} & errori(camp, rigoroso=True)
