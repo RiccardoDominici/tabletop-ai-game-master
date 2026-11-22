@@ -209,6 +209,19 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
     campaign the server loaded («campagna» in /api/salute).
 
 ## Later
+- **Rules engine after R5 (22 November 2026; docs/creazione.md, docs/regole-audit/).** Character creation at the table,
+  the roll numbers by the manual and the reaction tables are done (1cd3b2e … 96639b9). Open:
+  - **Elf combination classes** (audit C-RACE-26, C-RACE-27; Basic Fantasy p. 6): Fighter/Magic-User and Magic-User/Thief,
+    elves only, the requirements of both classes. What M1 needs: a class that names two base classes
+    (`combinazione: [guerriero, mago]`) and derives its rows — the better attack bonus and the better save of the two at
+    each level, XP to advance the sum of both tables, the hit die the manual gives (d6 for Fighter/Magic-User, d4 for
+    Magic-User/Thief), the spells per day of the Magic-User, the thief's percentages for Magic-User/Thief — plus the
+    restrictions the combination lifts (casting in armor; in leather armor for Magic-User/Thief: the catalog's
+    `restrizioni` per class). Then the elf's `classi` list names them, creation offers them, the validator checks them.
+  - The thief's point allocation option (X-OPT-07), spells learned after the start (X-OPT-03: a teacher, a spellbook,
+    500 gp a level), retainers as sheets with loyalty (P4-32 to P4-35), locked doors forced on 1d10 (P4-11).
+  - The SRD 5.2's own creation (its species, classes, backgrounds and equipment as data): the schema already expresses
+    its methods (4d6 keep three, the standard array, the 27-point buy, the maximum first hit die).
 - **Gaps in the Basic Fantasy set from the final e2e** (docs/e2e-finale.md §2 and §7, «dadi» (dice)):
   ~~closed 11 November 2026 (HIDDEN/NASCOSTA marker in every language, death and natural d20 checks from the set, table-based modifiers, individual `ogni_round`, percentages and "x on 6", automatic weapons, the two validator checks)~~
   **Done**: markers (3238277), death-save naturals and d20 criticals (2d78978), table modifiers (bc15b8d), individual `ogni_round` (b75a693), percentages, x-in-6 and always-hit weapons (554972f), validator checks (19f863d). Still open: ~~simultaneous initiative ties~~ **Done** (72d098e: `iniziativa.pari: simultanei`), ~~natural d20s for attacks AND saving throws only (today `critici: attacchi | tutti`)~~ **Done** (e7bb597: `critici: attacchi_e_salvezze`, saves marked `salvezza: true`), ~~surprise with 1d6~~ **Done** (e04058e), ~~range, charge and attack from behind as modifiers of the set~~ **Done** (e9bf590: `modificatori`, triggered by the PC's words; not modelled: −5 shooting into melee, −2 AC after a charge).

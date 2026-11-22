@@ -686,5 +686,10 @@ The `significato` of bands and grades replaces it. With the SRD 5.2 the rule sta
   3d4 breath and the specials no power expresses (swallowing, sprays, grabs, splitting, disease, lycanthropy: P6-23,
   P6-24, P6-26) stay text in the entry; the 24 hours a song cannot charm again after a save are one use a day;
   dragon ages (P6-17) are the printed category-4 entry. Evidence: esperimenti/risultati/regole-r4/.
+- **Rules-engine work R5 (22 November) leaves open**: the elves' combination classes (C-RACE-26/27; what M1 needs is in
+  docs/da-fare.md), the SRD 5.2's own creation data (species, classes, backgrounds, equipment: the schema expresses its
+  methods), the thief's point allocation, spells learned after the start, retainers as sheets, locked doors on 1d10.
+  Creation at the table (docs/creazione.md) needs a quiet moment to let an approved PC join (the server rebuilds); a
+  player reconnecting after another approval finds its draft again. Evidence: esperimenti/risultati/regole-r5/.
 - **Subsystems** (`sottosistemi`) are text only. Conditions apply in the fight (docs/combattimento.md); damage, healing, falls and rest outside an attack are typed effects (above).
 - **Opposed checks** in a non-SRD set become normal checks. Saving throws are pinned to their own number (above), and a target rolls its own save against a PC's power (`salvezzaDelBersaglio`, the Game Master's side for an NPC).
