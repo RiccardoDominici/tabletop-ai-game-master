@@ -36,6 +36,12 @@ Creation at the table needs a set with `creazione` (the validator stops `al_tavo
 server falls back to pregenerated PCs and logs it). With `al_tavolo` pg.yaml may have no PC: the campaign loads, and
 «Inizia» on the projector is refused until the first PC is approved («Nessun personaggio ancora…»).
 
+**Combination classes** (R6; docs/regole.md §2, regole/combinazioni.ts): a class of two bases (Basic Fantasy's elves:
+fighter/magic-user, magic-user/thief) is a class like the others on the phone's class step, open only to the races whose
+`classi` name it, with the requirements of both bases, its own hit die, the caster base's starting book and the
+combination's own restrictions on the purchase screen. The approved PC plays with the derived rows: the better save and
+attack bonus, the XP of both tables summed to level up, the caster's slots, the thief's percentages.
+
 ## 2. The draft (apps/server/src/creazione/)
 
 One draft per phone, keyed by the phone's device token (the one that already remembers its PC). The modules:

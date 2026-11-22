@@ -10,7 +10,7 @@ import { describe, expect, it } from 'vitest';
 import { caricaCampagna } from '../src/campagna/caricatore';
 import { caricaRegole } from '../src/regole/caricatore';
 import { bersaglioSalvezza, rigaAlLivello } from '../src/regole/salvezze';
-import { caricaSchedeGeneriche, trattiDi, valoreCaratteristica } from '../src/regole/schede';
+import { caricaSchedeGeneriche, leggiSchedaGenerica, trattiDi, valoreCaratteristica } from '../src/regole/schede';
 import { bonusTratti } from '../src/regole/tratti';
 import type { SistemaRegole } from '../src/regole/tipi';
 import { limitiDi } from '../src/regole/carico';
@@ -20,6 +20,7 @@ import { loggerMuto } from '../src/logger';
 import { rigaDi } from '../src/regole/progressione';
 import { pxDiScheda } from '../src/regole/esperienza';
 import { controllaPersonaggio } from '../src/regole/controllo-pg';
+import { restrizioniViolate } from '../src/regole/equipaggiamento';
 import { sistemaAlLivello, spostamentoAlLivello } from '../src/regole/prove-livello';
 
 const BF = path.join(import.meta.dirname, '..', '..', '..', 'campagne', 'torre-mozza');
@@ -56,10 +57,11 @@ describe('the level-1 and level-2 Cleric and Magic-User spells (pp. 15–41)', (
     expect(p).toHaveLength(37);
     const livelli = (id: string) => p.find((x) => x.id === id)?.livello;
     // p. 15–16: one entry per spell, with each class's level.
-    expect(livelli('individuare_il_magico')).toEqual({ chierico: 1, mago: 1 });
-    expect(livelli('individuare_il_male')).toEqual({ chierico: 1, mago: 2 });
-    expect(livelli('blocca_persone')).toEqual({ chierico: 2, mago: 3 });
-    expect(livelli('leggere_il_magico')).toEqual({ mago: 1 });
+    // The elves' combinations that cast (p. 6) cast the magic-user's spells at its levels.
+    expect(livelli('individuare_il_magico')).toEqual({ chierico: 1, mago: 1, guerriero_mago: 1, mago_ladro: 1 });
+    expect(livelli('individuare_il_male')).toEqual({ chierico: 1, mago: 2, guerriero_mago: 2, mago_ladro: 2 });
+    expect(livelli('blocca_persone')).toEqual({ chierico: 2, mago: 3, guerriero_mago: 3, mago_ladro: 3 });
+    expect(livelli('leggere_il_magico')).toEqual({ mago: 1, guerriero_mago: 1, mago_ladro: 1 });
     expect(p.filter((x) => x.livello['chierico'] === 1).length).toBe(8);
     expect(p.filter((x) => x.livello['chierico'] === 2).length).toBe(8);
     expect(p.filter((x) => x.livello['mago'] === 1).length).toBe(13);
@@ -407,7 +409,7 @@ describe('progression by class and level (pp. 7–9, 53, 57, 49)', () => {
 describe('progression as torre-mozza uses it (pp. 3–9, 49, 53, 57–58, 190)', () => {
   it('the set-level rules: attack bonus to melee, missile and the sneak attack (+4), Constitution on each die', () => {
     const s = set();
-    expect(s.progressione).toEqual({ attacco: [{ abilita: 'mischia', piu: 0, classi: [] }, { abilita: 'distanza', piu: 0, classi: [] }, { abilita: 'alle_spalle', piu: 4, classi: ['ladro'] }], puntiFerita: { caratteristica: 'costituzione', minimo: 1 }, unLivelloPerAvventura: true });
+    expect(s.progressione).toEqual({ attacco: [{ abilita: 'mischia', piu: 0, classi: [] }, { abilita: 'distanza', piu: 0, classi: [] }, { abilita: 'alle_spalle', piu: 4, classi: ['ladro', 'mago_ladro'] }], puntiFerita: { caratteristica: 'costituzione', minimo: 1 }, unLivelloPerAvventura: true });
     // p. 190, the optional XP for treasure: 1 gp = 1 XP, only once back to safety.
     expect(s.esperienza!.tesoro).toEqual({ px: 1, moneta: 'mo', quando: 'al_sicuro' });
     const razza = (id: string) => s.razze!.find((r) => r.id === id)!.tratti;
@@ -532,6 +534,50 @@ describe('the bestiary\'s specials as typed data (pp. 62–162)', () => {
   });
 });
 
+describe('the elves\' combination classes (p. 6)', () => {
+  const elfo = (classe: string, extra: Record<string, unknown> = {}) =>
+    leggiSchedaGenerica(set(), 'pg_elfo', 'Elfo', false, { caratteristiche: { forza: 13, destrezza: 12, costituzione: 11, intelligenza: 14, saggezza: 10, carisma: 9 }, razza: 'elfo', classe, livello: 1, px: 0, pf: 5, libro: ['leggere_il_magico', 'dardo_incantato'], lingue: ['comune', 'elfico', 'orchesco'], ...extra })!;
+
+  it('fighter/magic-user: both Prime Requisites, the better save and attack bonus, XP 2,000 + 2,500, the magic-user\'s spells, a d6', () => {
+    const s = set();
+    const c = s.classi!.find((x) => x.id === 'guerriero_mago')!;
+    expect(c.requisiti).toEqual({ forza: { min: 9, max: null }, intelligenza: { min: 9, max: null } });
+    // Level 1 saves (p. 61): fighter 12 13 14 15 17, magic-user 13 14 13 16 15 → 12 13 13 15 15.
+    expect(rigaAlLivello(c.tiriSalvezza, 1)!.valori).toEqual([12, 13, 13, 15, 15]);
+    const riga = (id: string, l: number) => rigaAlLivello(s.classi!.find((x) => x.id === id)!.tiriSalvezza, l)!.valori;
+    for (const l of [2, 5, 9, 14, 20]) expect(rigaAlLivello(c.tiriSalvezza, l)!.valori).toEqual(riga('guerriero', l).map((v, i) => Math.min(v, riga('mago', l)[i]!)));
+    // The fighter's attack bonus (p. 53): +1 at 1, +2 at 2, +10 at 18.
+    expect(rigaDi(c.progressione.attacco, 2)!.bonus).toBe(2);
+    expect(rigaDi(c.progressione.attacco, 18)!.bonus).toBe(10);
+    expect(c.progressione.px.slice(0, 3)).toEqual([0, 4500, 9000]);
+    expect(c.progressione.px[19]).toBe(1560000 + 1950000);
+    expect(slot(s, 'guerriero_mago', 3)).toEqual([2, 1]);
+    expect(c.progressione.dadiVita[0]!.dado!.facce).toBe(6);
+    // Casts in armor: no restriction names the combination.
+    const maglia = s.catalogo!.voci.find((v) => v.id === 'cotta_di_maglia')!;
+    expect(restrizioniViolate(s, { classe: 'guerriero_mago', razza: 'elfo' }, maglia)).toEqual([]);
+    expect(restrizioniViolate(s, { classe: 'mago', razza: 'elfo' }, maglia)).toHaveLength(1);
+    expect(controllaPersonaggio(s, elfo('guerriero_mago', { equipaggiamento: ['cotta_di_maglia', 'spada_lunga'], monete: { mo: 10 } }), { creato: false }).map((p) => p.codice)).toEqual([]);
+  });
+
+  it('magic-user/thief: the thief\'s percentages and sneak attack, casting in leather only, a d4', () => {
+    const s = set();
+    const c = s.classi!.find((x) => x.id === 'mago_ladro')!;
+    expect(c.progressione.px[1]).toBe(2500 + 1250);
+    expect(rigaDi(c.progressione.abilita!.righe, 1)!.valori).toEqual([25, 20, 30, 25, 80, 10, 30]);
+    expect(s.progressione!.attacco.find((a) => a.abilita === 'alle_spalle')!.classi).toEqual(['ladro', 'mago_ladro']);
+    expect(c.progressione.dadiVita[0]!.dado!.facce).toBe(4);
+    const voce = (id: string) => s.catalogo!.voci.find((v) => v.id === id)!;
+    expect(restrizioniViolate(s, { classe: 'mago_ladro', razza: 'elfo' }, voce('cuoio'))).toEqual([]);
+    expect(restrizioniViolate(s, { classe: 'mago_ladro', razza: 'elfo' }, voce('cotta_di_maglia'))[0]!.penalita).toMatchObject({ senzaIncantesimi: 'perso', senzaAbilita: expect.arrayContaining(['scassinare', 'alle_spalle']) });
+  });
+
+  it('only elves: a human fighter/magic-user is refused', () => {
+    const s = set();
+    expect(controllaPersonaggio(s, elfo('guerriero_mago', { razza: 'umano', lingue: ['comune', 'orchesco'] }), { creato: false }).map((p) => p.codice)).toContain('classe_non_ammessa');
+  });
+});
+
 describe('character creation (pp. 3–8, 186–187)', () => {
   it('the Prime Requisites, the races\' limits and classes, the languages (pp. 4–8)', () => {
     const s = set();
@@ -546,11 +592,11 @@ describe('character creation (pp. 3–8, 186–187)', () => {
     expect(razza('nano').requisiti).toEqual({ costituzione: { min: 9, max: null }, carisma: { min: null, max: 17 } });
     expect(razza('nano').classi).toEqual(['chierico', 'guerriero', 'ladro']);
     expect(razza('elfo').requisiti).toEqual({ intelligenza: { min: 9, max: null }, costituzione: { min: null, max: 17 } });
-    expect(razza('elfo').classi).toEqual(['chierico', 'guerriero', 'mago', 'ladro']);
-    // p. 6: halflings DEX ≥ 9, STR ≤ 17; humans any class, no limits.
+    expect(razza('elfo').classi).toEqual(['chierico', 'guerriero', 'mago', 'ladro', 'guerriero_mago', 'mago_ladro']);
+    // p. 6: halflings DEX ≥ 9, STR ≤ 17; humans any single class, no limits (the combinations are the elves').
     expect(razza('halfling').requisiti).toEqual({ destrezza: { min: 9, max: null }, forza: { min: null, max: 17 } });
     expect(razza('umano').requisiti).toEqual({});
-    expect(razza('umano').classi).toBeNull();
+    expect(razza('umano').classi).toEqual(['chierico', 'guerriero', 'mago', 'ladro']);
     // p. 4: their own language and Common.
     expect(razza('nano').lingue).toEqual(['comune', 'nanico']);
     expect(razza('umano').lingue).toEqual(['comune']);
@@ -562,7 +608,12 @@ describe('character creation (pp. 3–8, 186–187)', () => {
     expect(cr.metodi).toEqual([{ id: 'in_ordine', nome: '3d6 in ordine', tipo: 'dadi', dadi: { numero: 3, facce: 6, bonus: 0 }, tieni: null, ordine: 'fisso' }]);
     expect(cr.puntiFerita).toBe('tira');
     expect(cr.monete).toEqual({ dadi: { numero: 3, facce: 6, bonus: 0 }, per: 10, moneta: 'mo' });
-    expect(cr.incantesimi).toEqual([{ classe: 'mago', fissi: ['leggere_il_magico'], aScelta: 1, livello: 1, come: 'scelta' }]);
+    expect(cr.incantesimi).toEqual([
+      { classe: 'mago', fissi: ['leggere_il_magico'], aScelta: 1, livello: 1, come: 'scelta' },
+      // The elves' combinations that cast (p. 6) start with the magic-user's book.
+      { classe: 'guerriero_mago', fissi: ['leggere_il_magico'], aScelta: 1, livello: 1, come: 'scelta' },
+      { classe: 'mago_ladro', fissi: ['leggere_il_magico'], aScelta: 1, livello: 1, come: 'scelta' },
+    ]);
     expect(cr.lingue).toEqual({ caratteristica: 'intelligenza' });
     // p. 186–187: the Game Master's options and the hopeless character's flip (21 − score).
     expect(cr.opzioni.map((o) => o.tipo)).toEqual(['punti', 'scambio', 'riordino']);

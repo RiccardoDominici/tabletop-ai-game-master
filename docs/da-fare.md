@@ -211,7 +211,7 @@ Checked on 14 November 2026 against the commits of 2–12 November (the last com
 ## Later
 - **Rules engine after R5 (22 November 2026; docs/creazione.md, docs/regole-audit/).** Character creation at the table,
   the roll numbers by the manual and the reaction tables are done (1cd3b2e … 96639b9). Open:
-  - **Elf combination classes** (audit C-RACE-26, C-RACE-27; Basic Fantasy p. 6): Fighter/Magic-User and Magic-User/Thief,
+  - ~~**Elf combination classes**~~ **Done** (R6: `classi[].combinazione`, regole/combinazioni.ts). (audit C-RACE-26, C-RACE-27; Basic Fantasy p. 6): Fighter/Magic-User and Magic-User/Thief,
     elves only, the requirements of both classes. What M1 needs: a class that names two base classes
     (`combinazione: [guerriero, mago]`) and derives its rows — the better attack bonus and the better save of the two at
     each level, XP to advance the sum of both tables, the hit die the manual gives (d6 for Fighter/Magic-User, d4 for

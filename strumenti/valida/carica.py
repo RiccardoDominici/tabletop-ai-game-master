@@ -22,6 +22,7 @@ from typing import Any
 import yaml
 
 from .esito import Esito
+from .combinazioni import espandi as espandi_combinazioni
 from .lingua import LINGUA_PREDEFINITA, Prosa, carica_prosa, lingua_della_campagna, lingue_disponibili, prosa_predefinita
 
 
@@ -162,6 +163,12 @@ def carica(cartella: Path, esito: Esito, voci: Path | None = None) -> Campagna:
     c.pg = _leggi(cartella / "pg.yaml", esito, True) or {}
     c.pg_creati = pg_creati(cartella, esito)
     c.regole = _leggi(cartella / "regole" / "regole.yaml", esito, False)
+    # Combination classes (Basic Fantasy's elves) expanded at once, as the Engine does (regole/combinazioni.ts): every
+    # check keyed by a class finds their rows.
+    errori_comb: list[str] = []
+    c.regole = espandi_combinazioni(c.regole, errori_comb)
+    for m in errori_comb:
+        esito.errore("REGOLE.classi", "regole/regole.yaml", m)
 
     file_scene = [cartella / "scena.yaml"] if (cartella / "scena.yaml").exists() else []
     file_scene += sorted(p for p in cartella.glob("scena_*.yaml"))

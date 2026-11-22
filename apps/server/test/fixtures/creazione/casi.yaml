@@ -37,9 +37,16 @@ set:
       dadi_vita: [{da: 1, dado: "1d4"}]
       attacco: [{da: 1, bonus: 0}]
       incantesimi_al_giorno: [{da: 1, slot: [1]}, {da: 3, slot: [2, 1]}]
+    # A combination class (regole/combinazioni.ts; Basic Fantasy's elves, p. 6): both requirements, the better rows, the XP
+    # summed, the caster's spells and starting book; its own hit die.
+    - id: lama_arcano
+      nome: "Lama/Arcano"
+      combinazione: [lama, arcano]
+      dadi_vita: [{da: 1, dado: "1d6"}]
   razze:
     - id: umano
       nome: "Umano"
+      classi: [lama, arcano]
       lingue: [comune]
     - id: piccolo
       nome: "Piccolo"
@@ -47,6 +54,10 @@ set:
       classi: [lama]
       lingue: [comune, piccolese]
       tratti: [{dado_vita_massimo: 6}]
+    - id: silvano
+      nome: "Silvano"
+      classi: [lama, arcano, lama_arcano]
+      lingue: [comune]
   lingue:
     - {id: comune, nome: "Comune"}
     - {id: piccolese, nome: "Piccolese"}
@@ -186,3 +197,23 @@ casi:
     creato: true
     scheda: {<<: *lama, lingue: null}
     problemi: [lingue_mancanti]
+  - nome: "a legal sylvan blade-arcanist: both requirements, the d6, the arcane book"
+    creato: true
+    scheda: {<<: *lama, razza: silvano, classe: lama_arcano, caratteristiche: {forza: 12, mente: 12, agilita: 11, tempra: 13}, pf: 7, libro: [leggere_rune, scintilla]}
+    problemi: []
+  - nome: "a combination class the race does not allow"
+    creato: false
+    scheda: {<<: *lama, classe: lama_arcano, caratteristiche: {forza: 12, mente: 12, agilita: 11, tempra: 13}, pf: 5, libro: [leggere_rune, scintilla]}
+    problemi: [classe_non_ammessa]
+  - nome: "below the arcane base's requirement"
+    creato: false
+    scheda: {<<: *lama, razza: silvano, classe: lama_arcano, caratteristiche: {forza: 12, mente: 8, agilita: 11, tempra: 13}, pf: 5, libro: [leggere_rune, scintilla]}
+    problemi: [requisito_classe]
+  - nome: "the blade's d8 is not the combination's d6"
+    creato: false
+    scheda: {<<: *lama, razza: silvano, classe: lama_arcano, caratteristiche: {forza: 12, mente: 12, agilita: 11, tempra: 13}, pf: 8, libro: [leggere_rune, scintilla]}
+    problemi: [pf_fuori]
+  - nome: "the combination casts: without the arcane base's book"
+    creato: false
+    scheda: {<<: *lama, razza: silvano, classe: lama_arcano, caratteristiche: {forza: 12, mente: 12, agilita: 11, tempra: 13}, pf: 5}
+    problemi: [libro_mancante]

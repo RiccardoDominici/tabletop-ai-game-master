@@ -209,6 +209,16 @@ classi:                                     # optional [V]: the classes and thei
     tabelle:                                # [V] a power rolled against a class table (poteri[].tabella): power id →
       scacciare_non_morti: [{da: 1, valori: [13, 17, null]}, {da: 8, valori: [T, 3, 7]}]   # rows, one cell per column:
                                             #   the number to reach, T (no roll), D (the stronger result), null (No)
+  - id: guerriero_mago                      # a combination class (R6; regole/combinazioni.ts; Basic Fantasy p. 6):
+    nome: "Guerriero/Mago"
+    combinazione: [guerriero, mago]         # [V] two single classes of the set; derived from them, unless written:
+                                            #   requisiti (both), tiri_salvezza (the lower at each level), attacco (the
+                                            #   higher), px (summed), incantesimi_al_giorno (the caster's), abilita and
+                                            #   tabelle (the base that has them), tratti (both); and the bases' powers
+                                            #   (poteri[].livello), starting book (creazione.incantesimi) and class-only
+                                            #   attack abilities (progressione.attacco[].classi) extend to it
+    dadi_vita: [{da: 1, dado: "1d6"}, {da: 10, fissi: 1}]   # [V] required: its own die; restrictions are its own
+                                            #   (catalogo.restrizioni by its id: none inherited); races allow it by id
 progressione:                               # optional [V]: how the class tables reach a sheet (regole/progressione.ts)
   attacco: [mischia, distanza, {abilita: alle_spalle, piu: 4, classi: [ladro]}]   # abilities whose value is the attack
                                             #   bonus (+ piu; with `classi`, only for those classes: the thief's sneak attack)

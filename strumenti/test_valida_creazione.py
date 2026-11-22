@@ -11,11 +11,13 @@ import pytest
 import yaml
 
 from valida.esito import Esito
+from valida.combinazioni import espandi
 from valida.regole_creazione import creazione_del_set, problemi_della_scheda
 
 RADICE = Path(__file__).resolve().parents[1]
 CASI = yaml.safe_load((RADICE / "apps/server/test/fixtures/creazione/casi.yaml").read_text())
-SET = CASI["set"]
+# The combination classes expanded as on loading (valida/carica.py, regole/combinazioni.ts).
+SET = espandi(CASI["set"])
 CAR = {c["id"] for c in SET["caratteristiche"]}
 CLASSI = {c["id"] for c in SET["classi"]}
 RAZZE = {x["id"] for x in SET["razze"]}

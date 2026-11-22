@@ -409,6 +409,28 @@ classi:
       - {da: 16, valori: [7, 9, 9, 8, 9]}
       - {da: 18, valori: [7, 9, 8, 7, 9]}
       - {da: 20, valori: [6, 8, 8, 6, 8]}
+  # Classi combinate (p. 6), solo per gli elfi: i requisiti di entrambe le classi, il miglior bonus d'attacco e i migliori
+  # tiri salvezza delle due a ogni livello, per salire i PX sommati delle due tabelle (2.000 + 2.500 = 4.500 al 2°). Il
+  # Motore le ricava dalle due classi (docs/regole.md §2, «Classi combinate»); qui c'è solo ciò che il manuale dà loro di
+  # proprio. Gli incantesimi sono quelli del mago, col suo libro iniziale (leggere il magico e un altro, p. 8).
+  - id: guerriero_mago
+    nome: "Guerriero/Mago"
+    combinazione: [guerriero, mago]
+    # Un d6 per i punti ferita (p. 6). Dopo il 9° livello il manuale non dice quanti punti fissi: il set dà quelli del mago
+    # (+1), la scelta più prudente delle due; il master può cambiarla.
+    dadi_vita:
+      - {da: 1, dado: "1d6"}
+      - {da: 10, fissi: 1}
+    # Lancia incantesimi anche in armatura (p. 6): nessuna restrizione del mago (catalogo.restrizioni non ne ha per questa classe).
+  - id: mago_ladro
+    nome: "Mago/Ladro"
+    combinazione: [mago, ladro]
+    # Un d4 per i punti ferita (p. 6); dopo il 9° livello, come per il guerriero/mago, i +1 del mago (il manuale non dice).
+    dadi_vita:
+      - {da: 1, dado: "1d4"}
+      - {da: 10, fissi: 1}
+    # Lancia in armatura di cuoio (p. 6): le restrizioni di questa classe sono nel catalogo (oltre il cuoio niente incantesimi
+    # né abilità del ladro; le armi, quelle del ladro: nessuna restrizione).
 
 # Razze (p. 5–6): i tratti che cambiano un tiro. Nani e halfling +4 ai salvezza (+3 al soffio); elfi +1 a paralisi,
 # +2 a bacchette e incantesimi, sorpresi con un numero in meno su 1d6, immuni alla paralisi dei ghoul; halfling +1
@@ -418,6 +440,7 @@ razze:
   - id: umano
     nome: "Umano"
     # Qualunque classe singola, nessun punteggio minimo o massimo (p. 6); la lingua comune (p. 4).
+    classi: [chierico, guerriero, mago, ladro]
     lingue: [comune]
     tratti:
       - {tiro: esperienza, bonus: 10}          # +10% ai PX guadagnati (p. 6)
@@ -435,10 +458,9 @@ razze:
   - id: elfo
     nome: "Elfo"
     # Chierico, guerriero, mago o ladro; Intelligenza almeno 9, Costituzione al più 17 (p. 5); l'elfico e la lingua comune.
-    # Le classi combinate degli elfi (guerriero/mago, mago/ladro, p. 6) non ci sono ancora: il Motore non sa unire due
-    # tabelle di classe (il miglior bonus d'attacco e i migliori salvezza, i PX sommati).
+    # Solo gli elfi possono essere guerriero/mago o mago/ladro (p. 6).
     requisiti: {intelligenza: {min: 9}, costituzione: {max: 17}}
-    classi: [chierico, guerriero, mago, ladro]
+    classi: [chierico, guerriero, mago, ladro, guerriero_mago, mago_ladro]
     lingue: [comune, elfico]
     tratti:
       - {tiro: salvezza, colonne: [paralisi], bonus: 1}
@@ -1274,6 +1296,9 @@ catalogo:
     - {classe: chierico, cosa: arma, ammessi_proprieta: [contundente], penalita: {perde_incantesimi: true}, pagina: 187}
     - {classe: ladro, cosa: armatura, ammessi_categorie: [cuoio], penalita: {senza_abilita: [scassinare, trappole, borseggiare, muoversi_in_silenzio, scalare, nascondersi, ascoltare, alle_spalle]}, pagina: 187}
     - {classe: ladro, cosa: scudo, ammessi: [], penalita: {senza_abilita: [scassinare, trappole, borseggiare, muoversi_in_silenzio, scalare, nascondersi, ascoltare, alle_spalle]}, pagina: 8}
+    # Il mago/ladro (p. 6): incantesimi e abilità del ladro solo in armatura di cuoio, senza scudo.
+    - {classe: mago_ladro, cosa: armatura, ammessi_categorie: [cuoio], penalita: {senza_incantesimi: perso, senza_abilita: [scassinare, trappole, borseggiare, muoversi_in_silenzio, scalare, nascondersi, ascoltare, alle_spalle]}, pagina: 6}
+    - {classe: mago_ladro, cosa: scudo, ammessi: [], penalita: {senza_incantesimi: perso, senza_abilita: [scassinare, trappole, borseggiare, muoversi_in_silenzio, scalare, nascondersi, ascoltare, alle_spalle]}, pagina: 6}
     - {razza: nano, cosa: arma, vietati: [spadone, arma_in_asta, arco_lungo], penalita: {vietato: true}, pagina: 5}
     - {razza: halfling, cosa: arma, vietati_taglie: [L], penalita: {vietato: true}, pagina: 6}
 

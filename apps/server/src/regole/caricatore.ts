@@ -36,6 +36,7 @@ import { leggiFileMostri, leggiMostri, leggiRegolaBestiario } from './bestiario'
 import { leggiCreazione, leggiLingue } from './creazione';
 import { leggiReazioni } from './reazioni';
 import { controllaEsplorazione, leggiEsplorazione, leggiIncontri } from './esplorazione';
+import { espandiCombinazioni } from './combinazioni';
 
 export const CARTELLA_REGOLE = 'regole';
 const TIPI: readonly TipoRisoluzione[] = ['d20_cd', '2d6_fasce', 'sotto_soglia'];
@@ -65,7 +66,9 @@ function voci(v: unknown, dove: string, errori: string[]): Voce[] {
  * Legge e controlla regole.yaml. Gli errori rendono il set inutilizzabile (si torna all'SRD). `fileMostri`: the entries of
  * the set folder's regole/mostri.yaml (the bestiary, regole/bestiario.ts), read by caricaRegole.
  */
-export function leggiSistema(d: D, errori: string[], avvisi: string[], fileMostri?: unknown, fileIncontri?: unknown): SistemaRegole | null {
+export function leggiSistema(grezzo: D, errori: string[], avvisi: string[], fileMostri?: unknown, fileIncontri?: unknown): SistemaRegole | null {
+  // Combination classes (Basic Fantasy's elves, p. 6) expanded first: every reader keyed by a class finds their rows.
+  const d = espandiCombinazioni(grezzo, errori);
   const id = str(d['id']);
   if (!id || !/^[a-z0-9][a-z0-9.-]*$/.test(id)) errori.push('id: serve un id come «pbta-2d6» (minuscole, cifre, - e .)');
   if (id === ID_SRD) return sistemaSrd();
