@@ -158,6 +158,31 @@ def valori_da_classe(r: dict, s: dict) -> dict[str, int]:
         for ab, n in (_ogg(t.get("almeno")) or {}).items():
             if _intero(n):
                 out[ab] = max(out.get(ab, n), n)
+    return {**valori_da_soglie(r, s), **out}
+
+
+def valori_da_soglie(r: dict, s: dict) -> dict[str, int]:
+    """The thresholds the set derives (regole/schede.ts valoriDaSoglie): `predefinita` + `soglia.piu` + the traits."""
+    out: dict[str, int] = {}
+    tratti = tratti_di(r, s)
+    punteggi = _ogg(s.get("caratteristiche")) or {}
+    for a in r.get("abilita") or []:
+        so = _ogg((a or {}).get("soglia")) if isinstance(a, dict) else None
+        if not so or not _intero(so.get("dado")):
+            continue
+        tratto = sum(t.get("bonus", 0) for t in tratti if t.get("tiro") == "abilita" and a.get("id") in (t.get("abilita") or []) and _intero(t.get("bonus", 0)))
+        piu = [x for x in so.get("piu") or [] if isinstance(x, dict)]
+        if not piu and not tratto:
+            continue
+        v = (so.get("predefinita") if _intero(so.get("predefinita")) else 0) + tratto
+        for x in piu:
+            car = x.get("caratteristica")
+            if _intero(x.get("da")):
+                p = punteggi.get(car)
+                v += x.get("valore", 0) if _intero(p) and p >= x["da"] else 0
+            else:
+                v += bonus_caratteristica(r, s, car)
+        out[a["id"]] = max(0, min(so["dado"], v))
     return out
 
 
@@ -377,8 +402,8 @@ def controlla_scheda(s: dict, dove: str, r: dict, e: Esito, di_png: bool) -> Non
     livello = s.get("livello", 1) if _intero(s.get("livello", 1)) else 1
     uguali = sorted(k for k, n in scritte.items() if k in tabella and n == tabella[k])
     if uguali:
-        e.avviso("REGOLE.progressione", dove, f"abilita {', '.join(uguali)}: il numero viene dalla tabella della classe al "
-                 f"livello {livello}; scritto a mano non salirebbe col livello: toglilo", rigoroso=True)
+        e.avviso("REGOLE.progressione", dove, f"abilita {', '.join(uguali)}: il numero viene dalle tabelle del set (classe al "
+                 f"livello {livello}, caratteristiche, razza); scritto a mano non cambierebbe con loro: toglilo", rigoroso=True)
     for k in sorted(k for k, n in scritte.items() if k in tabella and n != tabella[k]):
         e.avviso("REGOLE.progressione", dove, f"abilita.{k}: {scritte[k]} scritto a mano, la tabella della classe dà "
                  f"{tabella[k]} al livello {livello}: vale quello della scheda (un'eccezione voluta?)")

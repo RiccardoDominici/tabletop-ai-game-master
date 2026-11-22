@@ -159,6 +159,15 @@ def _difficolta(r: dict, tipo: str | None, e: Esito, dove: str) -> list[str]:
     pred = r.get("difficolta_predefinita")
     if pred is not None and pred not in ids:
         _err(e, "difficolta_predefinita", dove, f"difficolta_predefinita «{pred}» non è tra le difficoltà")
+    # The default rung's number by the character's level (Basic Fantasy p. 189; regole/prove-livello.ts).
+    righe = r.get("difficolta_per_livello")
+    if righe is not None:
+        if tipo != "d20_cd":
+            _err(e, "difficolta", dove, "difficolta_per_livello: solo con risoluzione d20_cd")
+        elif not (isinstance(righe, list) and righe and all(isinstance(x, dict) and _intero(x.get("da")) and x["da"] >= 0 and _intero(x.get("valore")) for x in righe)):
+            _err(e, "difficolta", dove, "difficolta_per_livello: un elenco di {da: <livello da 0>, valore: <il numero da fare>}")
+        elif any(righe[i]["da"] <= righe[i - 1]["da"] for i in range(1, len(righe))):
+            _err(e, "difficolta", dove, "difficolta_per_livello: «da» cresce riga dopo riga")
     return ids
 
 
@@ -250,6 +259,18 @@ def _abilita(r: dict, car: set[str], e: Esito, dove: str) -> set[str]:
             if not so or so.get("dado") not in (6, 20, 100) or (pred is not None and not (_intero(pred) and 0 <= pred <= so["dado"])):
                 _err(e, "abilita", dove, f"abilita.{o['id']}.soglia: {{dado: 6 | 20 | 100, predefinita: da 0 al dado o vuota}}")
             # A failure band (M9): a failed roll above oltre_volte × the threshold (or the top face) is a bad failure.
+            # What raises the threshold from `predefinita` (regole/schede.ts valoriDaSoglie): a characteristic's bonus, or
+            # `valore` from the score `da` up.
+            for i, x in enumerate((so or {}).get("piu") or [], start=1):
+                xo = _ogg(x) or {}
+                if xo.get("caratteristica") not in car or ("da" in xo) != ("valore" in xo) or not all(_intero(xo[k]) for k in ("da", "valore") if k in xo):
+                    _err(e, "abilita", dove, f"abilita.{o['id']}.soglia.piu[{i}]: {{caratteristica: <del set>}} o {{caratteristica, da: <punteggio>, valore: <punti>}}")
+            # Whoever lacks the value rolls on another die (a non-thief listening: 1 in 1d6).
+            se = (so or {}).get("senza")
+            if se is not None and not (isinstance(se, dict) and se.get("dado") in (6, 20, 100) and _intero(se.get("valore")) and 0 <= se["valore"] <= se["dado"]):
+                _err(e, "abilita", dove, f"abilita.{o['id']}.soglia.senza: {{dado: 6 | 20 | 100, valore: da 0 al dado}}")
+            if se is not None and pred is not None:
+                _err(e, "abilita", dove, f"abilita.{o['id']}.soglia: predefinita o senza, non tutte e due")
             gr = (so or {}).get("grave")
             if gr is not None and not (isinstance(gr, dict) and isinstance(gr.get("oltre_volte"), (int, float)) and gr["oltre_volte"] >= 1
                                        and isinstance(gr.get("nome"), str) and gr["nome"].strip()):

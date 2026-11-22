@@ -103,7 +103,17 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[], fileMostr
     const gr = so['grave'] === undefined ? null : ogg(so['grave']);
     if (so['grave'] !== undefined && (!gr || !(typeof gr['oltre_volte'] === 'number' && gr['oltre_volte'] >= 1) || typeof gr['nome'] !== 'string')) errori.push(`abilita.${v.id}.soglia.grave: {oltre_volte: 2, col_massimo: true, nome: "…"}`);
     const grave = gr && typeof gr['oltre_volte'] === 'number' && gr['oltre_volte'] >= 1 && typeof gr['nome'] === 'string' ? { grave: { oltreVolte: gr['oltre_volte'], colMassimo: gr['col_massimo'] !== false, nome: gr['nome'] } } : {};
-    return [{ ...v, caratteristica: car, soglia: { dado: dado as 6 | 20 | 100, predefinita, ...grave }, ...salvezza }];
+    // What raises the threshold from `predefinita` (Basic Fantasy p. 43–44: a stuck door 1 + the Strength bonus, a secret
+    // door one more with Intelligence 15): a characteristic's bonus, or a number from a score up (regole/schede.ts).
+    const piu = leggiPiuSoglia(so['piu'], v.id, idCar, errori);
+    // Whoever lacks the value rolls on another die (a non-thief listening: 1 in 1d6, Basic Fantasy p. 43).
+    const se = so['senza'] === undefined ? null : ogg(so['senza']);
+    const seDado = num(se?.['dado']);
+    const seValore = num(se?.['valore']);
+    const senza = se && (seDado === 6 || seDado === 20 || seDado === 100) && seValore !== null && Number.isInteger(seValore) && seValore >= 0 && seValore <= seDado ? { senza: { dado: seDado as 6 | 20 | 100, valore: seValore } } : {};
+    if (so['senza'] !== undefined && !('senza' in senza)) errori.push(`abilita.${v.id}.soglia.senza: {dado: 6 | 20 | 100, valore: from 0 to the die}`);
+    if ('senza' in senza && predefinita !== null) errori.push(`abilita.${v.id}.soglia: predefinita or senza, not both`);
+    return [{ ...v, caratteristica: car, soglia: { dado: dado as 6 | 20 | 100, predefinita, ...grave, ...(piu.length ? { piu } : {}), ...senza }, ...salvezza }];
   });
   const modTipo = (ogg(d['modificatore'])?.['tipo'] ?? (tipo === 'sotto_soglia' ? 'soglia' : tipo === '2d6_fasce' ? 'diretto' : 'srd')) as SistemaRegole['modificatore'];
   if (!['srd', 'diretto', 'soglia', 'tabella'].includes(modTipo)) errori.push('modificatore.tipo: srd, diretto, soglia o tabella');
@@ -168,6 +178,7 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[], fileMostr
   }
   const predefinita = str(d['difficolta_predefinita']) ?? difficolta[Math.floor((difficolta.length - 1) / 2)]?.id ?? 'normale';
   if (!difficolta.some((x) => x.id === predefinita)) errori.push(`difficolta_predefinita: «${predefinita}» non è tra le difficoltà`);
+  const difficoltaPerLivello = leggiDifficoltaPerLivello(d['difficolta_per_livello'], tipo, errori);
 
   const v = ogg(d['vantaggio']) ?? {};
   const tipoV = (v['tipo'] ?? 'nessuno') as SistemaRegole['vantaggio']['tipo'];
@@ -284,6 +295,7 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[], fileMostr
     tabellaModificatori,
     difficolta,
     difficoltaPredefinita: predefinita,
+    ...(difficoltaPerLivello.length ? { difficoltaPerLivello } : {}),
     vantaggio: { tipo: tipoV, valore: num(v['valore']) ?? 1 },
     attacchi: {
       tipo: tipoA,
@@ -328,6 +340,53 @@ export function leggiSistema(d: D, errori: string[], avvisi: string[], fileMostr
     ...(lingue.length ? { lingue } : {}),
     ...(creazione ? { creazione } : {}),
   };
+}
+
+/** `abilita[].soglia.piu`: [{caratteristica}] (its bonus) or [{caratteristica, da, valore}] (valore from that score up). */
+function leggiPiuSoglia(v: unknown, id: string, idCar: ReadonlySet<string>, errori: string[]): Array<{ caratteristica: string; da: number | null; valore: number | null }> {
+  if (v === undefined || v === null) return [];
+  if (!Array.isArray(v)) {
+    errori.push(`abilita.${id}.soglia.piu: a list of {caratteristica} or {caratteristica, da, valore}`);
+    return [];
+  }
+  return v.flatMap((x, i) => {
+    const o = ogg(x);
+    const c = str(o?.['caratteristica']);
+    const da = o?.['da'];
+    const valore = o?.['valore'];
+    const ok = (n: unknown): n is number => typeof n === 'number' && Number.isInteger(n);
+    if (!o || !c || !idCar.has(c) || (da !== undefined && !ok(da)) || (valore !== undefined && !ok(valore)) || (da === undefined) !== (valore === undefined)) {
+      errori.push(`abilita.${id}.soglia.piu[${i + 1}]: {caratteristica: <of the set>} (its bonus) or {caratteristica, da: <score>, valore: <points>}`);
+      return [];
+    }
+    return [{ caratteristica: c, da: ok(da) ? da : null, valore: ok(valore) ? valore : null }];
+  });
+}
+
+/** `difficolta_per_livello`: the default difficulty's number by the character's level (Basic Fantasy p. 189), `da` growing. */
+function leggiDifficoltaPerLivello(v: unknown, tipo: TipoRisoluzione, errori: string[]): Array<{ da: number; valore: number }> {
+  if (v === undefined || v === null) return [];
+  if (tipo !== 'd20_cd') {
+    errori.push('difficolta_per_livello: only with risoluzione d20_cd (a number to reach)');
+    return [];
+  }
+  if (!Array.isArray(v) || !v.length) {
+    errori.push('difficolta_per_livello: a list of {da: <level>, valore: <the number to reach>}');
+    return [];
+  }
+  const out: Array<{ da: number; valore: number }> = [];
+  for (const [i, x] of v.entries()) {
+    const o = ogg(x);
+    const da = o?.['da'];
+    const valore = o?.['valore'];
+    if (!o || typeof da !== 'number' || !Number.isInteger(da) || da < 0 || typeof valore !== 'number' || !Number.isInteger(valore)) {
+      errori.push(`difficolta_per_livello[${i + 1}]: {da: a level from 0, valore: a whole number}`);
+      continue;
+    }
+    if (out.length && da <= out.at(-1)!.da) errori.push(`difficolta_per_livello[${i + 1}]: «da» grows row after row`);
+    out.push({ da, valore });
+  }
+  return out;
 }
 
 /** An attack ability's extras (Basic Fantasy's sneak attack): double damage, once per target per fight, its fallback. */

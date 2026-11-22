@@ -105,11 +105,14 @@ abilita:
   - {id: muoversi_in_silenzio, nome: "Muoversi in silenzio", caratteristica: null, soglia: {dado: 100}, segreta: riuscita}
   - {id: scalare, nome: "Scalare pareti", caratteristica: null, soglia: {dado: 100}}
   - {id: nascondersi, nome: "Nascondersi", caratteristica: null, soglia: {dado: 100}, segreta: riuscita}
-  - {id: ascoltare, nome: "Ascoltare", caratteristica: null, soglia: {dado: 100}, segreta: niente}
+  # Ascoltare a una porta (p. 43): il ladro con la sua percentuale, chiunque altro con 1 su 1d6; lo tira il master.
+  - {id: ascoltare, nome: "Ascoltare", caratteristica: null, soglia: {dado: 100, senza: {dado: 6, valore: 1}}, segreta: niente}
   # Possibilità «x su 6» (p. 43–44): d6 sotto il valore della scheda. Porte segrete e porte bloccate valgono
   # «1 su 6» per chi non ha di più; l'occhio per la pietra è solo dei nani.
-  - {id: cercare, nome: "Cercare porte segrete e trappole", caratteristica: null, soglia: {dado: 6, predefinita: 1}}
-  - {id: forzare, nome: "Forzare una porta bloccata", caratteristica: null, soglia: {dado: 6, predefinita: 1}}
+  # Il Motore le ricava dalla scheda (`piu`, docs/regole.md §2): porte segrete 1, una in più con Intelligenza 15 (p. 44) e una
+  # per gli elfi (un tratto della razza); porte bloccate 1 più il bonus di Forza (p. 43); la pietra 2 per i nani (un tratto).
+  - {id: cercare, nome: "Cercare porte segrete e trappole", caratteristica: null, soglia: {dado: 6, predefinita: 1, piu: [{caratteristica: intelligenza, da: 15, valore: 1}]}}
+  - {id: forzare, nome: "Forzare una porta bloccata", caratteristica: null, soglia: {dado: 6, predefinita: 1, piu: [{caratteristica: forza}]}}
   - {id: pietra, nome: "Occhio per la pietra (nani)", caratteristica: null, soglia: {dado: 6}}
 
 # Difficoltà: il «Target» delle prove di caratteristica al primo livello è 17 (p. 189); il master può dare un
@@ -122,6 +125,21 @@ difficolta:
   - {id: difficile, nome: "Difficile", valore: 19, percentuale: -20}
   - {id: ardua, nome: "Ardua", valore: 21, percentuale: -40}
 difficolta_predefinita: normale
+# Il «Target» delle prove di caratteristica scende col livello (Ability Rolls, p. 189): 17 per la gente comune e al 1°
+# livello, 16 al 2°–3°, … 7 al 20°. Il Motore sposta tutti i gradini della stessa quantità (facile 13 al 1°, 12 al 2°);
+# i tiri salvezza, gli attacchi e le soglie hanno i loro numeri.
+difficolta_per_livello:
+  - {da: 0, valore: 17}
+  - {da: 2, valore: 16}
+  - {da: 4, valore: 15}
+  - {da: 6, valore: 14}
+  - {da: 8, valore: 13}
+  - {da: 10, valore: 12}
+  - {da: 12, valore: 11}
+  - {da: 14, valore: 10}
+  - {da: 16, valore: 9}
+  - {da: 18, valore: 8}
+  - {da: 20, valore: 7}
 
 # Il manuale non ha il vantaggio: ha bonus e penalità di situazione, il più comune è ±2. Da dietro, carica e gittata
 # sono i `modificatori` qui sopra (non si sommano al vantaggio dell'arbitro per la stessa azione); il ±2 resta per il resto.
@@ -410,6 +428,7 @@ razze:
     tratti:
       - {tiro: salvezza, colonne: [morte, bacchette, paralisi, incantesimi], bonus: 4}
       - {tiro: salvezza, colonne: [soffio], bonus: 3}
+      - {almeno: {pietra: 2}}                   # pendenze, trappole e muri nuovi nella pietra con 1–2 su 1d6 (p. 5)
   - id: elfo
     nome: "Elfo"
     # Chierico, guerriero, mago o ladro; Intelligenza almeno 9, Costituzione al più 17 (p. 5); l'elfico e la lingua comune.
@@ -424,6 +443,7 @@ razze:
       - {sorpresa: -1}
       - {immune: [paralisi_ghoul]}
       - {dado_vita_massimo: 6}                  # mai un dado vita più grande di un d6 (p. 5)
+      - {tiro: abilita, abilita: [cercare], bonus: 1}   # le porte segrete con 1–2 su 1d6, 1–3 con Intelligenza 15 (p. 5, 44)
   - id: halfling
     nome: "Halfling"
     # Chierico, guerriero o ladro; Destrezza almeno 9, Forza al più 17 (p. 6); la lingua halfling e la comune.

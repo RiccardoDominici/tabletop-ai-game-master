@@ -20,6 +20,7 @@ import { loggerMuto } from '../src/logger';
 import { rigaDi } from '../src/regole/progressione';
 import { pxDiScheda } from '../src/regole/esperienza';
 import { controllaPersonaggio } from '../src/regole/controllo-pg';
+import { sistemaAlLivello, spostamentoAlLivello } from '../src/regole/prove-livello';
 
 const BF = path.join(import.meta.dirname, '..', '..', '..', 'campagne', 'torre-mozza');
 
@@ -541,5 +542,29 @@ describe('character creation (pp. 3–8, 186–187)', () => {
       expect(controllaPersonaggio(s, schede.get(id)!, { creato: false }), id).toEqual([]);
     }
     expect(schede.get('pg_eliandro')!.libro).toEqual(['leggere_il_magico', 'dardo_incantato']);
+  });
+});
+
+describe('the roll numbers the set derives (pp. 43–44, 189)', () => {
+  it('the Ability Rolls target by level (p. 189): NM or 1: 17 … 20: 7, every rung moving with it', () => {
+    const s = set();
+    // p. 189: «NM or 1: 17; 2-3: 16; 4-5: 15; 6-7: 14; 8-9: 13; 10-11: 12; 12-13: 11; 14-15: 10; 16-17: 9; 18-19: 8; 20: 7».
+    const atteso: Array<[number, number]> = [[1, 17], [2, 16], [3, 16], [4, 15], [5, 15], [6, 14], [8, 13], [10, 12], [12, 11], [14, 10], [16, 9], [18, 8], [19, 8], [20, 7]];
+    for (const [livello, target] of atteso) expect(17 + spostamentoAlLivello(s, livello), `livello ${livello}`).toBe(target);
+    const livia = caricaSchedeGeneriche(s, caricaCampagna(BF, loggerMuto())).get('pg_livia')!;
+    const al5 = sistemaAlLivello(s, { ...livia, livello: 5 });
+    expect(al5.difficolta.map((d) => [d.id, d.valore])).toEqual([['facile', 11], ['normale', 15], ['difficile', 17], ['ardua', 19]]);
+  });
+
+  it('the x-in-6 chances of the four PCs, from Strength, Intelligence and race (pp. 5, 43–44)', () => {
+    const s = set();
+    const schede = caricaSchedeGeneriche(s, caricaCampagna(BF, loggerMuto()));
+    // Livia STR 16 (+2): stuck doors 1–3; Fulco STR 13 (+1) 1–2, a dwarf's stonework 1–2; Nespola STR 9: 1;
+    // Eliandro an elf with INT 16: secret doors 1–3 (1, +1 elf, +1 INT 15+); the others 1 (INT below 15).
+    const v = (id: string) => ({ forzare: schede.get(id)!.abilita['forzare'], cercare: schede.get(id)!.abilita['cercare'], pietra: schede.get(id)!.abilita['pietra'] });
+    expect(v('pg_livia')).toEqual({ forzare: 3, cercare: 1, pietra: undefined });
+    expect(v('pg_fulco')).toEqual({ forzare: 2, cercare: 1, pietra: 2 });
+    expect(v('pg_nespola')).toEqual({ forzare: 1, cercare: 1, pietra: undefined });
+    expect(v('pg_eliandro')).toEqual({ forzare: 1, cercare: 3, pietra: undefined });
   });
 });

@@ -68,7 +68,15 @@ abilita:                      # optional; caratteristica = an existing id [V]
   - {id: persuadere, nome: "Persuadere", caratteristica: potere}
   - {id: scalare, nome: "Scalare pareti", caratteristica: null, soglia: {dado: 100}}               # optional [V]:
   - {id: porte, nome: "Porte segrete", caratteristica: null, soglia: {dado: 6, predefinita: 1}}   #   rolled separately
-  - {id: ascoltare, nome: "Ascoltare", caratteristica: null, soglia: {dado: 100}, segreta: niente}   # optional [V]: the Game
+  - {id: forzare, nome: "Porte bloccate", caratteristica: null, soglia: {dado: 6, predefinita: 1, piu: [{caratteristica: forza}]}}
+    # optional [V] piu (R5): what raises the threshold from `predefinita` for a sheet that does not write it — a
+    #   characteristic's bonus ({caratteristica}), or `valore` from the score `da` up ({caratteristica: intelligenza, da: 15,
+    #   valore: 1}); a race's or class's trait {tiro: abilita, abilita: [cercare], bonus: 1} adds too (regole/schede.ts
+    #   valoriDaSoglie; Basic Fantasy pp. 43–44: stuck doors 1 + Strength, secret doors +1 with INT 15, +1 for elves)
+  - {id: ascoltare, nome: "Ascoltare", caratteristica: null, soglia: {dado: 100, senza: {dado: 6, valore: 1}}, segreta: niente}
+    # optional [V] senza (R5): whoever lacks the value rolls this on its own die instead (a non-thief listening at a door:
+    #   1 in 1d6, Basic Fantasy p. 43); not together with `predefinita`
+  - {id: origliare, nome: "Origliare", caratteristica: null, soglia: {dado: 100}, segreta: niente}   # optional [V]: the Game
     # Master rolls it in secret (M9): the Engine's dice even with manual rolls, the card only on the panel; the narrator
     # hears how a failure is told: `niente` (nothing to notice: listening, finding traps) or `riuscita` (the character
     # believes it worked: moving silently, hiding)
@@ -98,6 +106,10 @@ difficolta:                   # [V] d20_cd: the CD (difficulty class) value requ
                                                              #   ability gets at this rung (a slimy wall: −20, M9)
   - {id: rischiosa, nome: "Rischiosa", modificatore: -1}
 difficolta_predefinita: normale   # [V] among the difficulties; if missing, the middle one
+difficolta_per_livello:           # optional [V] (R5; d20_cd only): the default difficulty's number by the character's
+  - {da: 0, valore: 17}           #   level (Basic Fantasy's Ability Rolls, p. 189: 17 … 7); every rung moves by the same
+  - {da: 2, valore: 16}           #   amount for a sheet with a class and level (regole/prove-livello.ts); saves, attacks,
+                                  #   thresholds and a monster (no class) keep their numbers
 vantaggio:
   tipo: due_dadi | dado_bonus | bonus | nessuno   # [V] due_dadi: one extra die is rolled (d20: the best;
   valore: 1                                        #   2d6: the two best are kept; sotto soglia: the lowest)

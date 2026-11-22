@@ -135,10 +135,33 @@ function idDi(v: unknown, esiste: (id: string) => boolean, dove: string, cosa: s
  */
 export function derivaAbilita(s: SistemaRegole, sch: SchedaGenerica): Array<{ id: string; scritto: number; tabella: number }> {
   const classe = sch.classe ? (s.classi ?? []).find((c) => c.id === sch.classe) : undefined;
-  const tabella = { ...attaccoDiMostro(s, sch), ...valoriDaClasse(s.progressione, classe?.progressione ?? null, sch.livello ?? 1, trattiDi(s, sch), sch.classe ?? null) };
+  const tabella = { ...attaccoDiMostro(s, sch), ...valoriDaSoglie(s, sch), ...valoriDaClasse(s.progressione, classe?.progressione ?? null, sch.livello ?? 1, trattiDi(s, sch), sch.classe ?? null) };
   const scritte = sch.abilitaScritte ?? sch.abilita;
   sch.abilita = { ...tabella, ...scritte };
   return Object.entries(tabella).flatMap(([id, n]) => (scritte[id] !== undefined && scritte[id] !== n ? [{ id, scritto: scritte[id]!, tabella: n }] : []));
+}
+
+/**
+ * The thresholds the set derives from the sheet (`abilita[].soglia.piu`; Basic Fantasy pp. 43–44): `predefinita` plus a
+ * characteristic's bonus or a number from a score up, plus the race's or class's traits to the ability (an elf's +1 to
+ * find secret doors). Only abilities with `piu` or such a trait; never below 0 nor above the die.
+ */
+export function valoriDaSoglie(s: SistemaRegole, sch: SchedaGenerica): Record<string, number> {
+  const tratti = trattiDi(s, sch);
+  const out: Record<string, number> = {};
+  for (const a of s.abilita) {
+    const so = a.soglia;
+    if (!so) continue;
+    const tratto = tratti.reduce((n, t) => (t.tipo === 'abilita' && t.abilita.includes(a.id) ? n + t.bonus : n), 0);
+    if (!so.piu?.length && !tratto) continue;
+    let v = (so.predefinita ?? 0) + tratto;
+    for (const p of so.piu ?? []) {
+      const punteggio = sch.caratteristiche[p.caratteristica] ?? caratteristicaPredefinita(s);
+      v += p.da === null ? valoreCaratteristica(s, sch, p.caratteristica) : punteggio >= p.da ? (p.valore ?? 0) : 0;
+    }
+    out[a.id] = Math.max(0, Math.min(so.dado, v));
+  }
+  return out;
 }
 
 /** The sheet's XP (`px`: a PC's total, an NPC's worth) and a monster's special-ability asterisks (`speciali`). */

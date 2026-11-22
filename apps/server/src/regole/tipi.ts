@@ -131,6 +131,17 @@ export interface SistemaRegole {
         predefinita: number | null;
         /** A failure band (Basic Fantasy's pick pockets: noticed above twice the target, or on 00): its name for the narrator. */
         grave?: { oltreVolte: number; colMassimo: boolean; nome: string } | null;
+        /**
+         * What raises the threshold from `predefinita` for a sheet that does not write it (regole/schede.ts): a
+         * characteristic's bonus (`da` null: a stuck door 1 + Strength, Basic Fantasy p. 43), or `valore` from the score
+         * `da` up (a secret door +1 with Intelligence 15, p. 44); a trait to the ability adds too (the elf's +1).
+         */
+        piu?: Array<{ caratteristica: string; da: number | null; valore: number | null }>;
+        /**
+         * Whoever lacks the value rolls this instead, on another die (Basic Fantasy p. 43: a thief listens with its
+         * percentage, anyone else on 1 in 1d6); null = `predefinita`, or an ordinary check of the set.
+         */
+        senza?: { dado: 6 | 20 | 100; valore: number } | null;
       } | null;
       /**
        * The Game Master rolls it in secret (M9, Basic Fantasy p. 8–9): the Engine's dice, never the player's; the card
@@ -158,6 +169,12 @@ export interface SistemaRegole {
   tabellaModificatori: Array<{ da: number; mod: number }> | null;
   difficolta: Difficolta[];
   difficoltaPredefinita: string;
+  /**
+   * The default difficulty's number by the character's level (regole.yaml → difficolta_per_livello; Basic Fantasy's
+   * Ability Rolls, p. 189: 17 at the first level down to 7 at the 20th): a check of a sheet with a level moves every
+   * rung by the same amount; saves, attacks and thresholds keep their own numbers. Absent = the rungs as written.
+   */
+  difficoltaPerLivello?: Array<{ da: number; valore: number }>;
   vantaggio: { tipo: 'due_dadi' | 'dado_bonus' | 'bonus' | 'nessuno'; valore: number };
   /**
    * `dannoCritico`: con un critico i dadi del danno raddoppiano (SRD) o no; `dannoMinimo`: un colpo andato

@@ -10,6 +10,7 @@ import { chiave, conSegno } from '../campagna/regole-srd';
 import type { Campagna, DatiYaml } from '../campagna/tipi';
 import type { Logger } from '../logger';
 import { ID_DIFESA, tiraCol, type EsitoTiroGenerico } from '../regole/risoluzione';
+import { sistemaAlLivello } from '../regole/prove-livello';
 import { valoreCaratteristica } from '../regole/schede';
 import type { SchedaGenerica, SistemaRegole } from '../regole/tipi';
 import { voce, type Penalita } from '../regole/catalogo';
@@ -290,7 +291,9 @@ export function risolviTurnoRegole(o: OpzioniRisolutoreRegole): Omit<EsitoTurnoP
         const condSv = conEffetto(o.condizioni, a.autore, fisso ? 'svantaggio_salvezze' : 'svantaggio_prove');
         if (condSv) fonti.push({ v: 'svantaggio', motivo: condSv.toLowerCase() });
         const v = combinaVantaggi(fonti.map((f) => f.v));
-        const sistTiro = cosa.soglia ? sistemaSoglia(s, cosa.soglia) : fisso ? sistemaSalvezza(s, fisso.contro) : s;
+        // An ability check's number moves with the level when the set says so (Basic Fantasy p. 189: 17 at the first, 16
+        // at the 2nd and 3rd…); saves and thresholds keep their own.
+        const sistTiro = cosa.soglia ? sistemaSoglia(s, cosa.soglia) : fisso ? sistemaSalvezza(s, fisso.contro) : sistemaAlLivello(s, sch);
         // The ability's own rules (M9): a roll the Game Master makes in secret, a failure band, situational points.
         const def = s.abilita.find((x) => x.id === ((ps ?? d).abilita ?? ''));
         const segreta = def?.segreta ?? null;
@@ -397,6 +400,8 @@ export function strumentiRegole(o: Omit<OpzioniRisolutoreRegole, 'azioni' | 'dec
       const so = s.abilita.find((x) => x.id === abil)?.soglia ?? null;
       const valoreSoglia = so ? (sch.abilita[abil] ?? so.predefinita) : null;
       if (so && valoreSoglia !== null) return { valore: Math.max(0, valoreSoglia + (so.dado === 100 ? (o.extraSoglia?.(sch.id) ?? 0) : 0)), etichetta: nomeAbil(abil), mossa: null, soglia: so.dado };
+      // Whoever lacks the value rolls on the set's other die (a non-thief listening at a door: 1 in 1d6, p. 43).
+      if (so?.senza) return { valore: Math.max(0, so.senza.valore + (so.senza.dado === 100 ? (o.extraSoglia?.(sch.id) ?? 0) : 0)), etichetta: nomeAbil(abil), mossa: null, soglia: so.senza.dado };
       if (s.modificatore === 'soglia') {
         const v = sch.abilita[abil] ?? (carAbil ? sch.caratteristiche[carAbil] : undefined) ?? 0;
         return { valore: v, etichetta: nomeAbil(abil), mossa: null };

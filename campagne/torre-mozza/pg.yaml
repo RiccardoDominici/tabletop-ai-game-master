@@ -5,7 +5,7 @@
 # il bonus lo dà la tabella del set (13–15 = +1…, p. 4); i tiri salvezza li dà la tabella della classe e del livello del
 # set (p. 61), con i tratti della razza; il bonus d'attacco (p. 53) e le abilità del ladro per livello (p. 9) li dà la tabella
 # della classe (regole.yaml, classi), per `classe` e `livello`: la scheda non li scrive, così salgono col livello. Le
-# possibilità «x su 6» che non vengono dalla classe (porte, pietra, porte segrete) scrivono la soglia del d6, come nel manuale.
+# possibilità «x su 6» (porte, pietra, porte segrete) le ricava il set dalla Forza, dall'Intelligenza e dalla razza (p. 43–44).
 # `px`: i punti esperienza, 0 al primo livello (p. 3); i PX per il 2° li dice la tabella della classe.
 # Punti ferita: dado vita al massimo più la Costituzione (decisione nel brief).
 situazione_comune: "Siete arrivati a Spinalba all'imbrunire, ognuno per la sua strada, e la pastora Berta Benni vi ha chiamati al suo ovile. In paese dicono che la notte scorsa i goblin della Torre Mozza le hanno preso il figlio, e che vogliono la chiave di famiglia entro mezzanotte."
@@ -36,7 +36,6 @@ personaggi:
       px: 0                      # 2.000 per il 2° livello (p. 7); da umana, +10% ai PX guadagnati
       razza: umano
       lingue: [comune]             # la lingua comune (p. 4): con Intelligenza 10 nessuna in più
-      abilita: {forzare: 3}      # il bonus d'attacco +1 viene dalla tabella (p. 53)
       pf: 9                      # 1d8 al massimo, più 1 di Costituzione
       # Equipaggiamento dal catalogo del set (p. 10–11): la CA 17 viene da cotta di maglia 15, scudo +1, Destrezza +1;
       # gli attacchi dalle armi (spada lunga 1d8 più la Forza +2; arco corto 1d6, senza Forza, una freccia a tiro).
@@ -82,7 +81,6 @@ personaggi:
       px: 0                      # 1.500 per il 2° livello (p. 7)
       razza: nano
       lingue: [comune, nanico]     # il nanico e la comune (p. 4)
-      abilita: {forzare: 2, pietra: 2}
       pf: 7                      # 1d6 al massimo, più 1 di Costituzione
       # Equipaggiamento dal catalogo del set: la CA 15 viene da cotta di maglia 15, scudo +1, Destrezza −1; mazza 1d8 e
       # fionda 1d4 più la Forza +1 (la fionda somma la Forza al danno, p. 55: «sling bullets or stones do»).
@@ -179,7 +177,6 @@ personaggi:
       # Il libro degli incantesimi (p. 8): leggere il magico e un incantesimo di primo livello; prepara il dardo per oggi.
       libro: [leggere_il_magico, dardo_incantato]
       incantesimi: [dardo_incantato]
-      abilita: {cercare: 3}
       pf: 4                      # 1d4 al massimo
       # Equipaggiamento dal catalogo del set: la CA 12 viene da senza armatura 11 e Destrezza +1; il pugnale 1d4, anche
       # lanciato (Forza +0). Il mago non porta armature (p. 8). Monete: 3d6 × 10 = 90 mo (p. 10) meno 45 mo spesi.

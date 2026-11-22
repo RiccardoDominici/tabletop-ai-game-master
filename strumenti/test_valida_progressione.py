@@ -121,7 +121,7 @@ def test_schede_contro_le_tabelle(tmp_path: Path) -> None:
     esito, _ = valida(dest, rigoroso=True)
     errori = [v.messaggio for v in esito.errori if v.codice == "REGOLE.progressione"]
     avvisi = [v.messaggio for v in esito.avvisi if v.codice == "REGOLE.progressione"]
-    assert any("abilita colpo: il numero viene dalla tabella della classe al livello 2" in m for m in errori)
+    assert any("abilita colpo: il numero viene dalle tabelle del set (classe al livello 2" in m for m in errori)
     assert any("abilita.origliare: 45 scritto a mano, la tabella della classe dà 28" in m for m in avvisi)
     assert any("px 150: con la tabella della classe è il livello 2, la scheda dice livello 1" in m for m in errori)
     assert any("pf 30: i dadi vita della classe al livello 1 danno da 2 a 11" in m for m in errori)
