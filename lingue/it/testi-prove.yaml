@@ -449,6 +449,17 @@ prove:
     toglie: "{nome} si toglie {oggetto}: Classe d'Armatura {ca}."
     sovraccarico: "Sovraccarico"
     carico: "{nome} ora ha un {fascia} ({peso} {unita}): si muove di {movimento} {unita_movimento} a round."
+  # Light and darkness (prove/luce.ts; docs/prove.md §15).
+  luce:
+    buio: "È buio pesto e nessuno ha una luce accesa."
+    scurovisione: "{nome} vede al buio fino a {portata} {unita}, in bianco e nero."
+    ciechi: "Non vedono nulla: {nomi}."
+    illuminato: "È buio: la luce di {nome} ({oggetto}) illumina {raggio} {unita} intorno, poi penombra fino a {fino} {unita}; oltre non si vede."
+    master: "Luce della scena: {livello}."
+    livello:
+      piena: "piena"
+      fioca: "fioca"
+      buio: "buio"
   # Daily food and water (prove/provviste.ts; docs/prove.md §14).
   provviste:
     ultima: "{nome} ha consumato l'ultimo giorno di {provvista} ({oggetto})."

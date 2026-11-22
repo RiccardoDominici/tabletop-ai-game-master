@@ -289,6 +289,20 @@ describe('exploration (pp. 44–45, 180–182)', () => {
     expect(s.viaggio!.terreni.find((x) => x.id === 'foresta')).toMatchObject({ per: 0.667, incontri: 'selvaggio_bosco', smarrirsi: true });
     expect(s.viaggio!.terreni.find((x) => x.id === 'strada')).toMatchObject({ smarrirsi: false });
   });
+  it('darkvision 60\' (18 m) for dwarves and elves (p. 5) and every monster unless said (p. 43); the dark blinds the rest', () => {
+    const s = set();
+    const sv = (r: string) => s.razze!.find((x) => x.id === r)!.tratti.find((t) => t.tipo === 'scurovisione');
+    expect(sv('nano')).toEqual({ tipo: 'scurovisione', portata: 18 });
+    expect(sv('elfo')).toEqual({ tipo: 'scurovisione', portata: 18 });
+    expect(sv('umano')).toBeUndefined();
+    expect(sv('halfling')).toBeUndefined();
+    expect(s.bestiario!.scurovisione).toBe(18);
+    expect(s.esplorazione!.buio).toEqual({ condizione: 'accecato' });
+    // Torch and lantern: 30' of light (9 m) and 20' more of dim light (6 m), p. 43.
+    const l = (id: string) => s.catalogo!.voci.find((v) => v.id === id) as { luce?: { raggio: number; fioca: number } };
+    expect(l('torcia').luce).toMatchObject({ raggio: 9, fioca: 6 });
+    expect(l('lanterna').luce).toMatchObject({ raggio: 9, fioca: 6 });
+  });
   it('a day\'s rations (a week a pack) and a quart of water; without food 2 days harmless then 1 a day, water 1d4 at once', () => {
     const p = Object.fromEntries(set().esplorazione!.provviste.map((x) => [x.id, x]));
     expect(p['cibo']).toMatchObject({ oggetti: [{ id: 'razioni', giorni: 7 }], senza: { dopo: 2, danno: { numero: 0, facce: 0, bonus: 1 }, guarigione: false } });

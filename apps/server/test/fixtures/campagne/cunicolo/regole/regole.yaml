@@ -75,6 +75,7 @@ razze:
     nome: Piccolo popolo
   - id: nano
     nome: Nano
+    tratti: [{scurovisione: 18}]
 magia: {preparazione: vanciana}
 riposo:
   - {id: notte, nome: Una notte di sonno, cura: 1, durata: {ora: 8}}
@@ -211,6 +212,7 @@ combattimento:
   condizioni:
     - {id: svenuto, nome: Svenuto, icona: SV, effetti: [perde_turno, non_si_muove, attacchi_contro_vantaggio], testo: A terra senza sensi.}
     - {id: affaticato, nome: Affaticato, icona: AF, effetti: [], valori: {attacchi: -1}, testo: Ha bisogno di una pausa.}
+    - {id: accecato, nome: Accecato, icona: AC, effetti: [], valori: {attacchi: -4, contro: 4}, gruppo: vista, testo: Non vede.}
   condizione_a_zero: svenuto
   fine: {morale: true}
 
@@ -221,6 +223,7 @@ bestiario:
   attacco: [{da: 0, bonus: 0}, {da: 1, bonus: 1}, {da: 2, bonus: 2}, {da: 3, bonus: 3}]
   abilita: [mischia, distanza]
   uno_meno_meno_di_uno: true
+  scurovisione: 18                          # every monster sees in the dark, unless its entry says otherwise
 
 # Exploration (regole/esplorazione.ts): underground, a check every two turns, an encounter on 1–2 on 1d6, the table by
 # the scene's level; in the wilderness every three hours on 1 on 1d6, the creatures' surprise checked in advance (1–2 on
@@ -247,3 +250,5 @@ esplorazione:
     - {id: acqua, nome: Acqua, oggetti: [{id: otre, giorni: 1}], senza: {dopo: 0, danno: "1d4", guarigione: false}}
   # The fixture's rest rule (Basic Fantasy has none): a turn of rest every hour of exploring, or −1 to attacks.
   riposo: {ogni: {ora: 1}, durata: {turno: 1}, parole: [ci riposiamo, riposiamo, riprendiamo fiato], condizione: affaticato}
+  # In the dark, with no light lit and no darkvision, one is blinded (the fight's condition).
+  buio: {condizione: accecato}

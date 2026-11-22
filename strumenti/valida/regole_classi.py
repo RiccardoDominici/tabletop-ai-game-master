@@ -129,7 +129,7 @@ def controlla_scheda(s: dict, dove: str, classi: set[str], colonne_abilita: dict
 
 def controlla_tratti(v, dove: str, abilita: set[str], colonne: set[str], e: Esito) -> None:
     """A list of traits (regole/tratti.ts): {tiro: iniziativa | abilita | salvezza | esperienza, bonus}, {immune: [...]},
-    {sorpresa}, {almeno: {ability: n}}, {dado_vita_massimo: n}."""
+    {sorpresa}, {almeno: {ability: n}}, {dado_vita_massimo: n}, {scurovisione: range} (R6, darkvision)."""
     if v is None:
         return
     if not isinstance(v, list):
@@ -151,6 +151,10 @@ def controlla_tratti(v, dove: str, abilita: set[str], colonne: set[str], e: Esit
             ignote = [a for a in al if a not in abilita]
             if not al or not all(_intero(n) and n >= 0 for n in al.values()) or ignote:
                 _err(e, d, f"almeno: {{abilità del set: un intero}}{' (non: ' + ', '.join(map(str, ignote)) + ')' if ignote else ''}")
+            continue
+        if "scurovisione" in o:
+            if not (isinstance(o["scurovisione"], (int, float)) and not isinstance(o["scurovisione"], bool) and o["scurovisione"] >= 0):
+                _err(e, d, "scurovisione: quanto vede al buio, nell'unità del movimento (0 = niente)")
             continue
         if "dado_vita_massimo" in o:
             if o["dado_vita_massimo"] not in (2, 3, 4, 6, 8, 10, 12, 20):

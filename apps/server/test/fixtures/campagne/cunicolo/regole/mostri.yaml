@@ -39,3 +39,4 @@ mostri:
     salva_come: {classe: guerriero, livello: 2}
     morale: 8
     px: 25
+    tratti: [{scurovisione: 0}]               # the fixture's wolf hunts by smell: no darkvision

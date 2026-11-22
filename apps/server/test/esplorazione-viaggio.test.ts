@@ -72,10 +72,11 @@ describe('an exploration rest rule (the fixture’s; Basic Fantasy has none)', (
     expect(m.vistaTempo()!.incontri!.fatica).toBe('Riposo: l\'ultimo 1 ora fa; ne serve uno di 1 turno ogni 1 ora');
     const r7 = await m.risolvi(7, [azione('pg_aldo', 'Avanzo nel buio')]);
     expect(r7.fatti.join(' ')).toMatch(/i personaggi sono stanchi \(affaticato\) finché non riposano/);
-    expect(m.combattimento.condizioniDi('pg_aldo').map((c) => c.nome)).toEqual(['Affaticato']);
+    // In the dark tunnel Aldo is also blinded (no light lit): the two conditions together.
+    expect(m.combattimento.condizioniDi('pg_aldo').map((c) => c.nome)).toEqual(['Affaticato', 'Accecato']);
     const r8 = await m.risolvi(8, [azione('pg_bice', 'Ci riposiamo un momento contro la parete')]);
     expect(r8.fatti.join(' ')).toMatch(/Il gruppo si ferma a riprendere fiato: la stanchezza passa\./);
-    expect(m.combattimento.condizioniDi('pg_aldo')).toEqual([]);
+    expect(m.combattimento.condizioniDi('pg_aldo').map((c) => c.nome)).toEqual(['Accecato']);
   });
 
   it('a weary attacker rolls at −1, said on the card', async () => {

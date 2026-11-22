@@ -1010,3 +1010,28 @@ need. Now the set says which environments the party explores and how often the G
 Tests: test/esplorazione.test.ts and test/esplorazione-viaggio.test.ts (fixture cunicolo), test/manuale-basic-fantasy.test.ts
 («exploration»), strumenti/test_valida_esplorazione.py, strumenti/regole/test_incontri_bf.py.
 
+## 15. Light and darkness (22 November, rules-engine package R6)
+
+R2 burned the torches on the clock but nobody was ever in the dark (audit P4-17, P4-18): a scene had no light state and
+darkvision was a line of a PC's sheet text. Now (prove/luce.ts):
+
+- **The scene's light.** A scene sheet says `luce: piena | fioca | buio` (absent: `piena`). The Game Master changes it from
+  the panel («Luce» in the Tempo di gioco box, command `luce`: the cellar under a lit hall, a fire put out), until the
+  scene changes; «quella della scena» goes back to the sheet's.
+- **Who sees.** In a dark scene a light lit by any PC at the table (R2's catalog `luce`: a torch, a lantern) lights the
+  party: positions are not tracked, so its fight is in the light. With no light lit, a character sees only by darkvision:
+  the race or sheet trait `{scurovisione: 18}` (Basic Fantasy's dwarves and elves, 60'), and every monster of the bestiary
+  by the set's `bestiario.scurovisione` (p. 43: «almost all monsters», 60' unless said; an entry writes
+  `tratti: [{scurovisione: 0}]` for none). A typed NPC sheet sees in the dark only with its own trait.
+- **What the dark does.** Whoever sees nothing carries the set's `esplorazione.buio.condizione` (Basic Fantasy: blinded,
+  −4 to attack and +4 to be hit, −2 to initiative: R4's numbers), on every card of the fight («condizioni: Accecato −4»).
+- **What the narrator hears**, when it changes (a dark scene entered, a light lit, a torch burned out, the panel's light):
+  «È buio: la luce di Aldo (torcia) illumina 9 metri intorno, poi penombra fino a 15 metri; oltre non si vede.», or
+  «È buio pesto e nessuno ha una luce accesa. Dora vede al buio fino a 18 metri, in bianco e nero. Non vedono nulla: Aldo,
+  Bice.». The panel's box shows the same line.
+- **Not modelled**: magical darkness (it blocks darkvision too), an NPC's own torch, the dim light's edge (a fight is in
+  the light or not), candles (no duration per inch), light on the SRD 5.2 path (its species are not data yet).
+
+Tests: test/luce.test.ts (fixture cunicolo), test/manuale-basic-fantasy.test.ts («darkvision 60'…»),
+strumenti/regole/test_incontri_bf.py («luce e scurovisione»), strumenti/test_valida_esplorazione.py.
+

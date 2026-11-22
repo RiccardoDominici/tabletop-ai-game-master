@@ -47,6 +47,8 @@ export interface RegolaBestiario {
   abilita: string[];
   /** «1−1» hit dice or less count as less than one (Basic Fantasy p. 54). */
   unoMenoMenoDiUno: boolean;
+  /** Every monster's darkvision unless its entry's traits say otherwise (Basic Fantasy p. 43: 60'); null = none. */
+  scurovisione: number | null;
 }
 
 /** A monster's hit dice as the manual prints them: «3+2*» = 3 dice, +2 hit points, one asterisk. */
@@ -130,7 +132,9 @@ export function leggiRegolaBestiario(v: unknown, abilita: ReadonlySet<string>, e
   for (const a of ab) if (!abilita.has(a)) errori.push(`bestiario.abilita: «${a}» is not an ability of the set`);
   if (attacco.length && !ab.length) errori.push('bestiario.abilita: the attack abilities that take the bonus (mischia, distanza)');
   if (o['uno_meno_meno_di_uno'] !== undefined && typeof o['uno_meno_meno_di_uno'] !== 'boolean') errori.push('bestiario.uno_meno_meno_di_uno: true o false');
-  return { dadoVita: intero(dado) ? dado : 8, mezzo: mezzo ?? { numero: 1, facce: 4, bonus: 0 }, attacco, abilita: ab.filter((a) => abilita.has(a)), unoMenoMenoDiUno: o['uno_meno_meno_di_uno'] === true };
+  const sv = o['scurovisione'];
+  if (sv !== undefined && !(typeof sv === 'number' && Number.isFinite(sv) && sv >= 0)) errori.push('bestiario.scurovisione: every monster\'s darkvision range, in the unit of movement');
+  return { dadoVita: intero(dado) ? dado : 8, mezzo: mezzo ?? { numero: 1, facce: 4, bonus: 0 }, attacco, abilita: ab.filter((a) => abilita.has(a)), unoMenoMenoDiUno: o['uno_meno_meno_di_uno'] === true, scurovisione: typeof sv === 'number' && sv >= 0 ? sv : null };
 }
 
 /** Keys of an entry that describe the printed stat block and are not a sheet's (the Engine does not read them). */

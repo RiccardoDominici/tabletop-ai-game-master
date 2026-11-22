@@ -77,6 +77,7 @@ import { carteEsplorazione, fattoIncontro } from './esplorazione-testi';
 import { creaVagante, leggiVaganti, MASSIMO_VAGANTI, vagantiDellIncontro, type Vagante } from './vaganti';
 import { Provviste } from './provviste';
 import { Fatica } from './fatica';
+import { chiaveLuce, descriviLuce, livelloDellaScena, portataScurovisione, statoLuce, vede, type LivelloLuce, type StatoLuce } from './luce';
 import { doveDellaScena, type DoveEsplorazione } from '../regole/esplorazione';
 
 /** The source of a knock-out's timed condition (prove/attivi.ts): its end wakes the character with 1 hit point. */
@@ -280,6 +281,10 @@ export class MotoreProve {
   private riposoInFinestra = false;
   /** The last journey's course check, for the panel only (the Game Master decides what getting lost means). */
   private orientamento: { guida: string; smarriti: boolean } | null = null;
+  /** The Game Master's light for a scene (the cellar under a lit hall), until the scene changes. */
+  private luceForzata: { scena: string; livello: LivelloLuce } | null = null;
+  /** What the narrator last heard of the party's sight in the dark (prove/luce.ts chiaveLuce). */
+  private luceNota: string | null = null;
   /** The XP the party earns (prove/esperienza.ts). Null with the SRD path (its XP are not data yet). */
   readonly esperienza: Esperienza | null;
   /** Each PC's level and maximum hit points, the level-up's rolls still owed (prove/livelli.ts). Null with the SRD. */
@@ -952,6 +957,9 @@ export class MotoreProve {
       if (this.carteDelTempo.length) r.tiri.unshift(...this.carteDelTempo.splice(0).map((t) => ({ ...t, turno })));
       if (luci.length) r.fatti.unshift(...luci);
       if (finiti.length) r.fatti.unshift(...finiti);
+      // What the party sees in the dark, when it changed (a dark scene entered, a light lit or out): after the lights.
+      const vista = this.notaLuce();
+      if (vista) r.fatti.push(vista);
       // What the Game Master applied from the panel since the last turn (a rest, a hazard) comes first for the narrator.
       if (this.fattiInSospeso.length) {
         r.fatti.unshift(...this.fattiInSospeso);
@@ -1186,10 +1194,66 @@ export class MotoreProve {
     return (this.regoleCombattimento().condizioni.find((x) => x.id === id)?.nome ?? id).toLowerCase();
   }
 
-  /** The conditions exploration gives a character now: the overdue rest's, for the PCs. */
+  /** The conditions exploration gives a character now: the overdue rest's (the PCs), and the dark's for who sees nothing. */
   private condizioniDiEsplorazione(id: string): string[] {
+    const out: string[] = [];
     const f = this.fatica.condizione;
-    return f && !id.startsWith('png_') ? [f] : [];
+    if (f && !id.startsWith('png_')) out.push(f);
+    const b = this.sistema.esplorazione?.buio;
+    if (b && !vede(this.statoLuce(), id, this.scurovisione(id))) out.push(b.condizione);
+    return out;
+  }
+
+  /** How dark the scene is now: the Game Master's light for this scene, else the scene sheet's `luce` (prove/luce.ts). */
+  livelloLuce(): LivelloLuce {
+    const c = this.o.contesto();
+    if (this.luceForzata && this.luceForzata.scena === c.campagna.scena.id) return this.luceForzata.livello;
+    // Another scene: the Game Master's light was for the one left (coming back, the scene sheet's counts again).
+    if (this.luceForzata) this.luceForzata = null;
+    return livelloDellaScena(c.campagna.scena.dati['luce']);
+  }
+
+  /** A character's darkvision range: its traits', else the bestiary's default for a monster (prove/luce.ts). */
+  private scurovisione(id: string): number {
+    const sch = this.generico?.schede.get(id);
+    return portataScurovisione(this.trattiDi(id), !!sch?.mostro, this.sistema.bestiario?.scurovisione ?? null);
+  }
+
+  /** Who sees now in the scene: the lights the PCs at the table have lit, and who has darkvision. */
+  statoLuce(): StatoLuce {
+    const c = this.o.contesto();
+    const raggio = (oggetto: string): { raggio: number; fioca: number } | null => {
+      const v = voce(this.sistema.catalogo, oggetto);
+      return v?.tipo === 'attrezzo' && v.luce ? { raggio: v.luce.raggio, fioca: v.luce.fioca } : null;
+    };
+    return statoLuce({ livello: this.livelloLuce(), chi: this.pgVivi(c), luci: this.tempo.tutteLeLuci(), raggio, portata: (id) => this.scurovisione(id) });
+  }
+
+  /** The party's sight in the dark, said to the narrator when it changes (a dark scene, a light lit or out). */
+  private notaLuce(): string | null {
+    if (!this.sistema.esplorazione?.buio) return null;
+    const c = this.o.contesto();
+    const st = this.statoLuce();
+    const k = chiaveLuce(c.campagna.scena.id, st);
+    if (k === this.luceNota) return null;
+    this.luceNota = k;
+    const d = descriviLuce(st, { nome: (id) => this.nomeDi(c, id), nomeOggetto: (id) => voce(this.sistema.catalogo, id)?.nome ?? id, unita: this.sistema.movimento?.unita ?? this.sistema.catalogo?.gittate?.unita ?? '' });
+    if (d) this.o.log.info({ livello: st.livello, fonti: st.fonti.map((f) => `${f.chi}:${f.oggetto}`), scurovisione: st.scurovisione, ciechi: st.ciechi }, 'light: what the party sees, told to the narrator');
+    return d;
+  }
+
+  /**
+   * The Game Master sets how dark the scene is (docs/prove.md §15): `piena`, `fioca`, `buio`, or null (back to the scene
+   * sheet's). Lasts until the scene changes. The narrator hears what the party sees in the next turn.
+   */
+  luceDelMaster(livello: LivelloLuce | null): { ok: true; fatto: string } | null {
+    if (!this.attivo) return null;
+    const c = this.o.contesto();
+    this.luceForzata = livello ? { scena: c.campagna.scena.id, livello } : null;
+    const d = this.notaLuce();
+    if (d) this.fattiInSospeso.push(d);
+    this.o.log.info({ scena: c.campagna.scena.id, livello }, 'light: the Game Master sets the scene\'s light');
+    return { ok: true, fatto: testo('prove.luce.master', { livello: testo(`prove.luce.livello.${this.livelloLuce()}`) }) };
   }
 
   /** Where the party explores now: the journey's environment while travelling, else the scene's `esplorazione`. */
@@ -1390,11 +1454,15 @@ export class MotoreProve {
    * The game clock for the Game Master's panel (docs/prove.md §11): the day and time, and every light burning with the
    * time it has left (a Game Master roll: the phones see only that it is lit). Null when the set has no clock.
    */
-  vistaTempo(): { ora: string; trascorso: string | null; luci: Array<{ chi: string; oggetto: string; nome: string; restante: string }>; incontri?: VistaIncontri } | null {
+  vistaTempo(): { ora: string; trascorso: string | null; luci: Array<{ chi: string; oggetto: string; nome: string; restante: string }>; incontri?: VistaIncontri; luce?: { livello: LivelloLuce; forzata: boolean; testo: string | null } } | null {
     if (!this.tempo.mostrato) return null;
     const incontri = this.vistaIncontri();
+    const st = this.sistema.esplorazione?.buio ? this.statoLuce() : null;
+    const c = this.o.contesto();
+    const luce = st ? { livello: st.livello, forzata: this.luceForzata?.scena === c.campagna.scena.id, testo: descriviLuce(st, { nome: (id) => this.nomeDi(c, id), nomeOggetto: (id) => voce(this.sistema.catalogo, id)?.nome ?? id, unita: this.sistema.movimento?.unita ?? '' }) } : null;
     return {
       ...(incontri ? { incontri } : {}),
+      ...(luce ? { luce } : {}),
       ora: this.tempo.testoOra(),
       trascorso: this.tempo.trascorsi > 0 ? this.tempo.durata(this.tempo.trascorsi) : null,
       luci: this.tempo.tutteLeLuci().map((l) => ({ chi: l.chi, oggetto: l.oggetto, nome: voce(this.sistema.catalogo, l.oggetto)?.nome ?? l.oggetto, restante: this.tempo.durata(l.restanti) })),
@@ -2230,7 +2298,7 @@ export class MotoreProve {
   // ------------------------------------------------------------------ sessione
 
   esporta(): StatoProveSalvato {
-    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta(), ...(this.tempo.mostrato ? { tempo: this.tempo.esporta() } : {}), ...(this.esperienza?.attiva ? { esperienza: this.esperienza.esporta() } : {}), ...(this.livelli?.attivo ? { livelli: this.livelli.esporta() } : {}), ...(this.drenaggi?.attivo ? { drenaggi: this.drenaggi.esporta() } : {}), ...(this.zeroDaTirare.length ? { zero_da_tirare: [...this.zeroDaTirare] } : {}), ...(this.sistema.esplorazione ? { esplorazione: this.esplorazione.esporta() } : {}), ...(this.vaganti.length ? { vaganti: this.vaganti.map((v) => ({ ...v })) } : {}), ...(this.provviste ? { provviste: this.provviste.esporta() } : {}), ...(this.fatica.regola ? { fatica: this.fatica.esporta() } : {}), ...(this.orientamento ? { orientamento: { ...this.orientamento } } : {}), ...(this.carteDelTempo.length ? { carte_del_tempo: [...this.carteDelTempo] } : {}), ...(this.incontriDovuti.length ? { incontri_dovuti: [...this.incontriDovuti] } : {}) };
+    return { ...this.stato.esporta(this.dadi.seme, this.dadi.contatore), combattimento: this.combattimento.esporta(), ...(this.scontroChiesto ? { combattimento_chiesto: true } : {}), ...(this.fattiInSospeso.length ? { fatti_in_sospeso: [...this.fattiInSospeso] } : {}), ...(this.risorse ? { risorse: this.risorse.esporta() } : {}), attivi: this.attivi.esporta(), morenti: this.morenti.esporta(), ...(this.tempo.mostrato ? { tempo: this.tempo.esporta() } : {}), ...(this.esperienza?.attiva ? { esperienza: this.esperienza.esporta() } : {}), ...(this.livelli?.attivo ? { livelli: this.livelli.esporta() } : {}), ...(this.drenaggi?.attivo ? { drenaggi: this.drenaggi.esporta() } : {}), ...(this.zeroDaTirare.length ? { zero_da_tirare: [...this.zeroDaTirare] } : {}), ...(this.sistema.esplorazione ? { esplorazione: this.esplorazione.esporta() } : {}), ...(this.vaganti.length ? { vaganti: this.vaganti.map((v) => ({ ...v })) } : {}), ...(this.provviste ? { provviste: this.provviste.esporta() } : {}), ...(this.fatica.regola ? { fatica: this.fatica.esporta() } : {}), ...(this.orientamento ? { orientamento: { ...this.orientamento } } : {}), ...(this.luceForzata ? { luce_forzata: { ...this.luceForzata } } : {}), ...(this.luceNota ? { luce_nota: this.luceNota } : {}), ...(this.carteDelTempo.length ? { carte_del_tempo: [...this.carteDelTempo] } : {}), ...(this.incontriDovuti.length ? { incontri_dovuti: [...this.incontriDovuti] } : {}) };
   }
 
   importa(s: StatoProveSalvato): void {
@@ -2255,6 +2323,8 @@ export class MotoreProve {
     this.provviste?.importa(s.provviste);
     this.fatica.importa(s.fatica);
     this.orientamento = s.orientamento && typeof s.orientamento.guida === 'string' ? { guida: s.orientamento.guida, smarriti: s.orientamento.smarriti === true } : null;
+    this.luceForzata = s.luce_forzata && typeof s.luce_forzata.scena === 'string' && ['piena', 'fioca', 'buio'].includes(s.luce_forzata.livello) ? { scena: s.luce_forzata.scena, livello: s.luce_forzata.livello } : null;
+    this.luceNota = typeof s.luce_nota === 'string' ? s.luce_nota : null;
     this.carteDelTempo = Array.isArray(s.carte_del_tempo) ? [...s.carte_del_tempo] : [];
     this.incontriDovuti = Array.isArray(s.incontri_dovuti) ? [...s.incontri_dovuti] : [];
     this.esperienza?.importa(s.esperienza);
@@ -2288,6 +2358,8 @@ export class MotoreProve {
     this.provviste?.azzera();
     this.fatica.azzera();
     this.orientamento = null;
+    this.luceForzata = null;
+    this.luceNota = null;
     this.carteDelTempo = [];
     this.incontriDovuti = [];
     this.esperienza?.azzera();

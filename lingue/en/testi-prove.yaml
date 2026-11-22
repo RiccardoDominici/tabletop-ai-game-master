@@ -437,6 +437,17 @@ prove:
     sovraccarico: "Overloaded"
     carico: "{nome} now has a {fascia} ({peso} {unita}): moves {movimento} {unita_movimento} a round."
   # The game clock and the lights (prove/tempo.ts, prove/luci.ts; docs/prove.md §11).
+  # Light and darkness (prove/luce.ts; docs/prove.md §15).
+  luce:
+    buio: "It is pitch dark and nobody has a light lit."
+    scurovisione: "{nome} sees in the dark up to {portata} {unita}, in black and white."
+    ciechi: "They see nothing: {nomi}."
+    illuminato: "It is dark: {nome}'s light ({oggetto}) lights {raggio} {unita} around, then dim light up to {fino} {unita}; beyond, nothing can be seen."
+    master: "Scene light: {livello}."
+    livello:
+      piena: "full"
+      fioca: "dim"
+      buio: "dark"
   # Daily food and water (prove/provviste.ts; docs/prove.md §14).
   provviste:
     ultima: "{nome} has used up the last day of {provvista} ({oggetto})."

@@ -28,6 +28,9 @@ png_presenti: [png_zirra, png_grosso, png_tonio]
 # Nessun orologio attivo: qui è già mezzanotte. Un orologio pieno farebbe dire al Motore un finale nel mezzo dello scontro;
 # i finali della torre li sceglie il tavolo (che cosa si racconta a Spinalba, o la discesa).
 orologi_attivi: []
+# La luce della scena (docs/prove.md §15): il fuoco in mezzo alla torre e il cielo aperto, luce fioca. La cantina e la cripta
+# sotto sono buie: quando il gruppo ci scende, il master mette «buio» dal pannello (Tempo di gioco → Luce).
+luce: fioca
 indizi:
   - id: i_tonio_libero
     conclusione: r_tonio

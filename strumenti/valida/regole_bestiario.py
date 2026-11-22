@@ -78,6 +78,9 @@ def bestiario_del_set(r: dict, abilita: set[str], e: Esito, dove: str) -> None:
         _err(e, dove, "bestiario.abilita: le abilità d'attacco che prendono il bonus (mischia, distanza)")
     if "uno_meno_meno_di_uno" in b and not isinstance(b["uno_meno_meno_di_uno"], bool):
         _err(e, dove, "bestiario.uno_meno_meno_di_uno: true o false")
+    sv = b.get("scurovisione")
+    if sv is not None and not (isinstance(sv, (int, float)) and not isinstance(sv, bool) and sv >= 0):
+        _err(e, dove, "bestiario.scurovisione: la scurovisione di ogni mostro, nell'unità del movimento")
 
 
 def voci_mostri(cartella_regole: Path, r: dict, e: Esito) -> list[tuple[str, dict]]:

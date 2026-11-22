@@ -286,6 +286,11 @@ export interface CombattimentoMaster {
     incontri?: { ambiente?: string; tabella?: string | null; prossimo?: string; ogni?: string; probabilita?: string; in_attesa?: boolean; ultimo?: { testo: string; ora: string }; fatica?: string; orientamento?: string; provviste?: string[] };
     /** The PCs who can lead a journey (its course check is the leader's): absent where the set has no such check. */
     guide?: Array<{ id: string; nome: string }>;
+    /**
+     * The scene's light (docs/prove.md §15): its level, whether the Game Master set it, and what the party sees in the dark
+     * (the light that shows the way, darkvision, who sees nothing). Absent where the set has no darkness rule.
+     */
+    luce?: { livello: 'piena' | 'fioca' | 'buio'; forzata: boolean; testo: string | null };
   };
   /**
    * Experience points (docs/prove.md §12): each PC's XP, level and next threshold (`sale`: it reaches the next level,
@@ -488,7 +493,9 @@ export type ComandoMaster =
    * The Game Master rolls an encounter now (docs/prove.md §14): on the table named, else the scene's. The creatures join
    * the scene as combatants, the narrator hears who arrives in the next turn, the cards are the panel's.
    */
-  | { tipo: 'incontro'; tabella?: string | null };
+  | { tipo: 'incontro'; tabella?: string | null }
+  /** How dark the scene is (docs/prove.md §15): piena, fioca, buio, or null (back to the scene sheet's), until it changes. */
+  | { tipo: 'luce'; livello: 'piena' | 'fioca' | 'buio' | null };
 
 export type TipoComandoMaster = ComandoMaster['tipo'];
 

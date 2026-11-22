@@ -16,6 +16,7 @@
  *                                                                         #   table's or this, the better; the halfling's hiding)
  *         - {dado_vita_massimo: 6}                                        # never a hit die bigger than a d6 (elves, halflings)
  *         - {tiro: esperienza, bonus: 10}                                 # +10% to every XP earned (humans, p. 6)
+ *         - {scurovisione: 18}                                            # sees in the dark this far (dwarves, elves: 60')
  */
 import type { Voce } from './tipi';
 import { leggiRequisiti, type Requisiti } from './requisiti';
@@ -28,7 +29,8 @@ export type Tratto =
   | { tipo: 'sorpresa'; modificatore: number }
   | { tipo: 'almeno'; valori: Record<string, number> }
   | { tipo: 'dado_vita'; facce: number }
-  | { tipo: 'esperienza'; bonus: number };
+  | { tipo: 'esperienza'; bonus: number }
+  | { tipo: 'scurovisione'; portata: number };
 
 export interface Razza extends Voce {
   tratti: Tratto[];
@@ -76,6 +78,12 @@ export function leggiTratti(v: unknown, dove: string, ctx: { abilita: ReadonlySe
       const ignote = voci.filter(([k]) => !ctx.abilita.has(k)).map(([k]) => k);
       if (!a || !voci.length || !voci.every(([, n]) => intero(n) && n >= 0) || ignote.length) errori.push(`${d}.almeno: {ability of the set: a whole number}${ignote.length ? ` (not: ${ignote.join(', ')})` : ''}`);
       else out.push({ tipo: 'almeno', valori: Object.fromEntries(voci) as Record<string, number> });
+      continue;
+    }
+    if (o && o['scurovisione'] !== undefined) {
+      const n = o['scurovisione'];
+      if (typeof n === 'number' && Number.isFinite(n) && n >= 0) out.push({ tipo: 'scurovisione', portata: n });
+      else errori.push(`${d}.scurovisione: how far it sees in the dark, in the set's unit of movement (0 = none)`);
       continue;
     }
     if (o && o['dado_vita_massimo'] !== undefined) {

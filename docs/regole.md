@@ -349,6 +349,9 @@ esplorazione:                               # optional [V] (R6): the environment
   riposo: {ogni: {ora: 1}, durata: {turno: 1}, parole: [ci riposiamo], condizione: affaticato}   # optional [V]: an
                                             #   exploration rest rule (none in Basic Fantasy): past `ogni` without a rest of
                                             #   `durata`, the PCs carry the fight's condition (its `valori`)
+  buio: {condizione: accecato}              # optional [V] (R6): in a dark scene, with no light lit by the party and no
+                                            #   darkvision (trait `{scurovisione: 18}`; `bestiario.scurovisione` for every
+                                            #   monster), one carries this condition of the fight (docs/prove.md §15)
 incontri:                                   # optional [V] (R6): encounter tables; also in regole/incontri.yaml
   - id: sotterraneo_1                       # [V] snake_case, unique
     nome: "Sotterraneo, livello 1"
@@ -416,6 +419,8 @@ bestiario:                                  # optional [V]: how a monster's stat
                                             #   da 0 = less than one hit die
   abilita: [mischia, distanza]              # [V] the set's attack abilities that take it
   uno_meno_meno_di_uno: true                # «1−1» hit dice or less count as less than one (p. 54)
+  scurovisione: 18                          # optional [V] (R6): every monster's darkvision unless its entry's traits say
+                                            #   otherwise (`tratti: [{scurovisione: 0}]`), in the unit of movement (p. 43)
 livelli_negativi: {d20: -1, percentuali: -5}   # optional [V]: what a level of energy drain costs (Basic Fantasy pp. 58–59)
 mostri:                                     # optional [V]: the manual's stat blocks; also in regole/mostri.yaml (`mostri:` there)
   - id: ghoul                               # [V] snake_case, unique across both places
@@ -657,6 +662,14 @@ counts the windows and rounds of play only (a journey's days and the panel's hou
 entries (one per roll, a creature of the bestiary, one kind per entry) and each scene's environment and table
 (strumenti/valida/regole_esplorazione.py). The numbers of torre-mozza's tables are checked against the PDF by
 `strumenti/regole/test_incontri_bf.py`.
+
+**Light in play** (prove/luce.ts; audit P4-17, P4-18; docs/prove.md §15). A scene says `luce: piena | fioca | buio`
+(absent: `piena`, so every existing scene is lit as before); the Game Master can change it from the panel until the scene
+changes. With the set's `esplorazione.buio`, in a dark scene with no light lit by a PC at the table, whoever has no
+darkvision carries its condition in the fight (its `valori` on the cards); a light lit lights the party's fight (no
+positions). The race trait `{scurovisione: n}` gives the range; a sheet with `mostro:` has the bestiary's default unless
+its traits say otherwise. The narrator hears what the party sees when it changes. Not on the SRD 5.2 path (its species
+are not data yet).
 
 **Checks of the scene** with a non-SRD set, in `scena.yaml → prove`:
 `{id: p_…, quando, mossa | abilita | caratteristica (set id), difficolta (set id), se_fallisce, parole, aggiustamento}`.

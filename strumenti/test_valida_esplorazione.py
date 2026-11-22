@@ -79,3 +79,19 @@ def test_provviste_riposo_e_viaggio_rotti(tmp_path: Path) -> None:
     assert "viaggio.smarrirsi: {abilita" in errori
     assert "viaggio.terreni[2].incontri: «foresta_nera» non è una tabella degli incontri" in errori
 
+
+def test_luce_e_scurovisione_rotte(tmp_path: Path) -> None:
+    dest = copia(CUNICOLO, tmp_path)
+
+    def rompi(d: dict) -> None:
+        d["esplorazione"]["buio"] = {"condizione": "cieco"}
+        d["bestiario"]["scurovisione"] = "tanta"
+        d["razze"][2]["tratti"] = [{"scurovisione": -3}]
+    modifica(dest, "regole/regole.yaml", rompi)
+    modifica(dest, "scene/scena_galleria.yaml", lambda s: s.update({"luce": "nera"}))
+    errori = " | ".join(regole_di(dest))
+    assert "esplorazione.buio.condizione: «cieco» non è una condizione" in errori
+    assert "bestiario.scurovisione: la scurovisione di ogni mostro" in errori
+    assert "scurovisione: quanto vede al buio" in errori
+    assert "luce: «nera»: piena, fioca o buio" in errori
+

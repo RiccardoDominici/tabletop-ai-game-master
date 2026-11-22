@@ -223,9 +223,15 @@ def provviste_e_riposo(r: dict, unita: set[str] | None, e: Esito, dove: str) -> 
                 _err(e, dove, f"{d}.oggetti: {{id, giorni: da 1}}")
             elif x["id"] not in oggetti:
                 _err(e, dove, f"{d}.oggetti: «{x['id']}» non è un oggetto del catalogo")
+    cond = {c.get("id") for c in ((r.get("combattimento") or {}).get("condizioni") or []) if isinstance(c, dict)}
+    bu = es.get("buio")
+    if bu is not None:
+        if not (isinstance(bu, dict) and isinstance(bu.get("condizione"), str)):
+            _err(e, dove, "esplorazione.buio: {condizione: la condizione di chi non vede (accecato)}")
+        elif bu["condizione"] not in cond:
+            _err(e, dove, f"esplorazione.buio.condizione: «{bu['condizione']}» non è una condizione di combattimento.condizioni")
     rp = es.get("riposo")
     if rp is not None:
-        cond = {c.get("id") for c in ((r.get("combattimento") or {}).get("condizioni") or []) if isinstance(c, dict)}
         if not (isinstance(rp, dict) and _durata(rp.get("ogni"), unita) and _durata(rp.get("durata"), unita) and isinstance(rp.get("condizione"), str)):
             _err(e, dove, "esplorazione.riposo: {ogni, durata: durate dell'orologio, parole: [parole di un riposo], condizione}")
         elif rp["condizione"] not in cond:
@@ -252,9 +258,16 @@ def viaggio(r: dict, ambienti: dict[str, dict], tabelle: set[str], e: Esito, dov
             _err(e, dove, f"viaggio.terreni[{i}].smarrirsi: true (senza strade) o false")
 
 
-def scene(c, ambienti: dict[str, dict], tabelle: set[str], e: Esito) -> None:
-    """A scene's `esplorazione`: an environment of the set, and its `tabella` (or the environment's by level)."""
+def scene(c, ambienti: dict[str, dict], tabelle: set[str], e: Esito, buio: bool = False) -> None:
+    """A scene's `esplorazione`: an environment of the set, and its `tabella` (or the environment's by level); its
+    `luce` (piena, fioca, buio), which says something only with the set's darkness rule (`esplorazione.buio`)."""
     for nome, sc in c.scene:
+        lu = sc.get("luce") if isinstance(sc, dict) else None
+        if lu is not None:
+            if lu not in ("piena", "fioca", "buio"):
+                _err(e, nome, f"luce: «{lu}»: piena, fioca o buio")
+            elif lu == "buio" and not buio:
+                e.avviso("REGOLE.esplorazione", nome, "luce: buio, ma il set non ha la regola del buio (esplorazione.buio): nessuno resta al buio")
         v = sc.get("esplorazione") if isinstance(sc, dict) else None
         if v is None:
             continue
@@ -276,4 +289,4 @@ def controlla(c, r: dict, cartella_regole: Path, mostri: set[str], unita: set[st
     ambienti = ambienti_del_set(r, unita, tabelle, e, dove)
     provviste_e_riposo(r, unita, e, dove)
     viaggio(r, ambienti, tabelle, e, dove)
-    scene(c, ambienti, tabelle, e)
+    scene(c, ambienti, tabelle, e, buio=isinstance(r.get("esplorazione"), dict) and r["esplorazione"].get("buio") is not None)

@@ -431,6 +431,7 @@ razze:
       - {tiro: salvezza, colonne: [morte, bacchette, paralisi, incantesimi], bonus: 4}
       - {tiro: salvezza, colonne: [soffio], bonus: 3}
       - {almeno: {pietra: 2}}                   # pendenze, trappole e muri nuovi nella pietra con 1–2 su 1d6 (p. 5)
+      - {scurovisione: 18}                      # scurovisione a 60 piedi, 18 m (p. 5, 43)
   - id: elfo
     nome: "Elfo"
     # Chierico, guerriero, mago o ladro; Intelligenza almeno 9, Costituzione al più 17 (p. 5); l'elfico e la lingua comune.
@@ -446,6 +447,7 @@ razze:
       - {immune: [paralisi_ghoul]}
       - {dado_vita_massimo: 6}                  # mai un dado vita più grande di un d6 (p. 5)
       - {tiro: abilita, abilita: [cercare], bonus: 1}   # le porte segrete con 1–2 su 1d6, 1–3 con Intelligenza 15 (p. 5, 44)
+      - {scurovisione: 18}                      # scurovisione a 60 piedi, 18 m (p. 5, 43)
   - id: halfling
     nome: "Halfling"
     # Chierico, guerriero o ladro; Destrezza almeno 9, Forza al più 17 (p. 6); la lingua halfling e la comune.
@@ -1037,6 +1039,8 @@ bestiario:
     - {da: 32, bonus: 16}
   abilita: [mischia, distanza]
   uno_meno_meno_di_uno: true
+  # Quasi tutti i mostri vedono al buio (p. 43): 60 piedi, 18 m, se la voce non dice altro.
+  scurovisione: 18
 
 # Tempo di gioco (p. 42): un turno è circa dieci minuti, un round dieci secondi (sessanta round fanno un turno).
 # Esplorando, ogni giro di azioni del tavolo è un turno (il movimento e le ricerche si contano a turni, p. 42–44; le
@@ -1110,6 +1114,9 @@ esplorazione:
   provviste:
     - {id: cibo, nome: "Cibo", oggetti: [{id: razioni, giorni: 7}], senza: {dopo: 2, danno: "1", guarigione: false}}
     - {id: acqua, nome: "Acqua", oggetti: [{id: otre, giorni: 1}], senza: {dopo: 0, danno: "1d4", guarigione: false}}
+  # Luce (p. 43): torce e lanterne illuminano 9 m e la penombra arriva a 15 m (catalogo); al buio, senza una luce e senza
+  # scurovisione, non si vede: si combatte come accecati (−4 a colpire, +4 per chi attacca, p. 59).
+  buio: {condizione: accecato}
 
 # Monete (p. 10): 1 pp = 5 gp, 1 gp = 10 sp, 1 ep = 5 sp, 1 sp = 10 cp. Il valore è in rame (il taglio più piccolo vale 1).
 # Peso: una moneta pesa 1/20 di libbra, quindi 20 monete = 1 unità di carico (1 libbra).

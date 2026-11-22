@@ -34,6 +34,22 @@ export function TempoMaster({ tempo, attivo, nomi }: { tempo: NonNullable<Combat
           {tempo.luci.map((l) => t('master.tempo.luce', { chi: nomi.get(l.chi) ?? l.chi, nome: l.nome, restante: l.restante })).join(' · ')}
         </p>
       )}
+      {tempo.luce && (
+        <div className="flex flex-wrap items-center gap-2 text-xs" data-testid="master-tempo-luce">
+          <label className="flex items-center gap-1 text-pergamena-2">
+            {t('master.tempo.luce_scena')}
+            <select data-testid="master-tempo-luce-livello" aria-label={t('master.tempo.luce_scena')} value={tempo.luce.forzata ? tempo.luce.livello : ''} onChange={(e) => void inviaComando({ tipo: 'luce', livello: (e.target.value || null) as 'piena' | 'fioca' | 'buio' | null })} className="rounded-md border border-bordo-chiaro bg-notte px-1 py-0.5 text-xs text-pergamena">
+              <option value="">{t('master.tempo.luce_della_scena', { livello: t(`master.tempo.luce_${tempo.luce.livello}`) })}</option>
+              {(['piena', 'fioca', 'buio'] as const).map((l) => (
+                <option key={l} value={l}>
+                  {t(`master.tempo.luce_${l}`)}
+                </option>
+              ))}
+            </select>
+          </label>
+          {tempo.luce.testo && <span className="text-candela">{tempo.luce.testo}</span>}
+        </div>
+      )}
       {tempo.incontri?.ambiente && (
         <p className="text-xs text-cenere" data-testid="master-tempo-incontri">
           {tempo.incontri.in_attesa

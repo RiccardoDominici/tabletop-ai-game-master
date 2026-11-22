@@ -40,6 +40,7 @@
  *         oggetti: [{id: razioni, giorni: 7}]                # a catalog item feeds one character this many days
  *         senza: {dopo: 2, danno: "1", guarigione: false}     # after 2 days without: 1 a day, no natural healing
  *     riposo: {ogni: {ora: 1}, durata: {turno: 1}, parole: [ci riposiamo], condizione: affaticato}
+ *     buio: {condizione: accecato}                          # who sees nothing in the dark (prove/luce.ts)
  */
 import { leggiFormula, type FormulaDadi } from '../campagna/regole-srd';
 import { secondiDi, type RegolaTempo } from './tempo';
@@ -113,6 +114,8 @@ export interface RegolaEsplorazione {
   ambienti: AmbienteEsplorazione[];
   provviste: Provvista[];
   riposo: RiposoEsplorazione | null;
+  /** In the dark with no light and no darkvision: the fight's condition one carries (Basic Fantasy: blinded). */
+  buio: { condizione: string } | null;
 }
 
 /** Where a scene says the party is (scene `esplorazione:`), read against the set. */
@@ -237,7 +240,14 @@ export function leggiEsplorazione(v: unknown, tempo: RegolaTempo | null, errori:
     if (!r || !ogni || !durata || !condizione || !ID.test(condizione)) errori.push('esplorazione.riposo: {ogni, durata: durations of the clock, parole: [words of a rest], condizione: the condition of the overdue}');
     else riposo = { ogni, durata, parole, condizione };
   }
-  return { ambienti, provviste, riposo };
+  let buio: RegolaEsplorazione['buio'] = null;
+  if (o['buio'] !== undefined) {
+    const b = ogg(o['buio']);
+    const cond = str(b?.['condizione']);
+    if (!cond || !ID.test(cond)) errori.push('esplorazione.buio: {condizione: the condition of who sees nothing (accecato)}');
+    else buio = { condizione: cond };
+  }
+  return { ambienti, provviste, riposo, buio };
 }
 
 /** The encounter tables (`incontri:` inline, then regole/incontri.yaml). `mostri`: the bestiary's ids, to check them. */
@@ -327,6 +337,7 @@ export function controllaEsplorazione(e: RegolaEsplorazione | null, tabelle: rea
   for (const a of e.ambienti) for (const t of a.tabelle) if (!ids.has(t.tabella)) errori.push(`esplorazione.ambienti.${a.id}.tabelle: «${t.tabella}» is not an encounter table (incontri)`);
   for (const p of e.provviste) for (const x of p.oggetti) if (!ctx.oggetti?.has(x.id)) errori.push(`esplorazione.provviste.${p.id}.oggetti: «${x.id}» is not an item of the catalog`);
   if (e.riposo && ctx.condizioni && !ctx.condizioni.has(e.riposo.condizione)) errori.push(`esplorazione.riposo.condizione: «${e.riposo.condizione}» is not a condition of combattimento.condizioni`);
+  if (e.buio && ctx.condizioni && !ctx.condizioni.has(e.buio.condizione)) errori.push(`esplorazione.buio.condizione: «${e.buio.condizione}» is not a condition of combattimento.condizioni`);
 }
 
 /** The entry a roll picks, or null (a hole in the table: the validator refuses it). */

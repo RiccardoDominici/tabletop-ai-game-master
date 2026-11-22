@@ -455,6 +455,14 @@ export class ControlliMaster {
         if (!esito.ok) return rifiuto(esito.errore);
         return { esito: { ok: true }, dettagli: esito.fatto ?? tabella ?? '', dati: { tabella } };
       }
+      case 'luce': {
+        // How dark the scene is (docs/prove.md §15): until the scene changes; null = the scene sheet's again.
+        const livello = c.livello === null ? null : c.livello === 'piena' || c.livello === 'fioca' || c.livello === 'buio' ? c.livello : undefined;
+        if (livello === undefined) return rifiutoDi('luce_non_valida');
+        const esito = regia.luce(livello);
+        if (!esito.ok) return rifiuto(esito.errore);
+        return { esito: { ok: true }, dettagli: esito.fatto ?? String(livello), dati: { livello } };
+      }
       case 'creazione': {
         // Creation at the table (docs/creazione.md): the service checks the draft, the step and the moment.
         if (!this.o.creazione) return rifiutoDi('creazione_spenta');

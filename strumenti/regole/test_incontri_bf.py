@@ -209,3 +209,18 @@ def test_terreni_e_smarrirsi_p45() -> None:
     persi = {x["id"] for x in SET["viaggio"]["terreni"] if x.get("smarrirsi")}
     assert persi == {"giungla", "montagna", "palude", "deserto", "foresta", "colline", "aperto", "pianura"}
 
+
+def test_luce_e_scurovisione_p5_p43() -> None:
+    f43 = frasi(43)
+    assert "A torch or lantern will provide light covering a 30' radius; dim light will extend about 20' further" in f43
+    assert "if not given for a particular creature, assume the 60' range" in f43
+    assert "Darkvision is totally ineffective in any light greater than moonlight" in f43
+    f5 = frasi(5)
+    assert f5.count("Darkvision (see page 43) with a 60' range") == 2  # dwarves and elves
+    razze = {x["id"]: x for x in SET["razze"]}
+    for r in ("nano", "elfo"):
+        assert {"scurovisione": 18} in razze[r]["tratti"], r  # 60' = 18 m (the set's metres: feet × 0.3)
+    for r in ("umano", "halfling"):
+        assert not any("scurovisione" in t for t in razze[r]["tratti"]), r
+    assert SET["bestiario"]["scurovisione"] == 18
+

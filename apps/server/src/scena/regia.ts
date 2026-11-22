@@ -3861,6 +3861,14 @@ export class Regia {
     return { ok: true, fatto: r.fatto };
   }
 
+  /** The scene's light from the panel (docs/prove.md §15; prove/motore.ts luceDelMaster): the narrator hears what the party sees. */
+  luce(livello: 'piena' | 'fioca' | 'buio' | null): Esito & { fatto?: string } {
+    const r = this.prove?.luceDelMaster(livello);
+    if (!r) return { ok: false, errore: testoFisso('regia.errori.luce_non_valida') };
+    this.notifica();
+    return { ok: true, fatto: r.fatto };
+  }
+
   /** Per il pannello del master: schede coi PF e condizioni del set (null senza dadi). */
   get combattimentoMaster(): CombattimentoMaster | null {
     return this.prove?.attivo ? this.prove.combattimentoMaster() : null;

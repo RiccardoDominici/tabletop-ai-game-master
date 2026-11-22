@@ -67,6 +67,9 @@ export interface StatoProveSalvato {
   fatica?: StatoFaticaSalvato;
   /** The last journey's course check, for the panel. */
   orientamento?: { guida: string; smarriti: boolean };
+  /** The Game Master's light for a scene, and what the narrator last heard of the party's sight (prove/luce.ts). */
+  luce_forzata?: { scena: string; livello: 'piena' | 'fioca' | 'buio' };
+  luce_nota?: string;
   /** The creatures wandering encounters brought into their scenes (prove/vaganti.ts), rebuilt on resume. */
   vaganti?: Array<{ id: string; mostro: string; nome: string; scena: string; incontro: number }>;
 }
