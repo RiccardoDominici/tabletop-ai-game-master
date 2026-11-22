@@ -8,6 +8,7 @@ import clsx from 'clsx';
 import type { StatoTavolo } from '@tabletop-ai-gm/shared';
 import { useTelefono } from '../store/telefono';
 import { scegliPg } from './sessione';
+import { useCreazione } from './creazione/stato';
 
 export function SceltaPersonaggio({ stato }: { stato: StatoTavolo }) {
   const idPg = useTelefono((s) => s.idPg);
@@ -29,7 +30,7 @@ export function SceltaPersonaggio({ stato }: { stato: StatoTavolo }) {
 
       {stato.pg.length === 0 ? (
         <p className="rounded-carta border border-bordo bg-notte-2 p-5 text-pergamena-2">
-          {t('telefono.scelta.nessuno')}
+          {stato.creazione ? t('telefono.creazione.nessuno_ancora') : t('telefono.scelta.nessuno')}
         </p>
       ) : (
         <ul className="flex flex-col gap-3">
@@ -65,6 +66,19 @@ export function SceltaPersonaggio({ stato }: { stato: StatoTavolo }) {
             );
           })}
         </ul>
+      )}
+
+      {/* Creation at the table (docs/creazione.md): the campaign lets a player build a PC here, step by step. */}
+      {stato.creazione && (
+        <button
+          type="button"
+          data-testid="crea-pg"
+          onClick={() => useCreazione.getState().apri(true)}
+          className="flex min-h-20 w-full flex-col gap-1 rounded-carta border border-dashed border-candela/70 bg-notte-2 px-5 py-4 text-left active:scale-[0.99]"
+        >
+          <span className="font-titolo text-xl font-semibold text-candela">{t('telefono.creazione.crea')}</span>
+          <span className="text-pergamena-2">{t('telefono.creazione.crea_desc')}</span>
+        </button>
       )}
 
       {errore && (

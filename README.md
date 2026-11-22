@@ -43,6 +43,11 @@ Before you read: nothing. This is the page to start from.
   and the phones. Combat has initiative, rounds and phases, conditions, death saves and
   morale. The rules come from the campaign's rule set: the SRD 5.2 by default, or any rulebook.
   See [Dice and character sheets](docs/guide/dice-and-sheets.md).
+- **Characters built at the table.** With a rule set that has a creation procedure (Basic Fantasy's, in `torre-mozza`),
+  each player can build a character on the phone by the manual's steps — real dice typed in, only the races and classes
+  the scores allow, the starting money and the purchases with the load and the Armor Class — and the Game Master
+  approves it from the panel; pregenerated characters pass the same check. See
+  [Dice and character sheets](docs/guide/dice-and-sheets.md#building-the-characters-at-the-table).
 - **Your own rulebook.** Put your manual in `manuali/` (it stays out of git) and the Preparer turns it into the
   campaign's rule set. On the phone, «Regole» (Rules) shows the set and «Chiedi una regola» (Ask a rule) answers
   only on the phone that asked. The example `torre-mozza` uses Basic Fantasy RPG.

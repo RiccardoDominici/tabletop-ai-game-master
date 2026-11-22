@@ -22,6 +22,7 @@ import { useBozza } from '../store/bozza';
 import { riconciliaBozza, TracciaScrittura } from './bozza';
 import { chiaveRichiesta } from './vista';
 import { dimenticaTrascrizione, trascrizionePerInvio } from './dettato';
+import { azioneCreazione, suBozza, useCreazione } from './creazione/stato';
 
 const log = creaLog('telefono');
 
@@ -88,6 +89,9 @@ async function rientra(): Promise<void> {
   } catch {
     // Server più vecchio o lento: si usa il PG ricordato.
   }
+  // Building a PC (docs/creazione.md): the phone joins its draft's room again, so the Game Master's approval reaches it.
+  const creazione = useCreazione.getState();
+  if (stato.creazione && creazione.aperta && creazione.bozza?.stato !== 'approvata') void azioneCreazione({ tipo: 'inizia' });
   if (dalServer && dalServer !== useTelefono.getState().idPg) {
     log.info('Il server ricorda il PG di questo telefono', { idPg: dalServer });
     useTelefono.getState().ricordaPg(dalServer);
@@ -122,6 +126,7 @@ export function avviaTelefono(): () => void {
     s.on('privato:esiti', suPrivati);
     s.on('tiri:richiesti', suRichiesteTiro);
     s.on('pg:scorta', suScorta);
+    s.on('creazione:bozza', suBozza);
     s.on('avviso', suAvviso);
     togliRientro = alRientro(() => void rientra());
   }
@@ -135,6 +140,7 @@ export function avviaTelefono(): () => void {
     s.off('privato:esiti', suPrivati);
     s.off('tiri:richiesti', suRichiesteTiro);
     s.off('pg:scorta', suScorta);
+    s.off('creazione:bozza', suBozza);
     s.off('avviso', suAvviso);
     togliRientro?.();
     togliRientro = null;

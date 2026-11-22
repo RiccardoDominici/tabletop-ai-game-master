@@ -195,6 +195,22 @@ The **Tiri** (Rolls) box appears in campaigns with dice. Only here you see the D
 
 ## Centre column
 
+### Characters being built
+
+Only when the campaign lets the players build their characters on the phones (`regole.creazione.modo: al_tavolo` or
+`entrambi`, see [Dice and character sheets](dice-and-sheets.md#building-the-characters-at-the-table)). One card per phone
+being used to build a character: the steps of the manual in order with what was chosen (scores, race, class, spells,
+hit points, money, purchases with the coins left and the Armor Class, languages, name), the dice the player typed (to
+compare with the real ones on the table) and, when finished, what the Engine's check still finds.
+- **Approva** next to a step: you agree with it; the player can no longer redo it.
+- **Annulla** next to a step: it is redone, with the steps that depend on it (the race resets the class, the class its
+  spells and hit points); its dice are thrown away, so this is how a reroll is allowed.
+- **Dai al libro**: when the rule set says the Game Master picks a caster's starting spells.
+- **Approva il personaggio**: the character joins the campaign. The server restarts for a moment (panel, projector and
+  phones reconnect by themselves) and the phone that built it takes it. It is refused while a turn is being narrated or
+  rolled, or while the open window has actions written: wait for the turn to end.
+- **Scarta**: throws a draft away.
+
 ### Window
 
 The action window of the turn: "aperta" (open) or "chiusa" (closed), and the pace: "ritmo calmo" (calm pace) or "ritmo concitato" (urgent pace).

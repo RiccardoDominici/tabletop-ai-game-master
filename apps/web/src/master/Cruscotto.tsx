@@ -17,6 +17,7 @@ import { SezioneMondo } from './SezioneMondo';
 import { SezioneCoerenza } from './SezioneCoerenza';
 import { SezioneCombattimento } from './SezioneCombattimento';
 import { SezioneTiri } from './SezioneTiri';
+import { SezioneCreazione } from './SezioneCreazione';
 import { SezioneFinestra } from './SezioneFinestra';
 import { SezioneAzioni } from './SezioneAzioni';
 import { SezioneTrascrizione } from './SezioneTrascrizione';
@@ -40,6 +41,7 @@ export function Cruscotto({ stato }: { stato: StatoMaster }) {
         <SezioneCoerenza stato={stato} />
         {stato.combattimento && <SezioneCombattimento stato={stato} />}
         {stato.tiri && <SezioneTiri stato={stato} />}
+        {(stato.tavolo.creazione || (stato.creazione?.length ?? 0) > 0) && <SezioneCreazione stato={stato} />}
       </div>
 
       {/* Colonna centrale: le azioni scorrono dentro il loro riquadro, la trascrizione prende il resto. */}

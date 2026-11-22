@@ -1195,6 +1195,17 @@ export class Regia {
     return { ok: true };
   }
 
+  /**
+   * A phone that built a PC at the table (docs/creazione.md): remembered with it, so it takes it when it reconnects after
+   * the server's rebuild, even if it missed the approval's notice.
+   */
+  ricordaDispositivo(dispositivo: string, id_pg: string): void {
+    if (!DISPOSITIVO_VALIDO.test(dispositivo) || !this.campagna.pg.some((p) => p.id === id_pg) || this.dispositivi.get(dispositivo) === id_pg) return;
+    this.dispositivi.set(dispositivo, id_pg);
+    this.o.memoria?.scrivi([{ tipo: 'dispositivo', dati: { dispositivo, id_pg } }], null);
+    this.o.log.info({ dispositivo: dispositivo.slice(0, 8), id_pg }, 'phone remembered with the PC it built');
+  }
+
   /** Il PG di un telefono conosciuto (token del dispositivo), o null. */
   pgDelDispositivo(dispositivo: unknown): string | null {
     if (typeof dispositivo !== 'string' || !DISPOSITIVO_VALIDO.test(dispositivo)) return null;

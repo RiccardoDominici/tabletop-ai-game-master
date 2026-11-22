@@ -471,4 +471,18 @@ export const master = {
   'master.spoiler.motivo_tiro': '(why: turn «no spoilers» off)',
   'master.spoiler.privata_breve': 'private check',
   'master.spoiler.cd_nascosta': 'DC hidden',
+  // Creation at the table (master/SezioneCreazione.tsx, docs/creazione.md)
+  'master.creazione.titolo': 'Characters being built',
+  'master.creazione.vuoto': 'No phone is building a character.',
+  'master.creazione.senza_nome': '(no name)',
+  'master.creazione.telefono': 'phone {telefono}, level {livello}',
+  'master.creazione.approvata': 'approved: {pg}',
+  'master.creazione.approva_passo': 'Approve',
+  'master.creazione.annulla_passo': 'Undo',
+  'master.creazione.tiri_telefono': 'Dice entered on the phone:',
+  'master.creazione.tiri_motore': 'The Engine\'s dice:',
+  'master.creazione.approva': 'Approve the character',
+  'master.creazione.scarta': 'Discard',
+  'master.creazione.libro': 'Give {n} spells to the book:',
+  'master.creazione.dai_libro': 'Give to the book',
 } satisfies Record<keyof typeof import('../it/master').master, string>;

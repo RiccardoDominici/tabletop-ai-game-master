@@ -199,6 +199,36 @@ It lives in `pg.yaml`, inside each character, under `scheda`. A real example, fr
 
 The level stays the character's own (`livello`, from 1 to 20).
 
+### Building the characters at the table
+
+With a rule set that has a creation procedure (`creazione` in `regole/regole.yaml`: Basic Fantasy's in `campagne/torre-mozza`),
+the players can build their characters on the phones instead of picking a pregenerated one. Turn it on in `campagna.yaml`:
+
+```yaml
+regole:
+  tiri_giocatori: manuale        # the creation dice too: real dice, typed on the phone (the default)
+  creazione:
+    modo: entrambi               # pregenerati (default: as before) | al_tavolo (pg.yaml empty) | entrambi
+    opzioni: [scambio_punti]     # the Game Master's options the set lists (none by default)
+    punti_ferita: massimo        # the first level's hit die at its maximum (default: the set's rule)
+    livello: 3                   # a player who joins a grown party starts at this level (default: the set's)
+```
+
+On the phone's character choice a **Crea un personaggio** card appears. The player follows the manual's steps: rolls each
+score with real dice and types each die, picks a race and a class (the ones the scores do not allow are greyed with the
+reason, and refused if tapped), the starting spells, rolls the hit points and the money, buys the equipment (price,
+weight, load, Armor Class and attacks change as they buy), picks the languages and writes the name. The Game Master
+follows every phone in the panel's **Personaggi in creazione** box, can approve or undo a step (an undo throws its dice
+away: a reroll) and approves the finished character with **Approva il personaggio**: the server restarts for a moment
+and the character is at the table, on that phone, and in every session after. With `modo: al_tavolo` the projector's
+«Inizia sessione» waits until the first character is approved.
+
+The characters built this way are saved in `campagne/<id>/pg-creati/<id>.yaml` (one file each, the same shape as an entry
+of `pg.yaml`, with every roll entered). That folder is in `.gitignore`: it is play data and may carry a player's real
+name, so it never goes into the repository. A test instance (another port) keeps them in its `logs/porta-<porta>/`;
+`TAGM_PG_CREATI=<folder>` moves them (the validator and `strumenti/tra_sessioni.py` read the same variable). The
+validator checks them like the pregenerated ones, strictly. The details are in `docs/creazione.md`.
+
 ### An NPC's sheet
 
 It lives in the NPC's file, `png/<id>.yaml`, under `scheda`. It is like a player character's sheet, with some differences:

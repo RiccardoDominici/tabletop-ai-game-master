@@ -116,6 +116,7 @@ export function vistaBozza(ctx: CtxCreazione, b: Bozza): VistaCreazione {
             peso: acq.inventario.peso(sch.id),
             carico: acq.inventario.carico(sch.id),
             unita: ctx.s.carico?.unita ?? null,
+            unita_movimento: ctx.s.movimento?.unita ?? null,
             difesa: sch.difesa,
             attacchi: sch.attacchi.map((a) => `${a.nome} ${formula(a.danno)}`),
           }

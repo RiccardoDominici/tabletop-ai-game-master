@@ -1,0 +1,17 @@
+# Trascrizione pubblica della sessione: ciò che il tavolo ha sentito e visto, turno per turno.
+# Estratta dall’archivio dal server; niente azioni private.
+formato: 1
+campagna: fucina
+sessione: 1
+archivio: 2026-11-22T14:36:04.107Z
+voci:
+  - turno: 0
+    tipo: narrazione
+    chi: narratore
+    nome: Narratore
+    testo: Siete alla fucina di Orsola, pronti a partire. Orsola alza gli occhi dall'incudine. «Chi parte, oggi?» Che fate?
+  - turno: 0
+    tipo: sistema
+    chi: sistema
+    nome: Sistema
+    testo: Fine della sessione.

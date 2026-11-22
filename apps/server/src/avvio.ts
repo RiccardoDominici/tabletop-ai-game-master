@@ -523,6 +523,8 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
     log: log.child({ modulo: 'creazione' }),
   });
   collegaCreazione(app.io, creazione, log.child({ modulo: 'creazione' }));
+  // A phone whose PC was approved before this start takes it when it reconnects (docs/creazione.md).
+  for (const x of creazione?.entrati ?? []) regia.ricordaDispositivo(x.dispositivo, x.idPg);
   const controlliMaster = new ControlliMaster({
     ...(creazione ? { creazione } : {}),
     regia,
@@ -572,7 +574,17 @@ export async function costruisciServer(config: ConfigServer, log: Logger, sost: 
       memoria?.sospendi();
       regia.spegni();
       archivio?.chiudi();
-      app.io.close();
+      // Socket.IO closes its sockets, then (after its adapters) the engine and the listener; until then the browsers
+      // reconnect at once and long-poll on their keep-alive connections, and the close waits for those to time out (40 s
+      // in the R5 live check: a «Prossima sessione» with the projector and the phones open kept the table waiting that
+      // long). So the open connections are closed until the listener is gone.
+      const chiusura = app.io.close();
+      const taglia = setInterval(() => app.http.server.closeAllConnections?.(), 50);
+      try {
+        await chiusura;
+      } finally {
+        clearInterval(taglia);
+      }
       await app.http.close();
     },
   };

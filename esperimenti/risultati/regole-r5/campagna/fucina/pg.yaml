@@ -1,0 +1,25 @@
+# The one pregenerated PC of the R5 fixture (docs/creazione.md): built by the same steps a player follows at the table,
+# and legal by the same check (regole/controllo-pg.ts). The others are built on the phones.
+situazione_comune: Siete alla fucina di Orsola, pronti a partire per la strada del nord.
+personaggi:
+- id: pg_brina
+  nome: Brina
+  pronomi: lei
+  specie: Umana
+  classe: Lama
+  livello: 1
+  aspetto: Una ragazza alta con una treccia e le mani callose.
+  concetto: Figlia di un carrettiere, sa usare la spada del padre.
+  aggancio: Orsola le deve una lama.
+  cosa_sai_fare:
+  - combatti con la spada
+  scheda:
+    caratteristiche: {forza: 14, mente: 10, agilita: 12, tempra: 13}
+    classe: lama
+    livello: 1
+    px: 0
+    razza: umano
+    pf: 7
+    equipaggiamento: [giaco, scudo, spada, zaino]
+    monete: {mo: 58}
+    lingue: [comune]

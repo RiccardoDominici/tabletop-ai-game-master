@@ -1,0 +1,3 @@
+Scheletro di /Users/riccardo/Developer/cantastorie/apps/web/../../esperimenti/risultati/regole-r5/campagna/fucina/sessioni/02 dallo stato dopo la sessione 1:
+  scritto: /Users/riccardo/Developer/cantastorie/apps/web/../../esperimenti/risultati/regole-r5/campagna/fucina/sessioni/02/sessione.yaml
+  scritto: /Users/riccardo/Developer/cantastorie/apps/web/../../esperimenti/risultati/regole-r5/campagna/fucina/sessioni/02/repertorio/parole_segrete.yaml

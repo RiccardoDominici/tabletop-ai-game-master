@@ -1,0 +1,101 @@
+# Registro della sessione: estratto dall’archivio (sessioni.sqlite) dal server, senza modelli.
+# Ogni voce porta il turno da cui viene. Non si modifica a mano: si rigenera con scripts/registro.sh.
+# Contiene le azioni PRIVATE dei PG: solo per il master e il Preparatore, mai per i giocatori.
+formato: 1
+campagna: fucina
+titolo: La fucina di Orsola
+sessione: 1
+archivio:
+  id: 2026-11-22T14:36:04.107Z
+  modo: improvvisa
+  creata: 2026-11-22T14:36:04.107Z
+  ultimo_evento: 2026-11-22T14:36:05.107Z
+  stato: chiusa
+  motivo_chiusura: fine sessione
+  eventi: 8
+  ultimo_turno: 0
+trascrizione:
+  file: trascrizione.yaml
+  voci: 2
+  turni: 1
+giocatori:
+  - pg_gaspare
+  - pg_selva
+scene:
+  - id: scena_fucina
+    titolo: La fucina
+    dal_turno: 0
+    al_turno: 0
+    png_presenti:
+      - png_orsola
+luoghi:
+  - id: scena_fucina
+    dal_turno: 0
+    causa: inizio
+situazioni: []
+orologi: []
+indizi: []
+battute: null
+menzogne: []
+fatti_noti: []
+png_incontrati: []
+pg:
+  - id: pg_brina
+    nome: Brina
+    azioni_pubbliche: []
+    azioni_private: []
+  - id: pg_gaspare
+    nome: Gaspare
+    azioni_pubbliche: []
+    azioni_private: []
+  - id: pg_selva
+    nome: Selva
+    azioni_pubbliche: []
+    azioni_private: []
+momenti: []
+note_del_master: []
+pg_alla_fine:
+  - id: pg_brina
+    pf: 7
+    oggetti:
+      giaco: 1
+      scudo: 1
+      spada: 1
+      zaino: 1
+    monete:
+      mo: 58
+    indossati:
+      - giaco
+      - scudo
+    px: 0
+    livello: 1
+    pf_massimi: 7
+  - id: pg_gaspare
+    pf: 8
+    oggetti:
+      cotta: 1
+      scudo: 1
+      spada: 1
+    monete:
+      mo: 95
+    indossati:
+      - cotta
+      - scudo
+    px: 0
+    livello: 1
+    pf_massimi: 8
+  - id: pg_selva
+    pf: 3
+    oggetti:
+      pugnale: 1
+    monete:
+      mo: 118
+    contatori:
+      slot_1: 1
+    incantesimi:
+      - scintilla
+    px: 0
+    livello: 1
+    pf_massimi: 3
+avvisi:
+  - "Modalità A (improvvisa): indizi, menzogne e fatti noti vengono dalle righe [indizio], [menzogna], [fatto] del narratore controllate dal Motore; le battute non ci sono (null)."

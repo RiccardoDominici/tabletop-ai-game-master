@@ -54,7 +54,7 @@ export function restrizioniDi(ctx: CtxCreazione, b: Bozza, v: VoceCatalogo): { v
   const chi = violate.map((r) => (r.classe ? (ctx.s.classi ?? []).find((c) => c.id === r.classe)?.nome ?? r.classe : (ctx.s.razze ?? []).find((x) => x.id === r.razza)?.nome ?? r.razza ?? '')).join(', ');
   if (p.vietato) return { vietato: testo('creazione.acquisti.vietato', { chi }), penalita: null };
   const parti: string[] = [];
-  if (p.attacco) parti.push(testo('creazione.acquisti.penalita_attacco', { n: p.attacco }));
+  if (p.attacco) parti.push(testo('creazione.acquisti.penalita_attacco', { n: p.attacco > 0 ? `+${p.attacco}` : `−${-p.attacco}` }));
   if (p.senzaIncantesimi) parti.push(testo('creazione.acquisti.penalita_incantesimi'));
   if (p.senzaAbilita?.length) parti.push(testo('creazione.acquisti.penalita_abilita', { abilita: p.senzaAbilita.map((a) => ctx.s.abilita.find((x) => x.id === a)?.nome ?? a).join(', ') }));
   if (p.perdeIncantesimi) parti.push(testo('creazione.acquisti.penalita_perde'));

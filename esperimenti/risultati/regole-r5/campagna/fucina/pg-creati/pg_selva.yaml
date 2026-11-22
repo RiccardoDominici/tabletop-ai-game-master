@@ -1,0 +1,68 @@
+# Personaggio creato al tavolo (2026-11-22 14:36): passi e tiri in «creazione», scheda come in pg.yaml.
+# Non finisce nel repository (campagne/*/pg-creati/ è in .gitignore): può avere il nome vero di un giocatore.
+id: pg_selva
+nome: Selva
+specie: Umano
+classe: Arcano
+livello: 1
+creazione:
+  quando: 2026-11-22T14:36:02.354Z
+  metodo: in_ordine
+  tiri:
+    - passo: caratteristiche
+      per: Forza
+      dadi:
+        - 4
+        - 3
+        - 3
+    - passo: caratteristiche
+      per: Mente
+      dadi:
+        - 6
+        - 5
+        - 3
+    - passo: caratteristiche
+      per: Agilità
+      dadi:
+        - 5
+        - 4
+        - 3
+    - passo: caratteristiche
+      per: Tempra
+      dadi:
+        - 4
+        - 3
+        - 3
+    - passo: punti_ferita
+      per: Punti ferita del 1° livello
+      dadi:
+        - 3
+    - passo: monete
+      per: Monete iniziali
+      dadi:
+        - 4
+        - 4
+        - 4
+scheda:
+  caratteristiche:
+    forza: 10
+    mente: 14
+    agilita: 12
+    tempra: 10
+  classe: arcano
+  livello: 1
+  px: 0
+  razza: umano
+  pf: 3
+  equipaggiamento:
+    - pugnale
+  monete:
+    mo: 118
+  libro:
+    - leggere_rune
+    - scintilla
+  incantesimi:
+    - scintilla
+  lingue:
+    - comune
+    - antico

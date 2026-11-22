@@ -17,6 +17,8 @@ import { useTavolo } from '../store/tavolo';
 import { useTelefono } from '../store/telefono';
 import { avviaTelefono } from './sessione';
 import { SceltaPersonaggio } from './SceltaPersonaggio';
+import { CreaPersonaggio } from './creazione/CreaPersonaggio';
+import { useCreazione } from './creazione/stato';
 import { BannerStato } from './BannerStato';
 import { TurnoCombattimento } from './TurnoCombattimento';
 import { Trascrizione } from './Trascrizione';
@@ -58,10 +60,19 @@ function PaginaTelefonoVera() {
   const stato = useTavolo((s) => s.stato);
   const idPg = useTelefono((s) => s.idPg);
   const sceltaAperta = useTelefono((s) => s.sceltaAperta);
+  const creazioneAperta = useCreazione((s) => s.aperta);
+  const bozza = useCreazione((s) => s.bozza);
+  // The PC this phone built is approved and at the table (the server restarted for it): the creation screen closes.
+  const entrato = !!bozza?.id_pg && bozza.stato === 'approvata' && !!stato?.pg.some((p) => p.id === bozza.id_pg);
+  useEffect(() => {
+    if (entrato && creazioneAperta) useCreazione.getState().apri(false);
+  }, [entrato, creazioneAperta]);
 
   let contenuto;
   if (!stato) {
     contenuto = <Attesa />;
+  } else if (creazioneAperta && stato.creazione && !entrato) {
+    contenuto = <CreaPersonaggio />;
   } else if (!idPg || sceltaAperta || !stato.pg.some((p) => p.id === idPg)) {
     contenuto = <SceltaPersonaggio stato={stato} />;
   } else {

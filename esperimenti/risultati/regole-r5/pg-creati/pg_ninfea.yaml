@@ -1,0 +1,85 @@
+# Personaggio creato al tavolo (2026-11-22 14:36): passi e tiri in «creazione», scheda come in pg.yaml.
+# Non finisce nel repository (campagne/*/pg-creati/ è in .gitignore): può avere il nome vero di un giocatore.
+id: pg_ninfea
+nome: Ninfea
+specie: Elfo
+classe: Mago
+livello: 1
+creazione:
+  quando: 2026-11-22T14:36:20.003Z
+  metodo: in_ordine
+  tiri:
+    - passo: caratteristiche
+      per: Forza
+      dadi:
+        - 3
+        - 4
+        - 3
+    - passo: caratteristiche
+      per: Intelligenza
+      dadi:
+        - 6
+        - 5
+        - 5
+    - passo: caratteristiche
+      per: Saggezza
+      dadi:
+        - 4
+        - 4
+        - 4
+    - passo: caratteristiche
+      per: Destrezza
+      dadi:
+        - 5
+        - 4
+        - 5
+    - passo: caratteristiche
+      per: Costituzione
+      dadi:
+        - 4
+        - 4
+        - 3
+    - passo: caratteristiche
+      per: Carisma
+      dadi:
+        - 3
+        - 3
+        - 3
+    - passo: punti_ferita
+      per: Punti ferita del 1° livello
+      dadi:
+        - 4
+    - passo: monete
+      per: Monete iniziali
+      dadi:
+        - 4
+        - 5
+        - 6
+scheda:
+  caratteristiche:
+    forza: 10
+    intelligenza: 16
+    saggezza: 12
+    destrezza: 14
+    costituzione: 11
+    carisma: 9
+  classe: mago
+  livello: 1
+  px: 0
+  razza: elfo
+  pf: 4
+  equipaggiamento:
+    - pugnale
+    - libro_degli_incantesimi
+  monete:
+    mo: 123
+  libro:
+    - leggere_il_magico
+    - sonno
+  incantesimi:
+    - sonno
+  lingue:
+    - comune
+    - elfico
+    - goblin
+    - orchesco

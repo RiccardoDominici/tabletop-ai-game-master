@@ -23,6 +23,14 @@ The players' phones connect to it over the home Wi-Fi, without internet.
 
 The Game Master panel is at `/master`, on the Mac or on another device on the same network.
 
+## Building your character on the phone
+
+If the campaign allows it, the character choice shows **Crea un personaggio**: you build your character step by step,
+with real dice (type each die as it falls), the race and class your scores allow, the starting money and the equipment
+(the phone shows what you have left, what you carry and your Armor Class as you buy), the languages and the name. When
+it is finished the Game Master approves it from the panel; the page reconnects by itself and you play with it. Leaving
+the screen with **Indietro** keeps what you did: **Crea un personaggio** brings you back to it.
+
 ## If the phones do not connect
 
 Check in this order.

@@ -471,4 +471,18 @@ export const master = {
   'master.spoiler.motivo_tiro': '(perché: spegni «senza spoiler»)',
   'master.spoiler.privata_breve': 'prova privata',
   'master.spoiler.cd_nascosta': 'CD nascosta',
+  // Creation at the table (master/SezioneCreazione.tsx, docs/creazione.md)
+  'master.creazione.titolo': 'Personaggi in creazione',
+  'master.creazione.vuoto': 'Nessun telefono sta creando un personaggio.',
+  'master.creazione.senza_nome': '(senza nome)',
+  'master.creazione.telefono': 'telefono {telefono}, livello {livello}',
+  'master.creazione.approvata': 'approvato: {pg}',
+  'master.creazione.approva_passo': 'Approva',
+  'master.creazione.annulla_passo': 'Annulla',
+  'master.creazione.tiri_telefono': 'Dadi scritti sul telefono:',
+  'master.creazione.tiri_motore': 'Dadi del Motore:',
+  'master.creazione.approva': 'Approva il personaggio',
+  'master.creazione.scarta': 'Scarta',
+  'master.creazione.libro': 'Dai {n} incantesimi al libro:',
+  'master.creazione.dai_libro': 'Dai al libro',
 } as const;

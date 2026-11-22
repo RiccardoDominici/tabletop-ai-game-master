@@ -1,0 +1,50 @@
+riassunto_iniziale: Usciti dalla fucina di Orsola, avete preso la strada del nord.
+scene:
+- scena_strada
+pieni_all_inizio: {}
+pg_all_inizio:
+  pg_brina:
+    pf: 7
+    oggetti:
+      giaco: 1
+      scudo: 1
+      spada: 1
+      zaino: 1
+    monete:
+      mo: 58
+    indossati:
+    - giaco
+    - scudo
+    px: 0
+    livello: 1
+    pf_massimi: 7
+  pg_gaspare:
+    pf: 8
+    oggetti:
+      cotta: 1
+      scudo: 1
+      spada: 1
+    monete:
+      mo: 95
+    indossati:
+    - cotta
+    - scudo
+    px: 0
+    livello: 1
+    pf_massimi: 8
+  pg_selva:
+    pf: 3
+    oggetti:
+      pugnale: 1
+    monete:
+      mo: 118
+    contatori:
+      slot_1: 1
+    incantesimi:
+    - scintilla
+    px: 0
+    livello: 1
+    pf_massimi: 3
+preparazione:
+  fili: []
+titolo: La strada del nord

@@ -46,11 +46,14 @@ export type EsitoComandoCreazione = { ok: true; dettagli: string } | { ok: false
 
 export class ServizioCreazione {
   private readonly bozze = new Map<string, Bozza>();
+  /** The phones whose approved PC is now in the campaign (the server binds each to its PC: it takes it at reconnection). */
+  readonly entrati: Array<{ dispositivo: string; idPg: string }> = [];
 
   constructor(private readonly o: OpzioniServizioCreazione) {
     for (const b of leggiBozze<Bozza>(o.cartella, (m) => o.log.warn({ m }, 'creation: a draft file is unreadable'))) {
       // An approved draft whose PC the campaign now has has done its job (the rebuild after the approval).
       if (b.stato === 'approvata' && b.idPg && o.idPresi().has(b.idPg)) {
+        this.entrati.push({ dispositivo: b.dispositivo, idPg: b.idPg });
         cancellaBozza(o.cartella, b.id);
         o.log.info({ bozza: b.id, pg: b.idPg }, 'creation: the approved PC is in the campaign, its draft is closed');
         continue;

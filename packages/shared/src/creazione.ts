@@ -98,7 +98,9 @@ export interface VistaCreazione {
     monete: Array<{ id: string; nome: string; quante: number }>;
     peso: number;
     carico: { nome: string; limite: number | null; movimento: number | null } | null;
+    /** The unit of the weights (`carico.unita`) and of the movement (`movimento.unita`). */
     unita: string | null;
+    unita_movimento: string | null;
     /** Armor Class with what is bought (worn: the first armor and shield) and the attack lines. */
     difesa: number | null;
     attacchi: string[];

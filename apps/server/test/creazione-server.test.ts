@@ -162,6 +162,8 @@ describe('a PC built on a phone joins the campaign', () => {
     const t2 = nuovo(url(s2));
     const st2 = await emetti<StatoTavolo>((cb) => t2.emit('telefono:entra', cb));
     expect(st2.pg.find((p) => p.id === 'pg_gaspare')).toMatchObject({ nome: 'Gaspare', pf: { attuali: 8, massimi: 8 } });
+    // The phone that built him is remembered with him: it takes him when it reconnects, even if it missed the notice.
+    expect(await emetti<{ id_pg: string | null }>((cb) => t2.emit('telefono:dispositivo', { dispositivo: 'telefono-di-gaspare-01' }, cb))).toEqual({ id_pg: 'pg_gaspare' });
     expect(await emetti<Esito>((cb) => t2.emit('telefono:scegli_pg', { id_pg: 'pg_gaspare', dispositivo: 'telefono-di-gaspare-01' }, cb))).toEqual({ ok: true });
     // The draft's job is done: the panel no longer lists it.
     expect((await (await master(url(s2))).stato()).creazione).toEqual([]);

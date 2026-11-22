@@ -1,0 +1,65 @@
+# Personaggio creato al tavolo (2026-11-22 14:36): passi e tiri in «creazione», scheda come in pg.yaml.
+# Non finisce nel repository (campagne/*/pg-creati/ è in .gitignore): può avere il nome vero di un giocatore.
+id: pg_gaspare
+nome: Gaspare
+specie: Umano
+classe: Lama
+livello: 1
+aspetto: Spalle larghe e una cicatrice sul mento.
+creazione:
+  quando: 2026-11-22T14:36:00.921Z
+  metodo: in_ordine
+  tiri:
+    - passo: caratteristiche
+      per: Forza
+      dadi:
+        - 6
+        - 5
+        - 5
+    - passo: caratteristiche
+      per: Mente
+      dadi:
+        - 4
+        - 4
+        - 2
+    - passo: caratteristiche
+      per: Agilità
+      dadi:
+        - 5
+        - 5
+        - 1
+    - passo: caratteristiche
+      per: Tempra
+      dadi:
+        - 6
+        - 4
+        - 3
+    - passo: punti_ferita
+      per: Punti ferita del 1° livello
+      dadi:
+        - 7
+    - passo: monete
+      per: Monete iniziali
+      dadi:
+        - 5
+        - 5
+        - 5
+scheda:
+  caratteristiche:
+    forza: 16
+    mente: 10
+    agilita: 11
+    tempra: 13
+  classe: lama
+  livello: 1
+  px: 0
+  razza: umano
+  pf: 8
+  equipaggiamento:
+    - cotta
+    - scudo
+    - spada
+  monete:
+    mo: 95
+  lingue:
+    - comune

@@ -113,7 +113,21 @@ at a higher level each level's hit die is rolled in turn and the XP are that lev
   libro?}`; `StatoMaster.creazione`: every draft with the phone's first characters and the rolls entered.
 - `StatoTavolo.creazione: {modo}` when the campaign allows creation at the table.
 
-## 5. Tests
+## 5. Screens
+
+- **Phone** (apps/web/src/telefono/creazione/): the character choice shows **Crea un personaggio** when the table state
+  has `creazione`; the creation screen covers it with the set's steps in order (done, approved by the Game Master, the
+  current one, «rifai» on the choice steps), the current step's screen — the dice card (one box per die with manual rolls,
+  one «Tira» button with automatic ones), the races and classes with the closed ones greyed and their reason, the book
+  and today's spells, the purchase screen (the catalog by kind with price and weight, «+» and «−», the coins left, the
+  weight with the load band and the movement, the Armor Class and the attack lines), the languages, the name — and the
+  Engine's refusal when there is one. Leaving with «Indietro» keeps the draft; reopening finds it. Approved, the phone
+  remembers the new PC and takes it when the server is back (the server also binds the phone's device to it).
+- **Panel** (apps/web/src/master/SezioneCreazione.tsx, «Personaggi in creazione»): one card per draft with the steps and
+  their summaries, «Approva» and «Annulla» per step, the dice typed on the phone, the check's problems, «Approva il
+  personaggio», «Scarta», and the book's spells when the set says the Game Master gives them.
+
+## 6. Tests
 
 - apps/server/test/creazione-controllo.test.ts and strumenti/test_valida_creazione.py: the shared case file
   apps/server/test/fixtures/creazione/casi.yaml (the same sheets, the same problem codes in both); the validator on the
@@ -121,4 +135,10 @@ at a higher level each level's hit die is rolled in turn and the XP are that lev
 - apps/server/test/creazione-bozza.test.ts: the draft's rules on the invented fucina fixture.
 - apps/server/test/creazione-server.test.ts: the whole server — a phone builds a PC with manual dice over the socket, an
   illegal choice refused, the panel approves, the store in the test instance's logs (not the campaign), the rebuild puts
-  the PC at the table, a new start loads it; a campaign `al_tavolo` loads with no PC and does not start.
+  the PC at the table and the phone's device is bound to it, a new start loads it; a campaign `al_tavolo` loads with no PC
+  and does not start.
+- apps/web/e2e/creazione.spec.ts, the live check on real pages (esperimenti/risultati/regole-r5/, `rifai.sh`): two phones
+  build a fighter and a caster with manual dice on a two-session copy of the fucina fixture, one illegal race refused,
+  the purchases change the Armor Class and the load, the Game Master approves a step and both PCs, session 1 is played
+  and closed, the between-session step writes session 2 from the log, and session 2 starts with both PCs; then an elf
+  magic-user built by Basic Fantasy's rules on a copy of torre-mozza.

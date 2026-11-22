@@ -1,0 +1,18 @@
+id: scena_strada
+nodo: n_strada
+nome: La strada del nord
+descrizione: Una strada fangosa tra i pini, verso nord.
+domanda_drammatica: Chi parte con che cosa?
+intensita: 2
+sensi:
+- Odore di carbone e ferro caldo.
+- Il colpo del martello sull'incudine.
+elementi_interattivi:
+- cosa: la rastrelliera
+  dove: contro il muro
+  azioni: si guarda, si prende una spada
+png_presenti: []
+apertura: La strada sale tra i pini. Che fate?
+musica:
+  tag: calma
+taglio: Si chiude quando il gruppo esce dalla fucina.

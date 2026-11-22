@@ -42,14 +42,13 @@ export function comeIncantesimi(ctx: CtxCreazione, b: Bozza): 'scelta' | 'master
 
 /** Applies one action of the phone; the draft changes only when the action is legal. */
 export function applica(ctx: CtxCreazione, b: Bozza, a: AzioneCreazione, dadi: () => FonteDadi): EsitoAzione {
+  // Opening the screen again (a reload, a reconnection) just shows the draft, even an approved one.
+  if (a.tipo === 'inizia') return si;
   if (b.stato === 'approvata') return no('approvata');
   const corrente = passoCorrente(ctx, b);
   const sulPasso = (p: PassoCreazione): EsitoAzione | null => (corrente === p ? null : no('non_ora', { passo: testo(`creazione.passi.${p}`), corrente: corrente ? testo(`creazione.passi.${corrente}`) : '—' }));
   let e: EsitoAzione;
   switch (a.tipo) {
-    case 'inizia':
-      e = si;
-      break;
     case 'tira':
       e = tira(ctx, b, a.valori, dadi);
       break;

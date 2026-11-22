@@ -1,0 +1,43 @@
+pg_alla_fine:
+- id: pg_brina
+  pf: 7
+  oggetti:
+    giaco: 1
+    scudo: 1
+    spada: 1
+    zaino: 1
+  monete:
+    mo: 58
+  indossati:
+  - giaco
+  - scudo
+  px: 0
+  livello: 1
+  pf_massimi: 7
+- id: pg_gaspare
+  pf: 8
+  oggetti:
+    cotta: 1
+    scudo: 1
+    spada: 1
+  monete:
+    mo: 95
+  indossati:
+  - cotta
+  - scudo
+  px: 0
+  livello: 1
+  pf_massimi: 8
+- id: pg_selva
+  pf: 3
+  oggetti:
+    pugnale: 1
+  monete:
+    mo: 118
+  contatori:
+    slot_1: 1
+  incantesimi:
+  - scintilla
+  px: 0
+  livello: 1
+  pf_massimi: 3

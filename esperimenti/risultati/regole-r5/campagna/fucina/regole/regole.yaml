@@ -1,0 +1,155 @@
+# Invented rule set of the R5 fixture (docs/creazione.md, docs/regole.md §2 «Creazione»): a small d20 game written for
+# the tests of character creation at the table — scores rolled in order, races with limits and a class allow-list, a
+# fighter and a caster with a starting spellbook, a catalog with restricted items, money, languages. The numbers are
+# invented: a test against a manual uses that manual's set (campagne/torre-mozza).
+id: fucina-prova
+nome: Prova della fucina (set di prova)
+fonte:
+  titolo: Set di prova di Tabletop AI Game Master, scritto per i test
+  autore: Tabletop AI Game Master
+licenza:
+  nome: CC0
+  libera: true
+risoluzione:
+  tipo: d20_cd
+  dado: 20
+  critico: 20
+  disastro: 1
+caratteristiche:
+  - {id: forza, nome: Forza}
+  - {id: mente, nome: Mente}
+  - {id: agilita, nome: Agilità}
+  - {id: tempra, nome: Tempra}
+modificatore:
+  tipo: tabella
+  tabella:
+    - {da: 3, mod: -1}
+    - {da: 9, mod: 0}
+    - {da: 13, mod: 1}
+    - {da: 16, mod: 2}
+abilita:
+  - {id: mischia, nome: Attacco in mischia, caratteristica: forza}
+  - {id: distanza, nome: Attacco a distanza, caratteristica: agilita}
+  - {id: ts_morte, nome: Salvezza contro la morte, caratteristica: null, salvezza: morte}
+difficolta:
+  - {id: facile, nome: Facile, valore: 11}
+  - {id: normale, nome: Normale, valore: 15}
+  - {id: difficile, nome: Difficile, valore: 18}
+difficolta_predefinita: normale
+vantaggio: {tipo: bonus, valore: 2}
+attacchi: {tipo: prova, danno_critico: normale, danno_minimo: 1}
+danni: {nome: Punti ferita, a_zero: a zero si cade}
+sociale: {caratteristica: mente, nota: Si tira Mente contro la diffidenza del PNG.}
+progressione:
+  attacco: [mischia, distanza]
+  punti_ferita: {caratteristica: tempra, minimo: 1}
+tiri_salvezza:
+  colonne:
+    - {id: morte, nome: Morte o veleno}
+classi:
+  - id: lama
+    nome: Lama
+    requisiti: {forza: 9}
+    px: [0, 1000, 2000]
+    dadi_vita: [{da: 1, dado: "1d8"}]
+    attacco: [{da: 1, bonus: 1}, {da: 2, bonus: 2}]
+    tiri_salvezza: [{da: 1, valori: [12]}]
+  - id: arcano
+    nome: Arcano
+    requisiti: {mente: {min: 9}}
+    px: [0, 1500, 3000]
+    dadi_vita: [{da: 1, dado: "1d4"}]
+    attacco: [{da: 1, bonus: 0}]
+    tiri_salvezza: [{da: 1, valori: [14]}]
+    incantesimi_al_giorno: [{da: 1, slot: [1]}, {da: 3, slot: [2, 1]}]
+razze:
+  - id: umano
+    nome: Umano
+    lingue: [comune]
+  - id: piccolo
+    nome: Piccolo
+    requisiti: {agilita: {min: 9}, forza: {max: 15}}
+    classi: [lama]
+    lingue: [comune, piccolese]
+    tratti:
+      - {dado_vita_massimo: 6}
+lingue:
+  - {id: comune, nome: Comune}
+  - {id: piccolese, nome: Piccolese}
+  - {id: antico, nome: Antico}
+  - {id: runico, nome: Runico}
+magia: {preparazione: vanciana}
+poteri:
+  - {id: leggere_rune, nome: Leggere le rune, tipo: incantesimo, livello: {arcano: 1}, bersaglio: se_stesso, descrittivo: true, parole: [leggo le rune]}
+  - {id: scintilla, nome: Scintilla, tipo: incantesimo, livello: {arcano: 1}, bersaglio: uno, parole: [scintilla], effetti: [{tipo: danno, dadi: "1d6"}]}
+  - {id: luce_fredda, nome: Luce fredda, tipo: incantesimo, livello: {arcano: 1}, bersaglio: se_stesso, descrittivo: true, parole: [luce fredda]}
+  - {id: fiamma, nome: Fiamma, tipo: incantesimo, livello: {arcano: 2}, bersaglio: uno, descrittivo: true, parole: [fiamma]}
+monete:
+  base: mo
+  prezzi: [mo, ma]
+  peso: {quante: 20, peso: 1}
+  tagli:
+    - {id: mo, nome: Monete d'oro, vale: 10}
+    - {id: ma, nome: Monete d'argento, vale: 1}
+catalogo:
+  difesa: {senza_armatura: 10, caratteristica: agilita}
+  abilita: {mischia: mischia, distanza: distanza}
+  danno_caratteristica: forza
+  gittate:
+    unita: metri
+    parole_unita: [metri, metro]
+    fasce:
+      - {id: corta, nome: Gittata corta, bonus: 1}
+      - {id: media, nome: Gittata media, bonus: 0}
+      - {id: lunga, nome: Gittata lunga, bonus: -2}
+    predefinita: media
+  armi:
+    - {id: spada, nome: Spada, danno: "1d8", taglia: M, peso: 4, costo: 10}
+    - {id: spadone, nome: Spadone, danno: "1d10", taglia: L, peso: 10, costo: 20, mani: 2}
+    - {id: pugnale, nome: Pugnale, danno: "1d4", taglia: S, peso: 1, costo: 2}
+    - {id: arco, nome: Arco, danno: "1d6", taglia: M, peso: 2, costo: 25, mani: 2, gittate: [15, 30, 45], munizioni: [freccia]}
+  armature:
+    - {id: giaco, nome: Giaco di cuoio, ca: 12, categoria: cuoio, peso: 15, costo: 15}
+    - {id: cotta, nome: Cotta di maglia, ca: 14, categoria: metallo, peso: 40, costo: 40}
+  scudi:
+    - {id: scudo, nome: Scudo, bonus: 1, peso: 5, costo: 5}
+  munizioni:
+    - {id: freccia, nome: Frecce, peso: 1, costo: 1, confezione: 20}
+  attrezzatura:
+    - {id: zaino, nome: Zaino, peso: 2, costo: 2}
+    - {id: corda, nome: Corda, peso: 5, costo: 1}
+    - {id: torcia, nome: Torcia, peso: 1, costo: 1, confezione: 6}
+  restrizioni:
+    - {razza: piccolo, cosa: arma, vietati_taglie: [L], penalita: {vietato: true}}
+    - {classe: arcano, cosa: arma, ammessi: [pugnale], penalita: {attacco: -4}}
+    - {classe: arcano, cosa: armatura, ammessi: [], penalita: {senza_incantesimi: perso}}
+carico:
+  unita: libbre
+  caratteristica: forza
+  fasce: [{id: leggero, nome: Carico leggero}, {id: pesante, nome: Carico pesante}]
+  limiti: [{da: 3, valori: [30, 60]}, {da: 13, valori: [50, 100]}]
+movimento:
+  unita: metri
+  righe:
+    - {armatura: nessuna, valori: [12, 6]}
+    - {armatura: cuoio, valori: [9, 6]}
+    - {armatura: metallo, valori: [6, 3]}
+creazione:
+  livello: 1
+  passi: [caratteristiche, razza, classe, incantesimi, punti_ferita, monete, acquisti, lingue, descrizione]
+  caratteristiche:
+    metodi:
+      - {id: in_ordine, nome: "3d6 in ordine", dadi: "3d6", ordine: fisso}
+      - {id: da_disporre, nome: "3d6 da disporre", dadi: "3d6", ordine: libero}
+      - {id: schiera, nome: "Schiera", valori: [15, 13, 11, 9]}
+    opzioni:
+      - {id: scambio_punti, nome: "Spostare punti", tipo: punti, togli: 2, aggiungi: 1, minimo: 9}
+      - {id: scambio, nome: "Scambiare due punteggi", tipo: scambio, volte: 1}
+      - {id: riordino, nome: "Disporre a piacere", tipo: riordino}
+    massimo: 18
+    senza_speranza: {rimedi: [ritira, ribalta], ribalta: 21}
+  punti_ferita: tira
+  monete: {dadi: "3d6", per: 10, moneta: mo}
+  incantesimi:
+    - {classe: arcano, fissi: [leggere_rune], a_scelta: 1, livello: 1, come: scelta}
+  lingue: {caratteristica: mente}
