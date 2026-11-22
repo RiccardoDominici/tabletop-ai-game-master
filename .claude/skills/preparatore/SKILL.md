@@ -367,6 +367,25 @@ here only the order.
      (`strumenti/regole/confronta_bestiario.py`, for Basic Fantasy). **An NPC or minion sheet names its entry**
      (`scheda: {mostro: ghoul}`) and writes only what is its own (its `pf`, a weapon, a different `px`): the Engine
      merges the entry under the sheet and rolls the hit points the sheet does not give.
+   - **Exploration as the manual's chapter** (`docs/regole.md` §2, «Esplorazione»; docs/prove.md §14–15): the
+     environments the party explores (`esplorazione.ambienti`: the wandering monster check `controllo: {ogni: <duration
+     of the clock>, dado, fino_a}`, the encounter tables by dungeon level `tabelle: [{da, tabella}]`, the surprise in
+     advance `sorpresa_prima: {dado, fino_a, imboscata}` where the manual checks it at the encounter, `provviste: false`
+     for a town); the manual's encounter tables in `regole/incontri.yaml` (one entry per roll of the table's dice:
+     `mostro` (a bestiary id) with `numero` — the block's «No. Appearing» for that environment —, `gruppo` for an entry
+     without a stat block, `scelta` for a nested roll, `manuale` the printed cell); the daily food and water
+     (`provviste`: catalog items and the days one feeds, `senza: {dopo, danno, guarigione}`), an exploration rest rule
+     only if the manual has one (`riposo`), the darkness rule (`buio: {condizione}`, the fight's blinded condition), the
+     darkvision trait (`{scurovisione: 18}` on races, `bestiario.scurovisione` for every monster); the journey's
+     environment, each terrain's table and whether it is trackless, and the leader's check against getting lost
+     (`viaggio.ambiente`, `terreni[].incontri`, `terreni[].smarrirsi`, `smarrirsi: {abilita}`). A manual's rule that the
+     schema has no place for is never invented into the set: say so to the user.
+   - **The manual's other numbers R6 made data**: a threshold ability that takes another's range on its own die
+     (`soglia: {dado: 10, come: forzare}`: Basic Fantasy's locked doors), the Game Master's morale adjustment
+     (`combattimento.fine.morale.aggiustamento`), waking someone knocked out (`non_letale.svegliare: {dopo, parole}`);
+     combination classes (`classi[].combinazione: [a, b]` with the class's own `dadi_vita` and its own
+     `catalogo.restrizioni`; the races that may take it name it in `classi`, and a race that may take only single
+     classes lists them).
    - **Keywords** (`parole_chiave`, the `parole` of scene checks and of excerpts with `per:`): specific words, not
      places, body parts or common objects («porta», «passaggio», «spalla»), which the validator refuses.
 3. Write `campagne/<id>/regole/`: `regole.yaml` (with `fonte.titolo`, `licenza` and the section `combattimento:`,
@@ -452,6 +471,11 @@ if someone holds it at the start: the Engine keeps who holds it (`riferimenti/sc
   mestiere.md §9.
 - World questions (`domande`, 0–2 per scene, «Sheets and checks» above): an uncertain fact no PC rolls for, written
   with the scene [V `DOMANDE`].
+- With a manual's exploration rules (step 1b): where the party explores, `esplorazione: {ambiente: sotterraneo, livello:
+  1}` (a dungeon level's table) or `{ambiente: selvaggio, tabella: selvaggio_bosco}`; the wandering monsters then come
+  on the clock, so write it only where the story can take a random meeting (not a set-piece climax, not a talk). And the
+  scene's light, `luce: piena | fioca | buio` (dusk and night outdoors: `fioca`; a cellar or a tunnel: `buio`), with
+  light sources among the PCs' gear when a scene is dark.
 
 **Check**: `--solo INDIZI,GRAFO,PROSA,SESSIONE,MONDO,VINCOLI,DOMANDE` with zero errors. The `SCENA` errors that cite NPCs and PCs are
 closed at steps 6 and 7.

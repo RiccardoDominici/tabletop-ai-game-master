@@ -341,6 +341,11 @@ code in `strumenti/valida/regole_schede.py`, tables in `srd.py`).
   the card («Fossa coperta»); `aggiustamento` (a manual's set: −100 to 100) is this check's situational points, added to
   a threshold ability's threshold (the slimy wall's −20) or to a d20 check's roll. A scene may set its window length
   (`tempo_per_finestra: {round: 6}` for a talk scene, in the set's clock units).
+  With a manual's exploration rules (R6, `docs/regole.md` §2 «Esplorazione»), a scene may say where the party explores,
+  `esplorazione: {ambiente: <an environment of esplorazione.ambienti>, livello: <the dungeon level>}` or `{ambiente,
+  tabella: <an encounter table>}` (wandering monsters on the clock there; no key = nothing explored, no check), and its
+  light, `luce: piena | fioca | buio` (absent = piena; in the dark, with the set's `esplorazione.buio`, who has no light
+  and no darkvision fights blinded) [V `REGOLE.esplorazione`].
   The `quando` opens with the PC's action («un PG apre…»): the rules arbiter matches that word (or one of `parole`) as
   the intent, never shared nouns alone.
 - `scena.yaml` and `scene/*.yaml` → `domande`: world questions (shape in the scene sheet above). The odds (`tiro`) work
